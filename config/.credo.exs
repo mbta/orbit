@@ -65,13 +65,13 @@
       #     {Credo.Check.Design.DuplicatedCode, false}
       #
       checks: %{
-          # You can customize the priority of any check
-          # Priority values are: `low, normal, high, higher`
-          # {Credo.Check.Design.AliasUsage, [priority: :low]},
-          # You can also customize the exit_status of each check.
-          # If you don't want TODO comments to cause `mix credo` to fail, just
-          # set this value to 0 (zero).
-          # {Credo.Check.Design.TagTODO, [exit_status: 2]},
+        # You can customize the priority of any check
+        # Priority values are: `low, normal, high, higher`
+        # {Credo.Check.Design.AliasUsage, [priority: :low]},
+        # You can also customize the exit_status of each check.
+        # If you don't want TODO comments to cause `mix credo` to fail, just
+        # set this value to 0 (zero).
+        # {Credo.Check.Design.TagTODO, [exit_status: 2]},
         enabled: [
           #
           ## Consistency Checks
@@ -86,7 +86,8 @@
           #
           ## Design Checks
           #
-          {Credo.Check.Design.AliasUsage, [if_nested_deeper_than: 2, if_called_more_often_than: 1]},
+          {Credo.Check.Design.AliasUsage,
+           [if_nested_deeper_than: 2, if_called_more_often_than: 1]},
           {Credo.Check.Design.TagFIXME, []},
           {Credo.Check.Design.TagTODO, false},
 
