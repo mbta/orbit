@@ -9,7 +9,10 @@ defmodule Orbit.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialzyer: [
+        plt_add_apps: [:mix]
+      ]
     ]
   end
 
@@ -34,6 +37,7 @@ defmodule Orbit.MixProject do
     [
       {:bandit, "~> 1.2"},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.10"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
