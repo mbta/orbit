@@ -1,7 +1,6 @@
 import Config
 
-# Configure your database
-#
+# Database config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
@@ -20,7 +19,6 @@ config :orbit, OrbitWeb.Endpoint,
   secret_key_base: "rkME9iHy9nN19cmr5XjoM1hJDX9m2KKjJXUkIRSzgnRWg8IVn8yGaGCNkzEQxkBD",
   server: false
 
-# Print only warnings and errors during test
 config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
