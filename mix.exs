@@ -52,6 +52,7 @@ defmodule Orbit.MixProject do
        compile: false,
        depth: 1},
       {:jason, "~> 1.2"},
+      {:logster, "~> 2.0.0-rc.1"},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 4.0"},

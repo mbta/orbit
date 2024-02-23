@@ -1,8 +1,4 @@
 defmodule Orbit.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
-
   use Application
 
   @impl true
@@ -17,6 +13,8 @@ defmodule Orbit.Application do
       # Start to serve requests, typically the last entry
       OrbitWeb.Endpoint
     ]
+
+    :ok = Logster.attach_phoenix_logger()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

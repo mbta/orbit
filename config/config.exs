@@ -38,13 +38,16 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
-# Configures Elixir's Logger
+# Logging config
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
+config :phoenix,
+  # Use Jason for JSON parsing in Phoenix
+  json_library: Jason,
+  # We use logster instead of the default Phoenix logging
+  logger: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
