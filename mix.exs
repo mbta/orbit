@@ -42,6 +42,8 @@ defmodule Orbit.MixProject do
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "~> 3.10"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
+      {:ex_aws, "== 2.5.1"},
+      {:ex_aws_rds, "== 2.0.2"},
       {:floki, ">= 0.30.0", only: :test},
       {:heroicons,
        github: "tailwindlabs/heroicons",

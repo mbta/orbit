@@ -20,3 +20,9 @@
 Run the server with `mix phx.server`.
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+## Docker
+
+To run the Docker container locally, run `docker compose up --build`.
+Find what port the server is using with `docker compose ps`,
+and then visit `localhost:<port>`.

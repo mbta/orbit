@@ -21,20 +21,29 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() == :prod do
-  database_url =
-    System.get_env("DATABASE_URL") ||
-      raise """
-      environment variable DATABASE_URL is missing.
-      For example: ecto://USER:PASS@HOST/DATABASE
-      """
-
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :orbit, Orbit.Repo,
-    # ssl: true,
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    socket_options: maybe_ipv6
+    socket_options: maybe_ipv6,
+    username: System.get_env("DATABASE_USERNAME"),
+    password: System.get_env("DATABASE_PASSWORD"),
+    database: System.get_env("DATABASE_NAME"),
+    hostname: System.get_env("DATABASE_HOST"),
+    ssl: System.get_env("DATABASE_DISABLE_SSL") != "insecure-yes",
+    ssl_opts: [
+      verify: :verify_peer,
+      cacertfile: "/usr/local/share/amazon-certs.pem",
+      server_name_indication: String.to_charlist(System.get_env("DATABASE_HOST")),
+      verify_fun:
+        {&:ssl_verify_hostname.verify_fun/3,
+         [check_hostname: String.to_charlist(System.get_env("DATABASE_HOST"))]}
+    ],
+    # function to call before every connection
+    # add RDS IAM auth, but only if there's no password
+    configure:
+      (if System.get_env("DATABASE_PASSWORD") == nil do
+         {Orbit.Repo, :add_prod_credentials, []}
+       end)
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
