@@ -40,7 +40,6 @@ defmodule Orbit.MixProject do
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
-      {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.10"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:floki, ">= 0.30.0", only: :test},

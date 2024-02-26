@@ -6,7 +6,6 @@ defmodule Orbit.Application do
     children = [
       OrbitWeb.Telemetry,
       Orbit.Repo,
-      {DNSCluster, query: Application.get_env(:orbit, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Orbit.PubSub},
       # Start a worker by calling: Orbit.Worker.start_link(arg)
       # {Orbit.Worker, arg},
