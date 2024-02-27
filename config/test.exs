@@ -1,14 +1,11 @@
 import Config
 
 # Database config
-# The MIX_TEST_PARTITION environment variable can be used
-# to provide built-in test partitioning in CI environment.
-# Run `mix help test` for more information.
 config :orbit, Orbit.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "orbit_test#{System.get_env("MIX_TEST_PARTITION")}",
+  username: System.get_env("DATABASE_USERNAME") || "postgres",
+  password: System.get_env("DATABASE_PASSWORD") || "postgres",
+  hostname: System.get_env("DATABASE_HOST") || "localhost",
+  database: System.get_env("DATABASE_NAME") || "orbit_test",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 

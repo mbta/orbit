@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  merge_group:
+
+jobs:
+  setup:
+    name: asdf and Elixir dependencies
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key-asdf: ${{ steps.cache-keys.outputs.asdf }}
+      cache-key-mix-deps: ${{ steps.cache-keys.outputs.mix-deps }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set cache keys
+        id: cache-keys
+        run: |
+          echo "asdf-restore=cache-asdf-" >> $GITHUB_OUTPUT
+          echo "asdf=cache-asdf-${{ hashFiles('.tool-versions') }}" >> $GITHUB_OUTPUT
+          echo "mix-deps-restore=cache-mix-deps-" >> $GITHUB_OUTPUT
+          echo "mix-deps=cache-mix-deps-${{ hashFiles('**/mix.lock', '.tool-versions') }}" >> $GITHUB_OUTPUT
+      - name: asdf cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.asdf
+          key: ${{ steps.cache-keys.outputs.asdf }}
+          restore-keys: ${{ steps.cache-keys.outputs.asdf-restore }}
+        id: asdf-cache
+      - uses: asdf-vm/actions/install@v3
+        # only run `asdf install` if we didn't hit the cache
+        if: steps.asdf-cache.outputs.cache-hit != 'true'
+      - name: Setup asdf environment
+        uses: mbta/actions/reshim-asdf@v2
+      - name: mix rebar and hex
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+        # mix rebar and hex are cached with asdf, not with mix
+        if: steps.asdf-cache.outputs.cache-hit != 'true'
+      - name: Mix cache
+        id: mix-deps-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ steps.cache-keys.outputs.mix-deps }}
+          restore-keys: ${{ steps.cache-keys.outputs.mix-deps-restore }}
+      - name: Install and compile Mix dependencies
+        if: steps.deps-cache.outputs.cache-hit != 'true'
+        run: |
+          mix deps.get
+          MIX_ENV=test mix deps.compile
+
+  elixir:
+    name: Build and test Elixir
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: localhost
+      DATABASE_NAME: orbit_test
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{env.DATABASE_USERNAME}}
+          POSTGRES_PASSWORD: ${{env.DATABASE_PASSWORD}}
+          POSTGRES_DB: ${{env.DATABASE_NAME}}
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: asdf cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.asdf
+          key: ${{ needs.setup.outputs.cache-key-asdf }}
+      - name: Setup asdf environment
+        uses: mbta/actions/reshim-asdf@v2
+      - uses: actions/checkout@v4
+      - name: Restore Mix cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ needs.setup.outputs.cache-key-mix-deps }}
+      - name: Compile (warnings as errors)
+        run: mix compile --force --warnings-as-errors
+      - name: Credo
+        run: mix credo --strict
+      - name: Check formatting
+        run: mix format --check-formatted
+      - name: Run tests
+        run: mix test
+        env:
+          DATABASE_USERNAME: ${{env.DATABASE_USERNAME}}
+          DATABASE_PASSWORD: ${{env.DATABASE_PASSWORD}}
+          DATABASE_HOST: ${{env.DATABASE_HOST}}
+          DATABASE_NAME: ${{env.DATABASE_NAME}}
+      - uses: mbta/actions/dialyzer@v2
+      - name: Check for unused dependencies
+        run: mix deps.unlock --check-unused
+      - name: Sobelow (security analysis)
+        run: mix sobelow
+
+  docker:
+    name: Check that the Docker container will build and run
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: docker build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+      - name: docker compose build
+        run: docker compose build
+      - name: docker compose up
+        run: docker compose up --wait
+      - name: ensure running properly
+        run: docker compose exec --no-TTY orbit wget --spider -S http://localhost:4000/
+      - name: show docker container logs
+        run: docker compose logs orbit
+        if: ${{ !cancelled() }}
