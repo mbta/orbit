@@ -1,0 +1,23 @@
+name: Deploy to Staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: staging
+  cancel-in-progress: true
+
+env:
+  # "branch:$name" or "tag:$name", except for the automatic deploys from pushing to main it's just "main".
+  version_name: "${{ (github.event_name == 'push' && github.ref_name == 'main' && 'main') || format('{0}:{1}', github.ref_type, github.ref_name) }}
+
+jobs:
+  deploy:
+    name: Deploy to Staging
+    uses: ./.github/workflows/deploy.yml
+    with:
+      env: staging
+      version-name: ${{ env.version_name }}
+    secrets: inherit

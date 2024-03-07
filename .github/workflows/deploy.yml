@@ -1,0 +1,66 @@
+on:
+  workflow_call:
+    inputs:
+      env:
+        required: true
+        type: string
+      version-name:
+        required: true
+        type: string
+        description: descriptive id of what's deployed (e.g. release name or pr number). doesn't have to be unique, the git hash is appended later
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
+      SLACK_WEBHOOK:
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.env }}
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment: ${{ inputs.env }}
+
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get versions
+        id: calc-version
+        run: |
+          docker_repo=orbit
+          git_hash="$(git rev-parse --short HEAD)"
+          version_id="${{ inputs.version-name }}:$git_hash"
+          git_hash_tag="$docker_repo:git-$git_hash"
+          latest_env_tag="$docker_repo:latest-${{ inputs.env }}"
+          version_tag=$docker_repo:"$version_id"
+          echo "version-id=$version_id" | tee -a $GITHUB_OUTPUT
+          echo "deploy-tag=$version_tag" | tee -a $GITHUB_OUTPUT
+          printf "tag-list=%s,%s,%s\n" "$git_hash_tag" "$latest_env_tag" "$version_tag" | tee -a $GITHUB_OUTPUT
+      - uses: aws-actions/amazon-ecr-login@v2
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          cache-from: type=gha
+          tags: ${{ steps.calc-version.outputs.tag-list }}
+          push: true
+      - uses: mbta/actions/deploy-ecs@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          ecs-cluster: orbit
+          ecs-service: orbit-${{ inputs.env }}
+          docker-tag: ${{ steps.calc-version.outputs.deploy-tag }}
+      - uses: mbta/actions/notify-slack-deploy@v2
+        if: ${{ !cancelled() }}
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          job-status: ${{ job.status }}
+          custom-message: Deployed ${{ steps.calc-version.outputs.version-id }} to ${{ inputs.env }}

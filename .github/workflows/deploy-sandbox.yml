@@ -1,0 +1,26 @@
+name: Deploy to Sandbox
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - synchronize
+      - labeled
+
+env:
+  # for workflow_dispatch: "branch:$name" or "tag:$name"
+  # for PRs with the deploy-to-sandbox tag: "pr:$number"
+  version_name: "${{ github.event_name == 'workflow_dispatch' && format('{0}:{1}', github.ref_type, github.ref_name) }}${{ github.event_name == 'pull_request' && format('pr:{0}', github.event.pull_request.number) }}"
+
+jobs:
+  deploy:
+    name: Deploy to Sandbox
+    concurrency:
+      group: sandbox
+      cancel-in-progress: true
+    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'deploy-to-sandbox') }}
+    uses: ./.github/workflows/deploy.yml
+    with:
+      env: sandbox
+      version-name: ${{ env.version_name }}
+    secrets: inherit
