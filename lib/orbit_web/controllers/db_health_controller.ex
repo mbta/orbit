@@ -9,6 +9,7 @@ defmodule OrbitWeb.HealthDbController do
 
   def index(conn, _params) do
     count = Repo.one(from(migration in "schema_migrations", select: count(migration)))
+
     conn
     |> put_status(200)
     |> text("#{count}")

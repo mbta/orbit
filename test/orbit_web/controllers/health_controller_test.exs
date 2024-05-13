@@ -1,4 +1,3 @@
-
 defmodule OrbitWeb.HealthControllerTest do
   use OrbitWeb.ConnCase
 
