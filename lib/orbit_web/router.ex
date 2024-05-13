@@ -20,10 +20,11 @@ defmodule OrbitWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", OrbitWeb do
-  #   pipe_through :api
-  # end
+  scope "/", OrbitWeb do
+    # no pipe
+    get "/_health", HealthController, :index
+    get "/_health_db", HealthDbController, :index
+  end
 
   # Enable LiveDashboard in development
   if Application.compile_env(:orbit, :dev_routes) do
