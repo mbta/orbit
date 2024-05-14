@@ -11,6 +11,8 @@ on:
     secrets:
       AWS_ROLE_ARN:
         required: true
+      DOCKER_REPO:
+        required: true
       SLACK_WEBHOOK:
         required: true
 
@@ -35,7 +37,7 @@ jobs:
       - name: Get versions
         id: calc-version
         run: |
-          docker_repo=orbit
+          docker_repo="${{ secrets.DOCKER_REPO }}"
           git_hash="$(git rev-parse --short HEAD)"
           version_id="${{ inputs.version-name }}:$git_hash"
           git_hash_tag="$docker_repo:git-$git_hash"
