@@ -6,6 +6,7 @@ defmodule Orbit.Application do
     children = [
       OrbitWeb.Telemetry,
       Orbit.Repo,
+      {Ecto.Migrator, repos: Application.fetch_env!(:orbit, :ecto_repos)},
       {Phoenix.PubSub, name: Orbit.PubSub},
       # Start a worker by calling: Orbit.Worker.start_link(arg)
       # {Orbit.Worker, arg},

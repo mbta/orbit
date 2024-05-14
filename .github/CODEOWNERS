@@ -1,0 +1,10 @@
+# The Glides team is the default owner for the entire codebase.
+*       @mbta/glides-developers
+
+# Dependency manifests & CI tooling does not automatically add reviewers
+mix.exs
+mix.lock
+package.json
+package-lock.json
+.tool-versions
+Dockerfile
