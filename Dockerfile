@@ -1,11 +1,10 @@
 ### Elixir Deps
 FROM hexpm/elixir:1.16.1-erlang-26.2.1-alpine-3.18.4 AS elixir-deps
 
-# needed to retrieve mix dependencies
+# git is needed to fetch some mix deps
 RUN apk add --no-cache git
 
-ENV PORT=4000 MIX_ENV=prod LANG="C.UTF-8"
-
+ENV MIX_ENV=prod
 COPY ./mix.exs /app/mix.exs
 COPY ./mix.lock /app/mix.lock
 WORKDIR /app
