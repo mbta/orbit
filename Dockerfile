@@ -26,7 +26,7 @@ RUN npm ci
 
 # build frontend
 COPY --from=elixir-deps /app/deps /app/deps
-COPY ./tailwind.config.js /app/tailwind.config.js
+COPY ./tailwind.config.ts /app/tailwind.config.ts
 COPY ./js /app/js
 COPY ./css /app/css
 COPY ./lib/orbit_web /app/lib/orbit_web
