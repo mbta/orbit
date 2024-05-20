@@ -1,9 +1,16 @@
 {
   "name": "orbit",
   "scripts": {
+    "build:css": "tailwindcss -i css/app.css -o priv/static/assets/app.css",
+    "build:js": "NODE_PATH=deps/ esbuild js/app.ts --bundle --target=es2017 --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
     "format": "prettier . --write",
     "test:format": "prettier . --check",
     "test": "npm run test:format"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "esbuild": "^0.21.3",
+    "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",

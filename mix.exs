@@ -41,7 +41,6 @@ defmodule Orbit.MixProject do
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "~> 3.10"},
-      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:ex_aws, "== 2.5.1"},
       {:ex_aws_rds, "== 2.0.2"},
       {:floki, ">= 0.30.0", only: :test},
@@ -62,7 +61,6 @@ defmodule Orbit.MixProject do
       {:phoenix_live_view, "~> 0.20.2"},
       {:postgrex, ">= 0.0.0"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:tailwind, "~> 0.2", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"}
     ]
@@ -76,18 +74,11 @@ defmodule Orbit.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
+      setup: ["deps.get", "ecto.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test", "credo"],
-      sobelow: ["sobelow --config"],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind orbit", "esbuild orbit"],
-      "assets.deploy": [
-        "tailwind orbit --minify",
-        "esbuild orbit --minify",
-        "phx.digest"
-      ]
+      sobelow: ["sobelow --config"]
     ]
   end
 end

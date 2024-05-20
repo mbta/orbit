@@ -31,8 +31,8 @@ config :orbit, OrbitWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "0EUYwTuYjv3d29zcLfEM4kG6gt+9p8gGHpimBuVfafFqQFKAuYIzHT7OGlfjjaS+",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:orbit, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:orbit, ~w(--watch)]}
+    npm: ~w(run build:js -- --sourcemap=inline --watch),
+    npm: ~w(run build:css -- --watch)
   ],
   # Watch static and templates for browser reloading.
   live_reload: [

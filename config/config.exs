@@ -16,28 +16,6 @@ config :orbit, OrbitWeb.Endpoint,
   pubsub_server: Orbit.PubSub,
   live_view: [signing_salt: "5ANP5/by"]
 
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.17.11",
-  orbit: [
-    args:
-      ~w(js/app.ts --bundle --target=es2017 --outdir=priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("..", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
-
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "3.4.0",
-  orbit: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/app.css
-      --output=priv/static/assets/app.css
-    ),
-    cd: Path.expand("..", __DIR__)
-  ]
-
 # Logging config
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

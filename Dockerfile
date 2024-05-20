@@ -23,8 +23,7 @@ COPY ./js /app/js
 COPY ./css /app/css
 WORKDIR /app
 RUN mix compile
-# mix assets.deploy is an alias for tailwind, esbuild, and mix phx.digest
-RUN mix assets.deploy
+RUN mix phx.digest
 RUN mix release --path /app-release
 
 ### Production Stage
