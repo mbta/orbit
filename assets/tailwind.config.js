@@ -7,7 +7,9 @@ const path = require("path")
 
 module.exports = {
   content: [
-    "./js/**/*.js",
+    "./src/**/*.js",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
     "../lib/orbit_web.ex",
     "../lib/orbit_web/**/*.*ex"
   ],
