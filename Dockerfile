@@ -19,7 +19,8 @@ RUN mix deps.compile
 COPY ./priv/repo/migrations /app/priv/repo/migrations
 COPY ./config /app/config
 COPY ./lib /app/lib
-COPY ./assets /app/assets
+COPY ./js /app/js
+COPY ./css /app/css
 WORKDIR /app
 RUN mix compile
 # mix assets.deploy is an alias for tailwind, esbuild, and mix phx.digest

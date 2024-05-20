@@ -21,8 +21,8 @@ config :esbuild,
   version: "0.17.11",
   orbit: [
     args:
-      ~w(src/app.ts --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
+      ~w(js/app.ts --bundle --target=es2017 --outdir=priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("..", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
@@ -33,9 +33,9 @@ config :tailwind,
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css
-      --output=../priv/static/assets/app.css
+      --output=priv/static/assets/app.css
     ),
-    cd: Path.expand("../assets", __DIR__)
+    cd: Path.expand("..", __DIR__)
   ]
 
 # Logging config
