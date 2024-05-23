@@ -1,0 +1,10 @@
+{
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports"
+  ],
+  "tailwindConfig": "tailwind.config.ts",
+  "tailwindFunctions": ["className"],
+  "importOrder": ["^js/(.*)$"],
+  "experimentalTernaries": true
+}
