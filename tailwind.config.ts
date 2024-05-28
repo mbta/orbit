@@ -57,9 +57,9 @@ module.exports = {
     //
     plugin(function ({ matchComponents, theme }) {
       type Value = { name: string; fullPath: string };
-      let iconsDir = path.join(__dirname, "deps/heroicons/optimized");
-      let values: Record<string, Value> = {};
-      let icons = [
+      const iconsDir = path.join(__dirname, "deps/heroicons/optimized");
+      const values: Record<string, Value> = {};
+      const icons = [
         ["", "/24/outline"],
         ["-solid", "/24/solid"],
         ["-mini", "/20/solid"],
@@ -67,7 +67,7 @@ module.exports = {
       ];
       icons.forEach(([suffix, dir]) => {
         fs.readdirSync(path.join(iconsDir, dir)).forEach((file) => {
-          let name = path.basename(file, ".svg") + suffix;
+          const name = path.basename(file, ".svg") + suffix;
           values[name] = { name, fullPath: path.join(iconsDir, dir, file) };
         });
       });
@@ -75,7 +75,7 @@ module.exports = {
         {
           // @ts-expect-error function might be passed a string, ignoring cuz this came from default phoenix untyped code
           hero: ({ name, fullPath }: Value) => {
-            let content = fs
+            const content = fs
               .readFileSync(fullPath)
               .toString()
               .replace(/\r?\n|\r/g, "");

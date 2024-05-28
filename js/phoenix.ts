@@ -22,10 +22,10 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 
 // @ts-expect-error missing null check, ignoring cuz this came from default untyped phoenix code
-let csrfToken = document
+const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
-let liveSocket = new LiveSocket("/live", Socket, {
+const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
 });
