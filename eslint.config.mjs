@@ -2,13 +2,16 @@
 
 import pluginJs from "@eslint/js";
 // @ts-expect-error couldn't find types for this package
+import pluginReactHooks from "eslint-plugin-react-hooks";
+// @ts-expect-error couldn't find types for this package
 import pluginReactConfig from "eslint-plugin-react/configs/jsx-runtime.js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.strictTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
   pluginReactConfig,
   {
     ignores: ["*", "!js/", "!*.ts", "!*.mjs"],
@@ -20,6 +23,53 @@ export default tseslint.config(
     },
     languageOptions: {
       globals: globals.browser,
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    plugins: {
+      "react-hooks": pluginReactHooks,
+    },
+    rules: {
+      ...pluginReactHooks.configs.recommended.rules,
+      // enforce "type" instead of enforcing "interface"
+      "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+      // unused arguments are fine if they have a leading _
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      // `${number}` is fine
+      "@typescript-eslint/restrict-template-expressions": [
+        "error",
+        {
+          allowNumber: true,
+        },
+      ],
+    },
+  },
+  {
+    files: ["js/test/", "js/**/*.test.*"],
+    rules: {
+      // empty functions are fine
+      "@typescript-eslint/no-empty-function": "off",
+      // expect.any is untyped and triggers this all the time.
+      "@typescript-eslint/no-unsafe-assignment": "off",
+    },
+  },
+  {
+    // In this file, some plugins have missing types that cause type-aware lint errors.
+    files: ["eslint.config.mjs"],
+    rules: {
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
     },
   },
 );
