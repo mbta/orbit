@@ -14,12 +14,17 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.3.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "@types/node": "^20.12.12",
     "@types/phoenix": "^1.6.4",
     "@types/phoenix_live_view": "^0.18.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.2",
+    "globals": "^15.3.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.11.0"
   }
 }
