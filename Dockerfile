@@ -26,6 +26,7 @@ RUN npm ci
 
 # build frontend
 COPY --from=elixir-deps /app/deps /app/deps
+COPY ./tsconfig.json /app/tsconfig.json
 COPY ./tailwind.config.ts /app/tailwind.config.ts
 COPY ./js /app/js
 COPY ./css /app/css
