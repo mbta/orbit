@@ -2,6 +2,8 @@
 
 import pluginJs from "@eslint/js";
 // @ts-expect-error couldn't find types for this package
+import pluginJsxA11y from "eslint-plugin-jsx-a11y";
+// @ts-expect-error couldn't find types for this package
 import pluginReactHooks from "eslint-plugin-react-hooks";
 // @ts-expect-error couldn't find types for this package
 import pluginReactConfig from "eslint-plugin-react/configs/jsx-runtime.js";
@@ -29,9 +31,11 @@ export default tseslint.config(
       },
     },
     plugins: {
+      "jsx-a11y": pluginJsxA11y,
       "react-hooks": pluginReactHooks,
     },
     rules: {
+      ...pluginJsxA11y.configs.recommended.rules,
       ...pluginReactHooks.configs.recommended.rules,
       // enforce "type" instead of enforcing "interface"
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
