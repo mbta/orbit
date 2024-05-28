@@ -1,9 +1,9 @@
 // See the Tailwind configuration guide for advanced usage
 // https://tailwindcss.com/docs/configuration
 
-const plugin = require("tailwindcss/plugin");
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
+import plugin from "tailwindcss/plugin";
 
 module.exports = {
   content: [
@@ -56,8 +56,9 @@ module.exports = {
     // See your `CoreComponents.icon/1` for more information.
     //
     plugin(function ({ matchComponents, theme }) {
+      type Value = { name: string; fullPath: string };
       let iconsDir = path.join(__dirname, "deps/heroicons/optimized");
-      let values = {};
+      let values: Record<string, Value> = {};
       let icons = [
         ["", "/24/outline"],
         ["-solid", "/24/solid"],
@@ -70,9 +71,10 @@ module.exports = {
           values[name] = { name, fullPath: path.join(iconsDir, dir, file) };
         });
       });
-      matchComponents(
+      matchComponents<Value>(
         {
-          hero: ({ name, fullPath }) => {
+          // @ts-expect-error function might be passed a string, ignoring cuz this came from default phoenix untyped code
+          hero: ({ name, fullPath }: Value) => {
             let content = fs
               .readFileSync(fullPath)
               .toString()
