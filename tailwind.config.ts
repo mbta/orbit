@@ -68,6 +68,7 @@ module.exports = {
       icons.forEach(([suffix, dir]) => {
         fs.readdirSync(path.join(iconsDir, dir)).forEach((file) => {
           const name = path.basename(file, ".svg") + suffix;
+          // eslint-disable-next-line better-mutation/no-mutation -- ignoring cuz this came from default phoenix code
           values[name] = { name, fullPath: path.join(iconsDir, dir, file) };
         });
       });

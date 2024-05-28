@@ -38,4 +38,5 @@ liveSocket.connect();
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 // @ts-expect-error liveSocket doesn't exist on window, ignoring cuz this came from default untyped phoenix code
+// eslint-disable-next-line better-mutation/no-mutation -- ignoring cuz this came from deafult phoenix code
 window.liveSocket = liveSocket;

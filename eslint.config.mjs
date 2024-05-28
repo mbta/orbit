@@ -2,6 +2,8 @@
 
 import pluginJs from "@eslint/js";
 // @ts-expect-error couldn't find types for this package
+import pluginBetterMutation from "eslint-plugin-better-mutation";
+// @ts-expect-error couldn't find types for this package
 import pluginJsxA11y from "eslint-plugin-jsx-a11y";
 // @ts-expect-error couldn't find types for this package
 import pluginReactHooks from "eslint-plugin-react-hooks";
@@ -31,12 +33,16 @@ export default tseslint.config(
       },
     },
     plugins: {
+      "better-mutation": pluginBetterMutation,
       "jsx-a11y": pluginJsxA11y,
       "react-hooks": pluginReactHooks,
     },
     rules: {
+      ...pluginBetterMutation.configs.recommended.rules,
       ...pluginJsxA11y.configs.recommended.rules,
       ...pluginReactHooks.configs.recommended.rules,
+      // allow modifying module.exports
+      "better-mutation/no-mutation": ["error", { commonjs: true }],
       // enforce "type" instead of enforcing "interface"
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       // unused arguments are fine if they have a leading _
