@@ -21,6 +21,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 
+// @ts-expect-error missing null check, ignoring cuz this came from default untyped phoenix code
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
@@ -36,4 +37,5 @@ liveSocket.connect();
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
+// @ts-expect-error liveSocket doesn't exist on window, ignoring cuz this came from default untyped phoenix code
 window.liveSocket = liveSocket;
