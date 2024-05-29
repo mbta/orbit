@@ -27,39 +27,39 @@ module.exports = {
     //
     //     <div class="phx-click-loading:animate-ping">
     //
-    plugin(({ addVariant }) =>
+    plugin(({ addVariant }) => {
       addVariant("phx-no-feedback", [
         ".phx-no-feedback&",
         ".phx-no-feedback &",
-      ]),
-    ),
-    plugin(({ addVariant }) =>
+      ]);
+    }),
+    plugin(({ addVariant }) => {
       addVariant("phx-click-loading", [
         ".phx-click-loading&",
         ".phx-click-loading &",
-      ]),
-    ),
-    plugin(({ addVariant }) =>
+      ]);
+    }),
+    plugin(({ addVariant }) => {
       addVariant("phx-submit-loading", [
         ".phx-submit-loading&",
         ".phx-submit-loading &",
-      ]),
-    ),
-    plugin(({ addVariant }) =>
+      ]);
+    }),
+    plugin(({ addVariant }) => {
       addVariant("phx-change-loading", [
         ".phx-change-loading&",
         ".phx-change-loading &",
-      ]),
-    ),
+      ]);
+    }),
 
     // Embeds Heroicons (https://heroicons.com) into your app.css bundle
     // See your `CoreComponents.icon/1` for more information.
     //
     plugin(function ({ matchComponents, theme }) {
       type Value = { name: string; fullPath: string };
-      let iconsDir = path.join(__dirname, "deps/heroicons/optimized");
-      let values: Record<string, Value> = {};
-      let icons = [
+      const iconsDir = path.join(__dirname, "deps/heroicons/optimized");
+      const values: Record<string, Value> = {};
+      const icons = [
         ["", "/24/outline"],
         ["-solid", "/24/solid"],
         ["-mini", "/20/solid"],
@@ -67,7 +67,8 @@ module.exports = {
       ];
       icons.forEach(([suffix, dir]) => {
         fs.readdirSync(path.join(iconsDir, dir)).forEach((file) => {
-          let name = path.basename(file, ".svg") + suffix;
+          const name = path.basename(file, ".svg") + suffix;
+          // eslint-disable-next-line better-mutation/no-mutation -- ignoring cuz this came from default phoenix code
           values[name] = { name, fullPath: path.join(iconsDir, dir, file) };
         });
       });
@@ -75,7 +76,7 @@ module.exports = {
         {
           // @ts-expect-error function might be passed a string, ignoring cuz this came from default phoenix untyped code
           hero: ({ name, fullPath }: Value) => {
-            let content = fs
+            const content = fs
               .readFileSync(fullPath)
               .toString()
               .replace(/\r?\n|\r/g, "");

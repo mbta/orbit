@@ -4,9 +4,10 @@
     "build:css": "tailwindcss -i css/app.css -o priv/static/assets/app.css",
     "build:js": "NODE_PATH=deps/ esbuild js/app.ts --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
     "format": "prettier . --write",
+    "test:eslint": "eslint .",
     "test:format": "prettier . --check",
     "test:tsc": "tsc -p tsconfig.json",
-    "test": "npm run test:tsc && npm run test:format"
+    "test": "npm run test:tsc && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
@@ -14,12 +15,21 @@
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.3.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.12.12",
     "@types/phoenix": "^1.6.4",
     "@types/phoenix_live_view": "^0.18.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-better-mutation": "^1.4.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.34.2",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "globals": "^15.3.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.11.0"
   }
 }
