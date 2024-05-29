@@ -1,0 +1,12 @@
+# ignore everything, so we can explicitly give an allowlist
+/*
+!/.github/
+!/css/
+!/js/
+!/*.mjs
+!/*.ts
+!/*.yml
+!/*.md
+!/*.json
+# all json files, except package-lock.json
+package-lock.json
