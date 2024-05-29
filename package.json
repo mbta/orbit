@@ -6,8 +6,9 @@
     "format": "prettier . --write",
     "test:eslint": "eslint .",
     "test:format": "prettier . --check",
+    "test:jest": "jest",
     "test:tsc": "tsc -p tsconfig.json",
-    "test": "npm run test:tsc && npm run test:eslint && npm run test:format"
+    "test": "npm run test:tsc && npm run test:jest && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
@@ -17,18 +18,29 @@
   "devDependencies": {
     "@eslint/js": "^9.3.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/react": "^15.0.7",
+    "@testing-library/user-event": "^14.5.2",
     "@types/eslint__js": "^8.42.3",
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.12.12",
     "@types/phoenix": "^1.6.4",
     "@types/phoenix_live_view": "^0.18.5",
     "eslint": "^8.57.0",
     "eslint-plugin-better-mutation": "^1.4.1",
+    "eslint-plugin-jest": "^28.5.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-hooks": "^4.6.2",
     "globals": "^15.3.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-extended": "^4.0.2",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "ts-jest": "^29.1.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.11.0"
   }

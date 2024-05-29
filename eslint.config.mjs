@@ -1,13 +1,17 @@
 // @ts-check
 
+// apparently it's not standard to publish types for eslint plugins
+
 import pluginJs from "@eslint/js";
-// @ts-expect-error couldn't find types for this package
+// @ts-expect-error no types for this plugin
 import pluginBetterMutation from "eslint-plugin-better-mutation";
-// @ts-expect-error couldn't find types for this package
+// @ts-expect-error no types for this plugin
+import pluginJest from "eslint-plugin-jest";
+// @ts-expect-error no types for this plugin
 import pluginJsxA11y from "eslint-plugin-jsx-a11y";
-// @ts-expect-error couldn't find types for this package
+// @ts-expect-error no types for this plugin
 import pluginReactHooks from "eslint-plugin-react-hooks";
-// @ts-expect-error couldn't find types for this package
+// @ts-expect-error no types for this plugin
 import pluginReactConfig from "eslint-plugin-react/configs/jsx-runtime.js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -66,7 +70,12 @@ export default tseslint.config(
   },
   {
     files: ["js/test/", "js/**/*.test.*"],
+    // we use both jest's recommended and style rules, but only need to set the plugin once here,
+    // and it doesn't matter which config we get the plugin from.
+    ...pluginJest.configs["flat/recommended"],
     rules: {
+      ...pluginJest.configs["flat/style"].rules,
+      ...pluginJest.configs["flat/recommended"].rules,
       // empty functions are fine
       "@typescript-eslint/no-empty-function": "off",
       // expect.any is untyped and triggers this all the time.
