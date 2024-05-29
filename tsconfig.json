@@ -3,7 +3,8 @@
     "js",
     "tailwind.config.ts",
     // this js file has a @/ts-check. to check it, allowJs must be on.
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "jest.config.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
