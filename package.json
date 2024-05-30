@@ -2,7 +2,7 @@
   "name": "orbit",
   "scripts": {
     "build:css": "tailwindcss -i css/app.css -o priv/static/assets/app.css",
-    "build:js": "NODE_PATH=deps/ esbuild js/app.ts --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
+    "build:js": "NODE_PATH=deps/ esbuild js/app.tsx --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
     "format": "prettier . --write",
     "test:eslint": "eslint .",
     "test:format": "prettier . --check",
@@ -13,6 +13,9 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "esbuild": "^0.21.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
     "tailwindcss": "^3.4.3"
   },
   "devDependencies": {
