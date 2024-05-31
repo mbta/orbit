@@ -17,8 +17,8 @@ defmodule OrbitWeb.Router do
   scope "/", OrbitWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-    get "/help", PageController, :home
+    get "/", FrontendPageController, :home
+    get "/help", FrontendPageController, :home
     get "/control-panel", ControlPanelController, :index
   end
 
