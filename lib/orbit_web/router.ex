@@ -21,8 +21,6 @@ defmodule OrbitWeb.Router do
     # Avoid using a wildcard to prevent invalid 200 responses
     get "/", FrontendPageController, :home
     get "/help", FrontendPageController, :home
-
-    get "/control-panel", ControlPanelController, :index
   end
 
   scope "/", OrbitWeb do
