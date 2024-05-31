@@ -17,8 +17,11 @@ defmodule OrbitWeb.Router do
   scope "/", OrbitWeb do
     pipe_through :browser
 
+    # Routes that should be handled by React
+    # Avoid using a wildcard to prevent invalid 200 responses
     get "/", FrontendPageController, :home
     get "/help", FrontendPageController, :home
+
     get "/control-panel", ControlPanelController, :index
   end
 
