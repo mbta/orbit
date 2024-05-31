@@ -1,4 +1,4 @@
-defmodule OrbitWeb.PageController do
+defmodule OrbitWeb.FrontendPageController do
   use OrbitWeb, :controller
 
   def home(conn, _params) do
