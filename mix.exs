@@ -9,6 +9,9 @@ defmodule Orbit.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      preferred_cli_env: [
+        test_all: :test
+      ],
       deps: deps(),
       dialzyer: [
         plt_add_apps: [:mix]
@@ -74,11 +77,37 @@ defmodule Orbit.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "assets.build"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
-      "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test", "credo"],
-      sobelow: ["sobelow --config"]
+      "ecto.setup": [
+        "ecto.create",
+        "ecto.migrate",
+        # only run seeds.exs in dev,
+        if Mix.env() == :dev do
+          "run priv/repo/seeds.exs"
+        else
+          # noop
+          fn _args -> :ok end
+        end
+      ],
+      "ecto.reset": [
+        "ecto.drop",
+        "ecto.setup"
+      ],
+      test: [
+        "ecto.create --quiet",
+        "ecto.migrate --quiet",
+        "test"
+      ],
+      sobelow: ["sobelow --config"],
+      # Must be separate from `test` so that you can pass args to `test`,
+      # and only run `test` on those files and not `credo` on all files.
+      # runs in MIX_ENV=test because of preferred_cli_env above
+      test_all: [
+        "test",
+        "credo",
+        "format --check-formatted",
+        "sobelow"
+        # dialyzer for some reason has to be in MIX_ENV=dev, so run it separately.
+      ]
     ]
   end
 end
