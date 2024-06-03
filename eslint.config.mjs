@@ -10,6 +10,8 @@ import pluginBetterMutation from "eslint-plugin-better-mutation";
 // @ts-expect-error no types for this plugin
 import pluginJest from "eslint-plugin-jest";
 // @ts-expect-error no types for this plugin
+import pluginJestDom from "eslint-plugin-jest-dom";
+// @ts-expect-error no types for this plugin
 import pluginJsxA11y from "eslint-plugin-jsx-a11y";
 // @ts-expect-error no types for this plugin
 import pluginReactHooks from "eslint-plugin-react-hooks";
@@ -17,6 +19,8 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-expect-error no types for this plugin
 import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
+// @ts-expect-error no types for this plugin
+import pluginTestingLibrary from "eslint-plugin-testing-library";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -77,16 +81,23 @@ export default tseslint.config(
   },
   {
     files: ["js/test/", "js/**/*.test.*"],
-    // we use both jest's recommended and style rules, but only need to set the plugin once here,
-    // and it doesn't matter which config we get the plugin from.
-    ...pluginJest.configs["flat/recommended"],
+    plugins: {
+      jest: pluginJest,
+      "jest-dom": pluginJestDom,
+      "testing-library": pluginTestingLibrary,
+    },
     rules: {
       ...pluginJest.configs["flat/style"].rules,
       ...pluginJest.configs["flat/recommended"].rules,
+      ...pluginJestDom.configs["flat/recommended"].rules,
+      ...pluginTestingLibrary.configs.react.rules,
       // empty functions are fine
       "@typescript-eslint/no-empty-function": "off",
       // expect.any is untyped and triggers this all the time.
       "@typescript-eslint/no-unsafe-assignment": "off",
+      /* we do `view = render(); view.getBy()` which also doesn't require destructuring
+      and has less global mutable state than `screen`. */
+      "testing-library/prefer-screen-queries": "off",
     },
   },
   {
