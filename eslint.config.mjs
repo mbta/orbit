@@ -4,6 +4,8 @@
 
 import pluginJs from "@eslint/js";
 // @ts-expect-error no types for this plugin
+import configPrettier from "eslint-config-prettier";
+// @ts-expect-error no types for this plugin
 import pluginBetterMutation from "eslint-plugin-better-mutation";
 // @ts-expect-error no types for this plugin
 import pluginJest from "eslint-plugin-jest";
@@ -25,6 +27,7 @@ export default tseslint.config(
   // jsx-runtime only disables rules, so need both recommended and jsx.
   pluginReactRecommended,
   pluginReactJsx,
+  configPrettier,
   {
     ignores: ["*", "!js/", "!*.ts", "!*.mjs"],
   },
