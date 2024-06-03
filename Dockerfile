@@ -56,7 +56,7 @@ RUN mix release --path /app-release
 FROM alpine:3.19.1 AS runtime
 
 # HTTP port
-EXPOSE 4000
+EXPOSE 4001
 
 # Erlang depends on these
 RUN apk add --no-cache ncurses-libs libstdc++ libgcc
@@ -71,6 +71,6 @@ USER orbit
 WORKDIR /home/orbit
 
 # Run properly in production
-ENV PORT=4000 MIX_ENV=prod TERM=xterm LANG="C.UTF-8"
+ENV PORT=4001 MIX_ENV=prod TERM=xterm LANG="C.UTF-8"
 COPY --from=elixir --chown=orbit:orbit /app-release .
 CMD ["bin/orbit", "start"]
