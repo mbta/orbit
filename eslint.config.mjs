@@ -12,7 +12,9 @@ import pluginJsxA11y from "eslint-plugin-jsx-a11y";
 // @ts-expect-error no types for this plugin
 import pluginReactHooks from "eslint-plugin-react-hooks";
 // @ts-expect-error no types for this plugin
-import pluginReactConfig from "eslint-plugin-react/configs/jsx-runtime.js";
+import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
+// @ts-expect-error no types for this plugin
+import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -20,7 +22,9 @@ export default tseslint.config(
   pluginJs.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
-  pluginReactConfig,
+  // jsx-runtime only disables rules, so need both recommended and jsx.
+  pluginReactRecommended,
+  pluginReactJsx,
   {
     ignores: ["*", "!js/", "!*.ts", "!*.mjs"],
   },
