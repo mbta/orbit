@@ -3,6 +3,7 @@
 !/.github/
 !/css/
 !/js/
+!/stories/
 !/*.mjs
 !/*.ts
 !/*.yml
