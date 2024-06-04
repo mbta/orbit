@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+
+# Exit if any subcommand fails
+set -e
+
+runtime_manager=$(command -v mise || command -v asdf)
+
+echo "# asdf/mise install"
+$runtime_manager install
+echo ""
+
+echo "# mix local.hex and local.rebar"
+mix local.hex --force
+mix local.rebar --force
+echo ""
+
+echo "# mix deps.get"
+mix deps.get
+echo ""
+
+echo "# mix deps.compile (dev)"
+mix deps.compile
+echo ""
+
+echo "# mix ecto.setup (dev)"
+mix ecto.setup
+echo ""
+
+echo "# mix deps.compile (test)"
+env MIX_ENV=test mix deps.compile
+echo ""
+
+echo "# mix ecto.setup (test)"
+env MIX_ENV=test mix ecto.setup
+echo ""
+
+echo "# npm ci"
+npm ci
+echo ""

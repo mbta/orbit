@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+set -ex
+
+mix test_all
+# dialyzer isn't included in `test_all` because it has to run in MIX_ENV=dev
+mix dialyzer
+npm test
