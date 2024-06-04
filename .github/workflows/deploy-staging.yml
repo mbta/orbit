@@ -11,7 +11,7 @@ concurrency:
 
 env:
   # "branch:$name" or "tag:$name", except for the automatic deploys from pushing to main it's just "main".
-  version_name: "${{ (github.event_name == 'push' && github.ref_name == 'main' && 'main') || format('{0}:{1}', github.ref_type, github.ref_name) }}
+  version_name: "${{ (github.event_name == 'push' && github.ref_name == 'main' && 'main') || format('{0}:{1}', github.ref_type, github.ref_name) }}"
 
 jobs:
   deploy:
