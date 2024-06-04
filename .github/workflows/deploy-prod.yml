@@ -1,0 +1,20 @@
+name: Deploy to Prod
+
+on:
+  release:
+    types:
+      - released
+
+concurrency:
+  group: prod
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Prod
+    uses: ./.github/workflows/deploy.yml
+    with:
+      env: prod
+      # the release name
+      version-name: ${{ github.ref_name }}
+    secrets: inherit
