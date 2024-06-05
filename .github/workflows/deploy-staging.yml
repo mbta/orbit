@@ -15,6 +15,6 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     with:
       env: staging
-      # "branch:$name" or "tag:$name", except for the automatic deploys from pushing to main it's just "main".
-      version-name: ${{ (github.event_name == 'push' && github.ref_name == 'main' && 'main') || format('{0}:{1}', github.ref_type, github.ref_name) }}
+      # "branch-$name" or "tag-$name", except for the automatic deploys from pushing to main it's just "main".
+      version-name: ${{ (github.event_name == 'push' && github.ref_name == 'main' && 'main') || format('{0}-{1}', github.ref_type, github.ref_name) }}
     secrets: inherit
