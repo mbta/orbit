@@ -47,6 +47,8 @@ defmodule Orbit.MixProject do
       {:ex_aws, "== 2.5.1"},
       {:ex_aws_rds, "== 2.0.2"},
       {:floki, ">= 0.30.0", only: :test},
+      # used by ex_aws
+      {:hackney, "== 1.20.1"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",

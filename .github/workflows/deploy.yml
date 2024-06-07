@@ -39,10 +39,10 @@ jobs:
         run: |
           docker_repo="${{ secrets.DOCKER_REPO }}"
           git_hash="$(git rev-parse --short HEAD)"
-          version_id="${{ inputs.version-name }}:$git_hash"
+          version_id="${{ inputs.version-name }}-$git_hash"
           git_hash_tag="$docker_repo:git-$git_hash"
           latest_env_tag="$docker_repo:latest-${{ inputs.env }}"
-          version_tag=$docker_repo:"$version_id"
+          version_tag="$docker_repo:$version_id"
           echo "version-id=$version_id" | tee -a $GITHUB_OUTPUT
           echo "deploy-tag=$version_tag" | tee -a $GITHUB_OUTPUT
           printf "tag-list=%s,%s,%s\n" "$git_hash_tag" "$latest_env_tag" "$version_tag" | tee -a $GITHUB_OUTPUT
