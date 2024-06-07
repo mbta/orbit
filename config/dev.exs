@@ -57,3 +57,22 @@ config :phoenix,
 config :phoenix_live_view,
   # Include HEEx debug annotations as HTML comments in rendered markup
   debug_heex_annotations: true
+
+# Auth
+config :orbit, OrbitWeb.Auth.Guardian,
+  issuer: "orbit",
+  secret_key: "dev key"
+
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak: {OrbitWeb.Auth.Strategy.FakeOidcc, []}
+  ]
+
+config :ueberauth_oidcc,
+  providers: [
+    keycloak: [
+      issuer: "dev-issuer",
+      client_id: "dev-client-id",
+      client_secret: "dev-secret"
+    ]
+  ]

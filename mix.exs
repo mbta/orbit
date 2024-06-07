@@ -49,6 +49,8 @@ defmodule Orbit.MixProject do
       {:floki, ">= 0.30.0", only: :test},
       # used by ex_aws
       {:hackney, "== 1.20.1"},
+      {:guardian, "== 2.3.2"},
+      {:guardian_phoenix, "== 2.0.1"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.1.1",
@@ -67,7 +69,9 @@ defmodule Orbit.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "~> 0.6"},
-      {:telemetry_poller, "~> 1.0"}
+      {:telemetry_poller, "~> 1.0"},
+      {:ueberauth, "== 0.10.8"},
+      {:ueberauth_oidcc, "== 0.4.0"}
     ]
   end
 

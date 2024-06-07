@@ -27,6 +27,13 @@ config :phoenix,
   # We use logster instead of the default Phoenix logging
   logger: false
 
+# Auth
+config :ueberauth, Ueberauth,
+  providers: [
+    # specified in dev.exs / prod.exs
+    keycloak: nil
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
