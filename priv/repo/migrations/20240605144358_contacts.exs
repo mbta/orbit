@@ -12,7 +12,7 @@ defmodule Orbit.Repo.Migrations.Contacts do
       timestamps()
     end
 
-    create index(:contacts, [:badge_number])
+    create unique_index(:contacts, [:badge_number])
 
     create(
       constraint(:contacts, :badge_number_no_leading_zeroes,
