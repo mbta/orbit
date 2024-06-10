@@ -23,3 +23,16 @@ config :ehmon, :report_mf, {:ehmon, :info_report}
 # which by default uses df flags that aren't available on alpine's busybox.
 # this tells disksup to use different df flags
 config :os_mon, disksup_posix_only: true
+
+# Auth
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak:
+      {Ueberauth.Strategy.Oidcc,
+       [
+         issuer: :keycloak_issuer,
+         userinfo: true,
+         uid_field: "email",
+         scopes: ~w"openid email"
+       ]}
+  ]
