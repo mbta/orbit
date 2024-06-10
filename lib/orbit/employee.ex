@@ -1,4 +1,4 @@
-defmodule Orbit.Contact do
+defmodule Orbit.Employee do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -7,31 +7,31 @@ defmodule Orbit.Contact do
           first_name: String.t() | nil,
           middle_initial: String.t() | nil,
           last_name: String.t() | nil,
-          email_address: String.t() | nil,
+          email: String.t() | nil,
           badge_number: String.t() | nil,
           area: integer() | nil
         }
 
-  schema "contacts" do
+  schema "employees" do
     field(:first_name, :string)
     field(:middle_initial, :string)
     field(:last_name, :string)
-    field(:email_address, :string)
+    field(:email, :string)
     field(:badge_number, :string)
     field(:area, :integer)
 
     timestamps()
   end
 
-  def changeset(contact, params \\ %{}) do
-    contact
+  def changeset(employee, params \\ %{}) do
+    employee
     |> cast(
       params,
       [
         :first_name,
         :middle_initial,
         :last_name,
-        :email_address,
+        :email,
         :badge_number,
         :area
       ]
