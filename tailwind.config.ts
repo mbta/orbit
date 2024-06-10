@@ -13,6 +13,7 @@ module.exports = {
     "./lib/orbit_web.ex",
     "./lib/orbit_web/**/*.*ex",
   ],
+  darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     extend: {
       colors: {
