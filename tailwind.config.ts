@@ -17,12 +17,15 @@ export default {
   ],
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
-    extend: {
-      colors: {
-        brand: "#FD4F00",
-        "mbta-red": "#DA291C",
-        "mbta-orange": "#ED8B00",
-        "mbta-blue": "#003DA5",
+    colors: {
+      "mbta-red": "#DA291C",
+      "mbta-orange": "#ED8B00",
+      "mbta-blue": "#003DA5",
+      black: "#000000",
+      gray: {
+        100: "#EAEAEA",
+        200: "#D9D9D9",
+        300: "#929292",
       },
     },
   },
