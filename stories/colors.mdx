@@ -1,0 +1,28 @@
+import { ColorItem, ColorPalette, Meta } from "@storybook/blocks";
+
+import * as tailwindConfig from "../tailwind.config.ts";
+import resolveConfig from "tailwindcss/resolveConfig";
+
+export const fullConfig = resolveConfig(tailwindConfig);
+export const themeColors = fullConfig.default.theme.colors;
+
+<Meta title="Colors" />
+
+<ColorPalette>
+  <ColorItem
+    title="Subway Lines"
+    colors={{
+      Red: themeColors["mbta-red"],
+      Orange: themeColors["mbta-orange"],
+      Blue: themeColors["mbta-blue"],
+    }}
+  />
+  <ColorItem
+    title="Gray"
+    colors={{
+      100: themeColors.gray[100],
+      200: themeColors.gray[200],
+      300: themeColors.gray[300],
+    }}
+  />
+</ColorPalette>
