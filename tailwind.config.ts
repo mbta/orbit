@@ -3,26 +3,31 @@
 
 import fs from "fs";
 import path from "path";
+import formsPlugin from "@tailwindcss/forms";
 import plugin from "tailwindcss/plugin";
 
-module.exports = {
+export default {
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
     "./js/**/*.tsx",
     "./lib/orbit_web.ex",
     "./lib/orbit_web/**/*.*ex",
+    "./storybook/**/*.html",
   ],
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     extend: {
       colors: {
         brand: "#FD4F00",
+        "mbta-red": "#DA291C",
+        "mbta-orange": "#ED8B00",
+        "mbta-blue": "#003DA5",
       },
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
+    formsPlugin,
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:
     //
