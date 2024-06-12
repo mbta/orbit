@@ -2,7 +2,12 @@ defmodule Orbit.Authentication.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @type t :: %__MODULE__{}
+  @type t :: %__MODULE__{
+          id: integer(),
+          email: String.t(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
 
   schema "users" do
     field(:email, :string)
