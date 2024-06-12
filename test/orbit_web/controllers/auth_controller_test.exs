@@ -7,8 +7,8 @@ defmodule OrbitWeb.AuthControllerTest do
     |> get(~p"/auth/keycloak/callback?#{%{"email" => "user@example.com"}}")
   end
 
-  describe "login_page" do
-    test "redirects to keycloak login (i.e. there isn't one)", %{conn: conn} do
+  describe "/login" do
+    test "redirects to keycloak login if unauthenticated", %{conn: conn} do
       conn = get(conn, ~p"/")
       assert redirected_to(conn) == "/login"
     end
