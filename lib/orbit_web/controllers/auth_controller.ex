@@ -92,14 +92,14 @@ defmodule OrbitWeb.AuthController do
   end
 
   def redirect_needs_login(conn) do
-    if get_format(conn) == "json" do
+    if get_format(conn) == "html" do
+      conn
+      |> redirect(to: ~p"/login")
+    else
       conn
       |> put_status(:unauthorized)
       |> json("Unauthorized")
       |> halt()
-    else
-      conn
-      |> redirect(to: ~p"/login")
     end
   end
 
