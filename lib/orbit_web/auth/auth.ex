@@ -48,8 +48,6 @@ defmodule OrbitWeb.Auth.Auth do
 
   @spec logout(Conn.t()) :: Conn.t()
   def logout(conn) do
-    # TODO delete refresh token
-
     conn
     |> Plug.Conn.assign(:logged_in_user, nil)
     |> OrbitWeb.Auth.Guardian.Plug.sign_out()
