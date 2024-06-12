@@ -31,6 +31,24 @@ if config_env() == :prod do
          {Orbit.Repo, :add_prod_credentials, []}
        end)
 
+  # Auth
+  config :ueberauth_oidcc,
+    issuers: [
+      %{
+        name: :keycloak_issuer,
+        issuer: System.fetch_env!("KEYCLOAK_ISSUER")
+      }
+    ],
+    providers: [
+      keycloak: [
+        issuer: :keycloak_issuer,
+        client_id: System.fetch_env!("KEYCLOAK_CLIENT_ID"),
+        client_secret: System.fetch_env!("KEYCLOAK_CLIENT_SECRET")
+      ]
+    ]
+
+  config :orbit, GlidesWeb.Auth.Guardian, secret_key: System.get_env("GUARDIAN_SECRET_KEY")
+
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
   # want to use a different value for prod and you most likely don't want
