@@ -53,7 +53,7 @@ defmodule OrbitWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through [:browser, :authenticated]
 
       live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
     end
