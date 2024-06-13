@@ -58,3 +58,7 @@ config :phoenix,
 config :phoenix_live_view,
   # Include HEEx debug annotations as HTML comments in rendered markup
   debug_heex_annotations: true
+
+if File.exists?(Path.expand("dev.secret.exs", __DIR__)) do
+  import_config "dev.secret.exs"
+end
