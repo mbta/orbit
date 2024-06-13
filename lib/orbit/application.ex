@@ -18,6 +18,9 @@ defmodule Orbit.Application do
 
     :ok = Logster.attach_phoenix_logger()
 
+    # unsupervised
+    Orbit.CrashServer.start_link([])
+
     Supervisor.start_link(children, strategy: :one_for_one, name: Orbit.Supervisor)
   end
 
