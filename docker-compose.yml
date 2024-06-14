@@ -16,6 +16,10 @@ services:
       - DATABASE_HOST=db
       - DATABASE_NAME=postgres
       - DATABASE_DISABLE_SSL=insecure-yes
+      - PHX_HOST=localhost
       - SECRET_KEY_BASE=/insecure/insecure/insecure/insecure/insecure/insecure/insecure/
+      - KEYCLOAK_ISSUER=https://login-sandbox.mbtace.com/auth/realms/MBTA
+      - KEYCLOAK_CLIENT_ID=docker_fake_keycloak_client_id
+      - KEYCLOAK_CLIENT_SECRET=docker_fake_keycloak_client_secret
     ports:
       - 4001
