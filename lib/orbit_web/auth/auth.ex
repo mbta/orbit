@@ -1,7 +1,7 @@
 defmodule OrbitWeb.Auth.Auth do
-  alias Plug.Conn
   alias Orbit.Authentication.User
   alias Orbit.Repo
+  alias Plug.Conn
 
   @spec login(Conn.t(), String.t(), integer(), String.t() | nil, [String.t()], String.t() | nil) ::
           Conn.t()
