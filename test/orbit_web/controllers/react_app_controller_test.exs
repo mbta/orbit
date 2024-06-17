@@ -3,6 +3,9 @@ defmodule OrbitWeb.ReactAppControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Orbit"
+    response = html_response(conn, 200)
+    assert response =~ "Orbit"
+    # sets release
+    assert response =~ "<meta name=\"release\" content=\"test\">"
   end
 end
