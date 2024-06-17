@@ -1,4 +1,4 @@
-defmodule OrbitWeb.PageControllerTest do
+defmodule OrbitWeb.ReactAppControllerTest do
   use OrbitWeb.ConnCase
 
   test "GET /", %{conn: conn} do

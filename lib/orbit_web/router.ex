@@ -25,8 +25,8 @@ defmodule OrbitWeb.Router do
 
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
-    get "/", FrontendPageController, :home
-    get "/help", FrontendPageController, :home
+    get "/", ReactAppController, :home
+    get "/help", ReactAppController, :home
   end
 
   scope "/", OrbitWeb do
