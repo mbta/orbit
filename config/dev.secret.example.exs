@@ -12,6 +12,6 @@ import Config
 #   dsn: "",
 #   environment_name: "local",
 #   enable_source_code_context: true,
-#   release: "local",
+#   release: Application.compile_env(:orbit, :release),
 #   root_source_code_paths: [File.cwd!()],
 #   server_name: "<yourname>.local"

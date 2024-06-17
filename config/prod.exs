@@ -35,5 +35,5 @@ config :os_mon, disksup_posix_only: true
 config :sentry,
   # dsn and environment_name are loaded at runtime
   enable_source_code_context: true,
-  # TODO release: System.get_env("VERSION"),
+  release: Application.compile_env(:orbit, :release),
   root_source_code_paths: [File.cwd!()]
