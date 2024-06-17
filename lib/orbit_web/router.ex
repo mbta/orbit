@@ -2,12 +2,17 @@ defmodule OrbitWeb.Router do
   use OrbitWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {OrbitWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"}
+  end
+
+  pipeline :accepts_html do
+    plug :accepts, ["html"]
+    plug :put_root_layout, html: {OrbitWeb.Layouts, :root}
+    # assigns used in the root layout
+    plug :merge_assigns, release: Application.compile_env!(:orbit, :release)
   end
 
   pipeline :api do
@@ -16,11 +21,12 @@ defmodule OrbitWeb.Router do
 
   scope "/", OrbitWeb do
     pipe_through :browser
+    pipe_through :accepts_html
 
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
-    get "/", FrontendPageController, :home
-    get "/help", FrontendPageController, :home
+    get "/", ReactAppController, :home
+    get "/help", ReactAppController, :home
   end
 
   scope "/", OrbitWeb do
@@ -40,6 +46,7 @@ defmodule OrbitWeb.Router do
 
     scope "/dev" do
       pipe_through :browser
+      pipe_through :accepts_html
 
       live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
     end

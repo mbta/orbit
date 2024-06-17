@@ -1,5 +1,8 @@
 import Config
 
+config :orbit,
+  release: "test"
+
 # Database config
 config :orbit, Orbit.Repo,
   username: System.get_env("DATABASE_USERNAME") || "postgres",

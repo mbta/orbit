@@ -2,6 +2,10 @@
 # of environment variables, is done on config/runtime.exs.
 import Config
 
+config :orbit,
+  # loaded at compile time
+  release: System.get_env("RELEASE")
+
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs
   pool_size: 10
