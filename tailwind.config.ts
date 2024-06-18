@@ -28,6 +28,12 @@ export default {
         300: "#929292",
       },
     },
+    zIndex: {
+      layout: "1000",
+      object: "2000",
+      "modal-backdrop": "3000",
+      "modal-content": "3001",
+    },
   },
   plugins: [
     formsPlugin,
