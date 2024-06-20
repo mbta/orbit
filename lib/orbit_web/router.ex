@@ -2,12 +2,17 @@ defmodule OrbitWeb.Router do
   use OrbitWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {OrbitWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"}
+  end
+
+  pipeline :accepts_html do
+    plug :accepts, ["html"]
+    plug :put_root_layout, html: {OrbitWeb.Layouts, :root}
+    # assigns used in the root layout
+    plug :merge_assigns, release: Application.compile_env!(:orbit, :release)
   end
 
   pipeline :api do
@@ -21,6 +26,7 @@ defmodule OrbitWeb.Router do
 
   scope "/", OrbitWeb do
     pipe_through :browser
+    pipe_through :accepts_html
 
     get("/login", AuthController, :login_page)
     get("/auth/:provider", AuthController, :request)
@@ -31,10 +37,9 @@ defmodule OrbitWeb.Router do
     pipe_through [:browser, :authenticated]
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
-    get "/", FrontendPageController, :home
-    get "/help", FrontendPageController, :home
-
-    get("/logout", AuthController, :logout)
+    get "/", ReactAppController, :home
+    get "/help", ReactAppController, :home
+    get "/logout", AuthController, :logout
   end
 
   scope "/", OrbitWeb do
@@ -53,7 +58,9 @@ defmodule OrbitWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through [:browser, :authenticated]
+      pipe_through :browser
+      pipe_through :accepts_html
+      pipe_through :authenticated
 
       live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
     end

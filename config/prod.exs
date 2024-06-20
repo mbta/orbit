@@ -2,6 +2,10 @@
 # of environment variables, is done on config/runtime.exs.
 import Config
 
+config :orbit,
+  # loaded at compile time
+  release: System.get_env("RELEASE")
+
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs
   pool_size: 10
@@ -16,6 +20,10 @@ config :orbit, OrbitWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 config :logger, level: :info
+
+config :logger, :console,
+  format: "$time [$level] node=$node $metadata$message\n",
+  metadata: [:request_id, :remote_ip]
 
 config :ehmon, :report_mf, {:ehmon, :info_report}
 

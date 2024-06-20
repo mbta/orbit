@@ -46,6 +46,8 @@ COPY ./priv/repo/migrations /app/priv/repo/migrations
 COPY ./config /app/config
 COPY ./lib /app/lib
 WORKDIR /app
+ARG RELEASE
+ENV RELEASE=${RELEASE}
 RUN mix compile
 RUN mix phx.digest
 RUN mix release --path /app-release

@@ -52,6 +52,8 @@ jobs:
         with:
           context: .
           cache-from: type=gha
+          build-args: |
+            RELEASE=${{ steps.calc-version.outputs.version-id }}
           tags: ${{ steps.calc-version.outputs.tag-list }}
           push: true
       - uses: mbta/actions/deploy-ecs@v2

@@ -3,7 +3,8 @@ import Config
 # Application config
 config :orbit,
   # Enable dev routes for dashboard and mailbox
-  dev_routes: true
+  dev_routes: true,
+  release: "local"
 
 # Database config
 config :orbit, Orbit.Repo,
