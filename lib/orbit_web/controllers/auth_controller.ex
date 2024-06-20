@@ -1,7 +1,7 @@
 defmodule OrbitWeb.AuthController do
   use OrbitWeb, :controller
   plug(Ueberauth)
-  import Config
+
   alias OrbitWeb.Auth.Auth
 
   def login_page(conn, _params) do
@@ -18,7 +18,7 @@ defmodule OrbitWeb.AuthController do
     # (recognized providers are caught by Ueberauth before this point)
     conn
     |> put_status(:bad_request)
-    |> text("Bad Request (unrecognized provider); config_env is #{config_env()})")
+    |> text("Bad Request (unrecognized provider)")
   end
 
   defp get_logout_url(conn, auth) do
