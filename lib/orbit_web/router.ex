@@ -34,7 +34,10 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
-    pipe_through [:browser, :authenticated]
+    pipe_through :browser
+    pipe_through :accepts_html
+    pipe_through :authenticated
+
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
     get "/", ReactAppController, :home
