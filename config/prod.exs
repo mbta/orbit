@@ -21,6 +21,10 @@ config :orbit, OrbitWeb.Endpoint,
 
 config :logger, level: :info
 
+config :logger, :console,
+  format: "$time [$level] node=$node $metadata$message\n",
+  metadata: [:request_id, :remote_ip]
+
 config :ehmon, :report_mf, {:ehmon, :info_report}
 
 # diskusage_logger calls disksup,
