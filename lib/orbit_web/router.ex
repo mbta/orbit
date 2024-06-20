@@ -33,7 +33,6 @@ defmodule OrbitWeb.Router do
     # no pipe
     get "/_health", HealthController, :index
     get "/_health_db", HealthDbController, :index
-    get "/crash", CrashController, :crash
   end
 
   # Enable LiveDashboard in development
