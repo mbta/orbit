@@ -21,6 +21,8 @@ config :orbit, Oban,
   plugins: [Oban.Plugins.Pruner, {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(60)}],
   queues: []
 
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+
 # Logging config
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
