@@ -3,6 +3,7 @@ defmodule OrbitWeb.AuthController do
   plug(Ueberauth)
 
   alias OrbitWeb.Auth.Auth
+  require Logger
 
   def login_page(conn, _params) do
     if Auth.logged_in_user(conn) do
@@ -75,9 +76,7 @@ defmodule OrbitWeb.AuthController do
         nil
 
       _ ->
-        nil
-        # TODO: Logger
-        # Logger.warning("Ueberauth failure: #{inspect(fail)}")
+        Logger.warning("Ueberauth failure: #{inspect(fail)}")
     end
 
     conn
