@@ -1,7 +1,6 @@
 defmodule OrbitWeb.AuthController do
   use OrbitWeb, :controller
   plug(Ueberauth)
-  require Logger
 
   alias OrbitWeb.Auth.Auth
 
@@ -17,10 +16,6 @@ defmodule OrbitWeb.AuthController do
   def request(conn, _params) do
     # unrecognized provider
     # (recognized providers are caught by Ueberauth before this point)
-    Logger.warning(
-      "Keycloak client secret length: #{String.length(System.fetch_env!("KEYCLOAK_CLIENT_SECRET"))}"
-    )
-
     conn
     |> put_status(:bad_request)
     |> text("Bad Request (unrecognized provider)")
