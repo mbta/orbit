@@ -26,9 +26,9 @@ describe("Modal", () => {
       </Modal>,
     );
 
-    expect(view.queryByRole("dialog")).toBeNull();
-    expect(view.queryByText(/Test title/)).toBeNull();
-    expect(view.queryByText(/Test contents/)).toBeNull();
+    expect(view.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(view.queryByText(/Test title/)).not.toBeInTheDocument();
+    expect(view.queryByText(/Test contents/)).not.toBeInTheDocument();
   });
 
   test("clicking the close button invokes the close callback", async () => {
