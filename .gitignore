@@ -36,3 +36,4 @@ npm-debug.log
 /node_modules/
 
 *storybook.log
+config/dev.secret.exs

@@ -48,6 +48,7 @@ COPY ./lib /app/lib
 WORKDIR /app
 ARG RELEASE
 ENV RELEASE=${RELEASE}
+RUN mix sentry.package_source_code
 RUN mix compile
 RUN mix phx.digest
 RUN mix release --path /app-release
