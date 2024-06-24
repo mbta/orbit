@@ -34,6 +34,8 @@ config :ehmon, :report_mf, {:ehmon, :info_report}
 config :os_mon, disksup_posix_only: true
 
 # Auth
+config :orbit, OrbitWeb.Auth.Guardian, issuer: "orbit"
+
 config :ueberauth, Ueberauth,
   providers: [
     keycloak:
