@@ -47,7 +47,7 @@ if config_env() == :prod do
       ]
     ]
 
-  config :orbit, GlidesWeb.Auth.Guardian, secret_key: System.get_env("GUARDIAN_SECRET_KEY")
+  config :orbit, OrbitWeb.Auth.Guardian, secret_key: System.get_env("GUARDIAN_SECRET_KEY")
 
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you
