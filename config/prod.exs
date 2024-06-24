@@ -38,6 +38,7 @@ config :ueberauth, Ueberauth,
     keycloak:
       {Ueberauth.Strategy.Oidcc,
        [
+         callback_scheme: "https",
          issuer: :keycloak_issuer,
          userinfo: true,
          uid_field: "email",
