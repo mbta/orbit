@@ -44,3 +44,9 @@ config :ueberauth, Ueberauth,
          scopes: ~w"openid email"
        ]}
   ]
+
+config :sentry,
+  # dsn and environment_name are loaded at runtime
+  enable_source_code_context: true,
+  release: Application.compile_env(:orbit, :release),
+  root_source_code_paths: [File.cwd!()]
