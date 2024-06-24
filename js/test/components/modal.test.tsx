@@ -4,10 +4,10 @@ import userEvent from "@testing-library/user-event";
 
 describe("Modal", () => {
   test("displays modal with title and contents", () => {
-    const onHide = jest.fn();
+    const onClose = jest.fn();
 
     const view = render(
-      <Modal show={true} title={<>Test title</>} onHide={onHide}>
+      <Modal show={true} title={<>Test title</>} onClose={onClose}>
         <>Test contents.</>
       </Modal>,
     );
@@ -18,10 +18,10 @@ describe("Modal", () => {
   });
 
   test("displays nothing when show is set to false", () => {
-    const onHide = jest.fn();
+    const onClose = jest.fn();
 
     const view = render(
-      <Modal show={false} title={<>Test title</>} onHide={onHide}>
+      <Modal show={false} title={<>Test title</>} onClose={onClose}>
         <>Test contents.</>
       </Modal>,
     );
@@ -32,16 +32,16 @@ describe("Modal", () => {
   });
 
   test("clicking the close button invokes the close callback", async () => {
-    const onHide = jest.fn();
+    const onClose = jest.fn();
 
     const view = render(
-      <Modal show={true} title={<>Test title</>} onHide={onHide}>
+      <Modal show={true} title={<>Test title</>} onClose={onClose}>
         <>Test contents.</>
       </Modal>,
     );
 
     await userEvent.click(view.getByRole("button"));
 
-    expect(onHide).toHaveBeenCalled();
+    expect(onClose).toHaveBeenCalled();
   });
 });
