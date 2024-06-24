@@ -32,6 +32,8 @@ if config_env() == :prod do
        end)
 
   # Auth
+  redirect_host = System.get_env("PHX_HOST") || "localhost:4001"
+
   config :ueberauth_oidcc,
     issuers: [
       %{
@@ -44,7 +46,7 @@ if config_env() == :prod do
         issuer: :keycloak_issuer,
         client_id: System.fetch_env!("KEYCLOAK_CLIENT_ID"),
         client_secret: System.fetch_env!("KEYCLOAK_CLIENT_SECRET"),
-        # redirect_uri: "https://#{redirect_host}/auth/keycloak/callback"
+        redirect_uri: "https://#{redirect_host}/auth/keycloak/callback"
       ]
     ]
 
@@ -62,11 +64,11 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("PHX_HOST")
   port = String.to_integer(System.get_env("PORT") || "4001")
 
   config :orbit, OrbitWeb.Endpoint,
-    url: [host: host, port: port],
+    url: [host: host, port: 443, scheme: "https"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
