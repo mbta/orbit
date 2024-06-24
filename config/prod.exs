@@ -4,7 +4,8 @@ import Config
 
 config :orbit,
   # loaded at compile time
-  release: System.get_env("RELEASE")
+  release: System.get_env("RELEASE"),
+  force_https?: true
 
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs
@@ -38,7 +39,6 @@ config :ueberauth, Ueberauth,
     keycloak:
       {Ueberauth.Strategy.Oidcc,
        [
-         callback_scheme: "http",
          issuer: :keycloak_issuer,
          userinfo: true,
          uid_field: "email",

@@ -2,6 +2,13 @@ defmodule OrbitWeb.Router do
   use OrbitWeb, :router
 
   pipeline :browser do
+    if Application.compile_env(:orbit, :force_https?) do
+      plug(Plug.SSL,
+        rewrite_on: [:x_forwarded_proto],
+        host: {System, :get_env, ["PHX_HOST"]}
+      )
+    end
+
     plug :fetch_session
     plug :fetch_live_flash
     plug :protect_from_forgery
