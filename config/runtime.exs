@@ -46,7 +46,7 @@ if config_env() == :prod do
         issuer: :keycloak_issuer,
         client_id: System.fetch_env!("KEYCLOAK_CLIENT_ID"),
         client_secret: System.fetch_env!("KEYCLOAK_CLIENT_SECRET"),
-        redirect_uri: "https://#{redirect_host}/auth/keycloak/callback"
+        # redirect_uri: "https://#{redirect_host}/auth/keycloak/callback"
       ]
     ]
 
