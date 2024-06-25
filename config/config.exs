@@ -17,6 +17,13 @@ config :orbit, OrbitWeb.Endpoint,
   pubsub_server: Orbit.PubSub,
   live_view: [signing_salt: "5ANP5/by"]
 
+config :orbit, Oban,
+  repo: Orbit.Repo,
+  plugins: [Oban.Plugins.Pruner, {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(60)}],
+  queues: []
+
+config :elixir, :time_zone_database, Tz.TimeZoneDatabase
+
 # Logging config
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

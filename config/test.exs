@@ -19,6 +19,8 @@ config :orbit, OrbitWeb.Endpoint,
   secret_key_base: "rkME9iHy9nN19cmr5XjoM1hJDX9m2KKjJXUkIRSzgnRWg8IVn8yGaGCNkzEQxkBD",
   server: false
 
+config :orbit, Oban, testing: :inline
+
 config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation

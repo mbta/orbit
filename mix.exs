@@ -60,6 +60,7 @@ defmodule Orbit.MixProject do
        depth: 1},
       {:jason, "== 1.4.1"},
       {:logster, "== 2.0.0-rc.3"},
+      {:oban, "== 2.17.10"},
       {:phoenix, "== 1.7.11"},
       {:phoenix_ecto, "== 4.6.1"},
       {:phoenix_html, "== 4.1.1"},
@@ -71,6 +72,7 @@ defmodule Orbit.MixProject do
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.0.0"},
       {:telemetry_poller, "== 1.1.0"},
+      {:tz, "== 0.26.5"},
       {:ueberauth, "== 0.10.8"},
       {:ueberauth_oidcc, "== 0.4.0"}
     ]
