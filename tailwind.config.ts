@@ -28,6 +28,24 @@ export default {
         300: "#929292",
       },
     },
+    zIndex: {
+      layout: "1000",
+      object: "2000",
+      "modal-backdrop": "3000",
+      "modal-content": "3001",
+    },
+    extend: {
+      animation: {
+        "dash-spin-ccw": "dashoffset-spin 2s linear infinite",
+        "dash-spin-cw": "dashoffset-spin 3s linear infinite reverse",
+      },
+      keyframes: {
+        "dashoffset-spin": {
+          "0%": { "stroke-dashoffset": "0" },
+          "100%": { "stroke-dashoffset": "1" },
+        },
+      },
+    },
   },
   plugins: [
     formsPlugin,
