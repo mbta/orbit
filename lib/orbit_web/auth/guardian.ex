@@ -1,9 +1,6 @@
 defmodule OrbitWeb.Auth.Guardian do
   use Guardian, otp_app: :orbit
 
-  # Guardian expects `resource` to be a full user object.
-  # We don't really have that, so use email address for both id and resource
-
   @spec subject_for_token(Guardian.Token.resource(), Guardian.Token.claims()) ::
           {:ok, String.t()} | {:error, atom()}
   def subject_for_token(resource, _claims) do

@@ -21,6 +21,7 @@ defmodule OrbitWeb.Auth.Auth do
       user
     end)
 
+    # We use username (email) as the Guardian resource
     conn
     |> OrbitWeb.Auth.Guardian.Plug.sign_in(
       username,
