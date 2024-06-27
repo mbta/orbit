@@ -4,8 +4,7 @@ import Config
 
 config :orbit,
   # loaded at compile time
-  release: System.get_env("RELEASE"),
-  force_https?: true
+  release: System.get_env("RELEASE")
 
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs

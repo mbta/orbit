@@ -7,10 +7,9 @@ defmodule OrbitWeb.AuthController do
 
   def login_page(conn, _params) do
     if Auth.logged_in_user(conn) do
-      conn
-      |> redirect_login_successful()
+      redirect_login_successful(conn)
     else
-      conn |> redirect(to: ~p"/auth/keycloak")
+      redirect(conn, to: ~p"/auth/keycloak")
     end
   end
 
@@ -26,7 +25,9 @@ defmodule OrbitWeb.AuthController do
     case UeberauthOidcc.initiate_logout_url(auth, %{
            # We have to generate exactly what Keycloak/EntraID expect for logout redirect
            post_logout_redirect_uri:
-             URI.parse(url(conn, ~p"/login"))
+             conn
+             |> url(~p"/login")
+             |> URI.parse()
              # SSL is terminated before Phoenix sees requests, so we have to pretend it's https
              # even if Phoenix thinks it isn't.
              |> Map.put(:scheme, "https")
@@ -41,13 +42,11 @@ defmodule OrbitWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: :keycloak} = auth}} = conn, _params) do
     username = String.replace(auth.info.email, "MBTA.com", "mbta.com")
-    credentials = auth.credentials
+    # credentials = auth.credentials
 
     # Ignore auth provider's TTL, set ours to 30 days so users don't have to log back in
     # expiration = credentials.expires_at
     ttl_seconds = 3600 * 24 * 30
-
-    refresh_token = Map.get(credentials, :refresh_token, nil)
 
     keycloak_client_id =
       get_in(Application.get_env(:ueberauth_oidcc, :providers), [:keycloak, :client_id])
@@ -61,7 +60,6 @@ defmodule OrbitWeb.AuthController do
     |> Auth.login(
       username,
       ttl_seconds,
-      refresh_token,
       groups,
       logout_url
     )
@@ -93,8 +91,7 @@ defmodule OrbitWeb.AuthController do
 
   def redirect_needs_login(conn) do
     if get_format(conn) == "html" do
-      conn
-      |> redirect(to: ~p"/login")
+      redirect(conn, to: ~p"/login")
     else
       conn
       |> put_status(:unauthorized)

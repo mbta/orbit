@@ -42,7 +42,6 @@ defmodule OrbitWeb.ConnCase do
         |> Auth.login(
           "user@example.com",
           30,
-          "refresh-token",
           [],
           "https://localhost/fake/logout"
         )

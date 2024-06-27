@@ -4,7 +4,7 @@ import Config
 config :orbit,
   ecto_repos: [Orbit.Repo],
   generators: [timestamp_type: :utc_datetime],
-  force_https?: false
+  force_https?: true
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

@@ -3,23 +3,18 @@ defmodule OrbitWeb.Auth.Auth do
   alias Orbit.Repo
   alias Plug.Conn
 
-  @spec login(Conn.t(), String.t(), integer(), String.t() | nil, [String.t()], String.t() | nil) ::
+  @spec login(Conn.t(), String.t(), integer(), [String.t()], String.t() | nil) ::
           Conn.t()
-  def login(conn, username, ttl_seconds, _refresh_token, _groups, logout_url) do
+  def login(conn, username, ttl_seconds, _groups, logout_url) do
     email = String.downcase(username)
 
-    Repo.transaction(fn ->
-      user =
-        case Repo.get_by(User, email: email) do
-          nil ->
-            Repo.insert!(%User{email: email})
+    case Repo.get_by(User, email: email) do
+      nil ->
+        Repo.insert!(%User{email: email})
 
-          u ->
-            u
-        end
-
-      user
-    end)
+      u ->
+        u
+    end
 
     # We use username (email) as the Guardian resource
     conn

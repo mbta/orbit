@@ -1,7 +1,8 @@
 import Config
 
 config :orbit,
-  release: "test"
+  release: "test",
+  force_https?: false
 
 # Database config
 config :orbit, Orbit.Repo,

@@ -4,7 +4,8 @@ import Config
 config :orbit,
   # Enable dev routes for dashboard and mailbox
   dev_routes: true,
-  release: "local"
+  release: "local",
+  force_https?: false
 
 # Database config
 config :orbit, Orbit.Repo,
