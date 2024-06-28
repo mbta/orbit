@@ -14,11 +14,11 @@ defmodule OrbitWeb.AuthController do
   end
 
   def request(conn, _params) do
-    # unrecognized provider
-    # (recognized providers are caught by Ueberauth before this point)
+    # either unrecognized provider (recognized providers are caught by Ueberauth
+    # before this point) or other keycloak error. Check keycloak logs!
     conn
     |> put_status(:bad_request)
-    |> text("Bad Request (unrecognized provider)")
+    |> text("Bad Request")
   end
 
   defp get_logout_url(conn, auth) do
