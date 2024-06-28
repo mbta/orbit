@@ -174,7 +174,7 @@ jobs:
       - name: docker compose up
         run: docker compose up --wait
       - name: ensure running properly
-        run: docker compose exec --no-TTY orbit wget --spider -S http://localhost:4001/
+        run: docker compose exec --no-TTY orbit wget --spider -S http://localhost:4001/_health
       - name: show docker container logs
         run: docker compose logs orbit
         if: ${{ !cancelled() }}

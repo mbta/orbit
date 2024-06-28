@@ -39,6 +39,21 @@ config :ehmon, :report_mf, {:ehmon, :info_report}
 # this tells disksup to use different df flags
 config :os_mon, disksup_posix_only: true
 
+# Auth
+config :orbit, OrbitWeb.Auth.Guardian, issuer: "orbit"
+
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak:
+      {Ueberauth.Strategy.Oidcc,
+       [
+         issuer: :keycloak_issuer,
+         userinfo: true,
+         uid_field: "email",
+         scopes: ~w"openid email"
+       ]}
+  ]
+
 config :sentry,
   # dsn and environment_name are loaded at runtime
   enable_source_code_context: true,

@@ -4,7 +4,8 @@ import Config
 config :orbit,
   # Enable dev routes for dashboard and mailbox
   dev_routes: true,
-  release: "local"
+  release: "local",
+  force_https?: false
 
 # Database config
 config :orbit, Orbit.Repo,
@@ -58,6 +59,25 @@ config :phoenix,
 config :phoenix_live_view,
   # Include HEEx debug annotations as HTML comments in rendered markup
   debug_heex_annotations: true
+
+# Auth
+config :orbit, OrbitWeb.Auth.Guardian,
+  issuer: "orbit",
+  secret_key: "dev key"
+
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak: {OrbitWeb.Auth.Strategy.FakeOidcc, []}
+  ]
+
+config :ueberauth_oidcc,
+  providers: [
+    keycloak: [
+      issuer: "dev-issuer",
+      client_id: "dev-client-id",
+      client_secret: "dev-secret"
+    ]
+  ]
 
 if File.exists?(Path.expand("dev.secret.exs", __DIR__)) do
   import_config "dev.secret.exs"

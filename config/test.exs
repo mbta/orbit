@@ -1,7 +1,8 @@
 import Config
 
 config :orbit,
-  release: "test"
+  release: "test",
+  force_https?: false
 
 # Database config
 config :orbit, Orbit.Repo,
@@ -25,3 +26,22 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Auth
+config :ueberauth, Ueberauth,
+  providers: [
+    keycloak: {OrbitWeb.Auth.Strategy.FakeOidcc, []}
+  ]
+
+config :ueberauth_oidcc,
+  providers: [
+    keycloak: [
+      issuer: "test-issuer",
+      client_id: "test-client-id",
+      client_secret: "test-secret"
+    ]
+  ]
+
+config :orbit, OrbitWeb.Auth.Guardian,
+  issuer: "orbit",
+  secret_key: "dev key"

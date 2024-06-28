@@ -2,6 +2,13 @@ defmodule OrbitWeb.Router do
   use OrbitWeb, :router
 
   pipeline :browser do
+    if Application.compile_env(:orbit, :force_https?) do
+      plug(Plug.SSL,
+        rewrite_on: [:x_forwarded_proto],
+        host: {System, :get_env, ["PHX_HOST"]}
+      )
+    end
+
     plug :fetch_session
     plug :fetch_live_flash
     plug :protect_from_forgery
@@ -19,14 +26,30 @@ defmodule OrbitWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :authenticated do
+    plug(OrbitWeb.Auth.Guardian.Pipeline)
+    plug(OrbitWeb.Plugs.RequireLogin)
+  end
+
   scope "/", OrbitWeb do
     pipe_through :browser
     pipe_through :accepts_html
+
+    get("/login", AuthController, :login_page)
+    get("/auth/:provider", AuthController, :request)
+    get("/auth/:provider/callback", AuthController, :callback)
+  end
+
+  scope "/", OrbitWeb do
+    pipe_through :browser
+    pipe_through :accepts_html
+    pipe_through :authenticated
 
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
     get "/", ReactAppController, :home
     get "/help", ReactAppController, :home
+    get "/logout", AuthController, :logout
   end
 
   scope "/", OrbitWeb do
@@ -47,6 +70,7 @@ defmodule OrbitWeb.Router do
     scope "/dev" do
       pipe_through :browser
       pipe_through :accepts_html
+      pipe_through :authenticated
 
       live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
     end

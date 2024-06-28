@@ -3,7 +3,8 @@ import Config
 # Application config
 config :orbit,
   ecto_repos: [Orbit.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  force_https?: true
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
@@ -33,6 +34,13 @@ config :phoenix,
   json_library: Jason,
   # We use logster instead of the default Phoenix logging
   logger: false
+
+# Auth
+config :ueberauth, Ueberauth,
+  providers: [
+    # specified in dev.exs / prod.exs
+    keycloak: nil
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

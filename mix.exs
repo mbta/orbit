@@ -47,6 +47,8 @@ defmodule Orbit.MixProject do
       {:ex_aws, "== 2.5.1"},
       {:ex_aws_rds, "== 2.0.2"},
       {:floki, ">= 0.30.0", only: :test},
+      {:guardian, "== 2.3.2"},
+      {:guardian_phoenix, "== 2.0.1"},
       # used by ex_aws
       {:hackney, "== 1.20.1"},
       {:heroicons,
@@ -70,7 +72,9 @@ defmodule Orbit.MixProject do
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.0.0"},
       {:telemetry_poller, "== 1.1.0"},
-      {:tz, "== 0.26.5"}
+      {:tz, "== 0.26.5"},
+      {:ueberauth, "== 0.10.8"},
+      {:ueberauth_oidcc, "== 0.4.0"}
     ]
   end
 

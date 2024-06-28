@@ -16,6 +16,7 @@ defmodule OrbitWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  alias OrbitWeb.Auth.Auth
 
   using do
     quote do
@@ -33,6 +34,21 @@ defmodule OrbitWeb.ConnCase do
 
   setup tags do
     Orbit.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    conn =
+      if tags[:authenticated] do
+        Phoenix.ConnTest.build_conn()
+        |> Plug.Test.init_test_session(%{})
+        |> Auth.login(
+          "user@example.com",
+          30,
+          [],
+          "https://localhost/fake/logout"
+        )
+      else
+        Phoenix.ConnTest.build_conn()
+      end
+
+    {:ok, conn: conn}
   end
 end
