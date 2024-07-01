@@ -4,7 +4,7 @@ defmodule Orbit.Import.Personnel do
   alias Orbit.S3
 
   @spec download() :: binary()
-  def download() do
+  def download do
     {:ok, csv_data} =
       S3.read(
         :glides_global,
