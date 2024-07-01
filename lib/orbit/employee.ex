@@ -5,6 +5,7 @@ defmodule Orbit.Employee do
   @type t :: %__MODULE__{
           id: integer(),
           first_name: String.t() | nil,
+          preferred_first: String.t() | nil,
           middle_initial: String.t() | nil,
           last_name: String.t() | nil,
           email: String.t() | nil,
@@ -14,6 +15,7 @@ defmodule Orbit.Employee do
 
   schema "employees" do
     field(:first_name, :string)
+    field(:preferred_first, :string)
     field(:middle_initial, :string)
     field(:last_name, :string)
     field(:email, :string)
@@ -29,6 +31,7 @@ defmodule Orbit.Employee do
       params,
       [
         :first_name,
+        :preferred_first,
         :middle_initial,
         :last_name,
         :email,

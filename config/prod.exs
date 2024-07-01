@@ -14,7 +14,12 @@ config :orbit, Oban,
   plugins: [
     Oban.Plugins.Pruner,
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(60)},
-    {Oban.Plugins.Cron, timezone: "America/New_York", crontab: []}
+    {Oban.Plugins.Cron,
+     timezone: "America/New_York",
+     crontab: [
+       # 3:50 AM, any day, any month, any day of the week
+       {"50 3 * * *", Orbit.Import.Personnel}
+     ]}
   ]
 
 # Note we also include the path to a cache manifest
@@ -25,6 +30,11 @@ config :orbit, Oban,
 config :orbit, OrbitWeb.Endpoint,
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"
+
+config :orbit, Orbit.S3,
+  folders: [
+    glides_global: nil
+  ]
 
 config :logger, level: :info
 
