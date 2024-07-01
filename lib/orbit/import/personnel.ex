@@ -51,12 +51,12 @@ defmodule Orbit.Import.Personnel do
 end
 
 defmodule Orbit.Import.PersonnelWorker do
-  alias Orbit.Import.Personnel
   use Oban.Worker, queue: :personnel_import, max_attempts: 3
+  alias Orbit.Import.Personnel
 
   @areas MapSet.new(["114"])
-  @impl Oban.Worker
 
+  @impl Oban.Worker
   @spec perform(Oban.Job.t()) :: :ok
   def perform(%Oban.Job{}) do
     csv_data =
