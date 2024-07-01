@@ -31,6 +31,15 @@ if config_env() == :prod do
          {Orbit.Repo, :add_prod_credentials, []}
        end)
 
+  # S3
+  config :orbit, Orbit.S3,
+    folders: [
+      glides_global: "s3://#{System.fetch_env!("GLIDES_BUCKET")}/global"
+    ]
+
+  # Personnel import
+  config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")
+
   # Auth
   config :ueberauth_oidcc,
     issuers: [
