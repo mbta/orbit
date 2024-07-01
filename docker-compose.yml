@@ -24,5 +24,7 @@ services:
       - KEYCLOAK_ISSUER=https://login-sandbox.mbtace.com/auth/realms/MBTA
       - KEYCLOAK_CLIENT_ID=docker_fake_keycloak_client_id
       - KEYCLOAK_CLIENT_SECRET=docker_fake_keycloak_client_secret
+      - GLIDES_BUCKET=example.com
+      - GLIDES_PERSONNEL_PATHNAME=personnel/demo.csv
     ports:
       - 4001
