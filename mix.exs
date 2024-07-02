@@ -48,6 +48,7 @@ defmodule Orbit.MixProject do
       {:ex_aws, "== 2.5.1"},
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.3"},
+      {:ex_machina, "== 2.8.0", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:guardian, "== 2.3.2"},
       {:guardian_phoenix, "== 2.0.1"},
@@ -116,7 +117,7 @@ defmodule Orbit.MixProject do
       test_all: [
         "test",
         "credo",
-        "format --check-formatted",
+        "Format --check-formatted",
         "sobelow"
         # dialyzer for some reason has to be in MIX_ENV=dev, so run it separately.
       ]
