@@ -22,6 +22,14 @@ config :orbit, OrbitWeb.Endpoint,
 
 config :orbit, Oban, testing: :inline
 
+config :orbit, Orbit.S3,
+  folders: [
+    glides_global: "local-s3-stub://glides/global/"
+  ]
+
+# Personnel import
+config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
+
 config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
