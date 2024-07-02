@@ -31,7 +31,7 @@ jobs:
           echo "asdf-restore=cache-asdf-" >> $GITHUB_OUTPUT
           echo "asdf=cache-asdf-${{ hashFiles('.tool-versions') }}" >> $GITHUB_OUTPUT
           echo "mix-deps-restore=cache-mix-deps-" >> $GITHUB_OUTPUT
-          echo "mix-deps=cache-mix-deps-${{ hashFiles('mix.lock', '.tool-versions') }}" >> $GITHUB_OUTPUT
+          echo "mix-deps=cache-mix-deps-${{ hashFiles('mix.exs', 'mix.lock', '.tool-versions') }}" >> $GITHUB_OUTPUT
           echo "node-modules-restore=cache-node-modules-" >> $GITHUB_OUTPUT
           echo "node-modules=cache-node-modules-${{ hashFiles('package-lock.json', '.tool-versions') }}" >> $GITHUB_OUTPUT
       - name: asdf cache
