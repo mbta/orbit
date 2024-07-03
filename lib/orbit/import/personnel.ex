@@ -1,4 +1,5 @@
 defmodule Orbit.Import.Personnel do
+  require Logger
   alias Orbit.Employee
   alias Orbit.Repo
   alias Orbit.S3
@@ -26,27 +27,30 @@ defmodule Orbit.Import.Personnel do
 
   @spec import_rows(Enumerable.t(), MapSet.t()) :: :ok
   def import_rows(rows, areas) do
-    rows
-    |> Enum.filter(fn entry ->
-      entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
-    end)
-    |> Enum.map(
-      &%Employee{
-        first_name: String.capitalize(&1["FIRST_NAME"]),
-        preferred_first: String.capitalize(&1["PREF_FIRST_NM_SRCH"]),
-        middle_initial: String.at(&1["MIDDLE_NAME"], 0),
-        last_name: String.capitalize(&1["LAST_NAME"]),
-        email: empty_to_nil(&1["WORK_EMAIL_ADDRESS"]),
-        badge_number: String.trim_leading(&1["EMPLOYEE_ID"], "0"),
-        area: String.to_integer(&1[@area_value_field])
-      }
-    )
-    |> Enum.each(
-      &Repo.insert(&1,
-        on_conflict: :replace_all,
-        conflict_target: :badge_number
+    result =
+      rows
+      |> Enum.filter(fn entry ->
+        entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
+      end)
+      |> Enum.map(
+        &%Employee{
+          first_name: String.capitalize(&1["FIRST_NAME"]),
+          preferred_first: String.capitalize(&1["PREF_FIRST_NM_SRCH"]),
+          middle_initial: String.at(&1["MIDDLE_NAME"], 0),
+          last_name: String.capitalize(&1["LAST_NAME"]),
+          email: empty_to_nil(&1["WORK_EMAIL_ADDRESS"]),
+          badge_number: String.trim_leading(&1["EMPLOYEE_ID"], "0"),
+          area: String.to_integer(&1[@area_value_field])
+        }
       )
-    )
+      |> Enum.map(
+        &Repo.insert(&1,
+          on_conflict: :replace_all,
+          conflict_target: :badge_number
+        )
+      )
+
+    Logger.info("personnel_import count=#{length(result)}")
   end
 end
 

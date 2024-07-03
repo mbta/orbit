@@ -75,7 +75,6 @@ defmodule OrbitWeb.AuthController do
 
       _ ->
         Logger.warning("Ueberauth failure: #{inspect(fail)}")
-        Logger.info("Base: #{OrbitWeb.Endpoint.url()}")
     end
 
     conn
