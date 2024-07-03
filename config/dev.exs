@@ -44,6 +44,14 @@ config :orbit, OrbitWeb.Endpoint,
     ]
   ]
 
+config :orbit, Orbit.S3,
+  folders: [
+    glides_global: "local-s3-stub://glides/global/"
+  ]
+
+# Personnel import
+config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
+
 # Logging config
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
