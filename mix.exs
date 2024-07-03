@@ -117,7 +117,7 @@ defmodule Orbit.MixProject do
       test_all: [
         "test",
         "credo",
-        "Format --check-formatted",
+        "format --check-formatted",
         "sobelow"
         # dialyzer for some reason has to be in MIX_ENV=dev, so run it separately.
       ]
