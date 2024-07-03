@@ -2,10 +2,10 @@ defmodule Orbit.OperatorSignIn do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Orbit.Authentication.User
   alias Orbit.Employee
   alias Orbit.RailLine
   alias Orbit.SignInMethod
-  alias Orbit.User
 
   @type t :: %__MODULE__{
           signed_in_employee: Employee.t(),

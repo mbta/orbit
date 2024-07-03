@@ -2,7 +2,7 @@ defmodule Orbit.Factory do
   use ExMachina.Ecto, repo: Orbit.Repo
 
   def user_factory do
-    %Orbit.User{email: sequence(:user_email, &"fake#{&1}@test.com")}
+    %Orbit.Authentication.User{email: sequence(:user_email, &"fake#{&1}@test.com")}
   end
 
   def employee_factory do
