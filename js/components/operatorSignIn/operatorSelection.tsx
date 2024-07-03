@@ -1,12 +1,17 @@
 import { className } from "../../util/dom";
-import { ReactElement, useId } from "react";
+import { ReactElement, useId, useState } from "react";
 
 export const OperatorSelection = ({
   nfcSupported: nfcSupported,
+  onOK,
 }: {
   nfcSupported: boolean;
+  onOK: (badge: string) => void;
 }): ReactElement => {
   const inputId = useId();
+  const [badgeEntry, setBadgeEntry] = useState<string>("");
+
+  const buttonEnabled = badgeEntry !== "";
 
   return (
     <div className="flex flex-col content-stretch">
@@ -15,7 +20,24 @@ export const OperatorSelection = ({
       : <NfcUnsupported />}
       <Or />
       <label htmlFor={inputId}>Search for an Operator</label>
-      <input id={inputId} />
+      <input
+        id={inputId}
+        onChange={(evt) => {
+          setBadgeEntry(evt.target.value);
+        }}
+      />
+      <button
+        disabled={!buttonEnabled}
+        onClick={() => {
+          onOK(badgeEntry);
+        }}
+        className={className([
+          "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 mx-auto",
+          !buttonEnabled && "opacity-50",
+        ])}
+      >
+        OK
+      </button>
     </div>
   );
 };
