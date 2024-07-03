@@ -18,8 +18,7 @@ config :orbit, Oban,
      timezone: "America/New_York",
      crontab: [
        # 3:50 AM, any day, any month, any day of the week
-       # temporarily every 5 minutes for testing
-       {"*/5 * * * *", Orbit.Import.PersonnelWorker}
+       {"50 3 * * *", Orbit.Import.PersonnelWorker}
      ]}
   ]
 
