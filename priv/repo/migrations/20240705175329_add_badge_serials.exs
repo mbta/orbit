@@ -9,6 +9,8 @@ defmodule Orbit.Repo.Migrations.AddBadgeSerials do
       timestamps()
     end
 
+    create index(:badge_serials, [:badge_serial])
+
     alter table("operator_sign_ins") do
       modify :signed_in_employee_id, references("employees", on_delete: :delete_all),
         from: references("employees", on_delete: :nothing)
