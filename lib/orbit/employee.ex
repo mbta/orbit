@@ -1,8 +1,10 @@
 defmodule Orbit.Employee do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Orbit.BadgeSerial
+  alias Orbit.Repo
 
   @type t :: %__MODULE__{
           id: integer(),
@@ -45,5 +47,12 @@ defmodule Orbit.Employee do
     )
     |> check_constraint(:badge_number, name: :badge_number_no_leading_zeroes)
     |> cast_assoc(:badge_serials)
+  end
+
+  @spec get_by_badge_serial(String.t()) :: t() | nil
+  def get_by_badge_serial(serial) do
+    Repo.one(
+      from(e in __MODULE__, join: b in assoc(e, :badge_serials), where: b.badge_serial == ^serial)
+    )
   end
 end

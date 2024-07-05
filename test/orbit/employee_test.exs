@@ -48,4 +48,23 @@ defmodule Orbit.EmployeeTest do
                    })
                  end
   end
+
+  describe "get_by_badge_serial/1" do
+    test "fetches employee by badge serial" do
+      badge_serial = build(:badge_serial)
+
+      employee =
+        insert(:employee, %{
+          badge_serials: [badge_serial]
+        })
+
+      employee_id = employee.id
+
+      assert %{id: ^employee_id} = Employee.get_by_badge_serial(badge_serial.badge_serial)
+    end
+
+    test "returns nil for serial with no corresponding employee" do
+      assert is_nil(Employee.get_by_badge_serial("fake_badge_serial"))
+    end
+  end
 end
