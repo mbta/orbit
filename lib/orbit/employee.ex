@@ -2,6 +2,8 @@ defmodule Orbit.Employee do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Orbit.BadgeSerial
+
   @type t :: %__MODULE__{
           id: integer(),
           first_name: String.t() | nil,
@@ -22,6 +24,8 @@ defmodule Orbit.Employee do
     field(:badge_number, :string)
     field(:area, :integer)
 
+    has_many(:badge_serials, BadgeSerial, on_replace: :delete_if_exists)
+
     timestamps()
   end
 
@@ -40,5 +44,6 @@ defmodule Orbit.Employee do
       ]
     )
     |> check_constraint(:badge_number, name: :badge_number_no_leading_zeroes)
+    |> cast_assoc(:badge_serials)
   end
 end
