@@ -1,4 +1,4 @@
-import { fetch } from "./browser";
+import { fetch, reload } from "./browser";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -30,6 +30,10 @@ export const useApiResult = <RawData, Data>({
       .then((response) => {
         if (response.status === 200) {
           return response.json();
+        } else if (response.status === 401) {
+          reload();
+
+          throw new Error("Unauthenticated");
         } else {
           // TODO: handle various errors
         }
@@ -42,6 +46,9 @@ export const useApiResult = <RawData, Data>({
         const parsedData = parser(data);
 
         setResult({ status: "ok", result: parsedData });
+      })
+      .catch(() => {
+        setResult({ status: "error" });
       });
   }, [url]);
 

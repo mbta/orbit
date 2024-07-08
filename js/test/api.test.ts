@@ -1,12 +1,13 @@
 import { useApiResult } from "../api";
-import { fetch } from "../browser";
+import { fetch, reload } from "../browser";
 import { PromiseWithResolvers } from "./helpers/promiseWithResolvers";
-import { renderHook, waitFor } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { z } from "zod";
 
 jest.mock("../browser", () => ({
   __esModule: true,
   fetch: jest.fn(),
+  reload: jest.fn(),
 }));
 
 describe("useApiResult", () => {
@@ -46,5 +47,28 @@ describe("useApiResult", () => {
     await waitFor(() =>
       expect(result.current).toEqual({ status: "ok", result: "test" }),
     );
+  });
+
+  test("reloads on a 401 response", async () => {
+    const RawData = z.string();
+    const parser = (s: String) => s;
+
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const { result } = renderHook(useApiResult, {
+      initialProps: { RawData, url: "/api/test", parser },
+    });
+
+    act(() => {
+      resolve({
+        status: 401,
+      } as Response);
+    });
+
+    await waitFor(() => expect(result.current).toEqual({ status: "error" }));
+
+    expect(reload).toHaveBeenCalled();
   });
 });
