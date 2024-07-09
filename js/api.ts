@@ -2,17 +2,10 @@ import { fetch, reload } from "./browser";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-export type ApiResponse<OkResult, ErrorResult = never> =
-  | { status: "ok"; result: OkResult }
-  | {
-      status: "error";
-      statusCode?: number;
-      result?: ErrorResult;
-    };
-
-export type ApiResult<OkResult, ErrorResult = never> =
+export type ApiResult<Result> =
   | { status: "loading" }
-  | ApiResponse<OkResult, ErrorResult>;
+  | { status: "ok"; result: Result }
+  | { status: "error" };
 
 export const useApiResult = <RawData, Data>({
   RawData,
