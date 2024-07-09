@@ -71,4 +71,29 @@ describe("useApiResult", () => {
 
     expect(reload).toHaveBeenCalled();
   });
+
+  test("handles a parsing error", async () => {
+    const RawData = z.string();
+    const parser = (s: String) => s;
+
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const { result } = renderHook(useApiResult, {
+      initialProps: { RawData, url: "/api/test", parser },
+    });
+
+    act(() => {
+      resolve({
+        status: 200,
+        json: () =>
+          new Promise((resolve) => {
+            resolve({ data: 12 });
+          }),
+      } as Response);
+    });
+
+    await waitFor(() => expect(result.current).toEqual({ status: "error" }));
+  });
 });
