@@ -13,7 +13,7 @@ jest.mock("../browser", () => ({
 describe("useApiResult", () => {
   test("returns loading state", () => {
     const RawData = z.string();
-    const parser = (s: String) => s;
+    const parser = (s: string) => s;
 
     jest.mocked(fetch).mockReturnValue(new Promise(jest.fn()));
 
@@ -26,7 +26,7 @@ describe("useApiResult", () => {
 
   test("handles success state", async () => {
     const RawData = z.string();
-    const parser = (s: String) => s;
+    const parser = (s: string) => s;
 
     const { promise, resolve } = PromiseWithResolvers<Response>();
 
@@ -44,14 +44,14 @@ describe("useApiResult", () => {
         }),
     } as Response);
 
-    await waitFor(() =>
-      expect(result.current).toEqual({ status: "ok", result: "test" }),
-    );
+    await waitFor(() => {
+      expect(result.current).toEqual({ status: "ok", result: "test" });
+    });
   });
 
   test("reloads on a 401 response", async () => {
     const RawData = z.string();
-    const parser = (s: String) => s;
+    const parser = (s: string) => s;
 
     const { promise, resolve } = PromiseWithResolvers<Response>();
 
@@ -67,14 +67,16 @@ describe("useApiResult", () => {
       } as Response);
     });
 
-    await waitFor(() => expect(result.current).toEqual({ status: "error" }));
+    await waitFor(() => {
+      expect(result.current).toEqual({ status: "error" });
+    });
 
     expect(reload).toHaveBeenCalled();
   });
 
   test("handles a parsing error", async () => {
     const RawData = z.string();
-    const parser = (s: String) => s;
+    const parser = (s: string) => s;
 
     const { promise, resolve } = PromiseWithResolvers<Response>();
 
@@ -94,6 +96,8 @@ describe("useApiResult", () => {
       } as Response);
     });
 
-    await waitFor(() => expect(result.current).toEqual({ status: "error" }));
+    await waitFor(() => {
+      expect(result.current).toEqual({ status: "error" });
+    });
   });
 });

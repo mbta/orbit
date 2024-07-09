@@ -43,7 +43,7 @@ export const useApiResult = <RawData, Data>({
       .catch(() => {
         setResult({ status: "error" });
       });
-  }, [url]);
+  }, [url, RawData, parser]);
 
   return result;
 };
