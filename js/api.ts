@@ -5,7 +5,7 @@ import { z } from "zod";
 export type ApiResult<Result> =
   | { status: "loading" }
   | { status: "ok"; result: Result }
-  | { status: "error"; error?: any };
+  | { status: "error"; error?: unknown };
 
 export const useApiResult = <RawData, Data>({
   RawData,
@@ -28,7 +28,6 @@ export const useApiResult = <RawData, Data>({
 
           throw new Error("Unauthenticated");
         } else {
-          console.log("HERE");
           throw new Error(`Unrecognized response code: ${response.status}`);
         }
       })
@@ -41,7 +40,7 @@ export const useApiResult = <RawData, Data>({
 
         setResult({ status: "ok", result: parsedData });
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         setResult({ status: "error", error: e });
       });
   }, [url, RawData, parser]);
