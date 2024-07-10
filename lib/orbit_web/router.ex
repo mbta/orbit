@@ -16,6 +16,7 @@ defmodule OrbitWeb.Router do
   end
 
   pipeline :accepts_html do
+    plug :browser
     plug :accepts, ["html"]
     plug :put_root_layout, html: {OrbitWeb.Layouts, :root}
     # assigns used in the root layout
@@ -32,7 +33,6 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
-    pipe_through :browser
     pipe_through :accepts_html
 
     get("/login", AuthController, :login_page)
@@ -41,7 +41,6 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
-    pipe_through :browser
     pipe_through :accepts_html
     pipe_through :authenticated
 
@@ -68,7 +67,6 @@ defmodule OrbitWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
       pipe_through :accepts_html
       pipe_through :authenticated
 
