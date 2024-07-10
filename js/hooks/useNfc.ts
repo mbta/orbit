@@ -54,5 +54,5 @@ const dehexSerial = (hexedSerial: string): string => {
   const bytes = hexedSerial.split(":");
   const hexValue = bytes.join("");
   const decimalValue = parseInt(hexValue, 16);
-  return `${decimalValue}`;
+  return decimalValue.toString();
 };
