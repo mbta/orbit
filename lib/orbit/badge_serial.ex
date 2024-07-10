@@ -5,7 +5,8 @@ defmodule Orbit.BadgeSerial do
   alias Orbit.Employee
 
   @type t :: %__MODULE__{
-          badge_serial: String.t()
+          badge_serial: String.t(),
+          employee: Employee.t() | nil
         }
 
   schema "badge_serials" do
