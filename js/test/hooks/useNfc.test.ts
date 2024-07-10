@@ -1,7 +1,13 @@
 import { useNfc } from "../../hooks/useNfc";
+import { nfcSupported } from "../../util/nfc";
 import { mockNDEFReader } from "../helpers/mockHelpers";
 import { PromiseWithResolvers } from "../helpers/promiseWithResolvers";
 import { act, renderHook, waitFor } from "@testing-library/react";
+
+jest.mock("../../util/nfc.ts", () => ({
+  __esModule: true,
+  nfcSupported: jest.fn(() => true),
+}));
 
 describe("useNfc", () => {
   test("creates a reader and scans", () => {
@@ -39,6 +45,16 @@ describe("useNfc", () => {
         error: new Error("test error"),
       });
     });
+  });
+
+  test("handles a case where NFC is unsupported", () => {
+    jest.mocked(nfcSupported).mockImplementationOnce(() => false);
+
+    const abortController = new AbortController();
+
+    const { result } = renderHook(useNfc, { initialProps: abortController });
+
+    expect(result.current).toEqual({ status: "nfcUnsupported" });
   });
 
   test("aborts the scan on unmount", () => {
