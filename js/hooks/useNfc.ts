@@ -6,7 +6,7 @@ export type NfcResult =
   | { status: "reading" }
   | { status: "success"; data: string }
   | { status: "cancelled" }
-  | { status: "error"; error: Error };
+  | { status: "error"; error: unknown };
 
 export const useNfc = (cancel: AbortController): NfcResult => {
   const supported = nfcSupported();
@@ -20,9 +20,7 @@ export const useNfc = (cancel: AbortController): NfcResult => {
       const reader = new NDEFReader();
 
       reader.scan({ signal: cancel.signal }).catch((error: unknown) => {
-        if (error instanceof Error) {
-          setResult({ status: "error", error });
-        }
+        setResult({ status: "error", error });
       });
 
       reader.addEventListener(
@@ -34,6 +32,8 @@ export const useNfc = (cancel: AbortController): NfcResult => {
               data: dehexSerial(event.serialNumber),
             });
             cancel.abort();
+          } else {
+            throw new Error("Unrecognized scan event");
           }
         },
         { once: true },
