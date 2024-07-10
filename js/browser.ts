@@ -1,5 +1,5 @@
-export const fetch: typeof window.fetch = window.fetch;
+export const fetch = window.fetch;
 
-export const reload: typeof window.location.reload = () => {
+export const reload = () => {
   window.location.reload();
 };
