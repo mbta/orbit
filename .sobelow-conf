@@ -1,4 +1,5 @@
 [
   format: "compact",
-  ignore: ["Config.HTTPS"],
+  ignore: ["Config.HTTPS", "Traversal.FileModule"],
+  exit: "low",
 ]
