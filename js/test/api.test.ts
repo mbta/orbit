@@ -68,10 +68,36 @@ describe("useApiResult", () => {
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({ status: "error" });
+      expect(result.current).toMatchObject({ status: "error" });
     });
 
     expect(reload).toHaveBeenCalled();
+  });
+
+  test("throws on an unrecognized response code", async () => {
+    const RawData = z.string();
+    const parser = (s: string) => s;
+
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const { result } = renderHook(useApiResult, {
+      initialProps: { RawData, url: "/api/test", parser },
+    });
+
+    act(() => {
+      resolve({
+        status: 500,
+      } as Response);
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        status: "error",
+        error: new Error("Unrecognized response code: 500"),
+      });
+    });
   });
 
   test("handles a parsing error", async () => {
@@ -97,7 +123,7 @@ describe("useApiResult", () => {
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({ status: "error" });
+      expect(result.current).toMatchObject({ status: "error" });
     });
   });
 });
