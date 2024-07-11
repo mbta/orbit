@@ -20,6 +20,6 @@ defmodule OrbitWeb.EmployeesController do
         end
       )
 
-    conn |> json(%{data: employees})
+    json(conn, %{data: employees})
   end
 end
