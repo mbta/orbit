@@ -12,6 +12,7 @@ defmodule Orbit.Factory do
       middle_initial: "A",
       email: sequence(:employee_email, &"fake#{&1}@test.com"),
       badge_number: sequence("employee_badge"),
+      badge_serials: [build(:badge_serial)],
       area: 321
     }
   end
@@ -25,6 +26,12 @@ defmodule Orbit.Factory do
       signed_in_at: DateTime.add(base_dt, sequence(:operator_sign_in_time_offset, & &1), :minute),
       rail_line: :blue,
       sign_in_method: :manual
+    }
+  end
+
+  def badge_serial_factory do
+    %Orbit.BadgeSerial{
+      badge_serial: sequence("employee_badge_serial")
     }
   end
 end
