@@ -6,9 +6,8 @@ export const useSignInText = (): {
   version: number;
   text: ReactElement;
 } => {
-  // Check the time only once on mount so that the text doesn't change if the time changes.
   return {
-    version: 5,
+    version: 1,
     text: (
       <ul className="m-8 mr-0 list-disc">
         <li className="mb-4">
