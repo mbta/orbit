@@ -49,8 +49,9 @@ config :orbit, Orbit.S3,
     glides_global: "local-s3-stub://glides/global/"
   ]
 
-# Personnel import
+# CSV import jobs
 config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
+config :orbit, Orbit.Import.Rfid, pathname: "rfid/demo.csv"
 
 # Logging config
 # Do not include metadata nor timestamps in development logs

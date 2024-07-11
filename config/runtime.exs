@@ -37,8 +37,9 @@ if config_env() == :prod do
       glides_global: "s3://#{System.fetch_env!("GLIDES_BUCKET")}/global"
     ]
 
-  # Personnel import
+  # CSV import jobs
   config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")
+  config :orbit, Orbit.Import.Rfid, pathname: System.fetch_env!("GLIDES_RFID_PATHNAME")
 
   # Auth
   config :ueberauth_oidcc,
