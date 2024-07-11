@@ -52,6 +52,14 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
+    pipe_through :browser
+    pipe_through :api
+    pipe_through :authenticated
+
+    get "/api/employees", EmployeesController, :index
+  end
+
+  scope "/", OrbitWeb do
     # no pipe
     get "/_health", HealthController, :index
     get "/_health_db", HealthDbController, :index

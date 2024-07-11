@@ -12,7 +12,7 @@ describe("OperatorSignInModal", () => {
   test("can close the modal", async () => {
     const view = render(<OperatorSignInModal />);
 
-    await userEvent.click(view.getByRole("button"));
+    await userEvent.click(view.getByRole("button", { name: "[x]" }));
 
     expect(view.queryByText(/fit for duty check/i)).not.toBeInTheDocument();
   });
