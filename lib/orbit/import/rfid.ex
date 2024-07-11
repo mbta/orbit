@@ -22,6 +22,9 @@ defmodule Orbit.Import.Rfid do
   def import_rows(rows) do
     imported_count =
       rows
+      |> Enum.map(fn row ->
+        Map.update!(row, @badge_number_field, &String.trim_leading(&1, "0"))
+      end)
       |> Enum.group_by(& &1[@badge_number_field])
       |> Enum.reduce(
         0,
@@ -37,7 +40,10 @@ defmodule Orbit.Import.Rfid do
                   |> Repo.preload([:badge_serials])
                   |> Employee.changeset(%{
                     badge_serials:
-                      Enum.map(badge_serials, &%{badge_serial: &1[@badge_serial_field]})
+                      Enum.map(
+                        badge_serials,
+                        &%{badge_serial: &1[@badge_serial_field]}
+                      )
                   })
                   |> Repo.update()
 

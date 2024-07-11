@@ -66,5 +66,25 @@ defmodule Orbit.Import.RfidTest do
       assert [] =
                Repo.all(from(b in BadgeSerial))
     end
+
+    test "trims any leading zeros from badge number" do
+      employee_id = "1234"
+
+      insert(:employee, %{badge_number: employee_id, badge_serials: []})
+
+      rows = [
+        %{"EMPLOYEE_ID" => "0#{employee_id}", "SERIAL_NUMBER" => "56"}
+      ]
+
+      Rfid.import_rows(rows)
+
+      assert %Employee{
+               badge_number: ^employee_id,
+               badge_serials: [%BadgeSerial{badge_serial: "56"}]
+             } =
+               Employee
+               |> Repo.get_by(badge_number: employee_id)
+               |> Repo.preload([:badge_serials])
+    end
   end
 end
