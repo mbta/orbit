@@ -27,6 +27,9 @@ export default {
         200: "#D9D9D9",
         300: "#929292",
       },
+      green: {
+        500: "#2EC92E",
+      },
     },
     zIndex: {
       layout: "1000",

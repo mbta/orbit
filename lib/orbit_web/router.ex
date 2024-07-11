@@ -57,6 +57,7 @@ defmodule OrbitWeb.Router do
     pipe_through :authenticated
 
     get "/api/employees", EmployeesController, :index
+    post "/api/signin", SignInController, :submit
   end
 
   scope "/", OrbitWeb do

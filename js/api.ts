@@ -1,4 +1,5 @@
 import { fetch, reload } from "./browser";
+import { getMetaContent } from "./util/metadata";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -6,6 +7,21 @@ export type ApiResult<Result> =
   | { status: "loading" }
   | { status: "ok"; result: Result }
   | { status: "error"; error?: unknown };
+
+export const post = (url: string, body: object) => {
+  const csrfToken = getMetaContent("csrf-token");
+  if (csrfToken === null) {
+    throw new Error("Cannot POST; csrf-token was null");
+  }
+  return fetch(url, {
+    headers: {
+      "content-type": "application/json",
+      "x-csrf-token": csrfToken,
+    },
+    method: "post",
+    body: JSON.stringify(body),
+  });
+};
 
 export const useApiResult = <RawData, Data>({
   RawData,

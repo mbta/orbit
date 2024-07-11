@@ -1,5 +1,6 @@
-import { useApiResult } from "../api";
+import { post, useApiResult } from "../api";
 import { fetch, reload } from "../browser";
+import { putMetaData } from "./helpers/metadata";
 import { PromiseWithResolvers } from "./helpers/promiseWithResolvers";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { z } from "zod";
@@ -9,6 +10,26 @@ jest.mock("../browser", () => ({
   fetch: jest.fn(),
   reload: jest.fn(),
 }));
+
+describe("post", () => {
+  test("throws on non-existent csrf token", () => {
+    expect(() => post("/not-a-real-endpoint", {})).toThrow();
+  });
+
+  test("calls fetch() to POST", async () => {
+    putMetaData("csrf-token", "TEST-CSRF-TOKEN");
+
+    await post("/not-a-real-endpoint", { strawberries: "tasty" });
+    expect(fetch).toHaveBeenCalledWith("/not-a-real-endpoint", {
+      body: JSON.stringify({ strawberries: "tasty" }),
+      headers: {
+        "content-type": "application/json",
+        "x-csrf-token": "TEST-CSRF-TOKEN",
+      },
+      method: "post",
+    });
+  });
+});
 
 describe("useApiResult", () => {
   test("returns loading state", () => {

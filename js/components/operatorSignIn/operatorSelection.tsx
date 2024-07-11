@@ -22,6 +22,7 @@ export const OperatorSelection = ({
       <label htmlFor={inputId}>Search for an Operator</label>
       <input
         id={inputId}
+        inputMode="numeric"
         onChange={(evt) => {
           setBadgeEntry(evt.target.value);
         }}

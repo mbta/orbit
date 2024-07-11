@@ -1,60 +1,128 @@
+import { ApiResult } from "../../../api";
 import { Attestation } from "../../../components/operatorSignIn/attestation";
+import { Employee } from "../../../models/employee";
 import { employeeFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("../../../hooks/useEmployees.ts", () => ({
-  __esModule: true,
-  findEmployeeByBadge: jest.fn((_employees, badge) => {
-    if (badge === "123") {
-      return employeeFactory.build();
-    }
-    return undefined;
-  }),
-  useEmployees: jest.fn(() => ({
-    status: "ok",
-    result: [],
-  })),
-}));
+const EMPLOYEES: ApiResult<Employee[]> = {
+  status: "ok",
+  result: [employeeFactory.build({ badge: "123" })],
+};
 
 describe("Attestation", () => {
   test("displays sign-in text", () => {
-    const view = render(<Attestation badge="123" onComplete={jest.fn()} />);
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={jest.fn()}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
     expect(
       view.getByText("I do not have an electronic device in my possession."),
     ).toBeInTheDocument();
   });
 
   test("refers to operators by preferred first name (if available)", () => {
-    const view = render(<Attestation badge="123" onComplete={jest.fn()} />);
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={jest.fn()}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
     expect(view.getByText("Preferredy Lasty")).toBeInTheDocument();
   });
 
   test("refers to operators by Operator #XXXX if name not available", () => {
     const view = render(
-      <Attestation badge="00000000" onComplete={jest.fn()} />,
+      <Attestation
+        badge="00000000"
+        onComplete={jest.fn()}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
     );
     expect(view.getByText("Operator #00000000")).toBeInTheDocument();
   });
 
   test("contains signature text box", () => {
-    const view = render(<Attestation badge="123" onComplete={jest.fn()} />);
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={jest.fn()}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
     expect(view.getByRole("textbox")).toBeInTheDocument();
   });
 
   test("contains Complete button", () => {
-    const view = render(<Attestation badge="123" onComplete={jest.fn()} />);
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={jest.fn()}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
     expect(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     ).toBeInTheDocument();
   });
 
-  test("executes onComplete function on button click", async () => {
+  test("valid attestation", async () => {
     const onComplete = jest.fn();
-    const view = render(<Attestation badge="123" onComplete={onComplete} />);
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={onComplete}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
+    await userEvent.type(view.getByRole("textbox"), "123");
+    expect(view.getByText("Looks good!")).toBeInTheDocument();
+
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
     expect(onComplete).toHaveBeenCalledOnce();
+  });
+
+  test("invalid attestation", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    jest.useFakeTimers();
+    const onComplete = jest.fn();
+    const view = render(
+      <Attestation
+        badge="123"
+        onComplete={onComplete}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
+
+    await user.type(view.getByRole("textbox"), "4123");
+    act(() => {
+      jest.runAllTimers();
+    });
+
+    expect(view.queryByText("Looks good!")).not.toBeInTheDocument();
+    expect(
+      view.getByText("That badge number doesn't match our records."),
+    ).toBeInTheDocument();
+
+    // Try to click the button- it's disabled!
+    await user.click(
+      view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+
+    expect(onComplete).not.toHaveBeenCalled();
+    jest.useRealTimers();
   });
 });
