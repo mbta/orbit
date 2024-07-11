@@ -4,6 +4,7 @@
 import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
+import colors from "tailwindcss/colors";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -22,11 +23,13 @@ export default {
       "mbta-orange": "#ED8B00",
       "mbta-blue": "#003DA5",
       black: "#000000",
+      green: colors.green,
       gray: {
         100: "#EAEAEA",
         200: "#D9D9D9",
         300: "#929292",
       },
+      red: colors.red,
     },
     zIndex: {
       layout: "1000",
