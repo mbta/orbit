@@ -1,5 +1,6 @@
 import { fetch } from "../../browser";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { employeeFactory } from "../helpers/factory";
 import { PromiseWithResolvers } from "../helpers/promiseWithResolvers";
 import { renderHook, waitFor } from "@testing-library/react";
 
@@ -9,23 +10,13 @@ jest.mock("../../browser", () => ({
 }));
 
 const TEST_DATA = {
-  data: [
-    {
-      first_name: "Christopher",
-      preferred_first: "Chris",
-      last_name: "Robin",
-      badge: "123",
-    },
-  ],
+  data: [employeeFactory.build()],
 };
 
 const TEST_PARSED = [
-  {
-    first_name: "Christopher",
+  employeeFactory.build({
     preferred_first: undefined,
-    last_name: "Robin",
-    badge: "123",
-  },
+  }),
 ];
 
 describe("useEmployees", () => {

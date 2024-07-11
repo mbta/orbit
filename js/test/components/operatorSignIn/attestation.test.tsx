@@ -1,4 +1,5 @@
 import { Attestation } from "../../../components/operatorSignIn/attestation";
+import { employeeFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -6,12 +7,7 @@ jest.mock("../../../hooks/useEmployees.ts", () => ({
   __esModule: true,
   findEmployeeByBadge: jest.fn((_employees, badge) => {
     if (badge === "123") {
-      return {
-        first_name: "Firsty",
-        preferred_first: "Preferredy",
-        last_name: "Lasty",
-        badge: "123",
-      };
+      return employeeFactory.build();
     }
     return undefined;
   }),
