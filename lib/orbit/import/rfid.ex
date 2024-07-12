@@ -26,6 +26,8 @@ defmodule Orbit.Import.Rfid do
         Map.update!(row, @badge_number_field, &String.trim_leading(&1, "0"))
       end)
       |> Enum.group_by(& &1[@badge_number_field])
+      # random old CharlieCard serial for testing
+      |> Map.merge(%{"999999" => [%{"SERIAL_NUMBER" => "4127266888"}]})
       |> Enum.reduce(
         0,
         fn {badge_number, badge_serials}, acc ->

@@ -17,10 +17,10 @@ config :orbit, Oban,
     {Oban.Plugins.Cron,
      timezone: "America/New_York",
      crontab: [
-       # the top of every hour, any day, any month, any day of the week
-       {"0 * * * *", Orbit.Import.PersonnelWorker},
-       # the bottom of every hour, any day, any month, any day of the week
-       {"30 * * * *", Orbit.Import.RfidWorker}
+       # every five minutes
+       {"*/5 * * * *", Orbit.Import.PersonnelWorker},
+       # every five minutes
+       {"*/5 * * * *", Orbit.Import.RfidWorker}
      ]}
   ]
 

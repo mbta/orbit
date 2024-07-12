@@ -43,6 +43,17 @@ defmodule Orbit.Import.Personnel do
           area: String.to_integer(&1[@area_value_field])
         }
       )
+      |> Enum.concat([
+        %Employee{
+          first_name: "Test",
+          preferred_first: "Preferred",
+          middle_initial: "E",
+          last_name: "Operator",
+          email: nil,
+          badge_number: "999999",
+          area: 999
+        }
+      ])
       |> Enum.map(
         &Repo.insert(&1,
           on_conflict: {:replace_all_except, [:id]},
