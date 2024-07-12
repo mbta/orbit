@@ -1,15 +1,18 @@
-import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { ApiResult } from "../../api";
+import { findEmployeeByBadge } from "../../hooks/useEmployees";
+import { Employee } from "../../models/employee";
 import { useSignInText } from "./text";
 import { ReactElement } from "react";
 
 export const Attestation = ({
   badge,
   onComplete,
+  employees,
 }: {
   badge: string;
   onComplete: () => void;
+  employees: ApiResult<Employee[]>;
 }): ReactElement => {
-  const employees = useEmployees();
   if (employees.status === "loading") {
     return <div>Loading...</div>;
   } else if (employees.status === "error") {

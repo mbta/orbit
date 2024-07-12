@@ -8,6 +8,11 @@ jest.mock("../../../util/nfc", () => ({
   nfcSupported: jest.fn().mockReturnValue(true),
 }));
 
+jest.mock("../../../hooks/useEmployees", () => ({
+  __esModule: true,
+  useEmployees: jest.fn().mockReturnValue({ status: "loading" }),
+}));
+
 describe("OperatorSignInModal", () => {
   test("shows badge tap message by default", () => {
     const view = render(<OperatorSignInModal />);
