@@ -1,5 +1,9 @@
 import { fetch } from "../../browser";
-import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import {
+  findEmployeeByBadge,
+  findEmployeeByBadgeSerial,
+  useEmployees,
+} from "../../hooks/useEmployees";
 import { employeeFactory } from "../helpers/factory";
 import { PromiseWithResolvers } from "../helpers/promiseWithResolvers";
 import { renderHook, waitFor } from "@testing-library/react";
@@ -52,5 +56,21 @@ describe("findEmployeeByBadge", () => {
 
   test("returns undefined if not found", () => {
     expect(findEmployeeByBadge(TEST_PARSED, "random_badge")).toBeUndefined();
+  });
+});
+
+describe("findEmployeeByBadgeSerial", () => {
+  test("finds an employee in an array by badge number", () => {
+    const employeeBadgeSerial = TEST_PARSED[0].badge_serials[0];
+
+    expect(findEmployeeByBadgeSerial(TEST_PARSED, employeeBadgeSerial)).toEqual(
+      TEST_PARSED[0],
+    );
+  });
+
+  test("returns undefined if not found", () => {
+    expect(
+      findEmployeeByBadgeSerial(TEST_PARSED, "random_serial"),
+    ).toBeUndefined();
   });
 });
