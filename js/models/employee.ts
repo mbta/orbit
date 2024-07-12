@@ -5,6 +5,7 @@ export const Employee = z.object({
   preferred_first: z.string().optional(),
   last_name: z.string(),
   badge: z.string(),
+  badge_serials: z.array(z.string()),
 });
 
 export type Employee = z.infer<typeof Employee>;

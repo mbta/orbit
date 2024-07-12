@@ -14,9 +14,10 @@ const TEST_DATA = {
 };
 
 const TEST_PARSED = [
-  employeeFactory.build({
+  {
+    ...TEST_DATA.data[0],
     preferred_first: undefined,
-  }),
+  },
 ];
 
 describe("useEmployees", () => {
@@ -42,10 +43,14 @@ describe("useEmployees", () => {
 
 describe("findEmployeeByBadge", () => {
   test("finds an employee in an array by badge number", () => {
-    expect(findEmployeeByBadge(TEST_PARSED, "123")).toEqual(TEST_PARSED[0]);
+    const employeeBadge = TEST_PARSED[0].badge;
+
+    expect(findEmployeeByBadge(TEST_PARSED, employeeBadge)).toEqual(
+      TEST_PARSED[0],
+    );
   });
 
   test("returns undefined if not found", () => {
-    expect(findEmployeeByBadge(TEST_PARSED, "1234")).toBeUndefined();
+    expect(findEmployeeByBadge(TEST_PARSED, "random_badge")).toBeUndefined();
   });
 });
