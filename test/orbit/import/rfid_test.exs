@@ -8,12 +8,14 @@ defmodule Orbit.Import.RfidTest do
 
   describe "worker" do
     test "downloads and parses badge serials" do
-      insert(:employee, %{badge_number: "1234", badge_serials: []})
+      insert(:employee, %{badge_number: "123456", badge_serials: []})
 
       RfidWorker.perform(%Oban.Job{})
 
-      assert [%BadgeSerial{badge_serial: "56"}, %BadgeSerial{badge_serial: "78"}] =
-               Repo.all(from(b in BadgeSerial))
+      badge_serials = Repo.all(from(b in BadgeSerial))
+
+      assert [%BadgeSerial{badge_serial: "78"}, %BadgeSerial{badge_serial: "90"}] =
+               Enum.sort_by(badge_serials, & &1.badge_serial)
     end
   end
 
