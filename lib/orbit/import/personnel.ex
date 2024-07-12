@@ -45,7 +45,7 @@ defmodule Orbit.Import.Personnel do
       )
       |> Enum.map(
         &Repo.insert(&1,
-          on_conflict: :replace_all,
+          on_conflict: {:replace_all_except, [:id]},
           conflict_target: :badge_number
         )
       )
