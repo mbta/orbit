@@ -8,6 +8,11 @@ jest.mock("../../../util/nfc", () => ({
   nfcSupported: jest.fn().mockReturnValue(true),
 }));
 
+jest.mock("../../../hooks/useNfc", () => ({
+  __esModule: true,
+  useNfc: jest.fn().mockReturnValue({ status: "reading" }),
+}));
+
 jest.mock("../../../hooks/useEmployees", () => ({
   __esModule: true,
   useEmployees: jest.fn().mockReturnValue({ status: "loading" }),

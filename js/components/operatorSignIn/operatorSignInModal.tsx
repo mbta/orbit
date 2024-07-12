@@ -20,7 +20,11 @@ export const OperatorSignInModal = (): ReactElement => {
       }}
     >
       {badge === null ?
-        <OperatorSelection nfcSupported={nfcSupported()} onOK={setBadge} />
+        <OperatorSelection
+          nfcSupported={nfcSupported()}
+          onOK={setBadge}
+          employees={employees}
+        />
       : <Attestation
           badge={badge}
           onComplete={() => {
