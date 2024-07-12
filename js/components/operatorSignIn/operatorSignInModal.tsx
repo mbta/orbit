@@ -1,3 +1,4 @@
+import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
 import { OperatorSelection } from "./operatorSelection";
@@ -16,7 +17,7 @@ export const OperatorSignInModal = (): ReactElement => {
       }}
     >
       {badge === null ?
-        <OperatorSelection nfcSupported={true} onOK={setBadge} />
+        <OperatorSelection nfcSupported={nfcSupported()} onOK={setBadge} />
       : <Attestation
           badge={badge}
           onComplete={() => {
