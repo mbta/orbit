@@ -51,8 +51,6 @@ defmodule Orbit.Import.Personnel do
       )
 
     Logger.info("personnel_import count=#{length(result)}")
-  rescue
-    e -> Logger.warning("personnel_import_error error=#{inspect(e)}")
   end
 end
 
