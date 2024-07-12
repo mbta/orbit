@@ -27,8 +27,9 @@ config :orbit, Orbit.S3,
     glides_global: "local-s3-stub://glides/global/"
   ]
 
-# Personnel import
+# Test import CSVs
 config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
+config :orbit, Orbit.Import.Rfid, pathname: "rfid/demo.csv"
 
 config :logger, level: :warning
 
