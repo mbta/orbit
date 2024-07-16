@@ -8,7 +8,9 @@ export type NfcResult =
   | { status: "cancelled" }
   | { status: "error"; error: unknown };
 
-export const useNfc = (cancel: AbortController): NfcResult => {
+export const useNfc = (
+  cancel: AbortController,
+): { result: NfcResult; abortController: AbortController } => {
   const supported = nfcSupported();
 
   const [result, setResult] = useState<NfcResult>({
@@ -55,7 +57,7 @@ export const useNfc = (cancel: AbortController): NfcResult => {
     }
   }, [cancel, supported]);
 
-  return result;
+  return { result, abortController: cancel };
 };
 
 const dehexSerial = (hexedSerial: string): string => {

@@ -10,7 +10,10 @@ jest.mock("../../../util/nfc", () => ({
 
 jest.mock("../../../hooks/useNfc", () => ({
   __esModule: true,
-  useNfc: jest.fn().mockReturnValue({ status: "reading" }),
+  useNfc: jest.fn().mockReturnValue({
+    result: { status: "reading" },
+    abortController: new AbortController(),
+  }),
 }));
 
 jest.mock("../../../hooks/useEmployees", () => ({

@@ -13,7 +13,10 @@ const EMPLOYEES: ApiResult<Employee[]> = {
 
 jest.mock("../../../hooks/useNfc", () => ({
   __esModule: true,
-  useNfc: jest.fn().mockReturnValue({ status: "reading" }),
+  useNfc: jest.fn().mockReturnValue({
+    result: { status: "reading" },
+    abortController: new AbortController(),
+  }),
 }));
 
 describe("OperatorSelection", () => {
@@ -86,7 +89,10 @@ describe("OperatorSelection", () => {
       />,
     );
 
-    jest.mocked(useNfc).mockReturnValueOnce({ status: "success", data: "56" });
+    jest.mocked(useNfc).mockReturnValueOnce({
+      result: { status: "success", data: "56" },
+      abortController: new AbortController(),
+    });
 
     rerender(
       <OperatorSelection

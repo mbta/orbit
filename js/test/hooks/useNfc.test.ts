@@ -19,7 +19,7 @@ describe("useNfc", () => {
 
     expect(mockScan).toHaveBeenCalledOnce();
 
-    expect(result.current).toEqual({ status: "reading" });
+    expect(result.current).toMatchObject({ result: { status: "reading" } });
   });
 
   test("handles a scan error", async () => {
@@ -40,9 +40,11 @@ describe("useNfc", () => {
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({
-        status: "error",
-        error: new Error("test error"),
+      expect(result.current).toMatchObject({
+        result: {
+          status: "error",
+          error: new Error("test error"),
+        },
       });
     });
   });
@@ -54,7 +56,9 @@ describe("useNfc", () => {
 
     const { result } = renderHook(useNfc, { initialProps: abortController });
 
-    expect(result.current).toEqual({ status: "nfcUnsupported" });
+    expect(result.current).toMatchObject({
+      result: { status: "nfcUnsupported" },
+    });
   });
 
   test("aborts the scan on unmount", () => {
@@ -83,7 +87,7 @@ describe("useNfc", () => {
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({ status: "cancelled" });
+      expect(result.current).toMatchObject({ result: { status: "cancelled" } });
     });
   });
 });
