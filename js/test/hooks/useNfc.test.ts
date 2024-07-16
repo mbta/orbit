@@ -62,13 +62,14 @@ describe("useNfc", () => {
 
     jest
       .mocked(nfcSupported)
-      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(false)
       .mockReturnValueOnce(false);
 
     expect(result.current).toMatchObject({ result: { status: "reading" } });
 
+    // it takes a couple of rerenders for both useEffect hooks to update
     rerender();
 
     rerender();
