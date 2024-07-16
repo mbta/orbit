@@ -17,8 +17,7 @@ export const OperatorSelection = ({
   const inputId = useId();
   const [badgeEntry, setBadgeEntry] = useState<string>("");
 
-  const nfcAbortController = new AbortController();
-  const { result: nfcResult } = useNfc(nfcAbortController);
+  const { result: nfcResult } = useNfc();
 
   useEffect(() => {
     if (nfcResult.status === "success" && employees.status === "ok") {

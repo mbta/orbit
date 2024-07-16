@@ -8,22 +8,36 @@ export type NfcResult =
   | { status: "cancelled" }
   | { status: "error"; error: unknown };
 
-export const useNfc = (
-  cancel: AbortController,
-): { result: NfcResult; abortController: AbortController } => {
+export const useNfc = (): {
+  result: NfcResult;
+  abortController: AbortController | null;
+} => {
   const supported = nfcSupported();
 
   const [result, setResult] = useState<NfcResult>({
     status: supported ? "reading" : "nfcUnsupported",
   });
 
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
+
   useEffect(() => {
     if (supported) {
+      setAbortController(new AbortController());
+    } else {
+      setAbortController(null);
+    }
+  }, [supported]);
+
+  useEffect(() => {
+    if (supported && abortController) {
       const reader = new NDEFReader();
 
-      reader.scan({ signal: cancel.signal }).catch((error: unknown) => {
-        setResult({ status: "error", error });
-      });
+      reader
+        .scan({ signal: abortController.signal })
+        .catch((error: unknown) => {
+          setResult({ status: "error", error });
+        });
 
       reader.addEventListener(
         "reading",
@@ -33,7 +47,8 @@ export const useNfc = (
               status: "success",
               data: dehexSerial(event.serialNumber),
             });
-            cancel.abort();
+
+            abortController.abort();
           } else {
             throw new Error("Unrecognized scan event");
           }
@@ -41,7 +56,7 @@ export const useNfc = (
         { once: true },
       );
 
-      cancel.signal.addEventListener("abort", () => {
+      abortController.signal.addEventListener("abort", () => {
         setResult((result) => {
           if (result.status === "success") {
             return result;
@@ -52,12 +67,14 @@ export const useNfc = (
       });
 
       return () => {
-        cancel.abort();
+        abortController.abort();
       };
+    } else if (!supported) {
+      setResult({ status: "nfcUnsupported" });
     }
-  }, [cancel, supported]);
+  }, [abortController, supported]);
 
-  return { result, abortController: cancel };
+  return { result, abortController };
 };
 
 const dehexSerial = (hexedSerial: string): string => {
