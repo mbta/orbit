@@ -29,7 +29,10 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   // jsx-runtime only disables rules, so need both recommended and jsx.
-  pluginReactRecommended,
+  {
+    ...pluginReactRecommended,
+    settings: { react: { version: "detect" } },
+  },
   pluginReactJsx,
   configPrettier,
   {
