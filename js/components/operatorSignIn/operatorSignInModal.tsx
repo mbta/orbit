@@ -12,7 +12,7 @@ enum CompleteState {
   ERROR,
 }
 
-export const submit = (
+const submit = (
   badge: string,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
