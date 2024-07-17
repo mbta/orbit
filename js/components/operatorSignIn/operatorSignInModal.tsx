@@ -1,3 +1,5 @@
+import { useEmployees } from "../../hooks/useEmployees";
+import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
 import { OperatorSelection } from "./operatorSelection";
@@ -6,6 +8,8 @@ import { ReactElement, useState } from "react";
 export const OperatorSignInModal = (): ReactElement => {
   const [show, setShow] = useState<boolean>(true);
   const [badge, setBadge] = useState<string | null>(null);
+
+  const employees = useEmployees();
 
   return (
     <Modal
@@ -16,12 +20,17 @@ export const OperatorSignInModal = (): ReactElement => {
       }}
     >
       {badge === null ?
-        <OperatorSelection nfcSupported={true} onOK={setBadge} />
+        <OperatorSelection
+          nfcSupported={nfcSupported()}
+          onOK={setBadge}
+          employees={employees}
+        />
       : <Attestation
           badge={badge}
           onComplete={() => {
             alert("Clicked!");
           }}
+          employees={employees}
         />
       }
     </Modal>

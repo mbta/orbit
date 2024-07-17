@@ -8,20 +8,36 @@ export type NfcResult =
   | { status: "cancelled" }
   | { status: "error"; error: unknown };
 
-export const useNfc = (cancel: AbortController): NfcResult => {
+export const useNfc = (): {
+  result: NfcResult;
+  abortController: AbortController | null;
+} => {
   const supported = nfcSupported();
 
   const [result, setResult] = useState<NfcResult>({
     status: supported ? "reading" : "nfcUnsupported",
   });
 
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
+
   useEffect(() => {
     if (supported) {
+      setAbortController(new AbortController());
+    } else {
+      setAbortController(null);
+    }
+  }, [supported]);
+
+  useEffect(() => {
+    if (supported && abortController) {
       const reader = new NDEFReader();
 
-      reader.scan({ signal: cancel.signal }).catch((error: unknown) => {
-        setResult({ status: "error", error });
-      });
+      reader
+        .scan({ signal: abortController.signal })
+        .catch((error: unknown) => {
+          setResult({ status: "error", error });
+        });
 
       reader.addEventListener(
         "reading",
@@ -31,7 +47,19 @@ export const useNfc = (cancel: AbortController): NfcResult => {
               status: "success",
               data: dehexSerial(event.serialNumber),
             });
-            cancel.abort();
+
+            // On success we want the reader to stop listening for NFC
+            // taps. If we didn't make this call, the NDEFReader would
+            // continue listening for taps as long as the `useNfc`
+            // hook was mounted. For instance, while later on in the
+            // sign-in workflow, you could tap a badge on your phone
+            // and it would make a little vibration indicating the
+            // card had been read, but it would have no effect on the
+            // application. With this call to abortController.abort(),
+            // it will stop reading once we get a successful scan and
+            // won't start reading again until you start a new sign-in
+            // flow and a new copy of the useNfc hook is mounted.
+            abortController.abort();
           } else {
             throw new Error("Unrecognized scan event");
           }
@@ -39,7 +67,7 @@ export const useNfc = (cancel: AbortController): NfcResult => {
         { once: true },
       );
 
-      cancel.signal.addEventListener("abort", () => {
+      abortController.signal.addEventListener("abort", () => {
         setResult((result) => {
           if (result.status === "success") {
             return result;
@@ -50,12 +78,14 @@ export const useNfc = (cancel: AbortController): NfcResult => {
       });
 
       return () => {
-        cancel.abort();
+        abortController.abort();
       };
+    } else if (!supported) {
+      setResult({ status: "nfcUnsupported" });
     }
-  }, [cancel, supported]);
+  }, [abortController, supported]);
 
-  return result;
+  return { result, abortController };
 };
 
 const dehexSerial = (hexedSerial: string): string => {

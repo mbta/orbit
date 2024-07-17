@@ -1,15 +1,38 @@
+import { ApiResult } from "../../api";
+import { findEmployeeByBadgeSerial } from "../../hooks/useEmployees";
+import { useNfc } from "../../hooks/useNfc";
+import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
-import { ReactElement, useId, useState } from "react";
+import { ReactElement, useEffect, useId, useState } from "react";
 
 export const OperatorSelection = ({
   nfcSupported: nfcSupported,
   onOK,
+  employees,
 }: {
   nfcSupported: boolean;
   onOK: (badge: string) => void;
+  employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
   const [badgeEntry, setBadgeEntry] = useState<string>("");
+
+  const { result: nfcResult } = useNfc();
+
+  useEffect(() => {
+    if (nfcResult.status === "success" && employees.status === "ok") {
+      const badge = findEmployeeByBadgeSerial(
+        employees.result,
+        nfcResult.data,
+      )?.badge;
+
+      if (badge) {
+        onOK(badge);
+      } else {
+        // handle case where we can't find operator for badge
+      }
+    }
+  }, [nfcResult, employees, onOK]);
 
   const buttonEnabled = badgeEntry !== "";
 

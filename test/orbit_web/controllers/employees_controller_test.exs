@@ -13,8 +13,9 @@ defmodule OrbitWeb.EmployeesControllerTest do
                  %{
                    "badge" => _badge,
                    "first_name" => "Fake",
-                   "last_name" => "Person"
+                   "last_name" => "Person",
                    #  "preferred_first" => nil
+                   "badge_serials" => [_badge_serial]
                  }
                ]
              } = json_response(conn, 200)
