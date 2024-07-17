@@ -4,7 +4,10 @@ import { ReactElement } from "react";
 export const Success = ({ name }: { name: string }): ReactElement => {
   return (
     <div className="text-center text-4xl w-full block mt-5 p-10">
-      ✅<div>{name} signed in successfully</div>
+      ✅
+      <div>
+        <span className="fs-mask">{name}</span> signed in successfully
+      </div>
     </div>
   );
 };
@@ -31,7 +34,7 @@ export const Error = ({
           ])}
           onClick={onTryAgain}
         >
-          Try signing in {name} again
+          Try signing in <span className="fs-mask">{name}</span> again
         </button>
       </div>
     </>
