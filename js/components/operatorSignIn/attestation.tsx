@@ -1,4 +1,5 @@
 import { ApiResult } from "../../api";
+import { reload } from "../../browser";
 import { findEmployeeByBadge } from "../../hooks/useEmployees";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
@@ -23,9 +24,16 @@ export const Attestation = ({
     return <div>Loading...</div>;
   } else if (employees.status === "error") {
     return (
-      <div>
-        Unable to download employee data. Please <a href="/">reload</a> to try
-        again.
+      <div className="text-center">
+        <div className="mb-4">Unable to download employee data</div>
+        <div>
+          <button
+            className="rounded bg-mbta-blue text-gray-100 w-1/4 max-w-20"
+            onClick={reload}
+          >
+            Reload
+          </button>
+        </div>
       </div>
     );
   }
@@ -46,7 +54,7 @@ export const Attestation = ({
       </p>
       <button
         className={className([
-          "block mx-auto w-2/3 h-10 bg-mbta-blue text-gray-100 rounded-md",
+          "block mx-auto w-2/3 max-w-80 h-10 bg-mbta-blue text-gray-100 rounded-md",
           (!ready || loading) && "opacity-50",
         ])}
         onClick={onComplete}

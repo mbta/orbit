@@ -33,7 +33,7 @@ export const OperatorSelection = ({
           onOK(badgeEntry);
         }}
         className={className([
-          "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 mx-auto",
+          "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
           !buttonEnabled && "opacity-50",
         ])}
       >
