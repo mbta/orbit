@@ -5,6 +5,7 @@ import { Modal } from "../modal";
 import { Attestation } from "./attestation";
 import { Error, Success } from "./complete";
 import { OperatorSelection } from "./operatorSelection";
+import { BadgeEntry } from "./types";
 import { DateTime } from "luxon";
 import { ReactElement, useEffect, useState } from "react";
 
@@ -14,17 +15,17 @@ enum CompleteState {
 }
 
 const submit = (
-  badge: string,
+  badgeEntry: BadgeEntry,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   setLoading(true);
 
   post("/api/signin", {
-    signed_in_employee_badge: badge,
+    signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
     line: "blue",
-    method: "manual",
+    method: badgeEntry.method,
   })
     .then((response) => {
       if (!response.ok) {
@@ -45,7 +46,7 @@ const submit = (
 
 export const OperatorSignInModal = (): ReactElement => {
   const [show, setShow] = useState<boolean>(true);
-  const [badge, setBadge] = useState<string | null>(null);
+  const [badge, setBadge] = useState<BadgeEntry | null>(null);
   const [complete, setComplete] = useState<CompleteState | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -67,8 +68,8 @@ export const OperatorSignInModal = (): ReactElement => {
   const employee =
     employees.status === "ok" &&
     badge !== null &&
-    findEmployeeByBadge(employees.result, badge);
-  const name = employee ? employee.first_name : `Operator ${badge}`;
+    findEmployeeByBadge(employees.result, badge.number);
+  const name = employee ? employee.first_name : `Operator ${badge?.number}`;
 
   return (
     <Modal
@@ -95,7 +96,7 @@ export const OperatorSignInModal = (): ReactElement => {
           employees={employees}
         />
       : <Attestation
-          badge={badge}
+          badge={badge.number}
           loading={loading}
           onComplete={() => {
             submit(badge, setComplete, setLoading);

@@ -75,7 +75,10 @@ describe("OperatorSelection", () => {
     await userEvent.type(textField, "123");
     await userEvent.click(button);
 
-    expect(onOK).toHaveBeenCalledExactlyOnceWith("123");
+    expect(onOK).toHaveBeenCalledExactlyOnceWith({
+      number: "123",
+      method: "manual",
+    });
   });
 
   test("executes onOK on successful badge tap", () => {
@@ -102,6 +105,9 @@ describe("OperatorSelection", () => {
       />,
     );
 
-    expect(onOK).toHaveBeenCalledExactlyOnceWith("123");
+    expect(onOK).toHaveBeenCalledExactlyOnceWith({
+      number: "123",
+      method: "nfc",
+    });
   });
 });

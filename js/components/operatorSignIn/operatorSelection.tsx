@@ -3,6 +3,7 @@ import { findEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
+import { BadgeEntry } from "./types";
 import { ReactElement, useEffect, useId, useState } from "react";
 
 export const OperatorSelection = ({
@@ -11,11 +12,11 @@ export const OperatorSelection = ({
   employees,
 }: {
   nfcSupported: boolean;
-  onOK: (badge: string) => void;
+  onOK: (badgeEntry: BadgeEntry) => void;
   employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
-  const [badgeEntry, setBadgeEntry] = useState<string>("");
+  const [badgeEntry, setBadgeEntry] = useState<BadgeEntry | null>(null);
 
   const { result: nfcResult } = useNfc();
 
@@ -27,14 +28,14 @@ export const OperatorSelection = ({
       )?.badge;
 
       if (badge) {
-        onOK(badge);
+        onOK({ number: badge, method: "nfc" });
       } else {
         // handle case where we can't find operator for badge
       }
     }
   }, [nfcResult, employees, onOK]);
 
-  const buttonEnabled = badgeEntry !== "";
+  const buttonEnabled = badgeEntry !== null;
 
   return (
     <div className="flex flex-col content-stretch">
@@ -47,13 +48,15 @@ export const OperatorSelection = ({
         id={inputId}
         inputMode="numeric"
         onChange={(evt) => {
-          setBadgeEntry(evt.target.value);
+          setBadgeEntry({ number: evt.target.value, method: "manual" });
         }}
       />
       <button
         disabled={!buttonEnabled}
         onClick={() => {
-          onOK(badgeEntry);
+          // badgeEntry cannot be null; otherwise the button would be disabled!
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          onOK(badgeEntry!);
         }}
         className={className([
           "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
