@@ -13,58 +13,80 @@ describe("useNfc", () => {
   test("creates a reader and scans", () => {
     const { mockScan } = mockNDEFReader();
 
-    const abortController = new AbortController();
-
-    const { result } = renderHook(useNfc, { initialProps: abortController });
+    const { result } = renderHook(useNfc);
 
     expect(mockScan).toHaveBeenCalledOnce();
 
-    expect(result.current).toEqual({ status: "reading" });
+    expect(result.current).toMatchObject({ result: { status: "reading" } });
   });
 
   test("handles a scan error", async () => {
     const { mockScan } = mockNDEFReader();
 
-    const abortController = new AbortController();
-
     const { promise: scanPromise, reject } = PromiseWithResolvers<undefined>();
 
     jest.mocked(mockScan).mockReturnValue(scanPromise);
 
-    const { result } = renderHook(useNfc, {
-      initialProps: abortController,
-    });
+    const { result } = renderHook(useNfc);
 
     act(() => {
       reject(new Error("test error"));
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({
-        status: "error",
-        error: new Error("test error"),
+      expect(result.current).toMatchObject({
+        result: {
+          status: "error",
+          error: new Error("test error"),
+        },
       });
     });
   });
 
   test("handles a case where NFC is unsupported", () => {
-    jest.mocked(nfcSupported).mockImplementationOnce(() => false);
+    mockNDEFReader();
 
-    const abortController = new AbortController();
+    jest.mocked(nfcSupported).mockReturnValueOnce(false);
 
-    const { result } = renderHook(useNfc, { initialProps: abortController });
+    const { result } = renderHook(useNfc);
 
-    expect(result.current).toEqual({ status: "nfcUnsupported" });
+    expect(result.current).toMatchObject({
+      result: { status: "nfcUnsupported" },
+    });
+  });
+
+  test("handles a case where NFC becomes unsupported", () => {
+    mockNDEFReader();
+
+    const { result, rerender } = renderHook(useNfc);
+
+    jest
+      .mocked(nfcSupported)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false);
+
+    expect(result.current).toMatchObject({ result: { status: "reading" } });
+
+    // it takes a couple of rerenders for both useEffect hooks to update
+    rerender();
+
+    rerender();
+
+    expect(result.current).toEqual({
+      result: { status: "nfcUnsupported" },
+      abortController: null,
+    });
   });
 
   test("aborts the scan on unmount", () => {
     mockNDEFReader();
 
-    const abortController = new AbortController();
+    const { result, unmount } = renderHook(useNfc);
 
-    const abortSpy = jest.spyOn(abortController, "abort");
-
-    const { unmount } = renderHook(useNfc, { initialProps: abortController });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const abortSpy = jest.spyOn(result.current.abortController!, "abort");
 
     unmount();
 
@@ -74,16 +96,15 @@ describe("useNfc", () => {
   test("can cancel the scan using the AbortController", async () => {
     mockNDEFReader();
 
-    const abortController = new AbortController();
-
-    const { result } = renderHook(useNfc, { initialProps: abortController });
+    const { result } = renderHook(useNfc);
 
     act(() => {
-      abortController.abort();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      result.current.abortController!.abort();
     });
 
     await waitFor(() => {
-      expect(result.current).toEqual({ status: "cancelled" });
+      expect(result.current).toMatchObject({ result: { status: "cancelled" } });
     });
   });
 });

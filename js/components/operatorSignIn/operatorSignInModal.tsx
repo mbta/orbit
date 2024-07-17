@@ -1,5 +1,6 @@
 import { post } from "../../api";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
 import { Error, Success } from "./complete";
@@ -88,7 +89,11 @@ export const OperatorSignInModal = (): ReactElement => {
       : complete === CompleteState.SUCCESS && badge !== null ?
         <Success name={name} />
       : badge === null ?
-        <OperatorSelection nfcSupported={true} onOK={setBadge} />
+        <OperatorSelection
+          nfcSupported={nfcSupported()}
+          onOK={setBadge}
+          employees={employees}
+        />
       : <Attestation
           badge={badge}
           loading={loading}

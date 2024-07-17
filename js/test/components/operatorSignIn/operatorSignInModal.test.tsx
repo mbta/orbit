@@ -1,5 +1,6 @@
 import { fetch } from "../../../browser";
 import { OperatorSignInModal } from "../../../components/operatorSignIn/operatorSignInModal";
+import { nfcSupported } from "../../../util/nfc";
 import { employeeFactory } from "../../helpers/factory";
 import { putMetaData } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
@@ -14,6 +15,17 @@ jest.mock("../../../hooks/useEmployees", () => ({
   findEmployeeByBadge: () => EMPLOYEES,
 }));
 
+jest.mock("../../../util/nfc", () => ({
+  nfcSupported: jest.fn().mockReturnValue(true),
+}));
+
+jest.mock("../../../hooks/useNfc", () => ({
+  useNfc: jest.fn().mockReturnValue({
+    result: { status: "reading" },
+    abortController: new AbortController(),
+  }),
+}));
+
 jest.mock("../../../browser", () => ({
   fetch: jest.fn(),
 }));
@@ -23,6 +35,14 @@ describe("OperatorSignInModal", () => {
     const view = render(<OperatorSignInModal />);
 
     expect(view.getByText(/waiting for badge tap/i)).toBeInTheDocument();
+  });
+
+  test("shows badge tap unsupported message when NFC isn't available", () => {
+    jest.mocked(nfcSupported).mockReturnValueOnce(false);
+
+    const view = render(<OperatorSignInModal />);
+
+    expect(view.getByText(/badge tap is not supported/i)).toBeInTheDocument();
   });
 
   test("can close the modal", async () => {

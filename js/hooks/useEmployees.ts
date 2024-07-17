@@ -20,3 +20,12 @@ export const useEmployees = () => {
 export const findEmployeeByBadge = (employees: Employee[], badge: string) => {
   return employees.find((employee) => employee.badge === badge);
 };
+
+export const findEmployeeByBadgeSerial = (
+  employees: Employee[],
+  badgeSerial: string,
+) => {
+  return employees.find((employee) =>
+    employee.badge_serials.includes(badgeSerial),
+  );
+};
