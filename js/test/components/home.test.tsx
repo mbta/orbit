@@ -1,8 +1,8 @@
 import { Home } from "../../components/home";
 import { render } from "@testing-library/react";
 
-jest.mock("../../hooks/useEmployees", () => ({
-  useEmployees: jest.fn().mockReturnValue({ status: "loading" }),
+jest.mock("../../components/operatorSignIn/operatorSignInModal", () => ({
+  OperatorSignInModal: () => <div>Mock modal</div>,
 }));
 
 describe("home", () => {

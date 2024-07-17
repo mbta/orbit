@@ -9,7 +9,6 @@ import { PromiseWithResolvers } from "../helpers/promiseWithResolvers";
 import { renderHook, waitFor } from "@testing-library/react";
 
 jest.mock("../../browser", () => ({
-  __esModule: true,
   fetch: jest.fn(),
 }));
 
