@@ -17,9 +17,6 @@ defmodule OrbitWeb.SignInController do
       }) do
     signed_in_at = DateTime.from_unix!(signed_in_at)
 
-    # ⚠️ TODO: remove before merge
-    :timer.sleep(1000)
-
     %OperatorSignIn{
       signed_in_employee:
         Repo.one!(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)),
