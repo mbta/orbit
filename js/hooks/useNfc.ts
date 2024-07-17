@@ -48,6 +48,17 @@ export const useNfc = (): {
               data: dehexSerial(event.serialNumber),
             });
 
+            // On success we want the reader to stop listening for NFC
+            // taps. If we didn't make this call, the NDEFReader would
+            // continue listening for taps as long as the `useNfc`
+            // hook was mounted. For instance, while later on in the
+            // sign-in workflow, you could tap a badge on your phone
+            // and it would make a little vibration indicating the
+            // card had been read, but it would have no effect on the
+            // application. With this call to abortController.abort(),
+            // it will stop reading once we get a successful scan and
+            // won't start reading again until you start a new sign-in
+            // flow and a new copy of the useNfc hook is mounted.
             abortController.abort();
           } else {
             throw new Error("Unrecognized scan event");
