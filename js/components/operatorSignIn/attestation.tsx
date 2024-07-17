@@ -112,19 +112,19 @@ const SignatureHint = ({
   let hintText: string;
   let hintClass: string;
   let title: string | undefined;
+
   if (visibleHint === "good") {
     hintText = "Looks good!";
     hintClass = "text-green-500";
   } else if (visibleHint === "bad") {
     hintText = "That badge number doesn't match our records.";
     hintClass = "text-mbta-red";
-    title = `expected ${JSON.stringify(badge)}, got ${JSON.stringify(
-      signatureText,
-    )}`;
+    title = `expected "${badge}", got "${signatureText}"`;
   } else {
     hintText = "";
     hintClass = "leading-[0]";
   }
+
   return (
     <p
       className={className([
