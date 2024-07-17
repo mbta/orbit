@@ -36,5 +36,17 @@ defmodule OrbitWeb.SignInControllerTest do
                  )
                )
     end
+
+    @tag :authenticated
+    test "replies 404 when the employee does not exist", %{conn: conn} do
+      assert_error_sent 404, fn ->
+        post(conn, ~p"/api/signin", %{
+          "signed_in_employee_badge" => "DOES_NOT_EXIST",
+          "signed_in_at" => 1_721_164_459,
+          "line" => "blue",
+          "method" => "manual"
+        })
+      end
+    end
   end
 end
