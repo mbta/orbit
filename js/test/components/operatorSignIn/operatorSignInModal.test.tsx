@@ -35,9 +35,9 @@ describe("OperatorSignInModal", () => {
 
   test("submits successful attestation to the server", async () => {
     putMetaData("csrf-token", "TEST-CSRF-TOKEN");
-    (fetch as jest.Mock).mockResolvedValueOnce({
+    jest.mocked(fetch).mockResolvedValueOnce({
       ok: true,
-    });
+    } as Response);
 
     const view = render(<OperatorSignInModal />);
     await userEvent.type(view.getByRole("textbox"), "123");
