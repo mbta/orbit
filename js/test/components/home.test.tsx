@@ -2,7 +2,6 @@ import { Home } from "../../components/home";
 import { render } from "@testing-library/react";
 
 jest.mock("../../hooks/useEmployees", () => ({
-  __esModule: true,
   useEmployees: jest.fn().mockReturnValue({ status: "loading" }),
 }));
 

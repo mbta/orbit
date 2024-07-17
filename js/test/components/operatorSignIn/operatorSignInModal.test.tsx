@@ -4,7 +4,6 @@ import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../util/nfc", () => ({
-  __esModule: true,
   nfcSupported: jest.fn().mockReturnValue(true),
 }));
 
