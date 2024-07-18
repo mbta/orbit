@@ -25,6 +25,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={jest.fn()}
         onBadgeLookupError={jest.fn()}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -38,6 +39,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={jest.fn()}
         onBadgeLookupError={jest.fn()}
+        onNfcScanError={jest.fn()}
         nfcSupported={false}
         employees={EMPLOYEES}
       />,
@@ -53,6 +55,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={jest.fn()}
         onBadgeLookupError={jest.fn()}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -69,6 +72,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={onOK}
         onBadgeLookupError={jest.fn()}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -93,6 +97,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={onOK}
         onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -107,6 +112,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={onOK}
         onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -118,7 +124,7 @@ describe("OperatorSelection", () => {
     });
   });
 
-  test("executes onBadgeLookupError on unsuccessful badge tap", () => {
+  test("executes onBadgeLookupError on unsuccessful badge tap result lookup", () => {
     const onOK = jest.fn();
     const onBadgeLookupError = jest.fn();
 
@@ -126,6 +132,7 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={onOK}
         onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -140,12 +147,47 @@ describe("OperatorSelection", () => {
       <OperatorSelection
         onOK={onOK}
         onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={jest.fn()}
         nfcSupported={true}
         employees={{ ...EMPLOYEES, result: [] }}
       />,
     );
 
     expect(onBadgeLookupError).toHaveBeenCalledOnce();
+    expect(onOK).not.toHaveBeenCalled();
+  });
+
+  test("executes onNfcScanError on unsuccessful badge tap", () => {
+    const onOK = jest.fn();
+    const onBadgeLookupError = jest.fn();
+    const onNfcScanError = jest.fn();
+
+    const { rerender } = render(
+      <OperatorSelection
+        onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={onNfcScanError}
+        nfcSupported={true}
+        employees={EMPLOYEES}
+      />,
+    );
+
+    jest.mocked(useNfc).mockReturnValueOnce({
+      result: { status: "error", error: "error" },
+      abortController: new AbortController(),
+    });
+
+    rerender(
+      <OperatorSelection
+        onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
+        onNfcScanError={onNfcScanError}
+        nfcSupported={true}
+        employees={EMPLOYEES}
+      />,
+    );
+
+    expect(onNfcScanError).toHaveBeenCalledOnce();
     expect(onOK).not.toHaveBeenCalled();
   });
 });

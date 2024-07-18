@@ -49,3 +49,10 @@ export const NfcLookupError = (): ReactElement => (
     </div>
   </div>
 );
+
+export const NfcScanError = (): ReactElement => (
+  <div className="text-center text-4xl w-full mt-10 mb-10">
+    ⚠️
+    <div>Something went wrong when looking for a badge tap.</div>
+  </div>
+);

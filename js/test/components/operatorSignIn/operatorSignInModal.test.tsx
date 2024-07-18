@@ -99,7 +99,7 @@ describe("OperatorSignInModal", () => {
   test("shows failure component when no operator is found after an NFC tap", () => {
     const view = render(<OperatorSignInModal />);
 
-    jest.mocked(useNfc).mockReturnValue({
+    jest.mocked(useNfc).mockReturnValueOnce({
       result: { status: "success", data: "bad_serial" },
       abortController: new AbortController(),
     });
@@ -109,6 +109,21 @@ describe("OperatorSignInModal", () => {
 
     expect(
       view.getByText(/something went wrong when looking up the owner/i),
+    ).toBeInTheDocument();
+  });
+
+  test("shows failure component when NFC tap fails", () => {
+    const view = render(<OperatorSignInModal />);
+
+    jest.mocked(useNfc).mockReturnValueOnce({
+      result: { status: "error", error: "error" },
+      abortController: new AbortController(),
+    });
+
+    view.rerender(<OperatorSignInModal />);
+
+    expect(
+      view.getByText(/something went wrong when looking for a badge tap/i),
     ).toBeInTheDocument();
   });
 });

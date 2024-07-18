@@ -10,11 +10,13 @@ export const OperatorSelection = ({
   nfcSupported: nfcSupported,
   onOK,
   onBadgeLookupError,
+  onNfcScanError,
   employees,
 }: {
   nfcSupported: boolean;
   onOK: (badgeEntry: BadgeEntry) => void;
   onBadgeLookupError: () => void;
+  onNfcScanError: () => void;
   employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
@@ -34,8 +36,10 @@ export const OperatorSelection = ({
       } else {
         onBadgeLookupError();
       }
+    } else if (nfcResult.status === "error") {
+      onNfcScanError();
     }
-  }, [nfcResult, employees, onOK, onBadgeLookupError]);
+  }, [nfcResult, employees, onOK, onBadgeLookupError, onNfcScanError]);
 
   const buttonEnabled = badgeEntry !== null;
 
