@@ -1,5 +1,7 @@
 import { fetch } from "../../../browser";
 import { OperatorSignInModal } from "../../../components/operatorSignIn/operatorSignInModal";
+import { findEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
+import { useNfc } from "../../../hooks/useNfc";
 import { nfcSupported } from "../../../util/nfc";
 import { employeeFactory } from "../../helpers/factory";
 import { putMetaData } from "../../helpers/metadata";
@@ -12,7 +14,8 @@ jest.mock("../../../hooks/useEmployees", () => ({
     status: "ok",
     result: EMPLOYEES,
   })),
-  findEmployeeByBadge: () => EMPLOYEES,
+  findEmployeeByBadge: jest.fn(() => EMPLOYEES),
+  findEmployeeByBadgeSerial: jest.fn(() => EMPLOYEES),
 }));
 
 jest.mock("../../../util/nfc", () => ({
@@ -91,5 +94,21 @@ describe("OperatorSignInModal", () => {
     );
     expect(view.getByText("Something went wrong")).toBeInTheDocument();
     expect(console.error).toHaveBeenCalledOnce();
+  });
+
+  test("shows failure component when no operator is found after an NFC tap", () => {
+    const view = render(<OperatorSignInModal />);
+
+    jest.mocked(useNfc).mockReturnValue({
+      result: { status: "success", data: "bad_serial" },
+      abortController: new AbortController(),
+    });
+    jest.mocked(findEmployeeByBadgeSerial).mockReturnValueOnce(undefined);
+
+    view.rerender(<OperatorSignInModal />);
+
+    expect(
+      view.getByText(/something went wrong when looking up the owner/i),
+    ).toBeInTheDocument();
   });
 });

@@ -24,6 +24,7 @@ describe("OperatorSelection", () => {
     const view = render(
       <OperatorSelection
         onOK={jest.fn()}
+        onBadgeLookupError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -36,6 +37,7 @@ describe("OperatorSelection", () => {
     const view = render(
       <OperatorSelection
         onOK={jest.fn()}
+        onBadgeLookupError={jest.fn()}
         nfcSupported={false}
         employees={EMPLOYEES}
       />,
@@ -50,6 +52,7 @@ describe("OperatorSelection", () => {
     const view = render(
       <OperatorSelection
         onOK={jest.fn()}
+        onBadgeLookupError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -65,6 +68,7 @@ describe("OperatorSelection", () => {
     const view = render(
       <OperatorSelection
         onOK={onOK}
+        onBadgeLookupError={jest.fn()}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -83,10 +87,12 @@ describe("OperatorSelection", () => {
 
   test("executes onOK on successful badge tap", () => {
     const onOK = jest.fn();
+    const onBadgeLookupError = jest.fn();
 
     const { rerender } = render(
       <OperatorSelection
         onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -100,6 +106,7 @@ describe("OperatorSelection", () => {
     rerender(
       <OperatorSelection
         onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
         nfcSupported={true}
         employees={EMPLOYEES}
       />,
@@ -109,5 +116,36 @@ describe("OperatorSelection", () => {
       number: "123",
       method: "nfc",
     });
+  });
+
+  test("executes onBadgeLookupError on unsuccessful badge tap", () => {
+    const onOK = jest.fn();
+    const onBadgeLookupError = jest.fn();
+
+    const { rerender } = render(
+      <OperatorSelection
+        onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
+        nfcSupported={true}
+        employees={EMPLOYEES}
+      />,
+    );
+
+    jest.mocked(useNfc).mockReturnValueOnce({
+      result: { status: "success", data: "56" },
+      abortController: new AbortController(),
+    });
+
+    rerender(
+      <OperatorSelection
+        onOK={onOK}
+        onBadgeLookupError={onBadgeLookupError}
+        nfcSupported={true}
+        employees={{ ...EMPLOYEES, result: [] }}
+      />,
+    );
+
+    expect(onBadgeLookupError).toHaveBeenCalledOnce();
+    expect(onOK).not.toHaveBeenCalled();
   });
 });
