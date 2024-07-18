@@ -11,7 +11,7 @@ import { ReactElement, useEffect, useState } from "react";
 
 enum CompleteState {
   SUCCESS,
-  ERROR,
+  SIGN_IN_ERROR,
 }
 
 const submit = (
@@ -30,14 +30,14 @@ const submit = (
     .then((response) => {
       if (!response.ok) {
         console.error(response.status, response.statusText);
-        setComplete(CompleteState.ERROR);
+        setComplete(CompleteState.SIGN_IN_ERROR);
       } else {
         setComplete(CompleteState.SUCCESS);
       }
     })
     .catch((err: unknown) => {
       console.error(err);
-      setComplete(CompleteState.ERROR);
+      setComplete(CompleteState.SIGN_IN_ERROR);
     })
     .finally(() => {
       setLoading(false);
@@ -79,7 +79,7 @@ export const OperatorSignInModal = (): ReactElement => {
         setShow(false);
       }}
     >
-      {complete === CompleteState.ERROR && badge !== null ?
+      {complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
         <Error
           name={name}
           loading={loading}
