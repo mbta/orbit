@@ -6,8 +6,6 @@ import { putMetaData } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-jest.spyOn(console, "error").mockImplementation(() => {});
-
 const EMPLOYEES = [employeeFactory.build()];
 jest.mock("../../../hooks/useEmployees", () => ({
   useEmployees: jest.fn().mockImplementation(() => ({
@@ -75,6 +73,7 @@ describe("OperatorSignInModal", () => {
 
   test("shows failure component on error", async () => {
     putMetaData("csrf-token", "TEST-CSRF-TOKEN");
+    jest.spyOn(console, "error").mockImplementation(() => {});
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       status: 500,
@@ -91,5 +90,6 @@ describe("OperatorSignInModal", () => {
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
     expect(view.getByText("Something went wrong")).toBeInTheDocument();
+    expect(console.error).toHaveBeenCalledOnce();
   });
 });
