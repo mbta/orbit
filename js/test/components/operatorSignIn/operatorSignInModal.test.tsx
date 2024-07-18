@@ -6,6 +6,8 @@ import { putMetaData } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+jest.spyOn(console, "error").mockImplementation(() => {});
+
 const EMPLOYEES = [employeeFactory.build()];
 jest.mock("../../../hooks/useEmployees", () => ({
   useEmployees: jest.fn().mockImplementation(() => ({
