@@ -56,11 +56,11 @@ defmodule Orbit.Import.PersonnelTest do
 
     test "properly formats fields" do
       row = %{
-        "FIRST_NAME" => "NEMO",
-        "PREF_FIRST_NM_SRCH" => "NEEMS",
+        "FIRST_NAME" => "Nemo",
+        "PREF_FIRST_NM_SRCH" => "Neems",
         "MIDDLE_NAME" => "A",
         "WORK_EMAIL_ADDRESS" => "",
-        "LAST_NAME" => "SMITH",
+        "LAST_NAME" => "Smith",
         "EMPLOYEE_ID" => "0123456",
         "CUSTOM_FIELD3" => "Area",
         "CUSTOM_VALUE3" => "114"
