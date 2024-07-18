@@ -54,9 +54,14 @@ export const OperatorSelection = ({
       <button
         disabled={!buttonEnabled}
         onClick={() => {
-          // badgeEntry cannot be null; otherwise the button would be disabled!
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          onOK(badgeEntry!);
+          // This should never happen, but throw just in case.
+          if (badgeEntry === null) {
+            throw new Error(
+              "operatorSelection badgeEntry was impossibly null.",
+            );
+          }
+
+          onOK(badgeEntry);
         }}
         className={className([
           "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
