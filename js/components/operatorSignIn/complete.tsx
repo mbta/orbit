@@ -12,7 +12,7 @@ export const Success = ({ name }: { name: string }): ReactElement => {
   );
 };
 
-export const Error = ({
+export const SignInError = ({
   name,
   onTryAgain,
   loading,
@@ -40,3 +40,19 @@ export const Error = ({
     </>
   );
 };
+
+export const BadgeSerialLookupError = (): ReactElement => (
+  <div className="text-center text-4xl w-full mt-10 mb-10">
+    ⚠️
+    <div>
+      Something went wrong when looking up the owner of the tapped badge.
+    </div>
+  </div>
+);
+
+export const NfcScanError = (): ReactElement => (
+  <div className="text-center text-4xl w-full mt-10 mb-10">
+    ⚠️
+    <div>Something went wrong when looking for a badge tap.</div>
+  </div>
+);

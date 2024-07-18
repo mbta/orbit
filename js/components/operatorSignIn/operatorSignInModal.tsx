@@ -3,7 +3,12 @@ import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
-import { Error, Success } from "./complete";
+import {
+  BadgeSerialLookupError,
+  NfcScanError,
+  SignInError,
+  Success,
+} from "./complete";
 import { OperatorSelection } from "./operatorSelection";
 import { BadgeEntry } from "./types";
 import { DateTime } from "luxon";
@@ -11,7 +16,9 @@ import { ReactElement, useEffect, useState } from "react";
 
 enum CompleteState {
   SUCCESS,
-  ERROR,
+  SIGN_IN_ERROR,
+  BADGE_SERIAL_LOOKUP_ERROR,
+  NFC_SCAN_ERROR,
 }
 
 const submit = (
@@ -30,14 +37,14 @@ const submit = (
     .then((response) => {
       if (!response.ok) {
         console.error(response.status, response.statusText);
-        setComplete(CompleteState.ERROR);
+        setComplete(CompleteState.SIGN_IN_ERROR);
       } else {
         setComplete(CompleteState.SUCCESS);
       }
     })
     .catch((err: unknown) => {
       console.error(err);
-      setComplete(CompleteState.ERROR);
+      setComplete(CompleteState.SIGN_IN_ERROR);
     })
     .finally(() => {
       setLoading(false);
@@ -79,20 +86,30 @@ export const OperatorSignInModal = (): ReactElement => {
         setShow(false);
       }}
     >
-      {complete === CompleteState.ERROR && badge !== null ?
-        <Error
+      {complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
+        <SignInError
           name={name}
           loading={loading}
           onTryAgain={() => {
             submit(badge, setComplete, setLoading);
           }}
         />
+      : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
+        <BadgeSerialLookupError />
+      : complete === CompleteState.NFC_SCAN_ERROR ?
+        <NfcScanError />
       : complete === CompleteState.SUCCESS && badge !== null ?
         <Success name={name} />
       : badge === null ?
         <OperatorSelection
           nfcSupported={nfcSupported()}
           onOK={setBadge}
+          onBadgeLookupError={() => {
+            setComplete(CompleteState.BADGE_SERIAL_LOOKUP_ERROR);
+          }}
+          onNfcScanError={() => {
+            setComplete(CompleteState.NFC_SCAN_ERROR);
+          }}
           employees={employees}
         />
       : <Attestation

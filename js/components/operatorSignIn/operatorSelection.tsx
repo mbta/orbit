@@ -9,10 +9,14 @@ import { ReactElement, useEffect, useId, useState } from "react";
 export const OperatorSelection = ({
   nfcSupported: nfcSupported,
   onOK,
+  onBadgeLookupError,
+  onNfcScanError,
   employees,
 }: {
   nfcSupported: boolean;
   onOK: (badgeEntry: BadgeEntry) => void;
+  onBadgeLookupError: () => void;
+  onNfcScanError: () => void;
   employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
@@ -30,10 +34,12 @@ export const OperatorSelection = ({
       if (badge) {
         onOK({ number: badge, method: "nfc" });
       } else {
-        // handle case where we can't find operator for badge
+        onBadgeLookupError();
       }
+    } else if (nfcResult.status === "error") {
+      onNfcScanError();
     }
-  }, [nfcResult, employees, onOK]);
+  }, [nfcResult, employees, onOK, onBadgeLookupError, onNfcScanError]);
 
   const buttonEnabled = badgeEntry !== null;
 
