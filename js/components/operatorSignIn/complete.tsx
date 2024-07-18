@@ -41,7 +41,7 @@ export const SignInError = ({
   );
 };
 
-export const NfcLookupError = (): ReactElement => (
+export const BadgeSerialLookupError = (): ReactElement => (
   <div className="text-center text-4xl w-full mt-10 mb-10">
     ⚠️
     <div>

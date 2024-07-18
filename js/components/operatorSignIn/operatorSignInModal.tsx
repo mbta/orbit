@@ -3,7 +3,12 @@ import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
-import { NfcLookupError, NfcScanError, SignInError, Success } from "./complete";
+import {
+  BadgeSerialLookupError,
+  NfcScanError,
+  SignInError,
+  Success,
+} from "./complete";
 import { OperatorSelection } from "./operatorSelection";
 import { BadgeEntry } from "./types";
 import { DateTime } from "luxon";
@@ -12,7 +17,7 @@ import { ReactElement, useEffect, useState } from "react";
 enum CompleteState {
   SUCCESS,
   SIGN_IN_ERROR,
-  NFC_LOOKUP_ERROR,
+  BADGE_SERIAL_LOOKUP_ERROR,
   NFC_SCAN_ERROR,
 }
 
@@ -89,8 +94,8 @@ export const OperatorSignInModal = (): ReactElement => {
             submit(badge, setComplete, setLoading);
           }}
         />
-      : complete === CompleteState.NFC_LOOKUP_ERROR ?
-        <NfcLookupError />
+      : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
+        <BadgeSerialLookupError />
       : complete === CompleteState.NFC_SCAN_ERROR ?
         <NfcScanError />
       : complete === CompleteState.SUCCESS && badge !== null ?
@@ -100,7 +105,7 @@ export const OperatorSignInModal = (): ReactElement => {
           nfcSupported={nfcSupported()}
           onOK={setBadge}
           onBadgeLookupError={() => {
-            setComplete(CompleteState.NFC_LOOKUP_ERROR);
+            setComplete(CompleteState.BADGE_SERIAL_LOOKUP_ERROR);
           }}
           onNfcScanError={() => {
             setComplete(CompleteState.NFC_SCAN_ERROR);
