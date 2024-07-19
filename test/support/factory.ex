@@ -8,6 +8,7 @@ defmodule Orbit.Factory do
   def employee_factory do
     %Orbit.Employee{
       first_name: "Fake",
+      preferred_first: "Preferredy",
       last_name: "Person",
       middle_initial: "A",
       email: sequence(:employee_email, &"fake#{&1}@test.com"),

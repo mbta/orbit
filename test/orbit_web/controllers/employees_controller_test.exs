@@ -14,7 +14,7 @@ defmodule OrbitWeb.EmployeesControllerTest do
                    "badge" => _badge,
                    "first_name" => "Fake",
                    "last_name" => "Person",
-                   #  "preferred_first" => nil
+                   "preferred_first" => "Preferredy",
                    "badge_serials" => [_badge_serial]
                  }
                ]

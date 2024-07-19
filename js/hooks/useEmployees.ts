@@ -6,7 +6,6 @@ const EMPLOYEES_API_PATH = "/api/employees";
 const parse = (list: EmployeeList) =>
   list.map((emp: Employee) => ({
     ...emp,
-    preferred_first: undefined,
   }));
 
 export const useEmployees = () => {
