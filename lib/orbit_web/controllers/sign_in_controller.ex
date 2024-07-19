@@ -8,6 +8,45 @@ defmodule OrbitWeb.SignInController do
 
   alias Orbit.Repo
 
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index(conn, params) do
+    line = params["line"] || "blue"
+
+    service_date =
+      if params["service_date"],
+        do: Date.from_iso8601!(params["service_date"]),
+        else: Util.Time.service_date_for_timestamp(Util.Time.current_time())
+
+    {start_datetime, end_datetime} = Util.Time.service_date_boundaries(service_date)
+
+    rail_line = String.to_existing_atom(line)
+
+    json(
+      conn,
+      %{
+        data:
+          Repo.all(
+            from(si in OperatorSignIn,
+              where:
+                ^start_datetime < si.signed_in_at and
+                  si.signed_in_at < ^end_datetime and
+                  si.rail_line == ^rail_line,
+              preload: [:signed_in_employee, :signed_in_by_user],
+              order_by: [desc: :signed_in_at]
+            )
+          )
+          |> Enum.map(fn si ->
+            %{
+              rail_line: si.rail_line,
+              signed_in_at: DateTime.to_iso8601(si.signed_in_at),
+              signed_in_by_user: si.signed_in_by_user.email,
+              signed_in_employee: si.signed_in_employee.badge_number
+            }
+          end)
+      }
+    )
+  end
+
   @spec submit(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def submit(conn, %{
         "signed_in_employee_badge" => signed_in_employee_badge,

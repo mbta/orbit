@@ -8,6 +8,14 @@ export const Employee = z.object({
   badge_serials: z.array(z.string()),
 });
 
+export const fullName = (emp: Employee | null) => {
+  if (emp === null) {
+    return null;
+  }
+
+  return `${emp.preferred_first ?? emp.first_name} ${emp.last_name}`;
+};
+
 export type Employee = z.infer<typeof Employee>;
 
 export const EmployeeList = z.array(Employee);
