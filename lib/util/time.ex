@@ -3,6 +3,7 @@ defmodule Util.Time do
   Unix timestamp, seconds past the epoch
   """
   @type timestamp :: integer()
+  @timezone Application.compile_env!(:orbit, :timezone)
 
   @spec current_time :: timestamp
   def current_time do
@@ -11,7 +12,7 @@ defmodule Util.Time do
 
   @spec current_datetime :: DateTime.t()
   def current_datetime do
-    DateTime.now!("America/New_York")
+    DateTime.now!(@timezone)
   end
 
   @spec current_service_date :: Date.t()
@@ -22,7 +23,7 @@ defmodule Util.Time do
   @spec service_date_for_timestamp(timestamp) :: Date.t()
   def service_date_for_timestamp(timestamp) do
     utc_datetime = DateTime.from_unix!(timestamp, :second)
-    eastern_datetime = Timex.Timezone.convert(utc_datetime, "America/New_York")
+    eastern_datetime = Timex.Timezone.convert(utc_datetime, @timezone)
     real_date = DateTime.to_date(eastern_datetime)
 
     if eastern_datetime.hour in [0, 1, 2] do
@@ -34,7 +35,7 @@ defmodule Util.Time do
 
   @spec service_date_boundaries(Date.t()) :: {DateTime.t(), DateTime.t()}
   def service_date_boundaries(service_date) do
-    {DateTime.new!(service_date, ~T[03:00:00], "America/New_York"),
-     DateTime.new!(Date.add(service_date, 1), ~T[03:00:00], "America/New_York")}
+    {DateTime.new!(service_date, ~T[03:00:00], @timezone),
+     DateTime.new!(Date.add(service_date, 1), ~T[03:00:00], @timezone)}
   end
 end

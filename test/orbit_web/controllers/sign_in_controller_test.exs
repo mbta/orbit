@@ -6,6 +6,7 @@ defmodule OrbitWeb.SignInControllerTest do
   alias Orbit.Repo
 
   import Ecto.Query
+  @timezone Application.compile_env!(:orbit, :timezone)
 
   describe "index" do
     test "unauthenticated requests get a 401", %{conn: conn} do
@@ -16,7 +17,7 @@ defmodule OrbitWeb.SignInControllerTest do
 
     @tag :authenticated
     test "responds with sign-ins from today's service date", %{conn: conn} do
-      now = DateTime.now!("America/New_York")
+      now = DateTime.now!(@timezone)
       insert(:operator_sign_in, signed_in_at: now)
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
@@ -36,7 +37,7 @@ defmodule OrbitWeb.SignInControllerTest do
     @tag :authenticated
     test "includes a signin from 3:00:00 on the dot", %{conn: conn} do
       insert(:operator_sign_in,
-        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[03:00:00], "America/New_York")
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[03:00:00], @timezone)
       )
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
@@ -53,7 +54,7 @@ defmodule OrbitWeb.SignInControllerTest do
     @tag :authenticated
     test "includes only today's signins if no date param", %{conn: conn} do
       insert(:operator_sign_in,
-        signed_in_at: DateTime.add(DateTime.now!("America/New_York"), -1, :day)
+        signed_in_at: DateTime.add(DateTime.now!(@timezone), -1, :day)
       )
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
@@ -66,11 +67,11 @@ defmodule OrbitWeb.SignInControllerTest do
     @tag :authenticated
     test "sorted by signed_in_at descending (recent first)", %{conn: conn} do
       insert(:operator_sign_in,
-        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], "America/New_York")
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone)
       )
 
       insert(:operator_sign_in,
-        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:30:00], "America/New_York")
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:30:00], @timezone)
       )
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
@@ -89,7 +90,7 @@ defmodule OrbitWeb.SignInControllerTest do
 
     @tag :authenticated
     test "filters by line param", %{conn: conn} do
-      insert(:operator_sign_in, signed_in_at: DateTime.now!("America/New_York"))
+      insert(:operator_sign_in, signed_in_at: DateTime.now!(@timezone))
 
       conn = get(conn, ~p"/api/signin", %{"line" => "orange"})
 
