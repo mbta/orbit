@@ -2,10 +2,11 @@ import { back } from "../../browser";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
 import { useSignins } from "../../hooks/useSignIns";
 import { fullName } from "../../models/employee";
+import { HeavyRailLine } from "../../types";
 import { DateTime } from "luxon";
 import { ReactElement } from "react";
 
-export const List = ({ line }: { line: string }): ReactElement => {
+export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   const employees = useEmployees();
   const signIns = useSignins(line);
 
