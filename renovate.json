@@ -1,0 +1,115 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:js-app",
+    ":timezone(America/New_York)",
+    "schedule:daily",
+    ":prConcurrentLimitNone",
+    ":prHourlyLimitNone"
+  ],
+  "packageRules": [
+    {
+      "description": "this dep is handled by customManagers",
+      "matchPackageNames": ["elixir"],
+      "matchManagers": ["asdf"],
+      "enabled": false
+    },
+    {
+      "description": "this dep is handled by customManagers",
+      "matchPackageNames": ["hexpm/elixir", "node"],
+      "matchManagers": ["dockerfile"],
+      "enabled": false
+    },
+    {
+      "groupName": "npm devDependencies (non-major)",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "excludePackagePatterns": ["prettier"]
+    },
+    {
+      "groupName": "prettier",
+      "description": "prettier changes often require manual source code changes, so should be grouped separately",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["^prettier"]
+    },
+    {
+      "groupName": "eslint",
+      "description": "eslint changes often require manual source code changes, so should be grouped separately",
+      "matchManagers": ["npm"],
+      "matchPackagePatterns": ["eslint"]
+    },
+    {
+      "groupName": "npm dependencies (patch)",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch"]
+    },
+    {
+      "groupName": "hex dependencies (patch)",
+      "matchManagers": ["mix"],
+      "matchUpdateTypes": ["patch"]
+    }
+  ],
+  "customManagers": [
+    {
+      "fileMatch": "package-lock.json",
+      "matchStrings": [
+        "\"deps/(?<depName>\\w+)\": {\\s+\"version\": \"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "hex",
+      "versioningTemplate": "npm"
+    },
+    {
+      "fileMatch": "Dockerfile",
+      "matchStrings": ["FROM hexpm/elixir:(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "elixir",
+      "datasourceTemplate": "hexpm-bob"
+    },
+    {
+      "fileMatch": "Dockerfile",
+      "matchStrings": ["-erlang-(?<currentValue>\\d+(\\.\\d+){1,3})-"],
+      "extractVersionTemplate": "^OTP-(?<version>\\S+)",
+      "depNameTemplate": "erlang",
+      "packageNameTemplate": "erlang/otp",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "fileMatch": "Dockerfile",
+      "matchStrings": [
+        "FROM hexpm/elixir:(?<prefix>.*?)-alpine-(?<currentValue>\\d+\\.\\d+\\.\\d+) AS elixir-deps"
+      ],
+      "extractVersionTemplate": "^{{{ prefix }}}-alpine-(?<version>\\d+.\\d+\\.\\d+)$",
+      "depNameTemplate": "alpine",
+      "packageNameTemplate": "hexpm/elixir",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": "Dockerfile",
+      "matchStrings": ["FROM node:(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node"
+    },
+    {
+      "fileMatch": "Dockerfile",
+      "matchStrings": ["-alpine(?<currentValue>\\d+\\.\\d+) AS node"],
+      "extractVersionTemplate": "^(?<version>\\d+.\\d+)",
+      "depNameTemplate": "alpine",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": ".tool-versions",
+      "matchStrings": ["elixir (?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "elixir",
+      "datasourceTemplate": "hexpm-bob"
+    },
+    {
+      "fileMatch": ".tool-versions",
+      "matchStrings": ["-otp-(?<currentValue>\\d+)"],
+      "extractVersionTemplate": "^(?<version>\\d+)",
+      "depNameTemplate": "erlang/otp",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
+    }
+  ]
+}
