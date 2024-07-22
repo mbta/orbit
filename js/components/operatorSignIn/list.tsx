@@ -1,7 +1,6 @@
 import { back } from "../../browser";
-import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { lookupDisplayName, useEmployees } from "../../hooks/useEmployees";
 import { useSignins } from "../../hooks/useSignIns";
-import { fullName } from "../../models/employee";
 import { HeavyRailLine } from "../../types";
 import { DateTime } from "luxon";
 import { ReactElement } from "react";
@@ -42,12 +41,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
           {signIns.result.map((si, idx) => (
             <tr key={idx}>
               <td className="border">
-                {fullName(
-                  findEmployeeByBadge(
-                    employees.result,
-                    si.signed_in_employee,
-                  ) ?? null,
-                )}
+                {lookupDisplayName(si.signed_in_employee, employees.result)}
               </td>
               <td className="border">{si.signed_in_employee}</td>
               <td className="border">

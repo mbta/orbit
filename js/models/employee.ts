@@ -8,12 +8,12 @@ export const Employee = z.object({
   badge_serials: z.array(z.string()),
 });
 
-export const fullName = (emp: Employee | null) => {
-  if (emp === null) {
-    return null;
-  }
-
+export const displayName = (emp: Employee) => {
   return `${emp.preferred_first ?? emp.first_name} ${emp.last_name}`;
+};
+
+export const fallbackDisplayName = (badge: string) => {
+  return `Operator #${badge}`;
 };
 
 export type Employee = z.infer<typeof Employee>;

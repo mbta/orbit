@@ -1,5 +1,10 @@
 import { useApiResult } from "../api";
-import { Employee, EmployeeList } from "../models/employee";
+import {
+  displayName,
+  Employee,
+  EmployeeList,
+  fallbackDisplayName,
+} from "../models/employee";
 
 const EMPLOYEES_API_PATH = "/api/employees";
 
@@ -14,6 +19,15 @@ export const useEmployees = () => {
     url: EMPLOYEES_API_PATH,
     parser: parse,
   });
+};
+
+export const lookupDisplayName = (badge: string, employees: Employee[]) => {
+  const employee = findEmployeeByBadge(employees, badge);
+  if (employee === undefined) {
+    return fallbackDisplayName(badge);
+  }
+
+  return displayName(employee);
 };
 
 export const findEmployeeByBadge = (employees: Employee[], badge: string) => {

@@ -2,6 +2,7 @@ import { fetch } from "../../browser";
 import {
   findEmployeeByBadge,
   findEmployeeByBadgeSerial,
+  lookupDisplayName,
   useEmployees,
 } from "../../hooks/useEmployees";
 import { employeeFactory } from "../helpers/factory";
@@ -36,6 +37,19 @@ describe("useEmployees", () => {
     await waitFor(() => {
       expect(result.current).toEqual({ status: "ok", result: TEST_PARSED });
     });
+  });
+});
+
+describe("lookupDisplayName", () => {
+  test("can retrieve/compute the display name for an employee", () => {
+    expect(lookupDisplayName(TEST_PARSED[0].badge, TEST_PARSED)).toBe(
+      "Preferredy Lasty",
+    );
+  });
+  test("can use the fallback string for an unknown operator", () => {
+    expect(lookupDisplayName("49203492152352341", TEST_PARSED)).toBe(
+      "Operator #49203492152352341",
+    );
   });
 });
 
