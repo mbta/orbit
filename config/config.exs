@@ -4,7 +4,8 @@ import Config
 config :orbit,
   ecto_repos: [Orbit.Repo],
   generators: [timestamp_type: :utc_datetime],
-  force_https?: true
+  force_https?: true,
+  timezone: "America/New_York"
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

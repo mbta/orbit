@@ -47,6 +47,7 @@ defmodule OrbitWeb.Router do
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
     get "/", ReactAppController, :home
+    get "/list", ReactAppController, :home
     get "/help", ReactAppController, :home
     get "/logout", AuthController, :logout
   end
@@ -57,6 +58,7 @@ defmodule OrbitWeb.Router do
     pipe_through :authenticated
 
     get "/api/employees", EmployeesController, :index
+    get "/api/signin", SignInController, :index
     post "/api/signin", SignInController, :submit
   end
 

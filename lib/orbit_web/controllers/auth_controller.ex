@@ -94,7 +94,7 @@ defmodule OrbitWeb.AuthController do
     else
       conn
       |> put_status(:unauthorized)
-      |> json("Unauthorized")
+      |> text("Unauthorized")
       |> halt()
     end
   end

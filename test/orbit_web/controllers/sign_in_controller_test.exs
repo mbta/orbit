@@ -6,8 +6,113 @@ defmodule OrbitWeb.SignInControllerTest do
   alias Orbit.Repo
 
   import Ecto.Query
+  @timezone Application.compile_env!(:orbit, :timezone)
+
+  describe "index" do
+    test "unauthenticated requests get a 401", %{conn: conn} do
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
+
+      assert "Unauthorized" = text_response(conn, 401)
+    end
+
+    @tag :authenticated
+    test "responds with sign-ins from today's service date", %{conn: conn} do
+      now = DateTime.now!(@timezone)
+      insert(:operator_sign_in, signed_in_at: now)
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "rail_line" => "blue",
+                   "signed_in_at" => _date,
+                   "signed_in_by_user" => _user,
+                   "signed_in_employee" => _badge
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "includes a signin from 3:00:00 on the dot", %{conn: conn} do
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[03:00:00], @timezone)
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "signed_in_at" => "2024-07-21T07:00:00Z"
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "includes only today's signins if no date param", %{conn: conn} do
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.add(DateTime.now!(@timezone), -1, :day)
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
+
+      assert %{
+               "data" => []
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "sorted by signed_in_at descending (recent first)", %{conn: conn} do
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone)
+      )
+
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:30:00], @timezone)
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "signed_in_at" => "2024-07-21T16:30:00Z"
+                 },
+                 %{
+                   "signed_in_at" => "2024-07-21T16:00:00Z"
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "filters by line param", %{conn: conn} do
+      insert(:operator_sign_in, signed_in_at: DateTime.now!(@timezone))
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "orange"})
+
+      assert %{
+               "data" => []
+             } = json_response(conn, 200)
+    end
+  end
 
   describe "submit" do
+    test "unauthenticated requests get a 401", %{conn: conn} do
+      conn =
+        post(conn, ~p"/api/signin", %{
+          "signed_in_employee_badge" => "123",
+          "signed_in_at" => 1_721_164_459,
+          "line" => "blue",
+          "method" => "manual"
+        })
+
+      assert "Unauthorized" = text_response(conn, 401)
+    end
+
     @tag :authenticated
     test "records a sign-in in the database", %{conn: conn} do
       insert(:employee, badge_number: "123")
