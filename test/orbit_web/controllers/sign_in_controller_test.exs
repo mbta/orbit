@@ -11,7 +11,7 @@ defmodule OrbitWeb.SignInControllerTest do
     test "unauthenticated requests get a 401", %{conn: conn} do
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
-      assert response(conn, 401)
+      assert "Unauthorized" = text_response(conn, 401)
     end
 
     @tag :authenticated
@@ -108,7 +108,7 @@ defmodule OrbitWeb.SignInControllerTest do
           "method" => "manual"
         })
 
-      assert response(conn, 401)
+      assert "Unauthorized" = text_response(conn, 401)
     end
 
     @tag :authenticated
