@@ -28,7 +28,7 @@ defmodule OrbitWeb.SignInController do
           Repo.all(
             from(si in OperatorSignIn,
               where:
-                ^start_datetime < si.signed_in_at and
+                ^start_datetime <= si.signed_in_at and
                   si.signed_in_at < ^end_datetime and
                   si.rail_line == ^rail_line,
               preload: [:signed_in_employee, :signed_in_by_user],

@@ -28,6 +28,23 @@ defmodule OrbitWeb.SignInControllerTest do
     end
 
     @tag :authenticated
+    test "includes a signin from 3:00:00 on the dot", %{conn: conn} do
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[03:00:00], "America/New_York")
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "signed_in_at" => "2024-07-21T07:00:00Z"
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
     test "includes only today's signins if no date param", %{conn: conn} do
       date = DateTime.add(DateTime.now!("America/New_York"), -1, :day)
       insert(:operator_sign_in, signed_in_at: date)
