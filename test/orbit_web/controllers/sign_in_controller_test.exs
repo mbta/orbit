@@ -8,6 +8,12 @@ defmodule OrbitWeb.SignInControllerTest do
   import Ecto.Query
 
   describe "index" do
+    test "unauthenticated requests get a 401", %{conn: conn} do
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
+
+      assert response(conn, 401)
+    end
+
     @tag :authenticated
     test "responds with sign-ins from today's service date", %{conn: conn} do
       date = DateTime.now!("America/New_York")
@@ -93,6 +99,18 @@ defmodule OrbitWeb.SignInControllerTest do
   end
 
   describe "submit" do
+    test "unauthenticated requests get a 401", %{conn: conn} do
+      conn =
+        post(conn, ~p"/api/signin", %{
+          "signed_in_employee_badge" => "123",
+          "signed_in_at" => 1_721_164_459,
+          "line" => "blue",
+          "method" => "manual"
+        })
+
+      assert response(conn, 401)
+    end
+
     @tag :authenticated
     test "records a sign-in in the database", %{conn: conn} do
       insert(:employee, badge_number: "123")
