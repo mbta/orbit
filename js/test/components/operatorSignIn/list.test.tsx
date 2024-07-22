@@ -1,4 +1,5 @@
 import { List } from "../../../components/operatorSignIn/list";
+import { displayName } from "../../../models/employee";
 import { employeeFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import { DateTime } from "luxon";
@@ -11,6 +12,7 @@ jest.mock("../../../hooks/useEmployees", () => ({
   })),
   findEmployeeByBadge: jest.fn(() => EMPLOYEES[0]),
   findEmployeeByBadgeSerial: jest.fn(() => EMPLOYEES[0]),
+  lookupDisplayName: jest.fn(() => displayName(EMPLOYEES[0])),
 }));
 
 jest.mock("../../../hooks/useSignIns", () => ({

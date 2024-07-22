@@ -16,8 +16,8 @@ defmodule OrbitWeb.SignInControllerTest do
 
     @tag :authenticated
     test "responds with sign-ins from today's service date", %{conn: conn} do
-      date = DateTime.now!("America/New_York")
-      insert(:operator_sign_in, signed_in_at: date)
+      now = DateTime.now!("America/New_York")
+      insert(:operator_sign_in, signed_in_at: now)
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
@@ -25,7 +25,7 @@ defmodule OrbitWeb.SignInControllerTest do
                "data" => [
                  %{
                    "rail_line" => "blue",
-                   "signed_in_at" => date,
+                   "signed_in_at" => _date,
                    "signed_in_by_user" => _user,
                    "signed_in_employee" => _badge
                  }
@@ -52,8 +52,9 @@ defmodule OrbitWeb.SignInControllerTest do
 
     @tag :authenticated
     test "includes only today's signins if no date param", %{conn: conn} do
-      date = DateTime.add(DateTime.now!("America/New_York"), -1, :day)
-      insert(:operator_sign_in, signed_in_at: date)
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.add(DateTime.now!("America/New_York"), -1, :day)
+      )
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
