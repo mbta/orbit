@@ -16,12 +16,7 @@ const TEST_DATA = {
   data: [employeeFactory.build()],
 };
 
-const TEST_PARSED = [
-  {
-    ...TEST_DATA.data[0],
-    preferred_first: undefined,
-  },
-];
+const TEST_PARSED = [TEST_DATA.data[0]];
 
 describe("useEmployees", () => {
   test("parses api response", async () => {

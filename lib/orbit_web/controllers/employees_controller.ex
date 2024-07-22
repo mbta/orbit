@@ -18,7 +18,7 @@ defmodule OrbitWeb.EmployeesController do
         fn e ->
           %{
             first_name: e.first_name,
-            # preferred_first: e.preferred_first,
+            preferred_first: e.preferred_first,
             last_name: e.last_name,
             badge: e.badge_number,
             badge_serials: Enum.map(e.badge_serials, & &1.badge_serial)
