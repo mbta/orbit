@@ -12,7 +12,10 @@ defmodule OrbitWeb.Router do
     plug :fetch_session
     plug :fetch_live_flash
     plug :protect_from_forgery
-    plug :put_secure_browser_headers, %{"content-security-policy" => "default-src 'self'"}
+
+    plug :put_secure_browser_headers, %{
+      "content-security-policy" => "default-src 'self'; connect-src 'self' *.sentry.io"
+    }
   end
 
   pipeline :accepts_html do

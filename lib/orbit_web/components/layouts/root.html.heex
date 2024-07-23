@@ -8,6 +8,16 @@
     <% # Orbit metadata %>
     <meta name="release" content={@release} />
 
+    <%= if @conn.assigns[:sentry_dsn] do %>
+      <meta name="sentryDsn" content={@sentry_dsn} />
+    <% end %>
+    <%= if @conn.assigns[:sentry_environment] do %>
+      <meta name="sentryEnvironment" content={@sentry_environment} />
+    <% end %>
+    <%= if @conn.assigns[:email] do %>
+      <meta name="userEmail" content={@email} />
+    <% end %>
+
     <title><%= assigns[:page_title] || "Orbit" %></title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />
   </head>

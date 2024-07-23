@@ -2,6 +2,8 @@ import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
 export const Success = ({ name }: { name: string }): ReactElement => {
+  throw new Error("Preston test throw!");
+
   return (
     <div className="text-center text-4xl w-full block mt-5 p-10">
       ✅

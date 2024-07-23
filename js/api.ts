@@ -1,5 +1,6 @@
 import { fetch, reload } from "./browser";
 import { getMetaContent } from "./util/metadata";
+import { captureException } from "@sentry/react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -58,6 +59,7 @@ export const useApiResult = <RawData, Data>({
       })
       .catch((e: unknown) => {
         setResult({ status: "error", error: e });
+        captureException(e);
       });
   }, [url, RawData, parser]);
 

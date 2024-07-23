@@ -1,4 +1,9 @@
-export type MetaDataKey = "csrf-token";
+export type MetaDataKey =
+  | "csrf-token"
+  | "sentryDsn"
+  | "sentryEnvironment"
+  | "userEmail"
+  | "release";
 
 export const getMetaContent = (field: MetaDataKey): string | null => {
   const element = document.querySelector(`meta[name=${field}]`);
