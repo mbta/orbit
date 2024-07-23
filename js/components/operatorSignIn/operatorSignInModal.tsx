@@ -51,8 +51,13 @@ const submit = (
     });
 };
 
-export const OperatorSignInModal = (): ReactElement => {
-  const [show, setShow] = useState<boolean>(true);
+export const OperatorSignInModal = ({
+  show,
+  close,
+}: {
+  show: boolean;
+  close: () => void;
+}): ReactElement => {
   const [badge, setBadge] = useState<BadgeEntry | null>(null);
   const [complete, setComplete] = useState<CompleteState | null>(null);
 
@@ -64,13 +69,13 @@ export const OperatorSignInModal = (): ReactElement => {
   useEffect(() => {
     if (complete === CompleteState.SUCCESS) {
       const timeout = setTimeout(() => {
-        setShow(false);
+        close();
       }, 1000);
       return () => {
         clearTimeout(timeout);
       };
     }
-  }, [complete]);
+  }, [complete, close]);
 
   const employee =
     employees.status === "ok" &&
@@ -83,7 +88,7 @@ export const OperatorSignInModal = (): ReactElement => {
       show={show}
       title={<span className="text-lg font-bold">Fit for Duty Check</span>}
       onClose={() => {
-        setShow(false);
+        close();
       }}
     >
       {complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
