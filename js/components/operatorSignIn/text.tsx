@@ -21,7 +21,9 @@ export const useSignInText = (): {
         <li>
           I have a valid ROW Card and Certification Card in my possession.
         </li>
-        <li>I have read the Day Orders.</li>
+        <li>I have read the Day/Night Orders.</li>
+        <li>I am in my MBTA uniform.</li>
+        <li>I have read relevant Special Orders and announcements.</li>
       </ul>
     ),
   };
