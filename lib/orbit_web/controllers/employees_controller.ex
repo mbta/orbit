@@ -11,8 +11,7 @@ defmodule OrbitWeb.EmployeesController do
       Enum.map(
         Repo.all(
           from e in Employee,
-            join: b in assoc(e, :badge_serials),
-            where: e.id == b.employee_id,
+            left_join: b in assoc(e, :badge_serials),
             preload: [badge_serials: b]
         ),
         fn e ->
