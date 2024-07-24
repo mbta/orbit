@@ -14,10 +14,15 @@ jest.mock("../../browser", () => ({
 }));
 
 const TEST_DATA = {
-  data: [employeeFactory.build()],
+  data: [
+    employeeFactory.build(),
+    employeeFactory.build({
+      preferred_first: null,
+    }),
+  ],
 };
 
-const TEST_PARSED = [TEST_DATA.data[0]];
+const TEST_PARSED = TEST_DATA.data;
 
 describe("useEmployees", () => {
   test("parses api response", async () => {

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const Employee = z.object({
   first_name: z.string(),
-  preferred_first: z.string().optional(),
+  preferred_first: z.string().nullable(),
   last_name: z.string(),
   badge: z.string(),
   badge_serials: z.array(z.string()),
