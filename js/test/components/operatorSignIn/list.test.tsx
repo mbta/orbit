@@ -3,6 +3,7 @@ import { displayName } from "../../../models/employee";
 import { employeeFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import { DateTime } from "luxon";
+import { MemoryRouter } from "react-router-dom";
 
 const EMPLOYEES = [employeeFactory.build()];
 jest.mock("../../../hooks/useEmployees", () => ({
@@ -33,7 +34,11 @@ jest.mock("../../../hooks/useSignIns", () => ({
 
 describe("List", () => {
   test("shows a sign-in", () => {
-    const view = render(<List line="blue" />);
+    const view = render(
+      <MemoryRouter>
+        <List line="blue" />
+      </MemoryRouter>,
+    );
     expect(view.getByText("12:45 PM")).toBeInTheDocument();
     expect(
       view.getByText(
