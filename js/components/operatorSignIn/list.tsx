@@ -1,9 +1,9 @@
-import { back } from "../../browser";
 import { lookupDisplayName, useEmployees } from "../../hooks/useEmployees";
 import { useSignins } from "../../hooks/useSignIns";
 import { HeavyRailLine } from "../../types";
 import { DateTime } from "luxon";
 import { ReactElement } from "react";
+import { Link } from "react-router-dom";
 
 export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   const employees = useEmployees();
@@ -19,14 +19,12 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
 
   return (
     <div className="m-2">
-      <button
-        className="bg-mbta-blue text-gray-100 rounded-md p-2 text-sm m-5"
-        onClick={() => {
-          back();
-        }}
+      <Link
+        className="inline-block bg-mbta-blue text-gray-100 rounded-md p-2 text-sm m-3"
+        to={"/"}
       >
         Back
-      </button>
+      </Link>
       <u>Today&apos;s sign-ins</u>
       <table>
         <thead>
