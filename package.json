@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@restart/ui": "1.6.9",
-    "@sentry/react": "^8.19.0",
+    "@sentry/react": "8.19.0",
     "@tailwindcss/forms": "0.5.7",
     "esbuild": "0.21.3",
     "luxon": "3.4.4",
