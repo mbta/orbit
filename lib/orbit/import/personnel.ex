@@ -35,7 +35,7 @@ defmodule Orbit.Import.Personnel do
       |> Enum.map(
         &%Employee{
           first_name: &1["FIRST_NAME"],
-          preferred_first: &1["PREF_FIRST_NM_SRCH"],
+          preferred_first: empty_to_nil(&1["PREF_FIRST_NM_SRCH"]),
           middle_initial: String.at(&1["MIDDLE_NAME"], 0),
           last_name: &1["LAST_NAME"],
           email: empty_to_nil(&1["WORK_EMAIL_ADDRESS"]),

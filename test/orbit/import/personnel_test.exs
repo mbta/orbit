@@ -77,5 +77,27 @@ defmodule Orbit.Import.PersonnelTest do
                email: nil
              } = Repo.one(from(e in Employee, where: e.first_name == "Nemo"))
     end
+
+    test "properly formats empty preferred name" do
+      Personnel.import_rows(
+        [
+          %{
+            "FIRST_NAME" => "Nemo",
+            "PREF_FIRST_NM_SRCH" => "",
+            "MIDDLE_NAME" => "A",
+            "WORK_EMAIL_ADDRESS" => "",
+            "LAST_NAME" => "Smith",
+            "EMPLOYEE_ID" => "0123456",
+            "CUSTOM_FIELD3" => "Area",
+            "CUSTOM_VALUE3" => "114"
+          }
+        ],
+        MapSet.new(["114"])
+      )
+
+      assert %Employee{
+               preferred_first: nil
+             } = Repo.one(from(e in Employee, where: e.first_name == "Nemo"))
+    end
   end
 end
