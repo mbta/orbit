@@ -17,13 +17,20 @@ defmodule Orbit.Authentication.User do
     timestamps()
   end
 
-  def create_changeset(struct, params \\ %{}) do
+  def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
       :email,
       :permissions
     ])
     |> validate_required([:email, :permissions])
+    |> validate_change(:permissions, fn :permissions, permissions ->
+      if permissions |> Enum.uniq() |> length() == length(permissions) do
+        []
+      else
+        [permissions: "cannot contain duplicate values"]
+      end
+    end)
     |> unique_constraint(
       :users,
       name: :users_email_index
