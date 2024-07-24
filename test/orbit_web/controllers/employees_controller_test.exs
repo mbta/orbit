@@ -20,5 +20,23 @@ defmodule OrbitWeb.EmployeesControllerTest do
                ]
              } = json_response(conn, 200)
     end
+
+    @tag :authenticated
+    test "fetches employees without badge serial data", %{conn: conn} do
+      insert(:employee, %{badge_serials: []})
+      conn = get(conn, ~p"/api/employees")
+
+      assert %{
+               "data" => [
+                 %{
+                   "badge" => _badge,
+                   "first_name" => "Fake",
+                   "last_name" => "Person",
+                   "preferred_first" => "Preferredy",
+                   "badge_serials" => []
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
   end
 end
