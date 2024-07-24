@@ -10,13 +10,15 @@ defmodule Orbit.Authentication.UserTest do
 
   test "cannot insert a duplicate user" do
     Repo.insert!(%User{
-      email: "test@mbta.com"
+      email: "test@mbta.com",
+      permissions: [:operator_sign_in]
     })
 
     assert_raise Ecto.ConstraintError,
                  fn ->
                    Repo.insert!(%User{
-                     email: "test@mbta.com"
+                     email: "test@mbta.com",
+                     permissions: [:operator_sign_in]
                    })
                  end
   end
