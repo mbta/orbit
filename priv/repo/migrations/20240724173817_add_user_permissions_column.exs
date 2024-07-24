@@ -8,7 +8,7 @@ defmodule Orbit.Repo.Migrations.AddUserPermissionsColumn do
     )
 
     alter table("users") do
-      add :permissions, {:array, :user_permission}
+      add :permissions, {:array, :user_permission}, null: false, default: []
     end
   end
 end
