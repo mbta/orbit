@@ -1,6 +1,7 @@
 import Config
 
 config :orbit,
+  environment: "test",
   release: "test",
   force_https?: false
 

@@ -11,6 +11,7 @@ import {
 } from "./complete";
 import { OperatorSelection } from "./operatorSelection";
 import { BadgeEntry } from "./types";
+import { captureException } from "@sentry/react";
 import { DateTime } from "luxon";
 import { ReactElement, useEffect, useState } from "react";
 
@@ -44,6 +45,7 @@ const submit = (
     })
     .catch((err: unknown) => {
       console.error(err);
+      captureException(err);
       setComplete(CompleteState.SIGN_IN_ERROR);
     })
     .finally(() => {
