@@ -29,10 +29,6 @@ jest.mock("../../../hooks/useNfc", () => ({
   }),
 }));
 
-jest.mock("../../../browser", () => ({
-  fetch: jest.fn(),
-}));
-
 describe("OperatorSignInModal", () => {
   test("shows badge tap message by default", () => {
     const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);

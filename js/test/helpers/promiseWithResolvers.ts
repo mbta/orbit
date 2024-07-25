@@ -33,3 +33,7 @@ export const PromiseWithResolvers = <T>(): {
 
   return { promise, resolve, reject };
 };
+
+export const neverPromise = <T>(): Promise<T> => {
+  return new Promise((_resolve, _reject) => {});
+};

@@ -83,7 +83,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["js/test/", "js/**/*.test.*"],
+    files: ["js/test/**", "js/**/*.test.*"],
     plugins: {
       jest: pluginJest,
       "jest-dom": pluginJestDom,
