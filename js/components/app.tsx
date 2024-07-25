@@ -14,7 +14,7 @@ const ErrorBoundary = (): ReactElement => {
   const error = useRouteError() as Error;
   useEffect(() => {
     captureException(error);
-  });
+  }, [error]);
   return (
     <main className="container mx-auto">
       <p>Sorry, something went wrong. It&apos;s not you, it&apos;s us.</p>
