@@ -11,7 +11,7 @@ import {
 } from "react-router-dom";
 
 const ErrorBoundary = (): ReactElement => {
-  const error = useRouteError() as Error;
+  const error = useRouteError();
   useEffect(() => {
     captureException(error);
   }, [error]);
@@ -32,10 +32,12 @@ const ErrorBoundary = (): ReactElement => {
         <li>Try again in a few minutes.</li>
         <li>Call the IT help desk. x5761</li>
       </ul>
-      <p>
-        Error details: {error.name} {error.message}
-      </p>
-      <pre className="bg-gray-200">{error.stack}</pre>
+      {error instanceof Error ?
+        <p>
+          Error details: {error.name} {error.message}
+          <pre className="bg-gray-200">{error.stack}</pre>
+        </p>
+      : <p>Error details unavailable</p>}
     </main>
   );
 };
