@@ -89,5 +89,6 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   config :sentry,
-    dsn: System.get_env("SENTRY_DSN")
+    dsn: System.get_env("SENTRY_DSN"),
+    environment_name: System.get_env("ENVIRONMENT")
 end
