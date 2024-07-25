@@ -35,7 +35,7 @@ jest.mock("../../../browser", () => ({
 
 describe("OperatorSignInModal", () => {
   test("shows badge tap message by default", () => {
-    const view = render(<OperatorSignInModal />);
+    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
 
     expect(view.getByText(/waiting for badge tap/i)).toBeInTheDocument();
   });
@@ -43,15 +43,18 @@ describe("OperatorSignInModal", () => {
   test("shows badge tap unsupported message when NFC isn't available", () => {
     jest.mocked(nfcSupported).mockReturnValueOnce(false);
 
-    const view = render(<OperatorSignInModal />);
+    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
 
     expect(view.getByText(/badge tap is not supported/i)).toBeInTheDocument();
   });
 
   test("can close the modal", async () => {
-    const view = render(<OperatorSignInModal />);
+    const close = jest.fn();
+    const view = render(<OperatorSignInModal show={true} close={close} />);
 
     await userEvent.click(view.getByRole("button", { name: "[x]" }));
+    expect(close).toHaveBeenCalled();
+    view.rerender(<OperatorSignInModal show={false} close={close} />);
 
     expect(view.queryByText(/fit for duty check/i)).not.toBeInTheDocument();
   });
@@ -62,7 +65,7 @@ describe("OperatorSignInModal", () => {
       ok: true,
     } as Response);
 
-    const view = render(<OperatorSignInModal />);
+    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
@@ -83,7 +86,7 @@ describe("OperatorSignInModal", () => {
       statusText: "Internal Server Error",
     });
 
-    const view = render(<OperatorSignInModal />);
+    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
@@ -97,7 +100,8 @@ describe("OperatorSignInModal", () => {
   });
 
   test("shows failure component when no operator is found after an NFC tap", () => {
-    const { rerender, ...view } = render(<OperatorSignInModal />);
+    const close = jest.fn();
+    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
 
     jest.mocked(useNfc).mockReturnValueOnce({
       result: { status: "success", data: "bad_serial" },
@@ -105,7 +109,7 @@ describe("OperatorSignInModal", () => {
     });
     jest.mocked(findEmployeeByBadgeSerial).mockReturnValueOnce(undefined);
 
-    rerender(<OperatorSignInModal />);
+    view.rerender(<OperatorSignInModal show={true} close={close} />);
 
     expect(
       view.getByText(/something went wrong when looking up the owner/i),
@@ -113,14 +117,15 @@ describe("OperatorSignInModal", () => {
   });
 
   test("shows failure component when NFC tap fails", () => {
-    const view = render(<OperatorSignInModal />);
+    const close = jest.fn();
+    const view = render(<OperatorSignInModal show={true} close={close} />);
 
     jest.mocked(useNfc).mockReturnValueOnce({
       result: { status: "error", error: "error" },
       abortController: new AbortController(),
     });
 
-    view.rerender(<OperatorSignInModal />);
+    view.rerender(<OperatorSignInModal show={true} close={close} />);
 
     expect(
       view.getByText(/something went wrong when looking for a badge tap/i),

@@ -13,6 +13,6 @@ describe("home", () => {
         <Home />
       </MemoryRouter>,
     );
-    expect(view.getByText(/🪐/)).toBeInTheDocument();
+    expect(view.getAllByText(/sign.?in/i)).not.toBeEmpty();
   });
 });
