@@ -7,7 +7,7 @@ defmodule OrbitWeb.ReactAppController do
     render(conn, :react_app,
       layout: false,
       sentry_dsn: Application.get_env(:sentry, :dsn),
-      sentry_environment: Application.get_env(:sentry, :environment_name)
+      environment: Application.get_env(:orbit, :environment)
     )
   end
 end

@@ -1,7 +1,7 @@
 export type MetaDataKey =
   | "csrf-token"
   | "sentryDsn"
-  | "sentryEnvironment"
+  | "environment"
   | "userEmail"
   | "release";
 

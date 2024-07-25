@@ -11,8 +11,8 @@
     <%= if @conn.assigns[:sentry_dsn] do %>
       <meta name="sentryDsn" content={@sentry_dsn} />
     <% end %>
-    <%= if @conn.assigns[:sentry_environment] do %>
-      <meta name="sentryEnvironment" content={@sentry_environment} />
+    <%= if @conn.assigns[:environment] do %>
+      <meta name="environment" content={@environment} />
     <% end %>
     <%= if @conn.assigns[:email] do %>
       <meta name="userEmail" content={@email} />

@@ -9,6 +9,8 @@ import Config
 if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
+  config :orbit, environment: System.get_env("ENVIRONMENT")
+
   config :orbit, Orbit.Repo,
     socket_options: maybe_ipv6,
     username: System.get_env("DATABASE_USERNAME"),
@@ -87,6 +89,5 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   config :sentry,
-    dsn: System.get_env("SENTRY_DSN"),
-    environment_name: System.get_env("ENVIRONMENT")
+    dsn: System.get_env("SENTRY_DSN")
 end
