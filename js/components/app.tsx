@@ -1,4 +1,5 @@
 import { reload } from "../browser";
+import { Header } from "./header";
 import { Help } from "./help";
 import { Home } from "./home";
 import { List } from "./operatorSignIn/list";
@@ -6,6 +7,7 @@ import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
   createBrowserRouter,
+  Outlet,
   RouterProvider,
   useRouteError,
 } from "react-router-dom";
@@ -45,6 +47,12 @@ const ErrorBoundary = (): ReactElement => {
 const router = createBrowserRouter([
   {
     errorElement: <ErrorBoundary />,
+    element: (
+      <>
+        <Header />
+        <Outlet />
+      </>
+    ),
     children: [
       {
         path: "/",

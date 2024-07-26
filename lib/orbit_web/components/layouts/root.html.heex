@@ -6,6 +6,9 @@
     <meta name="csrf-token" content={get_csrf_token()} />
 
     <% # Orbit metadata %>
+    <%= if @conn.assigns[:logged_in_user] do %>
+      <meta name="email" content={@logged_in_user.email} />
+    <% end %>
     <meta name="release" content={@release} />
 
     <%= if @conn.assigns[:sentry_dsn] do %>
