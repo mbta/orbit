@@ -1,6 +1,7 @@
 defmodule OrbitWeb.Auth.GuardianTest do
   use Orbit.DataCase
   alias OrbitWeb.Auth.Guardian
+  alias Orbit.Authentication.User
   import Orbit.Factory
 
   describe "subject_for_token/2" do
@@ -15,7 +16,15 @@ defmodule OrbitWeb.Auth.GuardianTest do
     test "pulls user from database" do
       user = insert(:user)
 
-      assert {:ok, user} == Guardian.resource_from_claims(%{"sub" => user.email})
+      assert {:ok, %User{user | admin?: false}} ==
+               Guardian.resource_from_claims(%{"sub" => user.email, "groups" => []})
+    end
+
+    test "sets the admin flag if user is in appropriate group" do
+      user = insert(:user)
+
+      assert {:ok, %User{user | admin?: true}} ==
+               Guardian.resource_from_claims(%{"sub" => user.email, "groups" => ["orbit-admin"]})
     end
   end
 end
