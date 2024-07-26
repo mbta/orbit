@@ -41,7 +41,6 @@ defmodule OrbitWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: :keycloak} = auth}} = conn, _params) do
-    username = String.replace(auth.info.email, "MBTA.com", "mbta.com")
     # credentials = auth.credentials
 
     # Ignore auth provider's TTL, set ours to 30 days so users don't have to log back in
@@ -58,7 +57,7 @@ defmodule OrbitWeb.AuthController do
 
     conn
     |> Auth.login(
-      username,
+      auth.info.email,
       ttl_seconds,
       groups,
       logout_url
