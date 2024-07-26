@@ -17,7 +17,7 @@ export const Home = (): ReactElement => {
           <p>Search and sign in operators</p>
         </hgroup>
         <button
-          className="rounded bg-[#1c1e23] hover:bg-[#404040] text-white p-1 self-center"
+          className="rounded bg-gray-900 hover:bg-gray-600 text-white p-1 self-center"
           onClick={() => {
             setModalOpen(true);
           }}
@@ -38,7 +38,7 @@ export const Home = (): ReactElement => {
           />
         </label>
         <button
-          className="rounded border border-[#929292] hover:bg-[#F6F6F6] px-2 py-1 disabled:text-[#929292]"
+          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1 disabled:text-gray-300"
           disabled={selectedDate === today}
           onClick={() => {
             setSelectedDate(today);
@@ -47,7 +47,7 @@ export const Home = (): ReactElement => {
           Today
         </button>
         <button
-          className="rounded border border-[#929292] hover:bg-[#F6F6F6] px-2 py-1"
+          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1"
           onClick={() => {
             console.log("TODO");
           }}
