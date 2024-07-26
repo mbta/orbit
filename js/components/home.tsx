@@ -32,7 +32,6 @@ export const Home = (): ReactElement => {
             type="date"
             value={selectedDate}
             onChange={(evt) => {
-              console.log(evt.target.value);
               setSelectedDate(evt.target.value);
             }}
             className="rounded"
