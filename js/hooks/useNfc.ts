@@ -1,4 +1,5 @@
 import { nfcSupported } from "../util/nfc";
+import { captureException } from "@sentry/react";
 import { useEffect, useState } from "react";
 
 export type NfcResult =
@@ -37,6 +38,7 @@ export const useNfc = (): {
         .scan({ signal: abortController.signal })
         .catch((error: unknown) => {
           setResult({ status: "error", error });
+          captureException(error);
         });
 
       reader.addEventListener(
