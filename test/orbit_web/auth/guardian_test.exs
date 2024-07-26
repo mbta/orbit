@@ -1,7 +1,7 @@
 defmodule OrbitWeb.Auth.GuardianTest do
   use Orbit.DataCase
-  alias OrbitWeb.Auth.Guardian
   alias Orbit.Authentication.User
+  alias OrbitWeb.Auth.Guardian
   import Orbit.Factory
 
   describe "subject_for_token/2" do
