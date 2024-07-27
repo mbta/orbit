@@ -47,7 +47,7 @@
     "@types/phoenix": "1.6.4",
     "@types/phoenix_live_view": "0.18.5",
     "@types/w3c-web-nfc": "1.0.4",
-    "eslint": "8.57.0",
+    "eslint": "9.8.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-better-mutation": "1.4.1",
     "eslint-plugin-jest": "28.5.0",
