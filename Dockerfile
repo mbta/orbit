@@ -1,5 +1,5 @@
 ### Elixir Deps
-FROM hexpm/elixir:1.16.1-erlang-26.2.1-alpine-3.18.4 AS elixir-deps
+FROM hexpm/elixir:1.17.2-erlang-26.2.1-alpine-3.18.4 AS elixir-deps
 
 # git is needed to fetch some mix deps
 RUN apk add --no-cache git
