@@ -49,7 +49,7 @@ defmodule Orbit.MixProject do
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.3"},
       {:ex_machina, "== 2.8.0", only: :test},
-      {:floki, ">= 0.30.0", only: :test},
+      {:floki, "== 0.36.2", only: :test},
       {:guardian, "== 2.3.2"},
       {:guardian_phoenix, "== 2.0.1"},
       # used by ex_aws
@@ -71,7 +71,7 @@ defmodule Orbit.MixProject do
       {:phoenix_live_dashboard, "== 0.8.3"},
       {:phoenix_live_reload, "== 1.4.1", only: :dev},
       {:phoenix_live_view, "== 0.20.9"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, "== 0.18.0"},
       {:sentry, "== 10.6.1"},
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.0.0"},
