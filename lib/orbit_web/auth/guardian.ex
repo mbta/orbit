@@ -1,18 +1,23 @@
 defmodule OrbitWeb.Auth.Guardian do
   use Guardian, otp_app: :orbit
+  alias Orbit.Authentication.User
+  alias Orbit.Repo
+
+  @admin_group "orbit-admin"
 
   @spec subject_for_token(Guardian.Token.resource(), Guardian.Token.claims()) ::
           {:ok, String.t()} | {:error, atom()}
-  def subject_for_token(resource, _claims) do
-    sub = resource
-    {:ok, sub}
+  def subject_for_token(%User{email: email}, _claims) do
+    {:ok, email}
   end
 
   @spec resource_from_claims(Guardian.Token.claims()) ::
           {:ok, Guardian.Token.resource()} | {:error, atom()}
-  def resource_from_claims(%{"sub" => id}) do
-    resource = id
-    {:ok, resource}
+  def resource_from_claims(%{"sub" => id, "groups" => groups}) do
+    case Repo.get_by(User, email: id) do
+      nil -> {:error, :user_not_found}
+      user -> {:ok, %User{user | admin?: @admin_group in groups}}
+    end
   end
 end
 

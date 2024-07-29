@@ -6,6 +6,7 @@ defmodule Orbit.Authentication.User do
   @type t :: %__MODULE__{
           id: integer(),
           email: String.t(),
+          admin?: boolean(),
           permissions: [UserPermission.t()],
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
@@ -14,6 +15,7 @@ defmodule Orbit.Authentication.User do
   schema "users" do
     field(:email, :string)
     field(:permissions, {:array, UserPermission})
+    field(:admin?, :boolean, virtual: true)
     timestamps()
   end
 
