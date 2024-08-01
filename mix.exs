@@ -38,7 +38,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.2.0"},
+      {:bandit, "== 1.5.7"},
       {:credo, "== 1.7.5", only: [:dev, :test], runtime: false},
       {:csv, "== 3.2.1"},
       {:dialyxir, "== 1.4.3", only: [:dev, :test], runtime: false},
