@@ -17,7 +17,7 @@ export const Home = (): ReactElement => {
           <p>Search and sign in operators</p>
         </hgroup>
         <button
-          className="rounded bg-gray-900 hover:bg-gray-600 text-white p-1 self-center"
+          className="rounded bg-gray-500 hover:bg-gray-400 text-white p-1 self-center"
           onClick={() => {
             setModalOpen(true);
           }}
