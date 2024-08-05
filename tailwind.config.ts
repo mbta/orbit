@@ -1,6 +1,8 @@
 // See the Tailwind configuration guide for advanced usage
 // https://tailwindcss.com/docs/configuration
 
+/* eslint-disable @typescript-eslint/unbound-method -- the recommended way to make tailwind plugins triggers this */
+
 import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
