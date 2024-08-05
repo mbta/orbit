@@ -29,7 +29,7 @@ export const SignInError = ({
       <div className="w-full">
         <button
           className={className([
-            "w-1/2 block mx-auto rounded-md bg-mbta-blue text-gray-100 text-sm p-2",
+            "w-1/2 block mx-auto rounded-md bg-mbta-blue text-gray-200 text-sm p-2",
             loading && "opacity-50",
           ])}
           onClick={onTryAgain}

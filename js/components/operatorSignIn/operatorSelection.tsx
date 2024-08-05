@@ -94,7 +94,7 @@ const Or = (): ReactElement => {
 };
 
 const NfcSupported = (): ReactElement => (
-  <div className="my-4 flex flex-col items-center gap-3 p-6 text-center bg-gray-100">
+  <div className="my-4 flex flex-col items-center gap-3 p-6 text-center bg-gray-200">
     <NfcSpinner />
     <p>Waiting for badge tap&hellip;</p>
   </div>

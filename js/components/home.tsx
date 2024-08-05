@@ -57,7 +57,7 @@ export const Home = (): ReactElement => {
       </div>
       <p className="mb-3">(Search will go here)</p>
       <Link className="block" to="/list">
-        <button className="bg-mbta-blue text-gray-100 rounded-md p-2 text-sm">
+        <button className="bg-mbta-blue text-gray-200 rounded-md p-2 text-sm">
           Sign-in history
         </button>
       </Link>

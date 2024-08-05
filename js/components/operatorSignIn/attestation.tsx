@@ -28,7 +28,7 @@ export const Attestation = ({
         <div className="mb-4">Unable to download employee data</div>
         <div>
           <button
-            className="rounded bg-mbta-blue text-gray-100 w-1/4 max-w-20"
+            className="rounded bg-mbta-blue text-gray-200 w-1/4 max-w-20"
             onClick={reload}
           >
             Reload
@@ -54,7 +54,7 @@ export const Attestation = ({
       </p>
       <button
         className={className([
-          "block mx-auto w-2/3 max-w-80 h-10 bg-mbta-blue text-gray-100 rounded-md",
+          "block mx-auto w-2/3 max-w-80 h-10 bg-mbta-blue text-gray-200 rounded-md",
           (!ready || loading) && "opacity-50",
         ])}
         onClick={onComplete}

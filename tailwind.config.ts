@@ -1,8 +1,6 @@
 // See the Tailwind configuration guide for advanced usage
 // https://tailwindcss.com/docs/configuration
 
-/* eslint-disable @typescript-eslint/unbound-method -- the recommended way to make tailwind plugins triggers this */
-
 import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
@@ -29,8 +27,7 @@ export default {
       white: "#ffffff",
       gray: {
         50: "#F6F6F6",
-        100: "#E8E8E8",
-        200: "#D9D9D9",
+        200: "#E8E8E8",
         300: "#929292",
         400: "#494F5C",
         500: "#1C1E23",
