@@ -38,7 +38,7 @@ export const Home = (): ReactElement => {
           />
         </label>
         <button
-          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1 disabled:text-gray-300"
+          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1 disabled:text-gray-300"
           disabled={selectedDate === today}
           onClick={() => {
             setSelectedDate(today);
@@ -47,7 +47,7 @@ export const Home = (): ReactElement => {
           Today
         </button>
         <button
-          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1"
+          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1"
           onClick={() => {
             console.log("TODO");
           }}

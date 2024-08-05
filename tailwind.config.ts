@@ -26,7 +26,7 @@ export default {
       error: "#B3000F",
       white: "#ffffff",
       gray: {
-        50: "#F6F6F6",
+        100: "#F6F6F6",
         200: "#E8E8E8",
         300: "#929292",
         400: "#494F5C",
