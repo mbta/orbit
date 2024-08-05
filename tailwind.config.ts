@@ -18,14 +18,8 @@ export default {
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     colors: {
-      red: {
-        100: "#DA291C",
-        200: "#B3000F",
-      },
-      orange: "#ED8B00",
+      black: "#000000",
       blue: "#003DA5",
-      yellow: "#FFC961",
-      white: "#ffffff",
       gray: {
         100: "#F6F6F6",
         200: "#E8E8E8",
@@ -33,8 +27,14 @@ export default {
         400: "#494F5C",
         500: "#1C1E23",
       },
-      black: "#000000",
       green: "#145A06",
+      orange: "#ED8B00",
+      red: {
+        100: "#DA291C",
+        200: "#B3000F",
+      },
+      white: "#ffffff",
+      yellow: "#FFC961",
     },
     zIndex: {
       layout: "1000",
