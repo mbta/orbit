@@ -9,20 +9,24 @@ export const themeColors = fullConfig.default.theme.colors;
 <Meta title="Colors" />
 
 <ColorPalette>
-  <ColorItem
-    title="Subway Lines"
-    colors={{
-      Red: themeColors["mbta-red"],
-      Orange: themeColors["mbta-orange"],
-      Blue: themeColors["mbta-blue"],
-    }}
-  />
+  <ColorItem title="Black" colors={{ Black: themeColors.black }} />
+  <ColorItem title="Blue" colors={{ Blue: themeColors.blue }} />
   <ColorItem
     title="Gray"
     colors={{
       100: themeColors.gray[100],
       200: themeColors.gray[200],
       300: themeColors.gray[300],
+      400: themeColors.gray[400],
+      500: themeColors.gray[500],
     }}
   />
+  <ColorItem title="Green" colors={{ Green: themeColors.green }} />
+  <ColorItem title="Orange" colors={{ Green: themeColors.orange }} />
+  <ColorItem
+    title="Red"
+    colors={{ 100: themeColors.red[100], 200: themeColors.red[200] }}
+  />
+  <ColorItem title="White" colors={{ White: themeColors.white }} />
+  <ColorItem title="Yellow" colors={{ Yellow: themeColors.yellow }} />
 </ColorPalette>
