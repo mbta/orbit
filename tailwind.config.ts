@@ -18,11 +18,13 @@ export default {
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     colors: {
-      "mbta-red": "#DA291C",
-      "mbta-orange": "#ED8B00",
-      "mbta-blue": "#003DA5",
-      warning: "#FFC961",
-      error: "#B3000F",
+      red: {
+        100: "#DA291C",
+        200: "#B3000F",
+      },
+      orange: "#ED8B00",
+      blue: "#003DA5",
+      yellow: "#FFC961",
       white: "#ffffff",
       gray: {
         100: "#F6F6F6",

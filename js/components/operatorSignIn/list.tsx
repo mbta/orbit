@@ -20,7 +20,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   return (
     <div className="m-2">
       <Link
-        className="inline-block bg-mbta-blue text-gray-200 rounded-md p-2 text-sm m-3"
+        className="inline-block bg-blue text-gray-200 rounded-md p-2 text-sm m-3"
         to={"/"}
       >
         Back
