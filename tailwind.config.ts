@@ -21,7 +21,6 @@ export default {
       "mbta-red": "#DA291C",
       "mbta-orange": "#ED8B00",
       "mbta-blue": "#003DA5",
-      success: "#145A06",
       warning: "#FFC961",
       error: "#B3000F",
       white: "#ffffff",
@@ -33,9 +32,7 @@ export default {
         500: "#1C1E23",
       },
       black: "#000000",
-      green: {
-        500: "#2EC92E",
-      },
+      green: "#145A06",
     },
     zIndex: {
       layout: "1000",

@@ -115,7 +115,7 @@ const SignatureHint = ({
 
   if (visibleHint === "good") {
     hintText = "Looks good!";
-    hintClass = "text-green-500";
+    hintClass = "text-green";
   } else if (visibleHint === "bad") {
     hintText = "That badge number doesn't match our records.";
     hintClass = "text-mbta-red";
