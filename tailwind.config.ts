@@ -20,6 +20,9 @@ export default {
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
     colors: {
+      "mbta-red": "#DA291C",
+      "mbta-orange": "#ED8B00",
+      "mbta-blue": "#003DA5",
       black: "#000000",
       blue: "#003DA5",
       gray: {
