@@ -17,7 +17,7 @@ export const Home = (): ReactElement => {
           <p>Search and sign in operators</p>
         </hgroup>
         <button
-          className="rounded bg-gray-900 hover:bg-gray-600 text-white p-1 self-center"
+          className="rounded bg-gray-500 hover:bg-gray-400 text-white p-1 self-center"
           onClick={() => {
             setModalOpen(true);
           }}
@@ -38,7 +38,7 @@ export const Home = (): ReactElement => {
           />
         </label>
         <button
-          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1 disabled:text-gray-300"
+          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1 disabled:text-gray-300"
           disabled={selectedDate === today}
           onClick={() => {
             setSelectedDate(today);
@@ -47,7 +47,7 @@ export const Home = (): ReactElement => {
           Today
         </button>
         <button
-          className="rounded border border-gray-300 hover:bg-gray-50 px-2 py-1"
+          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1"
           onClick={() => {
             console.log("TODO");
           }}
@@ -57,7 +57,7 @@ export const Home = (): ReactElement => {
       </div>
       <p className="mb-3">(Search will go here)</p>
       <Link className="block" to="/list">
-        <button className="bg-mbta-blue text-gray-100 rounded-md p-2 text-sm">
+        <button className="bg-blue text-gray-200 rounded-md p-2 text-sm">
           Sign-in history
         </button>
       </Link>

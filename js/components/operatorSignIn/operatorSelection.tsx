@@ -70,7 +70,7 @@ export const OperatorSelection = ({
           onOK(badgeEntry);
         }}
         className={className([
-          "rounded bg-mbta-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
+          "rounded bg-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
           !buttonEnabled && "opacity-50",
         ])}
       >
@@ -94,7 +94,7 @@ const Or = (): ReactElement => {
 };
 
 const NfcSupported = (): ReactElement => (
-  <div className="my-4 flex flex-col items-center gap-3 p-6 text-center bg-gray-100">
+  <div className="my-4 flex flex-col items-center gap-3 p-6 text-center bg-gray-200">
     <NfcSpinner />
     <p>Waiting for badge tap&hellip;</p>
   </div>
