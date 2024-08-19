@@ -69,8 +69,8 @@ defmodule OrbitWeb.Router do
     pipe_through :accepts_html
     pipe_through :authenticated
 
-    get "/admin/rfid", AdminController, :get_rfid
-    post "/admin/rfid", AdminController, :post_rfid
+    get "/admin/rfid", Admin.AdminController, :get_rfid
+    post "/admin/rfid", Admin.AdminController, :post_rfid
   end
 
   scope "/", OrbitWeb do
