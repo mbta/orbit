@@ -1,0 +1,24 @@
+<h1>admin/employee</h1>
+<p>Manually Create Employee</p>
+
+<.form for={%{}} action={~p"/admin/employee"} method="post">
+  <label class="block">First Name: <input name="first_name" type="text" /></label>
+  <label class="block">Preferred First: <input name="preferred_first" type="text" /></label>
+  <label class="block">Last Name: <input name="last_name" type="text" /></label>
+  <label class="block">Badge Number: X<input name="badge_number" type="text" required /></label>
+  <label class="block">Email: <input name="email" type="text" /></label>
+  <label class="block">
+    Area:
+    <select name="area">
+      <option value={nil}>null</option>
+      <%= for area <- [
+          "114"
+        ] do %>
+        <option value={area}><%= area %></option>
+      <% end %>
+    </select>
+  </label>
+  <button class="rounded border border-solid border-black hover:bg-gray-200 p-1" type="submit">
+    Write
+  </button>
+</.form>
