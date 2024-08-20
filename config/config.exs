@@ -2,6 +2,7 @@ import Config
 
 # Application config
 config :orbit,
+  allow_test_data?: false,
   ecto_repos: [Orbit.Repo],
   generators: [timestamp_type: :utc_datetime],
   force_https?: true,

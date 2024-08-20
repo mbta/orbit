@@ -8,6 +8,14 @@ defmodule OrbitWeb.Admin.AdminController do
 
   plug(OrbitWeb.Plugs.RequireAdmin)
 
+  plug(
+    OrbitWeb.Plugs.RequireAllowTestData
+    when action in [
+           :post_employee,
+           :post_rfid
+         ]
+  )
+
   @spec get_employee(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_employee(conn, _params) do
     render(conn, :employee, layout: false)
