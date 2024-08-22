@@ -19,7 +19,7 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
               </label>
             </div>
             <div>
-            <label >
+            <label>
               <input type="checkbox" name="groups[]" value="orbit-admin">
               orbit-admin group
             </label>

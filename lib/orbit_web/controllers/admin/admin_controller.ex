@@ -2,8 +2,8 @@ defmodule OrbitWeb.Admin.AdminController do
   use OrbitWeb, :controller
   import Ecto.Query
 
-  alias Orbit.Employee
   alias Orbit.BadgeSerial
+  alias Orbit.Employee
   alias Orbit.Repo
 
   plug(OrbitWeb.Plugs.RequireAdmin)
