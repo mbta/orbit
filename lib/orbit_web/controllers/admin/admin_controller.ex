@@ -38,7 +38,7 @@ defmodule OrbitWeb.Admin.AdminController do
       end
 
     area =
-      case Integer.parse(params["area"]) do
+      case params["area"] && Integer.parse(params["area"]) do
         {area, ""} -> area
         _ -> nil
       end
