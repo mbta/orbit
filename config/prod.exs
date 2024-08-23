@@ -4,7 +4,6 @@ import Config
 
 config :orbit,
   # loaded at compile time
-  allow_test_data?: System.get_env("ALLOW_TEST_DATA", "") == "yes",
   release: System.get_env("RELEASE")
 
 config :orbit, Orbit.Repo,

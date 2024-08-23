@@ -9,7 +9,9 @@ import Config
 if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
-  config :orbit, environment: System.get_env("ENVIRONMENT")
+  config :orbit,
+    allow_test_data?: System.get_env("ALLOW_TEST_DATA", "") == "yes",
+    environment: System.get_env("ENVIRONMENT")
 
   config :orbit, Orbit.Repo,
     socket_options: maybe_ipv6,
