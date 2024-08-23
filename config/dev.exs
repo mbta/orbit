@@ -3,6 +3,7 @@ import Config
 # Application config
 config :orbit,
   # Enable dev routes for dashboard and mailbox
+  allow_test_data?: true,
   dev_routes: true,
   release: "local",
   force_https?: false

@@ -42,7 +42,7 @@ defmodule OrbitWeb.ConnCase do
         |> Auth.login(
           "user@example.com",
           30,
-          [],
+          tags[:groups] || [],
           "https://localhost/fake/logout"
         )
       else

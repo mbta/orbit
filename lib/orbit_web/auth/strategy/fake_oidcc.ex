@@ -12,8 +12,21 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
         <html>
           <h1>Fake Keycloak/Oidcc</h1>
           <form action="/auth/keycloak/callback">
-            <label>Email: <input type="email" name="email" value="user@example.com"></label>
-            <input type="submit" value="Log In">
+            <div>
+              <label>
+                Email:
+                <input type="email" name="email" value="user@example.com">
+              </label>
+            </div>
+            <div>
+            <label>
+              <input type="checkbox" name="groups[]" value="orbit-admin">
+              orbit-admin group
+            </label>
+            </div>
+            <div>
+              <input type="submit" value="Log In">
+            </div>
           </form>
         </html>
       )

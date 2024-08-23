@@ -66,6 +66,16 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
+    pipe_through :accepts_html
+    pipe_through :authenticated
+
+    get "/admin/employee", Admin.AdminController, :get_employee
+    post "/admin/employee", Admin.AdminController, :post_employee
+    get "/admin/rfid", Admin.AdminController, :get_rfid
+    post "/admin/rfid", Admin.AdminController, :post_rfid
+  end
+
+  scope "/", OrbitWeb do
     # no pipe
     get "/_health", HealthController, :index
     get "/_health_db", HealthDbController, :index
