@@ -26,30 +26,31 @@ export const Home = (): ReactElement => {
         </button>
       </section>
       <section className="w-full bg-gray-100/50 py-5">
-        <div className="mx-auto max-w-lg px-2">
-          <p className="font-semibold">Export sign in records</p>
-        </div>
-        <div className="mt-5 flex justify-between gap-4 items-end mb-3 max-w-lg mx-auto px-2">
-          <label className="flex flex-grow flex-col">
-            <span className="text-sm">Service Date</span>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(evt) => {
-                setSelectedDate(evt.target.value);
-              }}
-              className="rounded h-10 bg-gray-100"
-            />
-          </label>
-          <button
-            className="rounded border border-gray-300 hover:bg-gray-100 p-2 h-10"
-            onClick={() => {
-              console.log("TODO");
-            }}
-          >
-            Export Records
-          </button>
-        </div>
+        <form action="/sign-in-export" method="get" target="_blank">
+          <div className="mx-auto max-w-lg px-2">
+            <p className="font-semibold">Export sign in records</p>
+          </div>
+          <div className="mt-5 flex justify-between gap-4 items-end mb-3 max-w-lg mx-auto px-2">
+            <label className="flex flex-grow flex-col">
+              <span className="text-sm">Service Date</span>
+              <input
+                type="date"
+                name="date"
+                value={selectedDate}
+                onChange={(evt) => {
+                  setSelectedDate(evt.target.value);
+                }}
+                className="rounded h-10 bg-gray-100"
+              />
+            </label>
+            <button
+              className="rounded border border-gray-300 hover:bg-gray-100 p-2 h-10"
+              type="submit"
+            >
+              Export Records
+            </button>
+          </div>
+        </form>
       </section>
       <section className="max-w-lg mx-auto px-2 py-5">
         <p className="font-semibold mb-3">Today&apos;s sign ins</p>
