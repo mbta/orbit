@@ -35,19 +35,19 @@ defmodule OrbitWeb.SignInExportControllerTest do
       assert [
                %{
                  "Location" => "Orient Heights",
-                 "Method" => "manual",
+                 "Method" => "type",
                  "Signer Badge #" => "employee_badge0",
                  "Signer Name" => "Preferredy Person",
                  "Text Version" => "1",
-                 "Time" => "2024-08-28T17:00:00-04:00"
+                 "Time" => "2024-08-28 17:00:00"
                },
                %{
                  "Location" => "Orient Heights",
-                 "Method" => "nfc",
+                 "Method" => "tap",
                  "Signer Badge #" => "employee_badge1",
                  "Signer Name" => "Preferredy Person",
                  "Text Version" => "1",
-                 "Time" => "2024-08-28T17:10:00-04:00"
+                 "Time" => "2024-08-28 17:10:00"
                }
              ] = result
     end

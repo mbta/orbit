@@ -38,11 +38,18 @@ defmodule OrbitWeb.SignInExportController do
       )
       |> Enum.map(
         &%{
-          time: &1.signed_in_at |> DateTime.shift_zone!(@timezone) |> DateTime.to_iso8601(),
+          time:
+            &1.signed_in_at
+            |> DateTime.shift_zone!(@timezone)
+            |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{0m}:{0s}"),
           location: "Orient Heights",
           signer_badge: &1.signed_in_employee.badge_number,
           signer_name: Employee.display_name(&1.signed_in_employee),
-          method: &1.sign_in_method,
+          method:
+            case &1.sign_in_method do
+              :nfc -> "tap"
+              :manual -> "type"
+            end,
           text_version: 1
         }
       )
