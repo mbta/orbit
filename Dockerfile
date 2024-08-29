@@ -15,7 +15,7 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-FROM node:20.16.0-alpine3.19 AS node
+FROM node:20.17.0-alpine3.19 AS node
 
 # npm deps
 ENV NODE_ENV=production
