@@ -56,7 +56,7 @@ defmodule Orbit.MixProject do
       {:hackney, "== 1.20.1"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
-       tag: "== v2.1.5",
+       tag: "v2.1.5",
        sparse: "optimized",
        app: false,
        compile: false,
