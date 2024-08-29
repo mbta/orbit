@@ -15,8 +15,17 @@ defmodule OrbitWeb.SignInExportControllerTest do
       {:ok, signed_in_at1, _offset} = DateTime.from_iso8601("2024-08-28T17:00:00-04:00")
       {:ok, signed_in_at2, _offset} = DateTime.from_iso8601("2024-08-28T17:10:00-04:00")
 
-      insert(:operator_sign_in, %{signed_in_at: signed_in_at1, sign_in_method: :manual})
-      insert(:operator_sign_in, %{signed_in_at: signed_in_at2, sign_in_method: :nfc})
+      insert(:operator_sign_in, %{
+        signed_in_at: signed_in_at1,
+        sign_in_method: :manual,
+        signed_in_employee: build(:employee, %{badge_number: "1234"})
+      })
+
+      insert(:operator_sign_in, %{
+        signed_in_at: signed_in_at2,
+        sign_in_method: :nfc,
+        signed_in_employee: build(:employee, %{badge_number: "5678"})
+      })
 
       conn =
         get(conn, ~p"/sign-in-export", %{
@@ -36,7 +45,7 @@ defmodule OrbitWeb.SignInExportControllerTest do
                %{
                  "Location" => "Orient Heights",
                  "Method" => "type",
-                 "Signer Badge #" => "employee_badge0",
+                 "Signer Badge #" => "1234",
                  "Signer Name" => "Preferredy Person",
                  "Text Version" => "1",
                  "Time" => "2024-08-28 17:00:00"
@@ -44,7 +53,7 @@ defmodule OrbitWeb.SignInExportControllerTest do
                %{
                  "Location" => "Orient Heights",
                  "Method" => "tap",
-                 "Signer Badge #" => "employee_badge1",
+                 "Signer Badge #" => "5678",
                  "Signer Name" => "Preferredy Person",
                  "Text Version" => "1",
                  "Time" => "2024-08-28 17:10:00"
