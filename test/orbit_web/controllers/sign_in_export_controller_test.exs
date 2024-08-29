@@ -12,13 +12,15 @@ defmodule OrbitWeb.SignInExportControllerTest do
 
     @tag :authenticated
     test "returns CSV export", %{conn: conn} do
-      {:ok, signed_in_at, _offset} = DateTime.from_iso8601("2024-08-28T17:00:00-04:00")
+      {:ok, signed_in_at1, _offset} = DateTime.from_iso8601("2024-08-28T17:00:00-04:00")
+      {:ok, signed_in_at2, _offset} = DateTime.from_iso8601("2024-08-28T17:10:00-04:00")
 
-      insert(:operator_sign_in, %{signed_in_at: signed_in_at})
+      insert(:operator_sign_in, %{signed_in_at: signed_in_at1, sign_in_method: :manual})
+      insert(:operator_sign_in, %{signed_in_at: signed_in_at2, sign_in_method: :nfc})
 
       conn =
         get(conn, ~p"/sign-in-export", %{
-          "date" => signed_in_at |> DateTime.to_date() |> Date.to_string()
+          "date" => signed_in_at1 |> DateTime.to_date() |> Date.to_string()
         })
 
       csv = response(conn, :ok)
@@ -38,6 +40,14 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "Signer Name" => "Preferredy Person",
                  "Text Version" => "1",
                  "Time" => "2024-08-28T17:00:00-04:00"
+               },
+               %{
+                 "Location" => "Orient Heights",
+                 "Method" => "nfc",
+                 "Signer Badge #" => "employee_badge1",
+                 "Signer Name" => "Preferredy Person",
+                 "Text Version" => "1",
+                 "Time" => "2024-08-28T17:10:00-04:00"
                }
              ] = result
     end
