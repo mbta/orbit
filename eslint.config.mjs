@@ -93,7 +93,7 @@ export default tseslint.config(
       ...pluginJest.configs["flat/style"].rules,
       ...pluginJest.configs["flat/recommended"].rules,
       ...pluginJestDom.configs["flat/recommended"].rules,
-      ...pluginTestingLibrary.configs.react.rules,
+      ...pluginTestingLibrary.configs["flat/react"].rules,
       // empty functions are fine
       "@typescript-eslint/no-empty-function": "off",
       // expect.any is untyped and triggers this all the time.
