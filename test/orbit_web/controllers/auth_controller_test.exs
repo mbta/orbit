@@ -36,7 +36,6 @@ defmodule OrbitWeb.AuthControllerTest do
       assert redirected_to(conn) == "/help"
     end
 
-    @tag capture_log: true
     test "invalid credentials redirect to /login", %{conn: conn} do
       conn = get(conn, ~p"/auth/keycloak/callback?#{%{"invalid" => "true"}}")
       assert redirected_to(conn) == "/login"
