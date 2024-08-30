@@ -8,15 +8,23 @@ defmodule OrbitWeb.SignInExportController do
 
   @timezone Application.compile_env!(:orbit, :timezone)
 
-  @spec get(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def get(conn, %{"date" => date_string}) do
-    case Date.from_iso8601(date_string) do
-      {:ok, date} ->
-        conn
-        |> put_resp_content_type("application/csv")
-        |> send_resp(200, fetch_sign_ins_csv(date))
+  @spec get_redirect(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_redirect(conn, %{"date" => date_string}) do
+    filename = "sign-ins-#{date_string}.csv"
 
-      {:error, _} ->
+    redirect(conn, to: ~p"/sign-in-export/#{filename}")
+  end
+
+  @spec get(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get(conn, %{"filename" => filename}) do
+    with %{"date_string" => date_string} <-
+           Regex.named_captures(~r"sign-ins-(?<date_string>.+)\.csv", filename),
+         {:ok, date} <- Date.from_iso8601(date_string) do
+      conn
+      |> put_resp_content_type("application/csv")
+      |> send_resp(200, fetch_sign_ins_csv(date))
+    else
+      _ ->
         conn
         |> put_status(:bad_request)
         |> text("Bad Request")

@@ -3,9 +3,24 @@ defmodule OrbitWeb.SignInExportControllerTest do
 
   import Orbit.Factory
 
-  describe "get/2" do
+  describe "get_redirect/2" do
     test "unauthenticated requests get redirected to login", %{conn: conn} do
       conn = get(conn, ~p"/sign-in-export", %{"date" => "2024-08-28"})
+
+      assert redirected_to(conn) == ~p"/login"
+    end
+
+    @tag :authenticated
+    test "redirects to CSV filename path", %{conn: conn} do
+      conn = get(conn, ~p"/sign-in-export", %{"date" => "2024-08-28"})
+
+      assert redirected_to(conn) == ~p"/sign-in-export/sign-ins-2024-08-28.csv"
+    end
+  end
+
+  describe "get/2" do
+    test "unauthenticated requests get redirected to login", %{conn: conn} do
+      conn = get(conn, ~p"/sign-in-export/sign-ins-2024-08-20.csv")
 
       assert redirected_to(conn) == ~p"/login"
     end
@@ -27,10 +42,11 @@ defmodule OrbitWeb.SignInExportControllerTest do
         signed_in_employee: build(:employee, %{badge_number: "5678"})
       })
 
+      filename =
+        "sign-ins-" <> (signed_in_at1 |> DateTime.to_date() |> Date.to_string()) <> ".csv"
+
       conn =
-        get(conn, ~p"/sign-in-export", %{
-          "date" => signed_in_at1 |> DateTime.to_date() |> Date.to_string()
-        })
+        get(conn, ~p"/sign-in-export/#{filename}")
 
       csv = response(conn, :ok)
 
@@ -62,8 +78,17 @@ defmodule OrbitWeb.SignInExportControllerTest do
     end
 
     @tag :authenticated
+    test "returns a bad request response for a malformed overall filename", %{conn: conn} do
+      filename = "foo.pdf"
+      conn = get(conn, ~p"/sign-in-export/#{filename}")
+
+      assert text_response(conn, :bad_request)
+    end
+
+    @tag :authenticated
     test "returns a bad request response for a malformed date", %{conn: conn} do
-      conn = get(conn, ~p"/sign-in-export", %{"date" => "invalid"})
+      filename = "sign-ins-bad-date.csv"
+      conn = get(conn, ~p"/sign-in-export/#{filename}")
 
       assert text_response(conn, :bad_request)
     end
