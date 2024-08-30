@@ -37,7 +37,7 @@ defmodule Orbit.Import.PersonnelTest do
                preferred_first: "Neems",
                middle_initial: "A",
                last_name: "Smith",
-               email: "NEMO@MBTA.COM",
+               email: "nemo@mbta.com",
                area: 114
              } = Repo.one(from(e in Employee, where: e.first_name == "Nemo"))
     end

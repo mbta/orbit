@@ -38,7 +38,7 @@ defmodule Orbit.Import.Personnel do
           preferred_first: empty_to_nil(&1["PREF_FIRST_NM_SRCH"]),
           middle_initial: String.at(&1["MIDDLE_NAME"], 0),
           last_name: &1["LAST_NAME"],
-          email: empty_to_nil(&1["WORK_EMAIL_ADDRESS"]),
+          email: &1["WORK_EMAIL_ADDRESS"] |> String.downcase() |> empty_to_nil(),
           badge_number: String.trim_leading(&1["EMPLOYEE_ID"], "0"),
           area: String.to_integer(&1[@area_value_field])
         }
