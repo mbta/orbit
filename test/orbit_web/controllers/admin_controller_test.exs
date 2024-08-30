@@ -1,6 +1,7 @@
 defmodule OrbitWeb.AdminControllerTest do
   use OrbitWeb.ConnCase
   import Ecto.Query
+  import Orbit.Factory
   import Test.Support.Helpers
 
   alias Orbit.BadgeSerial
@@ -82,6 +83,31 @@ defmodule OrbitWeb.AdminControllerTest do
       assert response(conn, 200)
 
       assert %BadgeSerial{employee: %Employee{badge_number: "X123"}} =
+               Repo.one!(
+                 from(badge_serial in BadgeSerial,
+                   where: badge_serial.badge_serial == "9999",
+                   preload: [:employee]
+                 )
+               )
+    end
+
+    test "can overwrite old data", %{conn: conn} do
+      insert(:employee,
+        badge_number: "X123",
+        badge_serials: [build(:badge_serial, badge_serial: "9999")]
+      )
+
+      insert(:employee, badge_number: "X124")
+
+      conn =
+        post(conn, ~p"/admin/rfid", %{
+          "badge_number" => "X124",
+          "badge_serial" => "9999"
+        })
+
+      assert response(conn, 200)
+
+      assert %BadgeSerial{employee: %Employee{badge_number: "X124"}} =
                Repo.one!(
                  from(badge_serial in BadgeSerial,
                    where: badge_serial.badge_serial == "9999",

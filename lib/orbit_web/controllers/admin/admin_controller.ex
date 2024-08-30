@@ -96,7 +96,10 @@ defmodule OrbitWeb.Admin.AdminController do
         badge_serial: badge_serial
       }
       |> BadgeSerial.changeset()
-      |> Repo.insert!()
+      |> Repo.insert!(
+        on_conflict: {:replace_all_except, [:id, :inserted_at]},
+        conflict_target: :badge_serial
+      )
 
       text(conn, "OK")
     else
