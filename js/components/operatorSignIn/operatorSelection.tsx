@@ -51,6 +51,7 @@ export const OperatorSelection = ({
       <Or />
       <label htmlFor={inputId}>Search for an Operator</label>
       <input
+        className="h-[61px]"
         id={inputId}
         inputMode="numeric"
         onChange={(evt) => {
@@ -70,7 +71,7 @@ export const OperatorSelection = ({
           onOK(badgeEntry);
         }}
         className={className([
-          "rounded bg-blue text-gray-200 mt-3 w-1/4 max-w-32 mx-auto",
+          "rounded bg-gray-500 text-gray-200 mt-3 w-full max-w-64 mx-auto h-10",
           !buttonEnabled && "opacity-50",
         ])}
       >
@@ -125,7 +126,7 @@ const NfcSpinner = (): ReactElement => {
 };
 
 const NfcUnsupported = (): ReactElement => (
-  <div className="my-4 flex flex-col items-center gap-3 p-6 text-center bg-gray-200">
+  <div className="my-4 flex flex-col items-center gap-3 p-8 text-center bg-gray-200">
     <p>
       Badge Tap is not supported on this device and/or browser. Please use an
       Orbit provided Android device and Google Chrome to use Badge Tap

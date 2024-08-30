@@ -1,7 +1,7 @@
+import { List } from "./operatorSignIn/list";
 import { OperatorSignInModal } from "./operatorSignIn/operatorSignInModal";
 import { DateTime } from "luxon";
 import { ReactElement, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 
 export const Home = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -10,63 +10,58 @@ export const Home = (): ReactElement => {
   const today = useMemo<string>(() => DateTime.now().toISODate(), []);
   const [selectedDate, setSelectedDate] = useState<string>(today);
   return (
-    <div className="max-w-lg mx-auto">
-      <div className="flex justify-between">
-        <hgroup className="mb-3">
-          <h1 className="text-xl">Operators</h1>
+    <main className="text-gray-500">
+      <section className="max-w-lg mx-auto px-2 py-5">
+        <hgroup className="mb-5">
+          <h1 className="text-[28px] font-semibold">Operators</h1>
           <p>Search and sign in operators</p>
         </hgroup>
         <button
-          className="rounded bg-gray-500 hover:bg-gray-400 text-white p-1 self-center"
+          className="w-full rounded bg-gray-500 hover:bg-gray-400 text-white font-semibold p-1 h-10"
           onClick={() => {
             setModalOpen(true);
           }}
         >
           Sign In Operator
         </button>
-      </div>
-      <div className="flex justify-between gap-2 items-end mb-3">
-        <label className="flex flex-col">
-          <span className="text-sm">Service Date</span>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(evt) => {
-              setSelectedDate(evt.target.value);
+      </section>
+      <section className="w-full bg-gray-100/50 py-5">
+        <div className="mx-auto max-w-lg px-2">
+          <p className="font-semibold">Export sign in records</p>
+        </div>
+        <div className="mt-5 flex justify-between gap-4 items-end mb-3 max-w-lg mx-auto px-2">
+          <label className="flex flex-grow flex-col">
+            <span className="text-sm">Service Date</span>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(evt) => {
+                setSelectedDate(evt.target.value);
+              }}
+              className="rounded h-10 bg-gray-100"
+            />
+          </label>
+          <button
+            className="rounded border border-gray-300 hover:bg-gray-100 p-2 h-10"
+            onClick={() => {
+              console.log("TODO");
             }}
-            className="rounded"
-          />
-        </label>
-        <button
-          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1 disabled:text-gray-300"
-          disabled={selectedDate === today}
-          onClick={() => {
-            setSelectedDate(today);
-          }}
-        >
-          Today
-        </button>
-        <button
-          className="rounded border border-gray-300 hover:bg-gray-100 px-2 py-1"
-          onClick={() => {
-            console.log("TODO");
-          }}
-        >
-          Export Records
-        </button>
-      </div>
-      <p className="mb-3">(Search will go here)</p>
-      <Link className="block" to="/list">
-        <button className="bg-blue text-gray-200 rounded-md p-2 text-sm">
-          Sign-in history
-        </button>
-      </Link>
+          >
+            Export Records
+          </button>
+        </div>
+      </section>
+      <section className="max-w-lg mx-auto px-2 py-5">
+        <p className="font-semibold mb-3">Today&apos;s sign ins</p>
+        <List line="blue" />
+      </section>
+
       <OperatorSignInModal
         show={modalOpen}
         close={() => {
           setModalOpen(false);
         }}
       />
-    </div>
+    </main>
   );
 };

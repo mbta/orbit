@@ -9,11 +9,9 @@ export const useSignInText = (): {
   return {
     version: 1,
     text: (
-      <ul className="m-8 mr-0 list-disc">
-        <li className="mb-4">
-          I do not have an electronic device in my possession.
-        </li>
-        <li className="mb-4">
+      <ul className="my-8 mx-10 list-disc leading-tight">
+        <li>I do not have an electronic device in my possession.</li>
+        <li>
           I am fit for duty, and I do not possess nor am I under the influence
           of alcohol, prohibited drugs, or non-authorized medication, whether
           prescribed or non-prescribed.

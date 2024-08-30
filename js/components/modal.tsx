@@ -16,7 +16,7 @@ export const Modal = ({
     <RestartModal
       show={show}
       onHide={onClose}
-      className="w-2/3 fixed z-modal-content flex max-h-[calc(100vh-3.5rem)] flex-col bg-gray-200 border-2 border-black p-1 -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4"
+      className="w-2/3 fixed z-modal-content flex max-h-[calc(100vh-3.5rem)] flex-col bg-gray-200 border-2 border-black p-6 -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4"
       renderBackdrop={(props) => (
         <div
           {...props}

@@ -39,7 +39,7 @@ describe("List", () => {
         <List line="blue" />
       </MemoryRouter>,
     );
-    expect(view.getByText("12:45 PM")).toBeInTheDocument();
+    expect(view.getByText("12:45PM")).toBeInTheDocument();
     expect(
       view.getByText(
         `${EMPLOYEES[0].preferred_first} ${EMPLOYEES[0].last_name}`,
