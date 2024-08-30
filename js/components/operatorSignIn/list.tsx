@@ -17,7 +17,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   }
 
   return (
-    <table className="break-word">
+    <table className="break-words">
       <colgroup>
         <col className="w-1/3" />
         <col className="w-1/5" />
