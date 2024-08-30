@@ -13,7 +13,7 @@ import userEvent from "@testing-library/user-event";
 
 const EMPLOYEES: ApiResult<Employee[]> = {
   status: "ok",
-  result: [employeeFactory.build({ badge: "123", badge_serials: ["56"] })],
+  result: [employeeFactory.build({ badge: "123" })],
 };
 
 jest.mock("../../../hooks/useNfc", () => ({

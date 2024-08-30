@@ -6,5 +6,4 @@ export const employeeFactory = Factory.define<Employee>(({ sequence }) => ({
   preferred_first: "Preferredy",
   last_name: "Lasty",
   badge: sequence.toString(),
-  badge_serials: [`serial${sequence.toString()}`],
 }));

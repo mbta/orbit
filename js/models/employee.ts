@@ -5,7 +5,6 @@ export const Employee = z.object({
   preferred_first: z.string().nullable(),
   last_name: z.string(),
   badge: z.string(),
-  badge_serials: z.array(z.string()),
 });
 
 export const displayName = (emp: Employee) => {
