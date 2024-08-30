@@ -30,16 +30,29 @@ defmodule OrbitWeb.SignInExportControllerTest do
       {:ok, signed_in_at1, _offset} = DateTime.from_iso8601("2024-08-28T17:00:00-04:00")
       {:ok, signed_in_at2, _offset} = DateTime.from_iso8601("2024-08-28T17:10:00-04:00")
 
+      official_user1 = insert(:user, %{email: "official1@mbta.com"})
+      official_user2 = insert(:user, %{email: "official2@mbta.com"})
+
+      insert(:employee, %{
+        first_name: "Fake",
+        preferred_first: nil,
+        last_name: "Official",
+        badge_number: "9898",
+        email: "official1@mbta.com"
+      })
+
       insert(:operator_sign_in, %{
         signed_in_at: signed_in_at1,
         sign_in_method: :manual,
-        signed_in_employee: build(:employee, %{badge_number: "1234"})
+        signed_in_employee: build(:employee, %{badge_number: "1234"}),
+        signed_in_by_user: official_user1
       })
 
       insert(:operator_sign_in, %{
         signed_in_at: signed_in_at2,
         sign_in_method: :nfc,
-        signed_in_employee: build(:employee, %{badge_number: "5678"})
+        signed_in_employee: build(:employee, %{badge_number: "5678"}),
+        signed_in_by_user: official_user2
       })
 
       filename =
@@ -63,6 +76,8 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "Method" => "type",
                  "Signer Badge #" => "1234",
                  "Signer Name" => "Preferredy Person",
+                 "Official Badge #" => "9898",
+                 "Official Name" => "Fake Official",
                  "Text Version" => "1",
                  "Time" => "2024-08-28 17:00:00"
                },
@@ -71,6 +86,8 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "Method" => "tap",
                  "Signer Badge #" => "5678",
                  "Signer Name" => "Preferredy Person",
+                 "Official Badge #" => "",
+                 "Official Name" => "official2@mbta.com",
                  "Text Version" => "1",
                  "Time" => "2024-08-28 17:10:00"
                }
