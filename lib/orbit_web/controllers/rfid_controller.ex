@@ -5,6 +5,8 @@ defmodule OrbitWeb.RfidController do
 
   alias Orbit.Repo
 
+  # TODO once we have permissions, require sign in permissions in order to use this endpoint
+
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"badge_serial" => badge_serial}) do
     badge_number =
