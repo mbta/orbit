@@ -1,7 +1,5 @@
-import { ApiResult } from "../../api";
 import { fetchEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
-import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { BadgeEntry } from "./types";
 import { ReactElement, useEffect, useId, useState } from "react";
@@ -11,13 +9,11 @@ export const OperatorSelection = ({
   onOK,
   onBadgeLookupError,
   onNfcScanError,
-  employees,
 }: {
   nfcSupported: boolean;
   onOK: (badgeEntry: BadgeEntry) => void;
   onBadgeLookupError: () => void;
   onNfcScanError: () => void;
-  employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
   const [badgeEntry, setBadgeEntry] = useState<BadgeEntry | null>(null);
@@ -38,7 +34,7 @@ export const OperatorSelection = ({
     } else if (nfcResult.status === "error") {
       onNfcScanError();
     }
-  }, [nfcResult, employees, onOK, onBadgeLookupError, onNfcScanError]);
+  }, [nfcResult, onOK, onBadgeLookupError, onNfcScanError]);
 
   const buttonEnabled = badgeEntry !== null;
 

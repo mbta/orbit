@@ -117,7 +117,6 @@ export const OperatorSignInModal = ({
           onNfcScanError={() => {
             setComplete(CompleteState.NFC_SCAN_ERROR);
           }}
-          employees={employees}
         />
       : <Attestation
           badge={badge.number}

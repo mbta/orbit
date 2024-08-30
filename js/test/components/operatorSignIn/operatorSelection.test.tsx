@@ -1,20 +1,12 @@
-import { ApiResult } from "../../../api";
 import { OperatorSelection } from "../../../components/operatorSignIn/operatorSelection";
 import { fetchEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
 import { useNfc } from "../../../hooks/useNfc";
-import { Employee } from "../../../models/employee";
-import { employeeFactory } from "../../helpers/factory";
 import {
   neverPromise,
   PromiseWithResolvers,
 } from "../../helpers/promiseWithResolvers";
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-
-const EMPLOYEES: ApiResult<Employee[]> = {
-  status: "ok",
-  result: [employeeFactory.build({ badge: "123" })],
-};
 
 jest.mock("../../../hooks/useNfc", () => ({
   __esModule: true,
@@ -36,7 +28,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={jest.fn()}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -50,7 +41,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={jest.fn()}
         onNfcScanError={jest.fn()}
         nfcSupported={false}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -66,7 +56,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={jest.fn()}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -83,7 +72,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={jest.fn()}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -108,7 +96,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -125,7 +112,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -151,7 +137,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -168,7 +153,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={jest.fn()}
         nfcSupported={true}
-        employees={{ ...EMPLOYEES, result: [] }}
       />,
     );
 
@@ -193,7 +177,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={onNfcScanError}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
@@ -208,7 +191,6 @@ describe("OperatorSelection", () => {
         onBadgeLookupError={onBadgeLookupError}
         onNfcScanError={onNfcScanError}
         nfcSupported={true}
-        employees={EMPLOYEES}
       />,
     );
 
