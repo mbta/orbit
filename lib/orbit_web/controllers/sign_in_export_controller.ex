@@ -35,54 +35,51 @@ defmodule OrbitWeb.SignInExportController do
   defp fetch_sign_ins_csv(service_date) do
     {start_datetime, end_datetime} = Util.Time.service_date_boundaries(service_date)
 
-    rows =
-      Repo.all(
-        from operator_sign_in in OperatorSignIn,
-          where:
-            ^start_datetime < operator_sign_in.signed_in_at and
-              operator_sign_in.signed_in_at < ^end_datetime,
-          order_by: operator_sign_in.signed_in_at,
-          join: e in assoc(operator_sign_in, :signed_in_employee),
-          join: u in assoc(operator_sign_in, :signed_in_by_user),
-          preload: [signed_in_employee: e, signed_in_by_user: u],
-          left_join: signed_in_by_employee in Employee,
-          on: u.email == signed_in_by_employee.email,
-          select: %{
-            operator_sign_in: operator_sign_in,
-            signed_in_by_employee: signed_in_by_employee
-          }
-      )
-      |> Enum.map(
-        &%{
-          time:
-            &1.operator_sign_in.signed_in_at
-            |> DateTime.shift_zone!(@timezone)
-            |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{0m}:{0s}"),
-          location: "Orient Heights",
-          signer_badge: &1.operator_sign_in.signed_in_employee.badge_number,
-          signer_name: Employee.display_name(&1.operator_sign_in.signed_in_employee),
-          official_badge:
-            if &1.signed_in_by_employee do
-              &1.signed_in_by_employee.badge_number
-            else
-              nil
-            end,
-          official_name:
-            if &1.signed_in_by_employee do
-              Employee.display_name(&1.signed_in_by_employee)
-            else
-              &1.operator_sign_in.signed_in_by_user.email
-            end,
-          method:
-            case &1.operator_sign_in.sign_in_method do
-              :nfc -> "tap"
-              :manual -> "type"
-            end,
-          text_version: 1
+    Repo.all(
+      from operator_sign_in in OperatorSignIn,
+        where:
+          ^start_datetime < operator_sign_in.signed_in_at and
+            operator_sign_in.signed_in_at < ^end_datetime,
+        order_by: operator_sign_in.signed_in_at,
+        join: e in assoc(operator_sign_in, :signed_in_employee),
+        join: u in assoc(operator_sign_in, :signed_in_by_user),
+        preload: [signed_in_employee: e, signed_in_by_user: u],
+        left_join: signed_in_by_employee in Employee,
+        on: u.email == signed_in_by_employee.email,
+        select: %{
+          operator_sign_in: operator_sign_in,
+          signed_in_by_employee: signed_in_by_employee
         }
-      )
-
-    rows
+    )
+    |> Enum.map(
+      &%{
+        time:
+          &1.operator_sign_in.signed_in_at
+          |> DateTime.shift_zone!(@timezone)
+          |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{0m}:{0s}"),
+        location: "Orient Heights",
+        signer_badge: &1.operator_sign_in.signed_in_employee.badge_number,
+        signer_name: Employee.display_name(&1.operator_sign_in.signed_in_employee),
+        official_badge:
+          if &1.signed_in_by_employee do
+            &1.signed_in_by_employee.badge_number
+          else
+            nil
+          end,
+        official_name:
+          if &1.signed_in_by_employee do
+            Employee.display_name(&1.signed_in_by_employee)
+          else
+            &1.operator_sign_in.signed_in_by_user.email
+          end,
+        method:
+          case &1.operator_sign_in.sign_in_method do
+            :nfc -> "tap"
+            :manual -> "type"
+          end,
+        text_version: 1
+      }
+    )
     |> CSV.encode(
       headers: [
         time: "Time",
