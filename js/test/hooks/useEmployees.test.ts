@@ -1,7 +1,7 @@
 import { fetch } from "../../browser";
 import {
+  fetchEmployeeByBadgeSerial,
   findEmployeeByBadge,
-  findEmployeeByBadgeSerial,
   lookupDisplayName,
   useEmployees,
 } from "../../hooks/useEmployees";
@@ -72,18 +72,31 @@ describe("findEmployeeByBadge", () => {
   });
 });
 
-describe("findEmployeeByBadgeSerial", () => {
-  test("finds an employee in an array by badge number", () => {
-    const employeeBadgeSerial = TEST_PARSED[0].badge_serials[0];
+describe("fetchEmployeeByBadgeSerial", () => {
+  test("finds an employee", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
 
-    expect(findEmployeeByBadgeSerial(TEST_PARSED, employeeBadgeSerial)).toEqual(
-      TEST_PARSED[0],
-    );
+    const result = fetchEmployeeByBadgeSerial("9999");
+
+    resolve({
+      status: 200,
+      json: () =>
+        new Promise((resolve) => {
+          resolve({ data: "123" });
+        }),
+    } as Response);
+
+    await expect(result).resolves.toBe("123");
   });
 
-  test("returns undefined if not found", () => {
-    expect(
-      findEmployeeByBadgeSerial(TEST_PARSED, "random_serial"),
-    ).toBeUndefined();
+  test("rejects if employee isn't found", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = fetchEmployeeByBadgeSerial("9999");
+
+    resolve({ status: 404 } as Response);
+    await expect(result).toReject();
   });
 });

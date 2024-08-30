@@ -1,9 +1,14 @@
 import { ApiResult } from "../../../api";
 import { OperatorSelection } from "../../../components/operatorSignIn/operatorSelection";
+import { fetchEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
 import { useNfc } from "../../../hooks/useNfc";
 import { Employee } from "../../../models/employee";
 import { employeeFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import {
+  neverPromise,
+  PromiseWithResolvers,
+} from "../../helpers/promiseWithResolvers";
+import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const EMPLOYEES: ApiResult<Employee[]> = {
@@ -17,6 +22,10 @@ jest.mock("../../../hooks/useNfc", () => ({
     result: { status: "reading" },
     abortController: new AbortController(),
   }),
+}));
+
+jest.mock("../../../hooks/useEmployees", () => ({
+  fetchEmployeeByBadgeSerial: jest.fn(() => neverPromise),
 }));
 
 describe("OperatorSelection", () => {
@@ -89,7 +98,7 @@ describe("OperatorSelection", () => {
     });
   });
 
-  test("executes onOK on successful badge tap", () => {
+  test("executes onOK on successful badge tap", async () => {
     const onOK = jest.fn();
     const onBadgeLookupError = jest.fn();
 
@@ -107,6 +116,8 @@ describe("OperatorSelection", () => {
       result: { status: "success", data: "56" },
       abortController: new AbortController(),
     });
+    const { promise, resolve } = PromiseWithResolvers<string>();
+    jest.mocked(fetchEmployeeByBadgeSerial).mockReturnValueOnce(promise);
 
     rerender(
       <OperatorSelection
@@ -118,13 +129,19 @@ describe("OperatorSelection", () => {
       />,
     );
 
-    expect(onOK).toHaveBeenCalledExactlyOnceWith({
-      number: "123",
-      method: "nfc",
+    act(() => {
+      resolve("123");
+    });
+
+    await waitFor(() => {
+      expect(onOK).toHaveBeenCalledExactlyOnceWith({
+        number: "123",
+        method: "nfc",
+      });
     });
   });
 
-  test("executes onBadgeLookupError on unsuccessful badge tap result lookup", () => {
+  test("executes onBadgeLookupError on unsuccessful badge tap result lookup", async () => {
     const onOK = jest.fn();
     const onBadgeLookupError = jest.fn();
 
@@ -142,6 +159,8 @@ describe("OperatorSelection", () => {
       result: { status: "success", data: "56" },
       abortController: new AbortController(),
     });
+    const { promise, reject } = PromiseWithResolvers<string>();
+    jest.mocked(fetchEmployeeByBadgeSerial).mockReturnValueOnce(promise);
 
     rerender(
       <OperatorSelection
@@ -153,7 +172,13 @@ describe("OperatorSelection", () => {
       />,
     );
 
-    expect(onBadgeLookupError).toHaveBeenCalledOnce();
+    act(() => {
+      reject(new Error("404"));
+    });
+
+    await waitFor(() => {
+      expect(onBadgeLookupError).toHaveBeenCalledOnce();
+    });
     expect(onOK).not.toHaveBeenCalled();
   });
 

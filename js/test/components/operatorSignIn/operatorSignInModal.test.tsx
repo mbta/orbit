@@ -1,11 +1,15 @@
 import { fetch } from "../../../browser";
 import { OperatorSignInModal } from "../../../components/operatorSignIn/operatorSignInModal";
-import { findEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
+import { fetchEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
 import { useNfc } from "../../../hooks/useNfc";
 import { nfcSupported } from "../../../util/nfc";
 import { employeeFactory } from "../../helpers/factory";
 import { putMetaData } from "../../helpers/metadata";
-import { render } from "@testing-library/react";
+import {
+  neverPromise,
+  PromiseWithResolvers,
+} from "../../helpers/promiseWithResolvers";
+import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const EMPLOYEES = [employeeFactory.build()];
@@ -14,8 +18,8 @@ jest.mock("../../../hooks/useEmployees", () => ({
     status: "ok",
     result: EMPLOYEES,
   })),
-  findEmployeeByBadge: jest.fn(() => EMPLOYEES),
-  findEmployeeByBadgeSerial: jest.fn(() => EMPLOYEES),
+  findEmployeeByBadge: jest.fn(() => EMPLOYEES[0]),
+  fetchEmployeeByBadgeSerial: jest.fn(() => neverPromise),
 }));
 
 jest.mock("../../../util/nfc", () => ({
@@ -95,7 +99,7 @@ describe("OperatorSignInModal", () => {
     expect(console.error).toHaveBeenCalledOnce();
   });
 
-  test("shows failure component when no operator is found after an NFC tap", () => {
+  test("shows failure component when no operator is found after an NFC tap", async () => {
     const close = jest.fn();
     const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
 
@@ -103,13 +107,20 @@ describe("OperatorSignInModal", () => {
       result: { status: "success", data: "bad_serial" },
       abortController: new AbortController(),
     });
-    jest.mocked(findEmployeeByBadgeSerial).mockReturnValueOnce(undefined);
+    const { promise, reject } = PromiseWithResolvers<string>();
+    jest.mocked(fetchEmployeeByBadgeSerial).mockReturnValueOnce(promise);
 
     view.rerender(<OperatorSignInModal show={true} close={close} />);
 
-    expect(
-      view.getByText(/something went wrong when looking up the owner/i),
-    ).toBeInTheDocument();
+    act(() => {
+      reject(new Error("not found"));
+    });
+
+    await waitFor(() => {
+      expect(
+        view.getByText(/something went wrong when looking up the owner/i),
+      ).toBeInTheDocument();
+    });
   });
 
   test("shows failure component when NFC tap fails", () => {

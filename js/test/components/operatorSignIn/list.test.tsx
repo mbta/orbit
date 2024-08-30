@@ -12,7 +12,6 @@ jest.mock("../../../hooks/useEmployees", () => ({
     result: EMPLOYEES,
   })),
   findEmployeeByBadge: jest.fn(() => EMPLOYEES[0]),
-  findEmployeeByBadgeSerial: jest.fn(() => EMPLOYEES[0]),
   lookupDisplayName: jest.fn(() => displayName(EMPLOYEES[0])),
 }));
 

@@ -1,5 +1,5 @@
 import { ApiResult } from "../../api";
-import { findEmployeeByBadgeSerial } from "../../hooks/useEmployees";
+import { fetchEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
@@ -25,17 +25,16 @@ export const OperatorSelection = ({
   const { result: nfcResult } = useNfc();
 
   useEffect(() => {
-    if (nfcResult.status === "success" && employees.status === "ok") {
-      const badge = findEmployeeByBadgeSerial(
-        employees.result,
-        nfcResult.data,
-      )?.badge;
-
-      if (badge) {
-        onOK({ number: badge, method: "nfc" });
-      } else {
-        onBadgeLookupError();
-      }
+    if (nfcResult.status === "success") {
+      const badgeSerial = nfcResult.data;
+      fetchEmployeeByBadgeSerial(badgeSerial).then(
+        (badge) => {
+          onOK({ number: badge, method: "nfc" });
+        },
+        () => {
+          onBadgeLookupError();
+        },
+      );
     } else if (nfcResult.status === "error") {
       onNfcScanError();
     }
