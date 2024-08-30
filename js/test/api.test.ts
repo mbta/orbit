@@ -1,4 +1,4 @@
-import { post, useApiResult } from "../api";
+import { get, post, useApiResult } from "../api";
 import { fetch, reload } from "../browser";
 import { putMetaData } from "./helpers/metadata";
 import { PromiseWithResolvers } from "./helpers/promiseWithResolvers";
@@ -31,6 +31,97 @@ describe("post", () => {
   });
 });
 
+describe("get", () => {
+  test("resolves with parsed data", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = get({
+      RawData: z.string(),
+      url: "/api/test",
+      parser: (s: string) => s + s,
+    });
+
+    resolve({
+      status: 200,
+      json: () =>
+        new Promise((resolve) => {
+          resolve({ data: "test" });
+        }),
+    } as Response);
+
+    await expect(result).resolves.toBe("testtest");
+  });
+
+  test("rejects on parsing error", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = get({
+      RawData: z.string(),
+      url: "/api/test",
+      parser: (s: string) => s,
+    });
+
+    resolve({
+      status: 200,
+      json: () =>
+        new Promise((resolve) => {
+          resolve({ data: { notAString: null } });
+        }),
+    } as Response);
+
+    await expect(result).toReject();
+  });
+
+  test("rejects if fetch rejects", async () => {
+    const { promise, reject } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = get({
+      RawData: z.string(),
+      url: "/api/test",
+      parser: (s: string) => s,
+    });
+
+    reject(new Error("fetch error"));
+    await expect(result).toReject();
+  });
+
+  test("rejects on HTTP error", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = get({
+      RawData: z.string(),
+      url: "/api/test",
+      parser: (s: string) => s,
+    });
+
+    resolve({ status: 500 } as Response);
+    await expect(result).toReject();
+  });
+
+  test("reloads on 404", async () => {
+    const { promise, resolve } = PromiseWithResolvers<Response>();
+
+    jest.mocked(fetch).mockReturnValue(promise);
+
+    const result = get({
+      RawData: z.string(),
+      url: "/api/test",
+      parser: (s: string) => s,
+    });
+
+    resolve({
+      status: 401,
+    } as Response);
+
+    await expect(result).toReject();
+    expect(reload).toHaveBeenCalled();
+  });
+});
+
 describe("useApiResult", () => {
   test("returns loading state", () => {
     const RawData = z.string();
@@ -57,13 +148,15 @@ describe("useApiResult", () => {
       initialProps: { RawData, url: "/api/test", parser },
     });
 
-    resolve({
-      status: 200,
-      json: () =>
-        new Promise((resolve) => {
-          resolve({ data: "test" });
-        }),
-    } as Response);
+    act(() => {
+      resolve({
+        status: 200,
+        json: () =>
+          new Promise((resolve) => {
+            resolve({ data: "test" });
+          }),
+      } as Response);
+    });
 
     await waitFor(() => {
       expect(result.current).toEqual({ status: "ok", result: "test" });
