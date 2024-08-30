@@ -23,6 +23,8 @@ export const OperatorSelection = ({
   useEffect(() => {
     if (nfcResult.status === "success") {
       const badgeSerial = nfcResult.data;
+      // TODO potential race condition if something changes before the fetch returns?
+      // maybe not, cuz useNfc locks in the state on a scan result, but it should probably be defended against anyway
       fetchEmployeeByBadgeSerial(badgeSerial).then(
         (badge) => {
           onOK({ number: badge, method: "nfc" });
