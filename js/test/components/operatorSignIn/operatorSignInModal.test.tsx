@@ -13,7 +13,9 @@ import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const EMPLOYEES = [employeeFactory.build()];
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 jest.mock("../../../hooks/useEmployees", () => ({
+  ...jest.requireActual("../../../hooks/useEmployees"),
   useEmployees: jest.fn().mockImplementation(() => ({
     status: "ok",
     result: EMPLOYEES,

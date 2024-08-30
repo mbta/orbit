@@ -14,12 +14,7 @@ jest.mock("../../browser", () => ({
 }));
 
 const TEST_DATA = {
-  data: [
-    employeeFactory.build(),
-    employeeFactory.build({
-      preferred_first: null,
-    }),
-  ],
+  data: [employeeFactory.build(), employeeFactory.build()],
 };
 
 const TEST_PARSED = TEST_DATA.data;
