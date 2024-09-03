@@ -48,6 +48,23 @@ defmodule OrbitWeb.AdminControllerTest do
       assert response(conn, 200)
       assert %Employee{} = Repo.one!(from(e in Employee, where: e.badge_number == "X123"))
     end
+
+    test "delete works", %{conn: conn} do
+      insert(:employee,
+        badge_number: "123",
+        badge_serials: [build(:badge_serial)]
+      )
+
+      conn = delete(conn, ~p"/admin/employee", %{"badge_number" => "123"})
+      assert response(conn, 200)
+      assert [] = Repo.all(Employee)
+      assert [] = Repo.all(BadgeSerial)
+    end
+
+    test "delete returns 404", %{conn: conn} do
+      conn = delete(conn, ~p"/admin/employee", %{"badge_number" => "123"})
+      assert response(conn, 404)
+    end
   end
 
   describe "rfid" do
@@ -114,6 +131,18 @@ defmodule OrbitWeb.AdminControllerTest do
                    preload: [:employee]
                  )
                )
+    end
+
+    test "delete works", %{conn: conn} do
+      insert(:badge_serial, badge_serial: "9999")
+      conn = delete(conn, ~p"/admin/rfid", %{"badge_serial" => "9999"})
+      assert response(conn, 200)
+      assert [] = Repo.all(BadgeSerial)
+    end
+
+    test "delete returns 404", %{conn: conn} do
+      conn = delete(conn, ~p"/admin/rfid", %{"badge_serial" => "9999"})
+      assert response(conn, 404)
     end
   end
 end

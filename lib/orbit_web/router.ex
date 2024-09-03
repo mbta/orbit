@@ -75,8 +75,10 @@ defmodule OrbitWeb.Router do
 
     get "/admin/employee", Admin.AdminController, :get_employee
     post "/admin/employee", Admin.AdminController, :post_employee
+    delete "/admin/employee", Admin.AdminController, :delete_employee
     get "/admin/rfid", Admin.AdminController, :get_rfid
     post "/admin/rfid", Admin.AdminController, :post_rfid
+    delete "/admin/rfid", Admin.AdminController, :delete_rfid
   end
 
   scope "/", OrbitWeb do
