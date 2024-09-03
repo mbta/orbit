@@ -54,7 +54,7 @@ export const Attestation = ({
       </p>
       <button
         className={className([
-          "block mx-auto w-2/3 max-w-80 h-10 bg-blue text-gray-200 rounded-md",
+          "block mx-auto w-2/3 max-w-80 h-10 bg-gray-500 text-gray-200 rounded-md",
           (!ready || loading) && "opacity-50",
         ])}
         onClick={onComplete}
@@ -145,8 +145,8 @@ export const SignaturePrompt = ({
 }): ReactElement => {
   return (
     <div>
-      <label className="text-sm font-semibold">
-        <span className="text-xs font-semibold">Operator Badge Number</span>
+      <label className="text-sm">
+        <span className="text-xs">Operator Badge Number</span>
         <span className="float-right text-xxs font-semibold uppercase tracking-wide-4">
           Required
         </span>

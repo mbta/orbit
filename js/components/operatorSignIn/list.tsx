@@ -3,7 +3,6 @@ import { useSignins } from "../../hooks/useSignIns";
 import { HeavyRailLine } from "../../types";
 import { DateTime } from "luxon";
 import { ReactElement } from "react";
-import { Link } from "react-router-dom";
 
 export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   const employees = useEmployees();
@@ -18,38 +17,35 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   }
 
   return (
-    <div className="m-2">
-      <Link
-        className="inline-block bg-blue text-gray-200 rounded-md p-2 text-sm m-3"
-        to={"/"}
-      >
-        Back
-      </Link>
-      <u>Today&apos;s sign-ins</u>
-      <table>
-        <thead>
-          <tr>
-            <th className="border">Name</th>
-            <th className="border">Badge</th>
-            <th className="border">Time</th>
-            <th className="border">Official</th>
+    <table className="break-words">
+      <colgroup>
+        <col className="w-1/3" />
+        <col className="w-1/5" />
+        <col className="w-1/5" />
+        <col />
+      </colgroup>
+      <tbody>
+        <tr className="font-semibold">
+          <td className="border p-1">Name</td>
+          <td className="border p-1">Badge</td>
+          <td className="border p-1">Time</td>
+          <td className="border p-1">Official</td>
+        </tr>
+        {signIns.result.map((si, idx) => (
+          <tr key={idx}>
+            <td className="border p-1">
+              {lookupDisplayName(si.signed_in_employee, employees.result)}
+            </td>
+            <td className="border p-1">{si.signed_in_employee}</td>
+            <td className="border p-1">
+              {si.signed_in_at
+                .toLocaleString(DateTime.TIME_SIMPLE)
+                .replace(/ /g, "")}
+            </td>
+            <td className="border p-1">{si.signed_in_by_user}</td>
           </tr>
-        </thead>
-        <tbody>
-          {signIns.result.map((si, idx) => (
-            <tr key={idx}>
-              <td className="border">
-                {lookupDisplayName(si.signed_in_employee, employees.result)}
-              </td>
-              <td className="border">{si.signed_in_employee}</td>
-              <td className="border">
-                {si.signed_in_at.toLocaleString(DateTime.TIME_SIMPLE)}
-              </td>
-              <td className="border">{si.signed_in_by_user}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 };
