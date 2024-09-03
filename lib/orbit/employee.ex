@@ -49,6 +49,11 @@ defmodule Orbit.Employee do
     |> cast_assoc(:badge_serials)
   end
 
+  @spec display_name(t()) :: String.t()
+  def display_name(employee) do
+    "#{employee.preferred_first || employee.first_name} #{employee.last_name}"
+  end
+
   @spec get_by_badge_serial(String.t()) :: t() | nil
   def get_by_badge_serial(serial) do
     Repo.one(

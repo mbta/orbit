@@ -49,6 +49,20 @@ defmodule Orbit.EmployeeTest do
                  end
   end
 
+  describe "display_name/1" do
+    test "uses preferred name if available" do
+      employee = build(:employee, %{preferred_first: "Preferred", last_name: "Name"})
+
+      assert Employee.display_name(employee) == "Preferred Name"
+    end
+
+    test "uses first name if no preferred name is specified" do
+      employee = build(:employee, %{preferred_first: nil, first_name: "First", last_name: "Name"})
+
+      assert Employee.display_name(employee) == "First Name"
+    end
+  end
+
   describe "get_by_badge_serial/1" do
     test "fetches employee by badge serial" do
       badge_serial = build(:badge_serial)
