@@ -1,5 +1,6 @@
 <h1>admin/employee</h1>
-<p>Manually Create Employee</p>
+
+<h2 class="font-bold mt-8">Manually Create Employee</h2>
 
 <.form for={%{}} action={~p"/admin/employee"} method="post">
   <label class="block">First Name: <input name="first_name" type="text" /></label>
@@ -20,5 +21,16 @@
   </label>
   <button class="rounded border border-solid border-black hover:bg-gray-200 p-1" type="submit">
     Write
+  </button>
+</.form>
+
+<h2 class="font-bold mt-8">Manually Delete Employee</h2>
+
+<.form for={%{}} action={~p"/admin/employee"} method="delete">
+  <label class="block">
+    Badge Number: <input name="badge_number" type="text" required />
+  </label>
+  <button class="rounded border border-solid border-black hover:bg-gray-200 p-1" type="submit">
+    Delete
   </button>
 </.form>
