@@ -5,7 +5,7 @@ export const Success = ({ name }: { name: string }): ReactElement => {
   return (
     <div className="text-center text-4xl w-full block mt-5 p-10">
       ✅
-      <div className="text-[20px]">
+      <div className="text-[20px] leading-tight">
         <span className="fs-mask">{name}</span> signed in successfully
       </div>
     </div>
@@ -23,7 +23,7 @@ export const SignInError = ({
 }): ReactElement => {
   return (
     <>
-      <div className="text-center text-4xl w-full mt-10 mb-10">
+      <div className="text-center leading-tight text-4xl w-full mt-10 mb-10">
         ❌<div className="text-[20px]">Something went wrong</div>
       </div>
       <div className="w-full">

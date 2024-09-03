@@ -26,23 +26,25 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
       </colgroup>
       <tbody>
         <tr className="font-semibold">
-          <td className="border p-1">Name</td>
-          <td className="border p-1">Badge</td>
-          <td className="border p-1">Time</td>
-          <td className="border p-1">Official</td>
+          <td className="border-y md:border-x p-1">Name</td>
+          <td className="border-y md:border-x p-1">Badge</td>
+          <td className="border-y md:border-x p-1">Time</td>
+          <td className="border-y md:border-x p-1">Official</td>
         </tr>
         {signIns.result.map((si, idx) => (
           <tr key={idx}>
-            <td className="border p-1">
+            <td className="border-y md:border-x p-1">
               {lookupDisplayName(si.signed_in_employee, employees.result)}
             </td>
-            <td className="border p-1 break-all">{si.signed_in_employee}</td>
-            <td className="border p-1">
+            <td className="border-y md:border-x p-1 break-all">
+              {si.signed_in_employee}
+            </td>
+            <td className="border-y md:border-x p-1">
               {si.signed_in_at
                 .toLocaleString(DateTime.TIME_SIMPLE)
                 .replace(/ /g, "")}
             </td>
-            <td className="border p-1 break-words">
+            <td className="border-y md:border-x p-1 break-words">
               {si.signed_in_by_user.replace(
                 /@/g,
                 // 173 is a soft hyphen, which here acts as a breaking suggestion

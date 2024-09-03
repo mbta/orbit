@@ -44,13 +44,13 @@ export const Attestation = ({
       <SignInText />
       <SignaturePrompt onChange={setEntered} />
       <SignatureHint badge={badge} signatureText={entered} />
-      <p className="mx-4 my-8">
+      <p className="mx-4 my-3">
         By pressing the button below I, <b className="fs-mask">{name}</b>,
         confirm the above is true.
       </p>
       <button
         className={className([
-          "block mx-auto w-2/3 max-w-80 h-10 bg-gray-500 text-gray-200 rounded-md",
+          "block mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
           (!ready || loading) && "opacity-50",
         ])}
         onClick={onComplete}
