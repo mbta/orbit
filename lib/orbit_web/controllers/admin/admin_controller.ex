@@ -74,6 +74,32 @@ defmodule OrbitWeb.Admin.AdminController do
     end
   end
 
+  @spec delete_employee(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def delete_employee(conn, %{
+        "badge_number" => badge_number
+      })
+      when is_binary(badge_number) and badge_number != "" do
+    {count, _} = Repo.delete_all(from(e in Employee, where: e.badge_number == ^badge_number))
+
+    case count do
+      0 ->
+        conn
+        |> put_status(404)
+        |> text("Employee ##{badge_number} not found, no data deleted.")
+
+      1 ->
+        conn
+        |> put_status(200)
+        |> text("Deleted employee data")
+    end
+  end
+
+  def delete_employee(conn, _params) do
+    conn
+    |> put_status(400)
+    |> text("Error: need param `badge_number`")
+  end
+
   @spec get_rfid(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_rfid(conn, _params) do
     render(conn, :rfid, layout: false)
@@ -110,5 +136,31 @@ defmodule OrbitWeb.Admin.AdminController do
     conn
     |> put_status(400)
     |> text("Error: need params `badge_number` and `badge_serial`")
+  end
+
+  @spec delete_rfid(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def delete_rfid(conn, %{
+        "badge_serial" => badge_serial
+      })
+      when is_binary(badge_serial) and badge_serial != "" do
+    {count, _} = Repo.delete_all(from(b in BadgeSerial, where: b.badge_serial == ^badge_serial))
+
+    case count do
+      0 ->
+        conn
+        |> put_status(404)
+        |> text("Badge serial #{badge_serial} not found, no data deleted.")
+
+      1 ->
+        conn
+        |> put_status(200)
+        |> text("Deleted badge serial")
+    end
+  end
+
+  def delete_rfid(conn, _params) do
+    conn
+    |> put_status(400)
+    |> text("Error: need param `badge_serial`")
   end
 end
