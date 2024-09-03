@@ -1,5 +1,6 @@
-import { post } from "../../api";
+import { ApiResult, post } from "../../api";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
 import { Attestation } from "./attestation";
@@ -60,12 +61,32 @@ export const OperatorSignInModal = ({
   show: boolean;
   close: () => void;
 }): ReactElement => {
+  const employees = useEmployees();
+
+  return (
+    <Modal
+      show={show}
+      title={<span className="text-lg font-bold">Fit for Duty Check</span>}
+      onClose={() => {
+        close();
+      }}
+    >
+      <OperatorSignInModalContent employees={employees} close={close} />
+    </Modal>
+  );
+};
+
+const OperatorSignInModalContent = ({
+  employees,
+  close,
+}: {
+  employees: ApiResult<EmployeeList>;
+  close: () => void;
+}): ReactElement => {
   const [badge, setBadge] = useState<BadgeEntry | null>(null);
   const [complete, setComplete] = useState<CompleteState | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
-
-  const employees = useEmployees();
 
   // Hide modal after timer on success
   useEffect(() => {
@@ -86,13 +107,7 @@ export const OperatorSignInModal = ({
   const name: string = employee?.first_name ?? `Operator ${badge?.number}`;
 
   return (
-    <Modal
-      show={show}
-      title={<span className="text-lg font-bold">Fit for Duty Check</span>}
-      onClose={() => {
-        close();
-      }}
-    >
+    <>
       {complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
         <SignInError
           name={name}
@@ -127,6 +142,6 @@ export const OperatorSignInModal = ({
           employees={employees}
         />
       }
-    </Modal>
+    </>
   );
 };
