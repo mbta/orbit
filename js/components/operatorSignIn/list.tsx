@@ -22,7 +22,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
         <col className="w-1/3" />
         <col className="w-1/5" />
         <col className="w-1/5" />
-        <col className="w-1/5" />
+        <col />
       </colgroup>
       <tbody>
         <tr className="font-semibold">
