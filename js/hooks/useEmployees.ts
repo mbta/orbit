@@ -1,10 +1,11 @@
-import { useApiResult } from "../api";
+import { get, useApiResult } from "../api";
 import {
   displayName,
   Employee,
   EmployeeList,
   fallbackDisplayName,
 } from "../models/employee";
+import { z } from "zod";
 
 const EMPLOYEES_API_PATH = "/api/employees";
 
@@ -27,18 +28,22 @@ export const lookupDisplayName = (badge: string, employees: Employee[]) => {
     return fallbackDisplayName(badge);
   }
 
-  return displayName(employee);
+  return displayName(employee) ?? fallbackDisplayName(badge);
 };
 
 export const findEmployeeByBadge = (employees: Employee[], badge: string) => {
   return employees.find((employee) => employee.badge === badge);
 };
 
-export const findEmployeeByBadgeSerial = (
-  employees: Employee[],
+/**
+ * Promise will throw on 404 Not Found errors (in addition to other HTTP errors)
+ */
+export const fetchEmployeeByBadgeSerial = (
   badgeSerial: string,
-) => {
-  return employees.find((employee) =>
-    employee.badge_serials.includes(badgeSerial),
-  );
+): Promise<string> => {
+  return get({
+    RawData: z.string(),
+    url: `api/rfid?badge_serial=${badgeSerial}`,
+    parser: (s: string) => s,
+  });
 };

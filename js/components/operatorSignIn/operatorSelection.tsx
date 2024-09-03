@@ -1,7 +1,5 @@
-import { ApiResult } from "../../api";
-import { findEmployeeByBadgeSerial } from "../../hooks/useEmployees";
+import { fetchEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
-import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { BadgeEntry } from "./types";
 import { ReactElement, useEffect, useId, useState } from "react";
@@ -11,13 +9,11 @@ export const OperatorSelection = ({
   onOK,
   onBadgeLookupError,
   onNfcScanError,
-  employees,
 }: {
   nfcSupported: boolean;
   onOK: (badgeEntry: BadgeEntry) => void;
   onBadgeLookupError: () => void;
   onNfcScanError: () => void;
-  employees: ApiResult<Employee[]>;
 }): ReactElement => {
   const inputId = useId();
   const [badgeEntry, setBadgeEntry] = useState<BadgeEntry | null>(null);
@@ -25,21 +21,22 @@ export const OperatorSelection = ({
   const { result: nfcResult } = useNfc();
 
   useEffect(() => {
-    if (nfcResult.status === "success" && employees.status === "ok") {
-      const badge = findEmployeeByBadgeSerial(
-        employees.result,
-        nfcResult.data,
-      )?.badge;
-
-      if (badge) {
-        onOK({ number: badge, method: "nfc" });
-      } else {
-        onBadgeLookupError();
-      }
+    if (nfcResult.status === "success") {
+      const badgeSerial = nfcResult.data;
+      // TODO potential race condition if something changes before the fetch returns?
+      // maybe not, cuz useNfc locks in the state on a scan result, but it should probably be defended against anyway
+      fetchEmployeeByBadgeSerial(badgeSerial).then(
+        (badge) => {
+          onOK({ number: badge, method: "nfc" });
+        },
+        () => {
+          onBadgeLookupError();
+        },
+      );
     } else if (nfcResult.status === "error") {
       onNfcScanError();
     }
-  }, [nfcResult, employees, onOK, onBadgeLookupError, onNfcScanError]);
+  }, [nfcResult, onOK, onBadgeLookupError, onNfcScanError]);
 
   const buttonEnabled = badgeEntry !== null;
 

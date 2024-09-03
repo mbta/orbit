@@ -16,7 +16,7 @@ defmodule Orbit.Factory do
       middle_initial: "A",
       email: sequence(:employee_email, &"fake#{&1}@test.com"),
       badge_number: sequence("employee_badge"),
-      badge_serials: [build(:badge_serial)],
+      badge_serials: [],
       area: 321
     }
   end

@@ -80,10 +80,10 @@ export const OperatorSignInModal = ({
   }, [complete, close]);
 
   const employee =
-    employees.status === "ok" &&
-    badge !== null &&
-    findEmployeeByBadge(employees.result, badge.number);
-  const name = employee ? employee.first_name : `Operator ${badge?.number}`;
+    employees.status === "ok" && badge !== null ?
+      findEmployeeByBadge(employees.result, badge.number)
+    : null;
+  const name: string = employee?.first_name ?? `Operator ${badge?.number}`;
 
   return (
     <Modal
@@ -117,7 +117,6 @@ export const OperatorSignInModal = ({
           onNfcScanError={() => {
             setComplete(CompleteState.NFC_SCAN_ERROR);
           }}
-          employees={employees}
         />
       : <Attestation
           badge={badge.number}

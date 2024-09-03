@@ -61,6 +61,7 @@ defmodule OrbitWeb.Router do
     pipe_through :authenticated
 
     get "/api/employees", EmployeesController, :index
+    get "/api/rfid", RfidController, :show
     get "/api/signin", SignInController, :index
     post "/api/signin", SignInController, :submit
   end

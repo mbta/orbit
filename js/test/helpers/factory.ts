@@ -2,9 +2,7 @@ import { Employee } from "../../models/employee";
 import { Factory } from "fishery";
 
 export const employeeFactory = Factory.define<Employee>(({ sequence }) => ({
-  first_name: "Firsty",
-  preferred_first: "Preferredy",
+  first_name: "Preferredy",
   last_name: "Lasty",
   badge: sequence.toString(),
-  badge_serials: [`serial${sequence.toString()}`],
 }));

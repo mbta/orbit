@@ -12,7 +12,6 @@ jest.mock("../../../hooks/useEmployees", () => ({
     result: EMPLOYEES,
   })),
   findEmployeeByBadge: jest.fn(() => EMPLOYEES[0]),
-  findEmployeeByBadgeSerial: jest.fn(() => EMPLOYEES[0]),
   lookupDisplayName: jest.fn(() => displayName(EMPLOYEES[0])),
 }));
 
@@ -41,9 +40,7 @@ describe("List", () => {
     );
     expect(view.getByText("12:45PM")).toBeInTheDocument();
     expect(
-      view.getByText(
-        `${EMPLOYEES[0].preferred_first} ${EMPLOYEES[0].last_name}`,
-      ),
+      view.getByText(`${EMPLOYEES[0].first_name} ${EMPLOYEES[0].last_name}`),
     ).toBeInTheDocument();
     expect(view.getByText("user@example.com")).toBeInTheDocument();
   });
