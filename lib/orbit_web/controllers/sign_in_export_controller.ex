@@ -38,7 +38,7 @@ defmodule OrbitWeb.SignInExportController do
     Repo.all(
       from operator_sign_in in OperatorSignIn,
         where:
-          ^start_datetime < operator_sign_in.signed_in_at and
+          ^start_datetime <= operator_sign_in.signed_in_at and
             operator_sign_in.signed_in_at < ^end_datetime,
         order_by: operator_sign_in.signed_in_at,
         join: e in assoc(operator_sign_in, :signed_in_employee),
