@@ -21,7 +21,7 @@ defmodule OrbitWeb.SignInExportController do
            Regex.named_captures(~r"sign-ins-(?<date_string>.+)\.csv", filename),
          {:ok, date} <- Date.from_iso8601(date_string) do
       conn
-      |> put_resp_content_type("application/csv")
+      |> put_resp_content_type("text/csv")
       |> send_resp(200, fetch_sign_ins_csv(date))
     else
       _ ->
