@@ -1,6 +1,6 @@
 import { ApiResult } from "../../api";
 import { reload } from "../../browser";
-import { findEmployeeByBadge } from "../../hooks/useEmployees";
+import { lookupDisplayName } from "../../hooks/useEmployees";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { useSignInText } from "./text";
@@ -37,11 +37,7 @@ export const Attestation = ({
       </div>
     );
   }
-  const employee = findEmployeeByBadge(employees.result, badge);
-  const name =
-    employee !== undefined ?
-      `${employee.preferred_first ?? employee.first_name} ${employee.last_name}`
-    : `Operator #${badge}`;
+  const name = lookupDisplayName(badge, employees.result);
   return (
     <div className="text-sm">
       Step 2 of 2

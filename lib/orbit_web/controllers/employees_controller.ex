@@ -11,8 +11,7 @@ defmodule OrbitWeb.EmployeesController do
         Repo.all(Employee),
         fn e ->
           %{
-            first_name: e.first_name,
-            preferred_first: e.preferred_first,
+            first_name: e.preferred_first || e.first_name,
             last_name: e.last_name,
             badge: e.badge_number
           }

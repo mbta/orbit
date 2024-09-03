@@ -40,9 +40,7 @@ describe("List", () => {
     );
     expect(view.getByText("12:45 PM")).toBeInTheDocument();
     expect(
-      view.getByText(
-        `${EMPLOYEES[0].preferred_first} ${EMPLOYEES[0].last_name}`,
-      ),
+      view.getByText(`${EMPLOYEES[0].first_name} ${EMPLOYEES[0].last_name}`),
     ).toBeInTheDocument();
     expect(view.getByText("user@example.com")).toBeInTheDocument();
   });

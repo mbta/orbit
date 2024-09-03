@@ -28,7 +28,7 @@ export const lookupDisplayName = (badge: string, employees: Employee[]) => {
     return fallbackDisplayName(badge);
   }
 
-  return displayName(employee);
+  return displayName(employee) ?? fallbackDisplayName(badge);
 };
 
 export const findEmployeeByBadge = (employees: Employee[], badge: string) => {
