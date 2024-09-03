@@ -1,5 +1,6 @@
 <h1>admin/rfid</h1>
-<p>Manually Create RFID Badge Serial</p>
+
+<h2 class="font-bold mt-8">Manually Create RFID Badge Serial</h2>
 
 <.form for={%{}} action={~p"/admin/rfid"} method="post">
   <label class="block">
@@ -10,5 +11,16 @@
   </label>
   <button class="rounded border border-solid border-black hover:bg-gray-200 p-1" type="submit">
     Write
+  </button>
+</.form>
+
+<h2 class="font-bold mt-8">Manually Delete RFID Badge Serial</h2>
+
+<.form for={%{}} action={~p"/admin/rfid"} method="delete">
+  <label class="block">
+    Badge Serial: <input name="badge_serial" type="text" required />
+  </label>
+  <button class="rounded border border-solid border-black hover:bg-gray-200 p-1" type="submit">
+    Delete
   </button>
 </.form>
