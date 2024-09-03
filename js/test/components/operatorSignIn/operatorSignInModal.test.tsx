@@ -127,4 +127,32 @@ describe("OperatorSignInModal", () => {
       view.getByText(/something went wrong when looking for a badge tap/i),
     ).toBeInTheDocument();
   });
+
+  test("reopening modal after a successful sign-in resets to the original state", async () => {
+    putMetaData("csrf-token", "TEST-CSRF-TOKEN");
+    jest.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+    } as Response);
+
+    const close = jest.fn();
+
+    const view = render(<OperatorSignInModal show={true} close={close} />);
+
+    await userEvent.type(view.getByRole("textbox"), "123");
+
+    await userEvent.click(view.getByRole("button", { name: "OK" }));
+
+    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.click(
+      view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+
+    expect(view.getByText(/signed in successfully/i)).toBeInTheDocument();
+
+    view.rerender(<OperatorSignInModal show={false} close={close} />);
+
+    view.rerender(<OperatorSignInModal show={true} close={close} />);
+
+    expect(view.getByText(/waiting for badge tap/i)).toBeInTheDocument();
+  });
 });
