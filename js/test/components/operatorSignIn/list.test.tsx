@@ -42,6 +42,7 @@ describe("List", () => {
     expect(
       view.getByText(`${EMPLOYEES[0].first_name} ${EMPLOYEES[0].last_name}`),
     ).toBeInTheDocument();
-    expect(view.getByText("user@example.com")).toBeInTheDocument();
+    // NB: the email below contains a soft hyphen character
+    expect(view.getByText("user­@example.com")).toBeInTheDocument();
   });
 });

@@ -45,8 +45,8 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
             <td className="border p-1 break-words">
               {si.signed_in_by_user.replace(
                 /@/g,
-                // 8203 is a zero width space, which here acts as a breaking suggestion
-                String.fromCharCode(8203) + "@",
+                // 173 is a soft hyphen, which here acts as a breaking suggestion
+                String.fromCharCode(173) + "@",
               )}
             </td>
           </tr>
