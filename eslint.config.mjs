@@ -41,7 +41,7 @@ export default tseslint.config(
   {
     name: "orbit",
     linterOptions: {
-      reportUnusedDisableDirectives: "warn",
+      reportUnusedDisableDirectives: "error",
     },
     languageOptions: {
       globals: globals.browser,
@@ -62,10 +62,10 @@ export default tseslint.config(
       // allow modifying module.exports
       "better-mutation/no-mutation": ["error", { commonjs: true }],
       // enforce "type" instead of enforcing "interface"
-      "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       // unused arguments are fine if they have a leading _
       "@typescript-eslint/no-unused-vars": [
-        "warn",
+        "error",
         {
           argsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_",
