@@ -108,6 +108,31 @@ defmodule OrbitWeb.AdminControllerTest do
                )
     end
 
+    test "can overwrite old data", %{conn: conn} do
+      insert(:employee,
+        badge_number: "X123",
+        badge_serials: [build(:badge_serial, badge_serial: "9999")]
+      )
+
+      insert(:employee, badge_number: "X124")
+
+      conn =
+        post(conn, ~p"/admin/rfid", %{
+          "badge_number" => "X124",
+          "badge_serial" => "9999"
+        })
+
+      assert response(conn, 200)
+
+      assert %BadgeSerial{employee: %Employee{badge_number: "X124"}} =
+               Repo.one!(
+                 from(badge_serial in BadgeSerial,
+                   where: badge_serial.badge_serial == "9999",
+                   preload: [:employee]
+                 )
+               )
+    end
+
     test "delete works", %{conn: conn} do
       insert(:badge_serial, badge_serial: "9999")
       conn = delete(conn, ~p"/admin/rfid", %{"badge_serial" => "9999"})

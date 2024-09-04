@@ -20,6 +20,7 @@ defmodule Orbit.BadgeSerial do
     badge_serial
     |> cast(attrs, [:badge_serial])
     |> validate_required([:badge_serial])
+    |> unique_constraint(:badge_serial)
     |> foreign_key_constraint(:employee_id)
   end
 end

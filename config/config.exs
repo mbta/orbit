@@ -33,11 +33,6 @@ config :orbit, Oban,
 
 config :elixir, :time_zone_database, Tz.TimeZoneDatabase
 
-# Logging config
-config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
-
 config :phoenix,
   # Use Jason for JSON parsing in Phoenix
   json_library: Jason,

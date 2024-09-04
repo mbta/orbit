@@ -1,10 +1,11 @@
 defmodule Orbit.Import.RfidTest do
+  use Orbit.DataCase
+  import Orbit.Factory
+  import Test.Support.Helpers
   alias Orbit.BadgeSerial
   alias Orbit.Employee
-  use Orbit.DataCase
   alias Orbit.Import.Rfid
   alias Orbit.Import.RfidWorker
-  import Orbit.Factory
 
   describe "worker" do
     test "downloads and parses badge serials" do
@@ -87,6 +88,59 @@ defmodule Orbit.Import.RfidTest do
                Employee
                |> Repo.get_by(badge_number: employee_id)
                |> Repo.preload([:badge_serials])
+    end
+
+    test "overwrites existing badge for employee and employee for badge" do
+      insert(:employee,
+        badge_number: "100",
+        badge_serials: [build(:badge_serial, badge_serial: "1000")]
+      )
+
+      insert(:employee,
+        badge_number: "101",
+        badge_serials: [build(:badge_serial, badge_serial: "1001")]
+      )
+
+      rows = [
+        %{"EMPLOYEE_ID" => "100", "SERIAL_NUMBER" => "1001"}
+      ]
+
+      Rfid.import_rows(rows)
+
+      assert [
+               %Employee{
+                 badge_number: "100",
+                 badge_serials: [%BadgeSerial{badge_serial: "1001"}]
+               },
+               %Employee{
+                 badge_number: "101",
+                 badge_serials: []
+               }
+             ] =
+               Employee
+               |> Repo.all()
+               |> Repo.preload([:badge_serials])
+               |> Enum.sort_by(& &1.badge_number)
+    end
+
+    test "logs warning if serial number is duplicated in file" do
+      insert(:employee, badge_number: "100")
+      insert(:employee, badge_number: "101")
+
+      rows = [
+        %{"EMPLOYEE_ID" => "100", "SERIAL_NUMBER" => "1000"},
+        %{"EMPLOYEE_ID" => "101", "SERIAL_NUMBER" => "1000"}
+      ]
+
+      log =
+        capture_log do
+          Rfid.import_rows(rows)
+        end
+
+      assert Enum.member?(log, "[warning] rfid_import badge_serials_with_duplicates=1")
+
+      # serial might be assigned to either employee
+      assert [%BadgeSerial{employee_id: _, badge_serial: "1000"}] = Repo.all(BadgeSerial)
     end
   end
 end

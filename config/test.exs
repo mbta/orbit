@@ -34,6 +34,7 @@ config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
 config :orbit, Orbit.Import.Rfid, pathname: "rfid/demo.csv"
 
 config :logger, level: :warning
+config :logger, :console, format: "[$level] $message\n"
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
