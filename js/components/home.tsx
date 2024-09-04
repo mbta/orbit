@@ -40,7 +40,7 @@ export const Home = (): ReactElement => {
                 onChange={(evt) => {
                   setSelectedDate(evt.target.value);
                 }}
-                className="rounded h-10 bg-gray-100"
+                className="w-full rounded h-10 bg-gray-100"
               />
             </label>
             <button
