@@ -44,10 +44,11 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
                 .toLocaleString(DateTime.TIME_SIMPLE)
                 .replace(/ /g, "")}
             </td>
-            <td className="border-y md:border-x p-1 break-words">
+            <td className="border-y md:border-x p-1 break-words [hyphenate-character:'']">
               {si.signed_in_by_user.replace(
                 /@/g,
                 // 173 is a soft hyphen, which here acts as a breaking suggestion
+                // We are hiding the hyphen above with CSS
                 String.fromCharCode(173) + "@",
               )}
             </td>
