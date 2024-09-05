@@ -1,7 +1,11 @@
 defmodule Orbit.Authentication.User do
+  alias Orbit.Employee
+  alias Orbit.Repo
   alias Orbit.Authentication.UserPermission
+
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   @type t :: %__MODULE__{
           id: integer(),
@@ -36,6 +40,16 @@ defmodule Orbit.Authentication.User do
     |> unique_constraint(
       :users,
       name: :users_email_index
+    )
+  end
+
+  @spec get_names_from_employee(t()) :: map() | nil
+  def get_names_from_employee(struct) do
+    Repo.one(
+      from(e in Employee,
+        where: e.email == ^struct.email,
+        select: %{first_name: e.first_name, preferred_first: e.preferred_first}
+      )
     )
   end
 end

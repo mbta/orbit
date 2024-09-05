@@ -20,6 +20,9 @@
     <%= if @conn.assigns[:email] do %>
       <meta name="userEmail" content={@email} />
     <% end %>
+    <%= if @conn.assigns[:name] do %>
+      <meta name="userName" content={@name} />
+    <% end %>
 
     <title><%= assigns[:page_title] || "Orbit" %></title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />

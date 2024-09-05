@@ -1,6 +1,8 @@
 defmodule Orbit.Authentication.UserTest do
   use Orbit.DataCase
   alias Orbit.Authentication.User
+  alias Orbit.Employee
+
   import Orbit.Factory
 
   test "can insert a user" do
@@ -41,6 +43,26 @@ defmodule Orbit.Authentication.UserTest do
                user
                |> User.changeset(%{permissions: [:operator_sign_in, :operator_sign_in]})
                |> Repo.update()
+    end
+  end
+
+  describe "get_names_from_employee/1" do
+    test "looks up name in Employee" do
+      Repo.insert!(%Employee{
+        first_name: "Arthur",
+        preferred_first: "Art",
+        last_name: "Read",
+        email: "arthur@mbta.com",
+        badge_number: "123456789"
+      })
+
+      user =
+        Repo.insert!(%User{
+          email: "arthur@mbta.com",
+          permissions: [:operator_sign_in]
+        })
+
+      assert User.get_names_from_employee(user) == %{first_name: "Arthur", preferred_first: "Art"}
     end
   end
 end
