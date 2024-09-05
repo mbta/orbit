@@ -1,7 +1,7 @@
 defmodule Orbit.Authentication.User do
+  alias Orbit.Authentication.UserPermission
   alias Orbit.Employee
   alias Orbit.Repo
-  alias Orbit.Authentication.UserPermission
 
   use Ecto.Schema
   import Ecto.Changeset

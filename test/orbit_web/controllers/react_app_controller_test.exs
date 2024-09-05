@@ -2,8 +2,8 @@ defmodule OrbitWeb.ReactAppControllerTest do
   use OrbitWeb.ConnCase
   import Test.Support.Helpers
 
-  alias Orbit.Repo
   alias Orbit.Employee
+  alias Orbit.Repo
 
   setup do
     Repo.insert!(%Employee{

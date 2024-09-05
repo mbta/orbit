@@ -1,8 +1,8 @@
 defmodule OrbitWeb.Plugs.RequireLogin do
   @behaviour Plug
 
-  alias OrbitWeb.Auth.Auth
   alias Orbit.Authentication.User
+  alias OrbitWeb.Auth.Auth
 
   @impl Plug
   def init(opts), do: opts
