@@ -45,11 +45,14 @@ defmodule Orbit.Authentication.User do
 
   @spec get_names_from_employee(t()) :: map() | nil
   def get_names_from_employee(struct) do
-    Repo.one(
-      from(e in Employee,
-        where: e.email == ^struct.email,
-        select: %{first_name: e.first_name, preferred_first: e.preferred_first}
-      )
+    List.first(
+      Repo.all(
+        from(e in Employee,
+          where: e.email == ^struct.email,
+          select: %{first_name: e.first_name, preferred_first: e.preferred_first}
+        )
+      ),
+      nil
     )
   end
 end

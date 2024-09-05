@@ -64,5 +64,31 @@ defmodule Orbit.Authentication.UserTest do
 
       assert User.get_names_from_employee(user) == %{first_name: "Arthur", preferred_first: "Art"}
     end
+
+    test "uses first Employee when multiple have the same email address" do
+      Repo.insert!(%Employee{
+        first_name: "Arthur",
+        preferred_first: "Art",
+        last_name: "Read",
+        email: "arthur@mbta.com",
+        badge_number: "123456789"
+      })
+
+      Repo.insert!(%Employee{
+        first_name: "Arthur2",
+        preferred_first: "Art2",
+        last_name: "Read2",
+        email: "arthur@mbta.com",
+        badge_number: "987654321"
+      })
+
+      user =
+        Repo.insert!(%User{
+          email: "arthur@mbta.com",
+          permissions: [:operator_sign_in]
+        })
+
+      assert User.get_names_from_employee(user) == %{first_name: "Arthur", preferred_first: "Art"}
+    end
   end
 end
