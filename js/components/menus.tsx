@@ -1,3 +1,4 @@
+import { IconName } from "../icons";
 import { paths } from "../paths";
 import { className } from "../util/dom";
 import { getMetaContent } from "../util/metadata";
@@ -13,7 +14,7 @@ const MenuLink = ({
   children,
 }: {
   to: string;
-  icon?: string;
+  icon?: IconName;
   iconExtraClassName?: string;
   reload?: boolean;
   newTab?: boolean;
