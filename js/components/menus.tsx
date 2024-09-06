@@ -107,6 +107,18 @@ export const HelpMenu = (): ReactElement => {
       >
         Training Materials
       </MenuLink>
+      <hr className="mx-auto my-8 w-full" />
+      <div>
+        For more support, contact{" "}
+        <Link className="underline" to={"mailto:helpdesk@mbta.com"}>
+          helpdesk@mbta.com
+        </Link>{" "}
+        or{" "}
+        <Link className="underline" to={"tel:+1-617-222-5761"}>
+          617-222-5761
+        </Link>{" "}
+        and mention that you are having an issue with Orbit.
+      </div>
     </main>
   );
 };
