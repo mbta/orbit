@@ -77,7 +77,7 @@ defmodule Orbit.MixProject do
       {:telemetry_metrics, "== 1.0.0"},
       {:telemetry_poller, "== 1.1.0"},
       {:timex, "== 3.7.11"},
-      {:tz, "== 0.27.1"},
+      {:tz, "== 0.27.2"},
       {:ueberauth, "== 0.10.8"},
       {:ueberauth_oidcc, "== 0.4.0"}
     ]
