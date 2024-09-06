@@ -20,7 +20,7 @@ defmodule OrbitWeb.Plugs.RequireLogin do
 
       conn
       |> Plug.Conn.assign(:email, user.email)
-      |> Plug.Conn.assign(:name, User.get_display_first_name(user))
+      |> Plug.Conn.assign(:name, User.get_display_name(user))
       |> Plug.Conn.assign(:logged_in_user, user)
     else
       conn

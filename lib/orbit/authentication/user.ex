@@ -43,14 +43,18 @@ defmodule Orbit.Authentication.User do
     )
   end
 
-  @spec get_display_first_name(t()) :: String.t() | nil
-  def get_display_first_name(struct) do
+  @spec get_display_name(t()) :: String.t() | nil
+  def get_display_name(struct) do
     names =
       List.first(
         Repo.all(
           from(e in Employee,
             where: e.email == ^struct.email,
-            select: %{first_name: e.first_name, preferred_first: e.preferred_first}
+            select: %{
+              first_name: e.first_name,
+              preferred_first: e.preferred_first,
+              last_name: e.last_name
+            }
           )
         ),
         nil
@@ -58,8 +62,8 @@ defmodule Orbit.Authentication.User do
 
     case names do
       nil -> nil
-      %{preferred_first: x} -> x
-      %{first_name: x} -> x
+      %{preferred_first: nil, first_name: fname, last_name: lname} -> "#{fname} #{lname}"
+      _ -> "#{names.preferred_first} #{names.last_name}"
     end
   end
 end

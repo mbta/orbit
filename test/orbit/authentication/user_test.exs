@@ -45,7 +45,7 @@ defmodule Orbit.Authentication.UserTest do
     end
   end
 
-  describe "get_display_first_name/1" do
+  describe "get_display_name/1" do
     test "looks up preferred first name in Employee" do
       insert(:employee, %{
         first_name: "Arthur",
@@ -61,13 +61,13 @@ defmodule Orbit.Authentication.UserTest do
           permissions: [:operator_sign_in]
         })
 
-      assert User.get_display_first_name(user) == "Art"
+      assert User.get_display_name(user) == "Art Read"
     end
 
     test "uses first name when preferred unavailable" do
       insert(:employee, %{
         first_name: "Arthur",
-        preferred_first: "Art",
+        preferred_first: nil,
         last_name: "Read",
         email: "arthur@mbta.com",
         badge_number: "123456789"
@@ -79,7 +79,7 @@ defmodule Orbit.Authentication.UserTest do
           permissions: [:operator_sign_in]
         })
 
-      assert User.get_display_first_name(user) == "Art"
+      assert User.get_display_name(user) == "Arthur Read"
     end
 
     test "uses first Employee when multiple have the same email address" do
@@ -105,7 +105,7 @@ defmodule Orbit.Authentication.UserTest do
           permissions: [:operator_sign_in]
         })
 
-      assert User.get_display_first_name(user) == "Art"
+      assert User.get_display_name(user) == "Art Read"
     end
   end
 end
