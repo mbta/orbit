@@ -72,12 +72,12 @@ defmodule Orbit.MixProject do
       {:phoenix_live_reload, "== 1.5.3", only: :dev},
       {:phoenix_live_view, "== 0.20.17"},
       {:postgrex, "== 0.19.1"},
-      {:sentry, "== 10.7.0"},
+      {:sentry, "== 10.7.1"},
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.0.0"},
       {:telemetry_poller, "== 1.1.0"},
       {:timex, "== 3.7.11"},
-      {:tz, "== 0.27.1"},
+      {:tz, "== 0.27.2"},
       {:ueberauth, "== 0.10.8"},
       {:ueberauth_oidcc, "== 0.4.0"}
     ]
