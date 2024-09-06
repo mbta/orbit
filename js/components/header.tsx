@@ -10,7 +10,7 @@ export const Header = () => {
 
   return (
     <div className="w-full bg-gray-200 p-2 flex justify-between">
-      <Link to={"/"}>
+      <Link to={paths.root}>
         <img src="/images/logo.svg" alt="MBTA" className="w-44" />
       </Link>
       <Link to={paths.menu}>
