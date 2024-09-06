@@ -46,7 +46,7 @@ defmodule Orbit.Authentication.UserTest do
   end
 
   describe "get_display_first_name/1" do
-    test "looks up preferred name in Employee" do
+    test "looks up preferred first name in Employee" do
       insert(:employee, %{
         first_name: "Arthur",
         preferred_first: "Art",
