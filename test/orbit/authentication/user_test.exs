@@ -1,25 +1,24 @@
 defmodule Orbit.Authentication.UserTest do
   use Orbit.DataCase
   alias Orbit.Authentication.User
-  alias Orbit.Employee
 
   import Orbit.Factory
 
   test "can insert a user" do
-    Repo.insert!(%User{
+    insert(:user, %{
       email: "test@mbta.com"
     })
   end
 
   test "cannot insert a duplicate user" do
-    Repo.insert!(%User{
+    insert(:user, %{
       email: "test@mbta.com",
       permissions: [:operator_sign_in]
     })
 
     assert_raise Ecto.ConstraintError,
                  fn ->
-                   Repo.insert!(%User{
+                   insert(:user, %{
                      email: "test@mbta.com",
                      permissions: [:operator_sign_in]
                    })
@@ -48,7 +47,7 @@ defmodule Orbit.Authentication.UserTest do
 
   describe "get_names_from_employee/1" do
     test "looks up name in Employee" do
-      Repo.insert!(%Employee{
+      insert(:employee, %{
         first_name: "Arthur",
         preferred_first: "Art",
         last_name: "Read",
@@ -57,7 +56,7 @@ defmodule Orbit.Authentication.UserTest do
       })
 
       user =
-        Repo.insert!(%User{
+        insert(:user, %{
           email: "arthur@mbta.com",
           permissions: [:operator_sign_in]
         })
@@ -66,7 +65,7 @@ defmodule Orbit.Authentication.UserTest do
     end
 
     test "uses first Employee when multiple have the same email address" do
-      Repo.insert!(%Employee{
+      insert(:employee, %{
         first_name: "Arthur",
         preferred_first: "Art",
         last_name: "Read",
@@ -74,7 +73,7 @@ defmodule Orbit.Authentication.UserTest do
         badge_number: "123456789"
       })
 
-      Repo.insert!(%Employee{
+      insert(:employee, %{
         first_name: "Arthur2",
         preferred_first: "Art2",
         last_name: "Read2",
@@ -83,7 +82,7 @@ defmodule Orbit.Authentication.UserTest do
       })
 
       user =
-        Repo.insert!(%User{
+        insert(:user, %{
           email: "arthur@mbta.com",
           permissions: [:operator_sign_in]
         })
