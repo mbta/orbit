@@ -18,18 +18,9 @@ defmodule OrbitWeb.Plugs.RequireLogin do
       # TODO: Logger
       # Logger.metadata(remote_ip: nil)
 
-      names = User.get_names_from_employee(user)
-
-      name =
-        case names do
-          nil -> nil
-          %{preferred_first: x} -> x
-          %{first_name: x} -> x
-        end
-
       conn
       |> Plug.Conn.assign(:email, user.email)
-      |> Plug.Conn.assign(:name, name)
+      |> Plug.Conn.assign(:name, User.get_display_first_name(user))
       |> Plug.Conn.assign(:logged_in_user, user)
     else
       conn

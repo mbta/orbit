@@ -43,16 +43,23 @@ defmodule Orbit.Authentication.User do
     )
   end
 
-  @spec get_names_from_employee(t()) :: map() | nil
-  def get_names_from_employee(struct) do
-    List.first(
-      Repo.all(
-        from(e in Employee,
-          where: e.email == ^struct.email,
-          select: %{first_name: e.first_name, preferred_first: e.preferred_first}
-        )
-      ),
-      nil
-    )
+  @spec get_display_first_name(t()) :: String.t() | nil
+  def get_display_first_name(struct) do
+    names =
+      List.first(
+        Repo.all(
+          from(e in Employee,
+            where: e.email == ^struct.email,
+            select: %{first_name: e.first_name, preferred_first: e.preferred_first}
+          )
+        ),
+        nil
+      )
+
+    case names do
+      nil -> nil
+      %{preferred_first: x} -> x
+      %{first_name: x} -> x
+    end
   end
 end
