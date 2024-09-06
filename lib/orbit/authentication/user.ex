@@ -1,7 +1,11 @@
 defmodule Orbit.Authentication.User do
   alias Orbit.Authentication.UserPermission
+  alias Orbit.Employee
+  alias Orbit.Repo
+
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   @type t :: %__MODULE__{
           id: integer(),
@@ -37,5 +41,29 @@ defmodule Orbit.Authentication.User do
       :users,
       name: :users_email_index
     )
+  end
+
+  @spec get_display_name(t()) :: String.t() | nil
+  def get_display_name(struct) do
+    names =
+      List.first(
+        Repo.all(
+          from(e in Employee,
+            where: e.email == ^struct.email,
+            select: %{
+              first_name: e.first_name,
+              preferred_first: e.preferred_first,
+              last_name: e.last_name
+            }
+          )
+        ),
+        nil
+      )
+
+    case names do
+      nil -> nil
+      %{preferred_first: nil, first_name: fname, last_name: lname} -> "#{fname} #{lname}"
+      _ -> "#{names.preferred_first} #{names.last_name}"
+    end
   end
 end

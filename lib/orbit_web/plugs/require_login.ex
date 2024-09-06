@@ -1,6 +1,7 @@
 defmodule OrbitWeb.Plugs.RequireLogin do
   @behaviour Plug
 
+  alias Orbit.Authentication.User
   alias OrbitWeb.Auth.Auth
 
   @impl Plug
@@ -19,6 +20,7 @@ defmodule OrbitWeb.Plugs.RequireLogin do
 
       conn
       |> Plug.Conn.assign(:email, user.email)
+      |> Plug.Conn.assign(:name, User.get_display_name(user))
       |> Plug.Conn.assign(:logged_in_user, user)
     else
       conn

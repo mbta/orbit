@@ -2,7 +2,18 @@ defmodule OrbitWeb.ReactAppControllerTest do
   use OrbitWeb.ConnCase
   import Test.Support.Helpers
 
+  alias Orbit.Employee
+  alias Orbit.Repo
+
   setup do
+    Repo.insert!(%Employee{
+      first_name: "Arthur",
+      preferred_first: "Art",
+      last_name: "Read",
+      email: "user@example.com",
+      badge_number: "123456789"
+    })
+
     reassign_env(:sentry, :dsn, "https://example.com")
   end
 
@@ -15,6 +26,7 @@ defmodule OrbitWeb.ReactAppControllerTest do
     # sets metadata
     assert response =~ "<meta name=\"release\" content=\"test\">"
     assert response =~ "<meta name=\"userEmail\" content=\"user@example.com\">"
+    assert response =~ "<meta name=\"userName\" content=\"Art Read\">"
     assert response =~ "<meta name=\"sentryDsn\" content=\"https://example.com\">"
     assert response =~ "<meta name=\"environment\" content=\"test\">"
   end

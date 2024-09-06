@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128px" height="128px" viewBox="0 0 128 128" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>DD680F9A-4CF5-4F08-98D6-E4E1F2731EC1@1x</title>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon/circle-info" fill="#000000" fill-rule="nonzero">
+            <path d="M64,0 C28.65,0 0,28.65 0,64 C0,99.35 28.65,128 64,128 C99.35,128 128,99.35 128,64 C128,28.65 99.35,0 64,0 Z M64,32 C68.4175,32 72,35.5825 72,40 C72,44.4175 68.4175,48 64,48 C59.5825,48 56,44.425 56,40 C56,35.575 59.575,32 64,32 Z M74,96 L54,96 C50.7,96 48,93.325 48,90 C48,86.675 50.6875,84 54,84 L58,84 L58,68 L56,68 C52.6875,68 50,65.3125 50,62 C50,58.6875 52.7,56 56,56 L64,56 C67.3125,56 70,58.6875 70,62 L70,84 L74,84 C77.3125,84 80,86.6875 80,90 C80,93.3125 77.325,96 74,96 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>

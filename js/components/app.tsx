@@ -1,8 +1,8 @@
 import { reload } from "../browser";
+import { paths } from "../paths";
 import { Header } from "./header";
-import { Help } from "./help";
 import { Home } from "./home";
-import { List } from "./operatorSignIn/list";
+import { HelpMenu, Menu } from "./menus";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
@@ -29,7 +29,7 @@ const ErrorBoundary = (): ReactElement => {
           .
         </li>
         <li>
-          <a href="/">Go back to the Orbit home page</a>.
+          <a href={paths.root}>Go back to the Orbit home page</a>.
         </li>
         <li>Try again in a few minutes.</li>
         <li>Call the IT help desk. x5761</li>
@@ -55,16 +55,16 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/",
+        path: paths.root,
         element: <Home />,
       },
       {
-        path: "/list",
-        element: <List line="blue" />,
+        path: paths.menu,
+        element: <Menu />,
       },
       {
-        path: "/help",
-        element: <Help />,
+        path: paths.help,
+        element: <HelpMenu />,
       },
     ],
   },

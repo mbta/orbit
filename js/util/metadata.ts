@@ -3,6 +3,7 @@ export type MetaDataKey =
   | "sentryDsn"
   | "environment"
   | "userEmail"
+  | "userName"
   | "release";
 
 export const getMetaContent = (field: MetaDataKey): string | null => {
