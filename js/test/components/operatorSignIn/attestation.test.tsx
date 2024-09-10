@@ -15,6 +15,7 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
+        prefill={false}
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
@@ -29,6 +30,7 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
+        prefill={false}
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
@@ -41,6 +43,7 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="00000000"
+        prefill={false}
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
@@ -49,22 +52,39 @@ describe("Attestation", () => {
     expect(view.getByText("Operator #00000000")).toBeInTheDocument();
   });
 
-  test("contains signature text box", () => {
-    const view = render(
-      <Attestation
-        badge="123"
-        onComplete={jest.fn()}
-        loading={false}
-        employees={EMPLOYEES}
-      />,
-    );
-    expect(view.getByRole("textbox")).toBeInTheDocument();
+  describe("signature text box", () => {
+    test("it's there", () => {
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={jest.fn()}
+          loading={false}
+          employees={EMPLOYEES}
+        />,
+      );
+      expect(view.getByRole("textbox")).toBeInTheDocument();
+    });
+
+    test("it pre-fills if requested", () => {
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={true}
+          onComplete={jest.fn()}
+          loading={false}
+          employees={EMPLOYEES}
+        />,
+      );
+      expect(view.getByRole("textbox")).toHaveValue("123");
+    });
   });
 
   test("contains Complete button", () => {
     const view = render(
       <Attestation
         badge="123"
+        prefill={false}
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
@@ -80,6 +100,7 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
+        prefill={false}
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
@@ -101,6 +122,7 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
+        prefill={false}
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
