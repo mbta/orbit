@@ -27,6 +27,7 @@ const submit = (
   badgeEntry: BadgeEntry,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  onComplete: () => void,
 ) => {
   setLoading(true);
 
@@ -41,6 +42,7 @@ const submit = (
         console.error(response.status, response.statusText);
         setComplete(CompleteState.SIGN_IN_ERROR);
       } else {
+        onComplete();
         setComplete(CompleteState.SUCCESS);
       }
     })
@@ -121,7 +123,7 @@ const OperatorSignInModalContent = ({
           name={name}
           loading={loading}
           onTryAgain={() => {
-            submit(badge, setComplete, setLoading);
+            submit(badge, setComplete, setLoading, onComplete);
           }}
         />
       : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
@@ -145,8 +147,7 @@ const OperatorSignInModalContent = ({
           badge={badge.number}
           loading={loading}
           onComplete={() => {
-            submit(badge, setComplete, setLoading);
-            onComplete();
+            submit(badge, setComplete, setLoading, onComplete);
           }}
           employees={employees}
         />

@@ -65,7 +65,7 @@ export const Home = (): ReactElement => {
       <OperatorSignInModal
         show={modalOpen}
         onComplete={() => {
-          setSignInCount(signInCount + 1);
+          setSignInCount((count) => count + 1);
         }}
         close={() => {
           setModalOpen(false);
