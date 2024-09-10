@@ -5,6 +5,11 @@ import { ReactElement, useMemo, useState } from "react";
 
 export const Home = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Keep track of sign-in count. When this changes, we re-render
+  //  the List component (and therefore re-download the list of sign-ins)
+  const [signInCount, setSignInCount] = useState(0);
+
   // check once to avoid it changing while looking at the page
   // no attempt yet to verify time zones / rolling the date at a time other than midnight
   const today = useMemo<string>(() => DateTime.now().toISODate(), []);
@@ -54,11 +59,14 @@ export const Home = (): ReactElement => {
       </section>
       <section className="max-w-lg mx-auto px-2 py-5">
         <p className="font-semibold mb-3">Today&apos;s sign ins</p>
-        <List line="blue" />
+        <List key={signInCount} line="blue" />
       </section>
 
       <OperatorSignInModal
         show={modalOpen}
+        onComplete={() => {
+          setSignInCount(signInCount + 1);
+        }}
         close={() => {
           setModalOpen(false);
         }}

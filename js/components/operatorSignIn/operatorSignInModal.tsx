@@ -56,9 +56,11 @@ const submit = (
 
 export const OperatorSignInModal = ({
   show,
+  onComplete,
   close,
 }: {
   show: boolean;
+  onComplete: () => void;
   close: () => void;
 }): ReactElement => {
   const employees = useEmployees();
@@ -71,16 +73,22 @@ export const OperatorSignInModal = ({
         close();
       }}
     >
-      <OperatorSignInModalContent employees={employees} close={close} />
+      <OperatorSignInModalContent
+        employees={employees}
+        onComplete={onComplete}
+        close={close}
+      />
     </Modal>
   );
 };
 
 const OperatorSignInModalContent = ({
   employees,
+  onComplete,
   close,
 }: {
   employees: ApiResult<EmployeeList>;
+  onComplete: () => void;
   close: () => void;
 }): ReactElement => {
   const [badge, setBadge] = useState<BadgeEntry | null>(null);
@@ -138,6 +146,7 @@ const OperatorSignInModalContent = ({
           loading={loading}
           onComplete={() => {
             submit(badge, setComplete, setLoading);
+            onComplete();
           }}
           employees={employees}
         />
