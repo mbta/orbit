@@ -11,7 +11,8 @@ if config_env() == :prod do
 
   config :orbit,
     allow_test_data?: System.get_env("ALLOW_TEST_DATA", "") == "yes",
-    environment: System.get_env("ENVIRONMENT")
+    environment: System.get_env("ENVIRONMENT"),
+    full_story_org_id: System.get_env("FULLSTORY_ORG_ID")
 
   config :orbit, Orbit.Repo,
     socket_options: maybe_ipv6,
