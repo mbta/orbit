@@ -64,6 +64,7 @@ describe("Attestation", () => {
         />,
       );
       expect(view.getByRole("textbox")).toBeInTheDocument();
+      expect(view.getByRole("textbox")).toHaveValue("");
     });
 
     test("it pre-fills if requested", () => {
