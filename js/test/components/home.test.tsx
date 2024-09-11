@@ -53,7 +53,8 @@ describe("home", () => {
       view.getByRole("button", { name: "Sign In Operator" }),
     );
 
-    (fetch as jest.MockedFunction<typeof fetch>).mockClear();
+    // Clear fetch's counter so we don't catch calls from initial render
+    jest.mocked(fetch).mockClear();
     await userEvent.click(view.getByRole("button", { name: "Complete" }));
     expect(fetch).toHaveBeenCalledWith("/api/signin?line=blue");
   });
