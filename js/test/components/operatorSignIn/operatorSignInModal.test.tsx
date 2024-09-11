@@ -37,7 +37,13 @@ jest.mock("../../../hooks/useNfc", () => ({
 
 describe("OperatorSignInModal", () => {
   test("shows badge tap message by default", () => {
-    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
 
     expect(view.getByText(/waiting for badge tap/i)).toBeInTheDocument();
   });
@@ -45,18 +51,28 @@ describe("OperatorSignInModal", () => {
   test("shows badge tap unsupported message when NFC isn't available", () => {
     jest.mocked(nfcSupported).mockReturnValueOnce(false);
 
-    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
 
     expect(view.getByText(/badge tap is not supported/i)).toBeInTheDocument();
   });
 
   test("can close the modal", async () => {
     const close = jest.fn();
-    const view = render(<OperatorSignInModal show={true} close={close} />);
+    const view = render(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     await userEvent.click(view.getByRole("button", { name: "[x]" }));
     expect(close).toHaveBeenCalled();
-    view.rerender(<OperatorSignInModal show={false} close={close} />);
+    view.rerender(
+      <OperatorSignInModal show={false} onComplete={jest.fn()} close={close} />,
+    );
 
     expect(view.queryByText(/fit for duty check/i)).not.toBeInTheDocument();
   });
@@ -67,7 +83,13 @@ describe("OperatorSignInModal", () => {
       ok: true,
     } as Response);
 
-    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
@@ -80,6 +102,32 @@ describe("OperatorSignInModal", () => {
     expect(view.getByText("signed in successfully")).toBeInTheDocument();
   });
 
+  test("runs onComplete on successful sign-in", async () => {
+    putMetaData("csrf-token", "TEST-CSRF-TOKEN");
+    jest.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+    } as Response);
+
+    const onCompleteFn = jest.fn();
+
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={onCompleteFn}
+        close={jest.fn()}
+      />,
+    );
+    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.click(view.getByRole("button", { name: "OK" }));
+
+    expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
+    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.click(
+      view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+    expect(onCompleteFn).toHaveBeenCalledOnce();
+  });
+
   test("shows failure component on error", async () => {
     putMetaData("csrf-token", "TEST-CSRF-TOKEN");
     jest.spyOn(console, "error").mockImplementation(() => {});
@@ -89,7 +137,13 @@ describe("OperatorSignInModal", () => {
       statusText: "Internal Server Error",
     });
 
-    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
@@ -104,7 +158,13 @@ describe("OperatorSignInModal", () => {
 
   test("shows failure component when no operator is found after an NFC tap", async () => {
     const close = jest.fn();
-    const view = render(<OperatorSignInModal show={true} close={jest.fn()} />);
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
 
     jest.mocked(useNfc).mockReturnValueOnce({
       result: { status: "success", data: "bad_serial" },
@@ -113,7 +173,9 @@ describe("OperatorSignInModal", () => {
     const { promise, reject } = PromiseWithResolvers<string>();
     jest.mocked(fetchEmployeeByBadgeSerial).mockReturnValueOnce(promise);
 
-    view.rerender(<OperatorSignInModal show={true} close={close} />);
+    view.rerender(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     act(() => {
       reject(new Error("not found"));
@@ -128,14 +190,18 @@ describe("OperatorSignInModal", () => {
 
   test("shows failure component when NFC tap fails", () => {
     const close = jest.fn();
-    const view = render(<OperatorSignInModal show={true} close={close} />);
+    const view = render(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     jest.mocked(useNfc).mockReturnValueOnce({
       result: { status: "error", error: "error" },
       abortController: new AbortController(),
     });
 
-    view.rerender(<OperatorSignInModal show={true} close={close} />);
+    view.rerender(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     expect(
       view.getByText(/something went wrong when looking for a badge tap/i),
@@ -150,7 +216,9 @@ describe("OperatorSignInModal", () => {
 
     const close = jest.fn();
 
-    const view = render(<OperatorSignInModal show={true} close={close} />);
+    const view = render(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     await userEvent.type(view.getByRole("textbox"), "123");
 
@@ -163,9 +231,13 @@ describe("OperatorSignInModal", () => {
 
     expect(view.getByText(/signed in successfully/i)).toBeInTheDocument();
 
-    view.rerender(<OperatorSignInModal show={false} close={close} />);
+    view.rerender(
+      <OperatorSignInModal show={false} onComplete={jest.fn()} close={close} />,
+    );
 
-    view.rerender(<OperatorSignInModal show={true} close={close} />);
+    view.rerender(
+      <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
+    );
 
     expect(view.getByText(/waiting for badge tap/i)).toBeInTheDocument();
   });

@@ -27,6 +27,7 @@ const submit = (
   badgeEntry: BadgeEntry,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  onComplete: () => void,
 ) => {
   setLoading(true);
 
@@ -41,6 +42,7 @@ const submit = (
         console.error(response.status, response.statusText);
         setComplete(CompleteState.SIGN_IN_ERROR);
       } else {
+        onComplete();
         setComplete(CompleteState.SUCCESS);
       }
     })
@@ -56,9 +58,11 @@ const submit = (
 
 export const OperatorSignInModal = ({
   show,
+  onComplete,
   close,
 }: {
   show: boolean;
+  onComplete: () => void;
   close: () => void;
 }): ReactElement => {
   const employees = useEmployees();
@@ -71,16 +75,22 @@ export const OperatorSignInModal = ({
         close();
       }}
     >
-      <OperatorSignInModalContent employees={employees} close={close} />
+      <OperatorSignInModalContent
+        employees={employees}
+        onComplete={onComplete}
+        close={close}
+      />
     </Modal>
   );
 };
 
 const OperatorSignInModalContent = ({
   employees,
+  onComplete,
   close,
 }: {
   employees: ApiResult<EmployeeList>;
+  onComplete: () => void;
   close: () => void;
 }): ReactElement => {
   const [badge, setBadge] = useState<BadgeEntry | null>(null);
@@ -113,7 +123,7 @@ const OperatorSignInModalContent = ({
           name={name}
           loading={loading}
           onTryAgain={() => {
-            submit(badge, setComplete, setLoading);
+            submit(badge, setComplete, setLoading, onComplete);
           }}
         />
       : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
@@ -138,7 +148,7 @@ const OperatorSignInModalContent = ({
           badge={badge.number}
           loading={loading}
           onComplete={() => {
-            submit(badge, setComplete, setLoading);
+            submit(badge, setComplete, setLoading, onComplete);
           }}
           employees={employees}
         />
