@@ -11,13 +11,17 @@ export const Attestation = ({
   employees,
   onComplete,
   loading,
+  prefill,
 }: {
   badge: string;
   employees: ApiResult<Employee[]>;
   onComplete: () => void;
   loading: boolean;
+  prefill: boolean;
 }): ReactElement => {
-  const [entered, setEntered] = useState<string>("");
+  const defaultValue = prefill ? badge : "";
+
+  const [entered, setEntered] = useState<string>(defaultValue);
   const ready = entered === badge;
 
   if (employees.status === "loading") {
@@ -42,7 +46,7 @@ export const Attestation = ({
     <div className="text-sm">
       Step 2 of 2
       <SignInText />
-      <SignaturePrompt onChange={setEntered} />
+      <SignaturePrompt defaultValue={defaultValue} onChange={setEntered} />
       <SignatureHint badge={badge} signatureText={entered} />
       <p className="my-3">
         By pressing the button below I, <b className="fs-mask">{name}</b>,
@@ -136,8 +140,10 @@ const SignatureHint = ({
 
 export const SignaturePrompt = ({
   onChange,
+  defaultValue,
 }: {
   onChange: (value: string) => void;
+  defaultValue: string;
 }): ReactElement => {
   return (
     <div>
@@ -150,6 +156,7 @@ export const SignaturePrompt = ({
           type="text"
           className="w-full"
           inputMode="numeric"
+          defaultValue={defaultValue}
           onChange={(evt) => {
             onChange(evt.target.value);
           }}
