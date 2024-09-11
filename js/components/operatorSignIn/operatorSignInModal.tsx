@@ -144,6 +144,7 @@ const OperatorSignInModalContent = ({
           }}
         />
       : <Attestation
+          prefill={badge.method === "nfc"}
           badge={badge.number}
           loading={loading}
           onComplete={() => {

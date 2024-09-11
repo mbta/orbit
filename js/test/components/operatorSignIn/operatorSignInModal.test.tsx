@@ -94,6 +94,7 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
     expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
+    expect(view.getByRole("textbox")).toHaveValue(""); // Not pre-filled if manually typed
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
