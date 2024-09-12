@@ -29,5 +29,6 @@ defmodule OrbitWeb.ReactAppControllerTest do
     assert response =~ "<meta name=\"userName\" content=\"Art Read\">"
     assert response =~ "<meta name=\"sentryDsn\" content=\"https://example.com\">"
     assert response =~ "<meta name=\"environment\" content=\"test\">"
+    assert response =~ "<meta name=\"fullStoryOrgId\" content=\"RAWR\">"
   end
 end
