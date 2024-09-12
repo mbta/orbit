@@ -23,8 +23,8 @@
     <%= if @conn.assigns[:name] do %>
       <meta name="userName" content={@name} />
     <% end %>
-    <%= if full_story_org_id = Application.get_env(:orbit, :full_story_org_id) do %>
-      <meta name="fullStoryOrgId" content={full_story_org_id} />
+    <%= if @conn.assigns[:full_story_org_id] do %>
+      <meta name="fullStoryOrgId" content={@full_story_org_id} />
     <% end %>
 
     <title><%= assigns[:page_title] || "Orbit" %></title>
