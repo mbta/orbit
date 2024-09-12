@@ -56,17 +56,22 @@ defmodule OrbitWeb.SignInController do
       }) do
     signed_in_at = DateTime.from_unix!(signed_in_at)
 
-    %OperatorSignIn{
-      signed_in_employee:
-        Repo.one!(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)),
-      signed_in_by_user: Auth.logged_in_user(conn),
-      signed_in_at: signed_in_at,
-      rail_line: String.to_existing_atom(line),
-      sign_in_method: String.to_existing_atom(method)
-    }
-    |> OperatorSignIn.changeset()
-    |> Repo.insert!()
+    case Repo.one(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)) do
+      nil ->
+        conn |> send_resp(404, "Employee not found") |> halt()
 
-    text(conn, "OK")
+      emp ->
+        %OperatorSignIn{
+          signed_in_employee: emp,
+          signed_in_by_user: Auth.logged_in_user(conn),
+          signed_in_at: signed_in_at,
+          rail_line: String.to_existing_atom(line),
+          sign_in_method: String.to_existing_atom(method)
+        }
+        |> OperatorSignIn.changeset()
+        |> Repo.insert!()
+
+        text(conn, "OK")
+    end
   end
 end
