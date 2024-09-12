@@ -154,7 +154,7 @@ export const SignaturePrompt = ({
         </span>
         <input
           type="text"
-          className="w-full"
+          className="fs-mask w-full"
           inputMode="numeric"
           defaultValue={defaultValue}
           onChange={(evt) => {
