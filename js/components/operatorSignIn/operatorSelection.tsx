@@ -48,7 +48,7 @@ export const OperatorSelection = ({
       <Or />
       <label htmlFor={inputId}>Search for an Operator</label>
       <input
-        className="h-10"
+        className="fs-mask h-10"
         id={inputId}
         inputMode="numeric"
         onChange={(evt) => {
