@@ -64,7 +64,7 @@ defmodule Orbit.MixProject do
       {:httpoison, "== 2.2.1"},
       {:jason, "== 1.4.4"},
       {:logster, "== 2.0.0-rc.3"},
-      {:oban, "== 2.18.2"},
+      {:oban, "== 2.18.3"},
       {:phoenix, "== 1.7.14"},
       {:phoenix_ecto, "== 4.6.2"},
       {:phoenix_html, "== 4.1.1"},
