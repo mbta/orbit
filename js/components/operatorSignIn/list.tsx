@@ -10,9 +10,11 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
 
   if (signIns.status === "loading" || employees.status === "loading") {
     return <>Loading...</>;
-  } else if (signIns.status === "error") {
+  }
+  if (signIns.status === "error") {
     return <>Error retrieving signins: {signIns.error}</>;
-  } else if (employees.status === "error") {
+  }
+  if (employees.status === "error") {
     return <>Error retrieving employees: {employees.error}</>;
   }
 
