@@ -11,9 +11,9 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   if (signIns.status === "loading" || employees.status === "loading") {
     return <>Loading...</>;
   } else if (signIns.status === "error") {
-    return <>Error retrieving signins: {signIns.error}</>;
+    return <>Error retrieving signins.</>;
   } else if (employees.status === "error") {
-    return <>Error retrieving employees: {employees.error}</>;
+    return <>Error retrieving employees.</>;
   }
 
   return (

@@ -74,6 +74,7 @@ export const useApiResult = <RawData, Data>({
         setResult({ status: "ok", result: parsedData });
       })
       .catch((e: unknown) => {
+        console.error(e);
         setResult({ status: "error", error: e });
       });
   }, [url, RawData, parser]);
