@@ -38,6 +38,7 @@ export const get = <RawData, Data>({
       if (response.status === 200) {
         return response.json();
       } else if (response.status === 401) {
+        console.log("api.ts Reloading");
         reload();
 
         throw new Error("Unauthenticated");
@@ -46,12 +47,14 @@ export const get = <RawData, Data>({
       }
     })
     .then((json) => {
+      console.log("api.ts parsing json");
       const jsonObject = z.object({ data: z.unknown() }).parse(json);
       const data = RawData.parse(jsonObject.data);
       const parsedData = parser(data);
       return parsedData;
     })
     .catch((e: unknown) => {
+      console.log("api.ts catch");
       captureException(e);
       throw e;
     });
