@@ -33,8 +33,8 @@ COPY ./css /app/css
 COPY ./lib/orbit_web /app/lib/orbit_web
 WORKDIR /app
 # TODO make esbuild emit sourcemaps
-RUN npm run build:js -- --minify
-RUN npm run build:css -- --minify
+RUN npm run build:js
+RUN npm run build:css
 
 
 ### Build Backend
