@@ -27,7 +27,7 @@ defmodule OrbitWeb.SignInControllerTest do
                  %{
                    "rail_line" => "blue",
                    "signed_in_at" => _date,
-                   "signed_in_by_user" => _user,
+                   "signed_in_by" => _user,
                    "signed_in_employee" => _badge
                  }
                ]
@@ -61,6 +61,47 @@ defmodule OrbitWeb.SignInControllerTest do
 
       assert %{
                "data" => []
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "shows officials' names if available", %{conn: conn} do
+      insert(:employee, email: "test@example.com")
+
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone),
+        signed_in_by_user: build(:user, email: "test@example.com")
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "signed_in_by" => "Preferredy Person"
+                 }
+               ]
+             } = json_response(conn, 200)
+    end
+
+    @tag :authenticated
+    test "shows official's email address if name is unavailable", %{conn: conn} do
+      insert(:operator_sign_in,
+        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone),
+        signed_in_by_user:
+          build(:user, %{
+            email: "does_not_exist_im_fairly_certain@example.com"
+          })
+      )
+
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
+
+      assert %{
+               "data" => [
+                 %{
+                   "signed_in_by" => "does_not_exist_im_fairly_certain@example.com"
+                 }
+               ]
              } = json_response(conn, 200)
     end
 

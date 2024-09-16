@@ -31,16 +31,28 @@ defmodule OrbitWeb.SignInController do
                 ^start_datetime <= si.signed_in_at and
                   si.signed_in_at < ^end_datetime and
                   si.rail_line == ^rail_line,
-              preload: [:signed_in_employee, :signed_in_by_user],
-              order_by: [desc: :signed_in_at]
+              join: u in assoc(si, :signed_in_by_user),
+              preload: [:signed_in_employee, signed_in_by_user: u],
+              left_join: signed_in_by_employee in Employee,
+              on: u.email == signed_in_by_employee.email,
+              order_by: [desc: :signed_in_at],
+              select: %{
+                signin: si,
+                signed_in_by_employee: signed_in_by_employee
+              }
             )
           )
-          |> Enum.map(fn si ->
+          |> Enum.map(fn i ->
             %{
-              rail_line: si.rail_line,
-              signed_in_at: DateTime.to_iso8601(si.signed_in_at),
-              signed_in_by_user: si.signed_in_by_user.email,
-              signed_in_employee: si.signed_in_employee.badge_number
+              rail_line: i.signin.rail_line,
+              signed_in_at: DateTime.to_iso8601(i.signin.signed_in_at),
+              signed_in_by:
+                if i.signed_in_by_employee do
+                  Employee.display_name(i.signed_in_by_employee)
+                else
+                  i.signin.signed_in_by_user.email
+                end,
+              signed_in_employee: i.signin.signed_in_employee.badge_number
             }
           end)
       }

@@ -24,7 +24,7 @@ jest.mock("../../../hooks/useSignIns", () => ({
         signed_in_at: DateTime.fromISO("2024-07-22T12:45:52.000-04:00", {
           zone: "America/New_York",
         }),
-        signed_in_by_user: "user@example.com",
+        signed_in_by: "user@example.com",
         signed_in_employee: EMPLOYEES[0].badge,
       },
     ],

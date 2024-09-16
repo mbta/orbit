@@ -45,7 +45,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
                 .replace(/ /g, "")}
             </td>
             <td className="fs-mask border-y md:border-x p-1 break-words [hyphenate-character:'']">
-              {si.signed_in_by_user.replace(
+              {si.signed_in_by.replace(
                 /@/g,
                 // 173 is a soft hyphen, which here acts as a breaking suggestion
                 // We are hiding the hyphen above with CSS
