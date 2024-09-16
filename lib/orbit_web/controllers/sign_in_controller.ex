@@ -31,8 +31,9 @@ defmodule OrbitWeb.SignInController do
                 ^start_datetime <= si.signed_in_at and
                   si.signed_in_at < ^end_datetime and
                   si.rail_line == ^rail_line,
+              join: e in assoc(si, :signed_in_employee),
               join: u in assoc(si, :signed_in_by_user),
-              preload: [:signed_in_employee, signed_in_by_user: u],
+              preload: [signed_in_employee: e, signed_in_by_user: u],
               left_join: signed_in_by_employee in Employee,
               on: u.email == signed_in_by_employee.email,
               order_by: [desc: :signed_in_at],
