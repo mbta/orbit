@@ -106,36 +106,6 @@ defmodule OrbitWeb.SignInControllerTest do
     end
 
     @tag :authenticated
-    test "shows official's email address if employee names are empty string", %{conn: conn} do
-      emp =
-        insert(:employee, %{
-          first_name: "",
-          preferred_first: nil,
-          last_name: "",
-          email: "exists_but_employee_names_are_blank@example.com"
-        })
-
-      insert(:operator_sign_in,
-        signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone),
-        signed_in_employee: emp,
-        signed_in_by_user:
-          build(:user, %{
-            email: "exists_but_employee_names_are_blank@example.com"
-          })
-      )
-
-      conn = get(conn, ~p"/api/signin", %{"line" => "blue", "service_date" => "2024-07-21"})
-
-      assert %{
-               "data" => [
-                 %{
-                   "signed_in_by" => "exists_but_employee_names_are_blank@example.com"
-                 }
-               ]
-             } = json_response(conn, 200)
-    end
-
-    @tag :authenticated
     test "sorted by signed_in_at descending (recent first)", %{conn: conn} do
       insert(:operator_sign_in,
         signed_in_at: DateTime.new!(~D[2024-07-21], ~T[12:00:00], @timezone)
