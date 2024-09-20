@@ -52,6 +52,7 @@ export const OperatorSelection = ({
         className="fs-mask h-10"
         id={inputId}
         inputMode="numeric"
+        // Do not set `value`- we are transforming below!
         onChange={(evt) => {
           setBadgeEntry({
             number: removeLeadingZero(evt.target.value),

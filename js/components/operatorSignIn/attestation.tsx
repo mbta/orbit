@@ -158,6 +158,7 @@ export const SignaturePrompt = ({
           className="fs-mask w-full"
           inputMode="numeric"
           defaultValue={defaultValue}
+          // Do not set `value`- we are transforming below!
           onChange={(evt) => {
             onChange(removeLeadingZero(evt.target.value));
           }}
