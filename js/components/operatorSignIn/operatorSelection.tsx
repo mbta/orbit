@@ -1,6 +1,7 @@
 import { fetchEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
 import { className } from "../../util/dom";
+import { removeLeadingZero } from "../../util/string";
 import { BadgeEntry } from "./types";
 import { ReactElement, useEffect, useId, useState } from "react";
 
@@ -52,7 +53,10 @@ export const OperatorSelection = ({
         id={inputId}
         inputMode="numeric"
         onChange={(evt) => {
-          setBadgeEntry({ number: evt.target.value, method: "manual" });
+          setBadgeEntry({
+            number: removeLeadingZero(evt.target.value),
+            method: "manual",
+          });
         }}
       />
       <button

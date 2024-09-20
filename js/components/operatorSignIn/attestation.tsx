@@ -3,6 +3,7 @@ import { reload } from "../../browser";
 import { lookupDisplayName } from "../../hooks/useEmployees";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
+import { removeLeadingZero } from "../../util/string";
 import { useSignInText } from "./text";
 import { ReactElement, useEffect, useState } from "react";
 
@@ -158,7 +159,7 @@ export const SignaturePrompt = ({
           inputMode="numeric"
           defaultValue={defaultValue}
           onChange={(evt) => {
-            onChange(evt.target.value);
+            onChange(removeLeadingZero(evt.target.value));
           }}
           required
         />
