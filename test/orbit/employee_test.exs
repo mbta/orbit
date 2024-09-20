@@ -61,6 +61,18 @@ defmodule Orbit.EmployeeTest do
 
       assert Employee.display_name(employee) == "First Name"
     end
+
+    test "uses email if names are all blank" do
+      employee =
+        build(:employee, %{
+          preferred_first: nil,
+          first_name: "",
+          last_name: "",
+          email: "rawr@example.com"
+        })
+
+      assert Employee.display_name(employee) == "rawr@example.com"
+    end
   end
 
   describe "get_by_badge_serial/1" do
