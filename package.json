@@ -16,7 +16,7 @@
     "@fullstory/browser": "2.0.5",
     "@restart/ui": "1.8.0",
     "@sentry/fullstory": "3.0.0",
-    "@sentry/react": "8.27.0",
+    "@sentry/react": "8.32.0",
     "@tailwindcss/forms": "0.5.8",
     "esbuild": "0.23.1",
     "luxon": "3.5.0",
