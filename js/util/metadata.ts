@@ -1,5 +1,6 @@
 export type MetaDataKey =
   | "csrf-token"
+  | "fullStoryOrgId"
   | "sentryDsn"
   | "environment"
   | "userEmail"

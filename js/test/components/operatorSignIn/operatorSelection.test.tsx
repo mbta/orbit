@@ -86,6 +86,28 @@ describe("OperatorSelection", () => {
     });
   });
 
+  test("trims leading zeros from typed operator badge", async () => {
+    const onOK = jest.fn();
+    const view = render(
+      <OperatorSelection
+        onOK={onOK}
+        onBadgeLookupError={jest.fn()}
+        onNfcScanError={jest.fn()}
+        nfcSupported={true}
+      />,
+    );
+
+    const textField = view.getByRole("textbox");
+    const button = view.getByRole("button");
+    await userEvent.type(textField, "0123");
+    await userEvent.click(button);
+
+    expect(onOK).toHaveBeenCalledExactlyOnceWith({
+      number: "123",
+      method: "manual",
+    });
+  });
+
   test("executes onOK on successful badge tap", async () => {
     const onOK = jest.fn();
     const onBadgeLookupError = jest.fn();

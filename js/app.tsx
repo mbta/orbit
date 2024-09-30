@@ -1,5 +1,5 @@
 // runs initialization during import
-import "./sentry";
+import "./telemetry";
 import "./phoenix.js";
 import { App } from "./components/app.js";
 import { createRoot } from "react-dom/client";

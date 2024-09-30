@@ -14,7 +14,8 @@ defmodule OrbitWeb.Router do
     plug :protect_from_forgery
 
     plug :put_secure_browser_headers, %{
-      "content-security-policy" => "default-src 'self'; connect-src 'self' *.sentry.io"
+      "content-security-policy" =>
+        "default-src 'self'; connect-src 'self' *.sentry.io *.fullstory.com; script-src 'self' *.fullstory.com"
     }
   end
 

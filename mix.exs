@@ -39,9 +39,9 @@ defmodule Orbit.MixProject do
   defp deps do
     [
       {:bandit, "== 1.5.7"},
-      {:credo, "== 1.7.7", only: [:dev, :test], runtime: false},
+      {:credo, "== 1.7.8", only: [:dev, :test], runtime: false},
       {:csv, "== 3.2.1"},
-      {:dialyxir, "== 1.4.3", only: [:dev, :test], runtime: false},
+      {:dialyxir, "== 1.4.4", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "== 3.12.0"},
@@ -64,7 +64,7 @@ defmodule Orbit.MixProject do
       {:httpoison, "== 2.2.1"},
       {:jason, "== 1.4.4"},
       {:logster, "== 2.0.0-rc.3"},
-      {:oban, "== 2.18.2"},
+      {:oban, "== 2.18.3"},
       {:phoenix, "== 1.7.14"},
       {:phoenix_ecto, "== 4.6.2"},
       {:phoenix_html, "== 4.1.1"},

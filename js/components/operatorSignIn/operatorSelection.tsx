@@ -1,6 +1,7 @@
 import { fetchEmployeeByBadgeSerial } from "../../hooks/useEmployees";
 import { useNfc } from "../../hooks/useNfc";
 import { className } from "../../util/dom";
+import { removeLeadingZero } from "../../util/string";
 import { BadgeEntry } from "./types";
 import { ReactElement, useEffect, useId, useState } from "react";
 
@@ -48,11 +49,15 @@ export const OperatorSelection = ({
       <Or />
       <label htmlFor={inputId}>Search for an Operator</label>
       <input
-        className="h-10"
+        className="fs-mask h-10"
         id={inputId}
         inputMode="numeric"
+        // Do not set `value`- we are transforming below!
         onChange={(evt) => {
-          setBadgeEntry({ number: evt.target.value, method: "manual" });
+          setBadgeEntry({
+            number: removeLeadingZero(evt.target.value),
+            method: "manual",
+          });
         }}
       />
       <button

@@ -185,7 +185,10 @@ defmodule Orbit.S3 do
             ExAws.Config.new(:s3),
             :get,
             bucket,
-            path
+            path,
+            # https://app.asana.com/0/616151179860796/1207721363846626/f
+            # https://github.com/ex-aws/ex_aws_s3/blob/v2.5.4/lib/ex_aws/s3.ex#L1320
+            virtual_host: true
           )
 
         url
@@ -214,7 +217,7 @@ defmodule Orbit.S3 do
 
   @spec anonymous_url(String.t(), String.t()) :: String.t()
   defp anonymous_url(bucket, prefixed_path) do
-    "https://s3.amazonaws.com/#{bucket}/#{prefixed_path}"
+    "https://#{bucket}.s3.amazonaws.com/#{prefixed_path}"
   end
 
   @spec local_path(String.t(), String.t()) :: String.t()

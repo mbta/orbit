@@ -11,9 +11,9 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   if (signIns.status === "loading" || employees.status === "loading") {
     return <>Loading...</>;
   } else if (signIns.status === "error") {
-    return <>Error retrieving signins: {signIns.error}</>;
+    return <>Error retrieving signins.</>;
   } else if (employees.status === "error") {
-    return <>Error retrieving employees: {employees.error}</>;
+    return <>Error retrieving employees.</>;
   }
 
   return (
@@ -33,10 +33,10 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
         </tr>
         {signIns.result.map((si, idx) => (
           <tr key={idx}>
-            <td className="border-y md:border-x p-1">
+            <td className="fs-mask border-y md:border-x p-1">
               {lookupDisplayName(si.signed_in_employee, employees.result)}
             </td>
-            <td className="border-y md:border-x p-1 break-all">
+            <td className="fs-mask border-y md:border-x p-1 break-all">
               {si.signed_in_employee}
             </td>
             <td className="border-y md:border-x p-1">
@@ -44,8 +44,8 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
                 .toLocaleString(DateTime.TIME_SIMPLE)
                 .replace(/ /g, "")}
             </td>
-            <td className="border-y md:border-x p-1 break-words [hyphenate-character:'']">
-              {si.signed_in_by_user.replace(
+            <td className="fs-mask border-y md:border-x p-1 break-words [hyphenate-character:'']">
+              {si.signed_in_by.replace(
                 /@/g,
                 // 173 is a soft hyphen, which here acts as a breaking suggestion
                 // We are hiding the hyphen above with CSS

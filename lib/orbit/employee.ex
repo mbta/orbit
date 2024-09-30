@@ -51,7 +51,10 @@ defmodule Orbit.Employee do
 
   @spec display_name(t()) :: String.t()
   def display_name(employee) do
-    "#{employee.preferred_first || employee.first_name} #{employee.last_name}"
+    case String.trim("#{employee.preferred_first || employee.first_name} #{employee.last_name}") do
+      "" -> employee.email
+      name -> name
+    end
   end
 
   @spec get_by_badge_serial(String.t()) :: t() | nil

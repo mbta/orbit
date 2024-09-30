@@ -116,6 +116,26 @@ describe("Attestation", () => {
     expect(onComplete).toHaveBeenCalledOnce();
   });
 
+  test("valid attestation with leading zero", async () => {
+    const onComplete = jest.fn();
+    const view = render(
+      <Attestation
+        badge="123"
+        prefill={false}
+        onComplete={onComplete}
+        loading={false}
+        employees={EMPLOYEES}
+      />,
+    );
+    await userEvent.type(view.getByRole("textbox"), "0123");
+    expect(view.getByText("Looks good!")).toBeInTheDocument();
+
+    await userEvent.click(
+      view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+    expect(onComplete).toHaveBeenCalledOnce();
+  });
+
   test("invalid attestation", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     jest.useFakeTimers();

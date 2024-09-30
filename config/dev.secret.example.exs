@@ -3,6 +3,11 @@
 # Copy the template to dev.secret.exs, then uncomment and fill in any sections you need.
 import Config
 
+# FullStory
+# Only turn this on if you're testing sending data to FullStory, not for regular use.
+config :orbit,
+  full_story_org_id: ""
+
 # Sentry
 # Only turn this on if you're testing sending events to Sentry, not for regular use.
 # The DSN comes from https://mbtace.sentry.io/settings/projects/glides/keys/
