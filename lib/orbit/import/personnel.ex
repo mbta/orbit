@@ -29,9 +29,9 @@ defmodule Orbit.Import.Personnel do
   def import_rows(rows, areas) do
     result =
       rows
-      |> Enum.filter(fn entry ->
-        entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
-      end)
+      # |> Enum.filter(fn entry ->
+      #   entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
+      # end)
       |> Enum.map(
         &%Employee{
           first_name: &1["FIRST_NAME"],
