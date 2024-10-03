@@ -43,12 +43,16 @@ defmodule Orbit.Import.Personnel do
           area: String.to_integer(&1[@area_value_field])
         }
       )
-      |> Enum.map(
-        &Repo.insert(&1,
-          on_conflict: {:replace_all_except, [:id]},
-          conflict_target: :badge_number
-        )
-      )
+      |> Enum.map(fn item ->
+        try do
+          Repo.insert(item,
+            on_conflict: {:replace_all_except, [:id]},
+            conflict_target: :badge_number
+          )
+        rescue
+          Postgrex.Error -> nil
+        end
+      end)
 
     Logger.info("personnel_import count=#{length(result)}")
   end
