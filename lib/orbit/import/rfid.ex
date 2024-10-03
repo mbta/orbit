@@ -78,16 +78,21 @@ defmodule Orbit.Import.Rfid do
 end
 
 defmodule Orbit.Import.RfidWorker do
+  require Logger
   use Oban.Worker, queue: :rfid_import, max_attempts: 3
   alias Orbit.Import.Rfid
 
   @impl Oban.Worker
   @spec perform(Oban.Job.t()) :: :ok
   def perform(%Oban.Job{}) do
-    Rfid.download()
-    |> String.splitter("\n", trim: true)
-    |> CSV.decode!(headers: true, field_transform: &String.trim/1)
-    |> Rfid.import_rows()
+    try do
+      Rfid.download()
+      |> String.splitter("\n", trim: true)
+      |> CSV.decode!(headers: true, field_transform: &String.trim/1)
+      |> Rfid.import_rows()
+    rescue
+      error -> Logger.error(inspect(error))
+    end
 
     :ok
   end
