@@ -29,9 +29,9 @@ defmodule Orbit.Import.Personnel do
   def import_rows(rows, areas) do
     result =
       rows
-      |> Enum.filter(fn entry ->
-        entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
-      end)
+      # |> Enum.filter(fn entry ->
+      #   entry[@area_name_field] == "Area" && MapSet.member?(areas, entry[@area_value_field])
+      # end)
       |> Enum.map(
         &%Employee{
           first_name: &1["FIRST_NAME"],
@@ -43,12 +43,16 @@ defmodule Orbit.Import.Personnel do
           area: String.to_integer(&1[@area_value_field])
         }
       )
-      |> Enum.map(
-        &Repo.insert(&1,
-          on_conflict: {:replace_all_except, [:id]},
-          conflict_target: :badge_number
-        )
-      )
+      |> Enum.map(fn item ->
+        try do
+          Repo.insert(item,
+            on_conflict: {:replace_all_except, [:id]},
+            conflict_target: :badge_number
+          )
+        rescue
+          Postgrex.Error -> nil
+        end
+      end)
 
     Logger.info("personnel_import count=#{length(result)}")
   end

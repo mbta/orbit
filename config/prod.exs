@@ -18,9 +18,9 @@ config :orbit, Oban,
      timezone: "America/New_York",
      crontab: [
        # the top of every hour, any day, any month, any day of the week
-       {"0 * * * *", Orbit.Import.PersonnelWorker},
+       {"*/5 * * * *", Orbit.Import.PersonnelWorker},
        # the bottom of every hour, any day, any month, any day of the week
-       {"30 * * * *", Orbit.Import.RfidWorker}
+       {"*/5 * * * *", Orbit.Import.RfidWorker}
      ]}
   ]
 
