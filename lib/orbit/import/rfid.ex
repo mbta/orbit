@@ -41,37 +41,40 @@ defmodule Orbit.Import.Rfid do
       Enum.group_by(rows, & &1[@badge_number_field], & &1[@badge_serial_field])
 
     {:ok, imported_count} =
-      Repo.transaction(fn ->
-        for {badge_number, badge_serials} <- serials_by_badge, reduce: 0 do
-          acc ->
-            case Repo.get_by(Employee, badge_number: badge_number) do
-              nil ->
-                acc
+      Repo.transaction(
+        fn ->
+          for {badge_number, badge_serials} <- serials_by_badge, reduce: 0 do
+            acc ->
+              case Repo.get_by(Employee, badge_number: badge_number) do
+                nil ->
+                  acc
 
-              employee ->
-                employee_id = employee.id
-                # Delete any of this employee's badges that were not in the latest import.
-                Repo.delete_all(
-                  from(b in BadgeSerial,
-                    where: b.employee_id == ^employee_id,
-                    where: b.badge_serial not in ^badge_serials
+                employee ->
+                  employee_id = employee.id
+                  # Delete any of this employee's badges that were not in the latest import.
+                  Repo.delete_all(
+                    from(b in BadgeSerial,
+                      where: b.employee_id == ^employee_id,
+                      where: b.badge_serial not in ^badge_serials
+                    )
                   )
-                )
 
-                # And add any new badges for that employee
-                for b <- badge_serials do
-                  %BadgeSerial{employee_id: employee_id, badge_serial: b}
-                  |> BadgeSerial.changeset()
-                  |> Repo.insert(
-                    on_conflict: {:replace_all_except, [:id, :inserted_at]},
-                    conflict_target: :badge_serial
-                  )
-                end
+                  # And add any new badges for that employee
+                  for b <- badge_serials do
+                    %BadgeSerial{employee_id: employee_id, badge_serial: b}
+                    |> BadgeSerial.changeset()
+                    |> Repo.insert(
+                      on_conflict: {:replace_all_except, [:id, :inserted_at]},
+                      conflict_target: :badge_serial
+                    )
+                  end
 
-                acc + length(badge_serials)
-            end
-        end
-      end)
+                  acc + length(badge_serials)
+              end
+          end
+        end,
+        timeout: 120_000
+      )
 
     Logger.info("rfid_import count=#{imported_count}")
   end
