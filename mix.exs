@@ -39,6 +39,8 @@ defmodule Orbit.MixProject do
   defp deps do
     [
       {:bandit, "== 1.5.7"},
+      # used by ex_aws to parse AWS CLI settings/credentials
+      {:configparser_ex, "== 4.0.0", only: :dev},
       {:credo, "== 1.7.8", only: [:dev, :test], runtime: false},
       {:csv, "== 3.2.1"},
       {:dialyxir, "== 1.4.4", only: [:dev, :test], runtime: false},
