@@ -34,6 +34,8 @@ Run `mix test test/path/to/file_test.exs` or `npm run test:jest -- js/path/to/fi
 
 See [`bin/test`](bin/test), [`mix.exs`](mix.exs), and [`package.json`](package.json) for other test commands.
 
+To see code coverage, run `mix test --cover` or `npm run test:jest -- --coverage`. These generate `lcov.info` files which can be viewed with tools like the VSCode extension "Coverage Gutters".
+
 ## Docker
 
 To run the Docker container locally, run `docker compose up --build`.

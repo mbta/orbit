@@ -15,7 +15,8 @@ defmodule Orbit.MixProject do
       deps: deps(),
       dialzyer: [
         plt_add_apps: [:mix]
-      ]
+      ],
+      test_coverage: [tool: LcovEx]
     ]
   end
 
@@ -65,6 +66,7 @@ defmodule Orbit.MixProject do
        depth: 1},
       {:httpoison, "== 2.2.1"},
       {:jason, "== 1.4.4"},
+      {:lcov_ex, "== 0.3.3", only: [:test], runtime: false},
       {:logster, "== 2.0.0-rc.3"},
       {:oban, "== 2.18.3"},
       {:phoenix, "== 1.7.14"},
