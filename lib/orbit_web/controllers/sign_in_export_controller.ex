@@ -57,9 +57,9 @@ defmodule OrbitWeb.SignInExportController do
           &1.operator_sign_in.signed_in_at
           |> DateTime.shift_zone!(@timezone)
           |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{0m}:{0s}"),
-        location: "Orient Heights",
         signer_badge: &1.operator_sign_in.signed_in_employee.badge_number,
         signer_name: Employee.display_name(&1.operator_sign_in.signed_in_employee),
+        radio_number: &1.operator_sign_in.radio_number,
         official_badge:
           if &1.signed_in_by_employee do
             &1.signed_in_by_employee.badge_number
@@ -72,6 +72,7 @@ defmodule OrbitWeb.SignInExportController do
           else
             &1.operator_sign_in.signed_in_by_user.email
           end,
+        location: "Orient Heights",
         method:
           case &1.operator_sign_in.sign_in_method do
             :nfc -> "tap"
@@ -83,11 +84,12 @@ defmodule OrbitWeb.SignInExportController do
     |> CSV.encode(
       headers: [
         time: "Time",
-        location: "Location",
         signer_badge: "Signer Badge #",
         signer_name: "Signer Name",
+        radio_number: "Radio",
         official_badge: "Official Badge #",
         official_name: "Official Name",
+        location: "Location",
         method: "Method",
         text_version: "Text Version"
       ],
