@@ -72,24 +72,26 @@ defmodule OrbitWeb.SignInExportControllerTest do
 
       assert [
                %{
-                 "Location" => "Orient Heights",
-                 "Method" => "type",
+                 "Time" => "2024-08-28 17:00:00",
                  "Signer Badge #" => "1234",
                  "Signer Name" => "Preferredy Person",
+                 "Radio" => "22",
                  "Official Badge #" => "9898",
                  "Official Name" => "Fake Official",
-                 "Text Version" => "1",
-                 "Time" => "2024-08-28 17:00:00"
+                 "Location" => "Orient Heights",
+                 "Method" => "type",
+                 "Text Version" => "1"
                },
                %{
-                 "Location" => "Orient Heights",
-                 "Method" => "tap",
+                 "Time" => "2024-08-28 17:10:00",
                  "Signer Badge #" => "5678",
                  "Signer Name" => "Preferredy Person",
+                 "Radio" => "22",
                  "Official Badge #" => "",
                  "Official Name" => "official2@mbta.com",
-                 "Text Version" => "1",
-                 "Time" => "2024-08-28 17:10:00"
+                 "Location" => "Orient Heights",
+                 "Method" => "tap",
+                 "Text Version" => "1"
                }
              ] = result
     end

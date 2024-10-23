@@ -12,6 +12,7 @@ defmodule Orbit.OperatorSignIn do
           signed_in_by_user: User.t(),
           signed_in_at: DateTime.t(),
           rail_line: RailLine.t(),
+          radio_number: integer(),
           sign_in_method: SignInMethod.t()
         }
 
@@ -20,6 +21,7 @@ defmodule Orbit.OperatorSignIn do
     belongs_to(:signed_in_by_user, User)
     field(:signed_in_at, :utc_datetime)
     field(:rail_line, RailLine)
+    field(:radio_number, :integer)
     field(:sign_in_method, SignInMethod)
 
     timestamps()
@@ -27,7 +29,7 @@ defmodule Orbit.OperatorSignIn do
 
   def changeset(operator_sign_in, attrs \\ %{}) do
     operator_sign_in
-    |> cast(attrs, [:signed_in_at, :rail_line, :sign_in_method])
+    |> cast(attrs, [:signed_in_at, :rail_line, :radio_number, :sign_in_method])
     |> cast_assoc(:signed_in_employee)
     |> cast_assoc(:signed_in_by_user)
     |> validate_required([:signed_in_at, :rail_line, :sign_in_method])
