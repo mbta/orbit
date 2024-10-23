@@ -21,6 +21,7 @@ jest.mock("../../../hooks/useSignIns", () => ({
     result: [
       {
         rail_line: "blue",
+        radio_number: 2102,
         signed_in_at: DateTime.fromISO("2024-07-22T12:45:52.000-04:00", {
           zone: "America/New_York",
         }),
@@ -42,6 +43,7 @@ describe("List", () => {
     expect(
       view.getByText(`${EMPLOYEES[0].first_name} ${EMPLOYEES[0].last_name}`),
     ).toBeInTheDocument();
+    expect(view.getByText("2102")).toBeInTheDocument();
     // NB: the email below contains a soft hyphen character
     expect(view.getByText("user­@example.com")).toBeInTheDocument();
   });

@@ -28,6 +28,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
         <tr className="font-semibold">
           <td className="border-y md:border-x p-1">Name</td>
           <td className="border-y md:border-x p-1">Badge</td>
+          <td className="border-y md:border-x p-1">Radio</td>
           <td className="border-y md:border-x p-1">Time</td>
           <td className="border-y md:border-x p-1">Official</td>
         </tr>
@@ -38,6 +39,9 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
             </td>
             <td className="fs-mask border-y md:border-x p-1 break-all">
               {si.signed_in_employee}
+            </td>
+            <td className="fs-mask border-y md:border-x p-1 break-all">
+              {si.radio_number}
             </td>
             <td className="border-y md:border-x p-1">
               {si.signed_in_at

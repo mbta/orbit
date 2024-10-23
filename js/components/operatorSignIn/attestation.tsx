@@ -11,19 +11,23 @@ export const Attestation = ({
   badge,
   employees,
   onComplete,
+  radio,
+  setRadio,
   loading,
   prefill,
 }: {
   badge: string;
   employees: ApiResult<Employee[]>;
   onComplete: () => void;
+  radio: string;
+  setRadio: (radio: string) => void;
   loading: boolean;
   prefill: boolean;
 }): ReactElement => {
   const defaultValue = prefill ? badge : "";
 
-  const [entered, setEntered] = useState<string>(defaultValue);
-  const ready = entered === badge;
+  const [enteredBadge, setEnteredBadge] = useState<string>(defaultValue);
+  const valid = enteredBadge === badge && radio !== "";
 
   if (employees.status === "loading") {
     return <div>Loading...</div>;
@@ -47,8 +51,17 @@ export const Attestation = ({
     <div className="text-sm">
       Step 2 of 2
       <SignInText />
-      <SignaturePrompt defaultValue={defaultValue} onChange={setEntered} />
-      <SignatureHint badge={badge} signatureText={entered} />
+      <InputBox
+        title={"Operator Badge Number"}
+        defaultValue={defaultValue}
+        onChange={setEnteredBadge}
+      />
+      <SignatureHint badge={badge} signatureText={enteredBadge} />
+      <InputBox
+        title={"Radio Number"}
+        defaultValue={radio}
+        onChange={setRadio}
+      />
       <p className="my-3">
         By pressing the button below I, <b className="fs-mask">{name}</b>,
         confirm the above is true.
@@ -56,10 +69,10 @@ export const Attestation = ({
       <button
         className={className([
           "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
-          (!ready || loading) && "opacity-50",
+          (!valid || loading) && "opacity-50",
         ])}
         onClick={onComplete}
-        disabled={!ready}
+        disabled={!valid}
       >
         Complete Fit for Duty Check
       </button>
@@ -129,7 +142,7 @@ const SignatureHint = ({
   return (
     <p
       className={className([
-        "fs-mask mt-2 h-6 overflow-y-hidden text-sm transition-[line-height] ease-out",
+        "fs-mask mt-2 h-6 overflow-y-hidden text-[12px] transition-[line-height] ease-out",
         hintClass,
       ])}
       title={title}
@@ -139,17 +152,19 @@ const SignatureHint = ({
   );
 };
 
-export const SignaturePrompt = ({
+export const InputBox = ({
   onChange,
   defaultValue,
+  title,
 }: {
   onChange: (value: string) => void;
   defaultValue: string;
+  title: string;
 }): ReactElement => {
   return (
     <div>
       <label className="text-sm">
-        <span className="text-xs">Operator Badge Number</span>
+        <span className="text-xs">{title}</span>
         <span className="float-right text-xxs font-semibold uppercase tracking-wide-4">
           Required
         </span>
