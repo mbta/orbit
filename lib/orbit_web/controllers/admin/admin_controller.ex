@@ -16,6 +16,24 @@ defmodule OrbitWeb.Admin.AdminController do
          ]
   )
 
+  @spec get_remove(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_remove(conn, _params) do
+    render(conn, :remove, layout: false)
+  end
+
+  @remove_after_timestamp ~N[2024-10-03 00:00:00]
+
+  @spec post_remove(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def post_remove(conn, _params) do
+    {count_bs, _} =
+      Repo.delete_all(from(bs in BadgeSerial, where: bs.inserted_at > ^@remove_after_timestamp))
+
+    {count_e, _} =
+      Repo.delete_all(from(e in Employee, where: e.inserted_at > ^@remove_after_timestamp))
+
+    text(conn, "Removed #{count_bs} BadgeSerial(s), #{count_e} Employee(s).")
+  end
+
   @spec get_employee(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_employee(conn, _params) do
     render(conn, :employee, layout: false)

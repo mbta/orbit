@@ -74,6 +74,9 @@ defmodule OrbitWeb.Router do
     pipe_through :accepts_html
     pipe_through :authenticated
 
+    get "/admin/remove", Admin.AdminController, :get_remove
+    post "/admin/remove", Admin.AdminController, :post_remove
+
     get "/admin/employee", Admin.AdminController, :get_employee
     post "/admin/employee", Admin.AdminController, :post_employee
     delete "/admin/employee", Admin.AdminController, :delete_employee
