@@ -25,6 +25,7 @@ enum CompleteState {
 
 const submit = (
   badgeEntry: BadgeEntry,
+  radio: string,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
@@ -35,6 +36,7 @@ const submit = (
     signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
     line: "blue",
+    radio_number: radio,
     method: badgeEntry.method,
   })
     .then((response) => {
@@ -94,6 +96,7 @@ const OperatorSignInModalContent = ({
   close: () => void;
 }): ReactElement => {
   const [badge, setBadge] = useState<BadgeEntry | null>(null);
+  const [radio, setRadio] = useState<string>("");
   const [complete, setComplete] = useState<CompleteState | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -123,7 +126,7 @@ const OperatorSignInModalContent = ({
           name={name}
           loading={loading}
           onTryAgain={() => {
-            submit(badge, setComplete, setLoading, onComplete);
+            submit(badge, radio, setComplete, setLoading, onComplete);
           }}
         />
       : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
@@ -147,8 +150,10 @@ const OperatorSignInModalContent = ({
           prefill={badge.method === "nfc"}
           badge={badge.number}
           loading={loading}
+          radio={radio}
+          setRadio={setRadio}
           onComplete={() => {
-            submit(badge, setComplete, setLoading, onComplete);
+            submit(badge, radio, setComplete, setLoading, onComplete);
           }}
           employees={employees}
         />

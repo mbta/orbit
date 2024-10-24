@@ -9,7 +9,7 @@ export const useSignInText = (): {
   return {
     version: 1,
     text: (
-      <ul className="my-8 mx-5 list-disc leading-tight">
+      <ul className="my-7 mx-5 list-disc leading-tight">
         <li>I do not have an electronic device in my possession.</li>
         <li>
           I am fit for duty, and I do not possess nor am I under the influence
