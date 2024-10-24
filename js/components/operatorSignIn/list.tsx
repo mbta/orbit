@@ -17,7 +17,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
   }
 
   return (
-    <table className="break-words">
+    <table className="break-words text-[14px]">
       <colgroup>
         <col className="w-1/3" />
         <col className="w-1/5" />
@@ -41,7 +41,8 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
               {si.signed_in_employee}
             </td>
             <td className="fs-mask border-y md:border-x p-1 break-all">
-              {si.radio_number}
+              {/* {si.radio_number} */}
+              2222
             </td>
             <td className="border-y md:border-x p-1">
               {si.signed_in_at
