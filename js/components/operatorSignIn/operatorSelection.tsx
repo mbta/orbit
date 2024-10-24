@@ -42,7 +42,12 @@ export const OperatorSelection = ({
   const buttonEnabled = badgeEntry !== null;
 
   return (
-    <div className="flex flex-col content-stretch">
+    <form
+      className="flex flex-col content-stretch"
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+    >
       {nfcSupported ?
         <NfcSupported />
       : <NfcUnsupported />}
@@ -79,7 +84,7 @@ export const OperatorSelection = ({
       >
         OK
       </button>
-    </div>
+    </form>
   );
 };
 
