@@ -51,31 +51,33 @@ export const Attestation = ({
     <div className="text-sm">
       Step 2 of 2
       <SignInText />
-      <InputBox
-        title={"Operator Badge Number"}
-        defaultValue={defaultValue}
-        onChange={setEnteredBadge}
-      />
-      <SignatureHint badge={badge} signatureText={enteredBadge} />
-      <InputBox
-        title={"Radio Number"}
-        defaultValue={radio}
-        onChange={setRadio}
-      />
-      <p className="my-3">
-        By pressing the button below I, <b className="fs-mask">{name}</b>,
-        confirm the above is true.
-      </p>
-      <button
-        className={className([
-          "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
-          (!valid || loading) && "opacity-50",
-        ])}
-        onClick={onComplete}
-        disabled={!valid}
-      >
-        Complete Fit for Duty Check
-      </button>
+      <form>
+        <InputBox
+          title={"Operator Badge Number"}
+          defaultValue={defaultValue}
+          onChange={setEnteredBadge}
+        />
+        <SignatureHint badge={badge} signatureText={enteredBadge} />
+        <InputBox
+          title={"Radio Number"}
+          defaultValue={radio}
+          onChange={setRadio}
+        />
+        <p className="my-3">
+          By pressing the button below I, <b className="fs-mask">{name}</b>,
+          confirm the above is true.
+        </p>
+        <button
+          className={className([
+            "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
+            (!valid || loading) && "opacity-50",
+          ])}
+          onClick={onComplete}
+          disabled={!valid}
+        >
+          Complete Fit for Duty Check
+        </button>
+      </form>
     </div>
   );
 };
