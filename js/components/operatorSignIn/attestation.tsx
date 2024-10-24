@@ -51,7 +51,11 @@ export const Attestation = ({
     <div className="text-sm">
       Step 2 of 2
       <SignInText />
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         <InputBox
           title={"Operator Badge Number"}
           defaultValue={defaultValue}
