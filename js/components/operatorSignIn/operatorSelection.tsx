@@ -44,7 +44,8 @@ export const OperatorSelection = ({
   return (
     <form
       className="flex flex-col content-stretch"
-      onSubmit={() => {
+      onSubmit={(e) => {
+        e.preventDefault();
         if (badgeEntry === null) {
           throw new Error("operatorSelection badgeEntry was impossibly null.");
         }
