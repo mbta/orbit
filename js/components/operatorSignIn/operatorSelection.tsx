@@ -44,8 +44,12 @@ export const OperatorSelection = ({
   return (
     <form
       className="flex flex-col content-stretch"
-      onSubmit={(e) => {
-        e.preventDefault();
+      onSubmit={() => {
+        if (badgeEntry === null) {
+          throw new Error("operatorSelection badgeEntry was impossibly null.");
+        }
+
+        onOK(badgeEntry);
       }}
     >
       {nfcSupported ?
@@ -67,16 +71,6 @@ export const OperatorSelection = ({
       />
       <button
         disabled={!buttonEnabled}
-        onClick={() => {
-          // This should never happen, but throw just in case.
-          if (badgeEntry === null) {
-            throw new Error(
-              "operatorSelection badgeEntry was impossibly null.",
-            );
-          }
-
-          onOK(badgeEntry);
-        }}
         className={className([
           "rounded bg-gray-500 text-gray-200 mt-3 w-full md:max-w-64 mx-auto h-10",
           !buttonEnabled && "opacity-50",
