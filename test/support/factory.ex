@@ -29,7 +29,7 @@ defmodule Orbit.Factory do
       signed_in_by_user: build(:user),
       signed_in_at: DateTime.add(base_dt, sequence(:operator_sign_in_time_offset, & &1), :minute),
       rail_line: :blue,
-      radio_number: 22,
+      radio_number: "22",
       sign_in_method: :manual
     }
   end
