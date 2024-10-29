@@ -5,7 +5,7 @@ import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
 import { useSignInText } from "./text";
-import { ReactElement, useEffect, useState } from "react";
+import { ChangeEvent, ReactElement, useEffect, useState } from "react";
 
 export const Attestation = ({
   badge,
@@ -59,13 +59,17 @@ export const Attestation = ({
         <InputBox
           title={"Operator Badge Number"}
           defaultValue={defaultValue}
-          onChange={setEnteredBadge}
+          onChange={(evt) => {
+            setEnteredBadge(removeLeadingZero(evt.target.value));
+          }}
         />
         <SignatureHint badge={badge} signatureText={enteredBadge} />
         <InputBox
           title={"Radio Number"}
           defaultValue={radio}
-          onChange={setRadio}
+          onChange={(evt) => {
+            setRadio(evt.target.value);
+          }}
         />
         <p className="my-3">
           By pressing the button below I, <b className="fs-mask">{name}</b>,
@@ -163,7 +167,7 @@ export const InputBox = ({
   defaultValue,
   title,
 }: {
-  onChange: (value: string) => void;
+  onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
   defaultValue: string;
   title: string;
 }): ReactElement => {
@@ -180,9 +184,7 @@ export const InputBox = ({
           inputMode="numeric"
           defaultValue={defaultValue}
           // Do not set `value`- we are transforming below!
-          onChange={(evt) => {
-            onChange(removeLeadingZero(evt.target.value));
-          }}
+          onChange={onChange}
           required
         />
       </label>
