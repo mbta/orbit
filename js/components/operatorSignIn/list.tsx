@@ -40,7 +40,7 @@ export const List = ({ line }: { line: HeavyRailLine }): ReactElement => {
             <td className="fs-mask border-y md:border-x p-1 break-all">
               {si.signed_in_employee}
             </td>
-            <td className="fs-mask border-y md:border-x p-1 break-all">
+            <td className="border-y md:border-x p-1 break-all">
               {/* {si.radio_number} */}
               2222
             </td>
