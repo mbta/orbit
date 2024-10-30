@@ -122,9 +122,6 @@ describe("Attestation", () => {
   });
 
   test("valid attestation", async () => {
-    // 'Radio' input state is held a component level up to keep
-    //   retry easy. Therefore we're pushing "22" in as a prop,
-    //   but also entering it in the test to make sure setRadio is called.
     const radioNumber = "22";
     const onComplete = jest.fn();
     const view = render(
