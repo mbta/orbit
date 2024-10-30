@@ -53,7 +53,8 @@ defmodule OrbitWeb.SignInController do
                 else
                   i.signin.signed_in_by_user.email
                 end,
-              signed_in_employee: i.signin.signed_in_employee.badge_number
+              signed_in_employee: i.signin.signed_in_employee.badge_number,
+              radio_number: i.signin.radio_number
             }
           end)
       }
@@ -65,7 +66,8 @@ defmodule OrbitWeb.SignInController do
         "signed_in_employee_badge" => signed_in_employee_badge,
         "signed_in_at" => signed_in_at,
         "line" => line,
-        "method" => method
+        "method" => method,
+        "radio_number" => radio_number
       }) do
     signed_in_at = DateTime.from_unix!(signed_in_at)
 
@@ -79,7 +81,8 @@ defmodule OrbitWeb.SignInController do
           signed_in_by_user: Auth.logged_in_user(conn),
           signed_in_at: signed_in_at,
           rail_line: String.to_existing_atom(line),
-          sign_in_method: String.to_existing_atom(method)
+          sign_in_method: String.to_existing_atom(method),
+          radio_number: radio_number
         }
         |> OperatorSignIn.changeset()
         |> Repo.insert!()

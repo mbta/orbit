@@ -18,7 +18,7 @@ defmodule OrbitWeb.SignInControllerTest do
     @tag :authenticated
     test "responds with sign-ins from today's service date", %{conn: conn} do
       now = DateTime.now!(@timezone)
-      insert(:operator_sign_in, signed_in_at: now)
+      insert(:operator_sign_in, signed_in_at: now, radio_number: "22")
 
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
@@ -26,6 +26,7 @@ defmodule OrbitWeb.SignInControllerTest do
                "data" => [
                  %{
                    "rail_line" => "blue",
+                   "radio_number" => "22",
                    "signed_in_at" => _date,
                    "signed_in_by" => _user,
                    "signed_in_employee" => _badge
@@ -148,7 +149,8 @@ defmodule OrbitWeb.SignInControllerTest do
           "signed_in_employee_badge" => "123",
           "signed_in_at" => 1_721_164_459,
           "line" => "blue",
-          "method" => "manual"
+          "method" => "manual",
+          "radio_number" => "22"
         })
 
       assert "Unauthorized" = text_response(conn, 401)
@@ -163,7 +165,8 @@ defmodule OrbitWeb.SignInControllerTest do
           "signed_in_employee_badge" => "123",
           "signed_in_at" => 1_721_164_459,
           "line" => "blue",
-          "method" => "manual"
+          "method" => "manual",
+          "radio_number" => "22"
         })
 
       assert "OK" = response(conn, 200)
@@ -172,7 +175,8 @@ defmodule OrbitWeb.SignInControllerTest do
                signed_in_employee: %Employee{badge_number: "123"},
                signed_in_at: ~U[2024-07-16 21:14:19Z],
                rail_line: :blue,
-               sign_in_method: :manual
+               sign_in_method: :manual,
+               radio_number: "22"
              } =
                Repo.one!(
                  from(si in OperatorSignIn,
@@ -190,7 +194,8 @@ defmodule OrbitWeb.SignInControllerTest do
           "signed_in_employee_badge" => "DOES_NOT_EXIST",
           "signed_in_at" => 1_721_164_459,
           "line" => "blue",
-          "method" => "manual"
+          "method" => "manual",
+          "radio_number" => "22"
         })
 
       assert "Employee not found" = response(conn, 404)
