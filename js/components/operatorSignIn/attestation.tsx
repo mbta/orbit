@@ -11,23 +11,20 @@ export const Attestation = ({
   badge,
   employees,
   onComplete,
-  radio,
-  setRadio,
   loading,
   prefill,
 }: {
   badge: string;
   employees: ApiResult<Employee[]>;
-  onComplete: () => void;
-  radio: string;
-  setRadio: (radio: string) => void;
+  onComplete: (radio: string) => void;
   loading: boolean;
   prefill: boolean;
 }): ReactElement => {
   const defaultValue = prefill ? badge : "";
 
   const [enteredBadge, setEnteredBadge] = useState<string>(defaultValue);
-  const valid = enteredBadge === badge && radio !== "";
+  const [enteredRadio, setEnteredRadio] = useState<string>("");
+  const valid = enteredBadge === badge && enteredRadio !== "";
 
   if (employees.status === "loading") {
     return <div>Loading...</div>;
@@ -66,9 +63,9 @@ export const Attestation = ({
         <SignatureHint badge={badge} signatureText={enteredBadge} />
         <InputBox
           title={"Radio Number"}
-          defaultValue={radio}
+          defaultValue={""}
           onChange={(evt) => {
-            setRadio(evt.target.value);
+            setEnteredRadio(evt.target.value);
           }}
         />
         <p className="my-3">
@@ -80,7 +77,9 @@ export const Attestation = ({
             "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
             (!valid || loading) && "opacity-50",
           ])}
-          onClick={onComplete}
+          onClick={() => {
+            onComplete(enteredRadio);
+          }}
           disabled={!valid}
         >
           Complete Fit for Duty Check

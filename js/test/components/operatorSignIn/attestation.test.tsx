@@ -15,8 +15,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
-        radio=""
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={jest.fn()}
         loading={false}
@@ -32,8 +30,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
-        radio=""
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={jest.fn()}
         loading={false}
@@ -47,8 +43,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="00000000"
-        radio=""
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={jest.fn()}
         loading={false}
@@ -63,8 +57,6 @@ describe("Attestation", () => {
       const view = render(
         <Attestation
           badge="123"
-          radio=""
-          setRadio={jest.fn()}
           prefill={false}
           onComplete={jest.fn()}
           loading={false}
@@ -82,8 +74,6 @@ describe("Attestation", () => {
       const view = render(
         <Attestation
           badge="123"
-          radio=""
-          setRadio={jest.fn()}
           prefill={true}
           onComplete={jest.fn()}
           loading={false}
@@ -102,8 +92,6 @@ describe("Attestation", () => {
       const view = render(
         <Attestation
           badge="123"
-          radio=""
-          setRadio={jest.fn()}
           prefill={false}
           onComplete={jest.fn()}
           loading={false}
@@ -122,8 +110,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
-        radio=""
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={jest.fn()}
         loading={false}
@@ -140,13 +126,10 @@ describe("Attestation", () => {
     //   retry easy. Therefore we're pushing "22" in as a prop,
     //   but also entering it in the test to make sure setRadio is called.
     const radioNumber = "22";
-    const setRadio = jest.fn();
     const onComplete = jest.fn();
     const view = render(
       <Attestation
         badge="123"
-        radio={radioNumber}
-        setRadio={setRadio}
         prefill={false}
         onComplete={onComplete}
         loading={false}
@@ -161,13 +144,12 @@ describe("Attestation", () => {
     });
     await userEvent.type(badgeInput, "123");
     await userEvent.type(radioInput, radioNumber);
-    expect(setRadio).toHaveBeenCalledTimes(2);
     expect(view.getByText("Looks good!")).toBeInTheDocument();
 
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
-    expect(onComplete).toHaveBeenCalledOnce();
+    expect(onComplete).toHaveBeenCalledExactlyOnceWith(radioNumber);
   });
 
   test("valid attestation with leading zero", async () => {
@@ -175,8 +157,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
-        radio="22"
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={onComplete}
         loading={false}
@@ -206,8 +186,6 @@ describe("Attestation", () => {
     const view = render(
       <Attestation
         badge="123"
-        radio="22"
-        setRadio={jest.fn()}
         prefill={false}
         onComplete={onComplete}
         loading={false}

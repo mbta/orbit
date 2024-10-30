@@ -150,9 +150,8 @@ const OperatorSignInModalContent = ({
           prefill={badge.method === "nfc"}
           badge={badge.number}
           loading={loading}
-          radio={radio}
-          setRadio={setRadio}
-          onComplete={() => {
+          onComplete={(radio: string) => {
+            setRadio(radio);
             submit(badge, radio, setComplete, setLoading, onComplete);
           }}
           employees={employees}
