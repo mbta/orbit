@@ -16,14 +16,15 @@ export const Attestation = ({
 }: {
   badge: string;
   employees: ApiResult<Employee[]>;
-  onComplete: () => void;
+  onComplete: (radio: string) => void;
   loading: boolean;
   prefill: boolean;
 }): ReactElement => {
   const defaultValue = prefill ? badge : "";
 
-  const [entered, setEntered] = useState<string>(defaultValue);
-  const ready = entered === badge;
+  const [enteredBadge, setEnteredBadge] = useState<string>(defaultValue);
+  const [enteredRadio, setEnteredRadio] = useState<string>("");
+  const valid = enteredBadge === badge && enteredRadio !== "";
 
   if (employees.status === "loading") {
     return <div>Loading...</div>;
@@ -47,22 +48,43 @@ export const Attestation = ({
     <div className="text-sm">
       Step 2 of 2
       <SignInText />
-      <SignaturePrompt defaultValue={defaultValue} onChange={setEntered} />
-      <SignatureHint badge={badge} signatureText={entered} />
-      <p className="my-3">
-        By pressing the button below I, <b className="fs-mask">{name}</b>,
-        confirm the above is true.
-      </p>
-      <button
-        className={className([
-          "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
-          (!ready || loading) && "opacity-50",
-        ])}
-        onClick={onComplete}
-        disabled={!ready}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
       >
-        Complete Fit for Duty Check
-      </button>
+        <InputBox
+          title={"Operator Badge Number"}
+          defaultValue={defaultValue}
+          onChange={(value) => {
+            setEnteredBadge(removeLeadingZero(value));
+          }}
+        />
+        <SignatureHint badge={badge} signatureText={enteredBadge} />
+        <InputBox
+          title={"Radio Number"}
+          defaultValue={""}
+          onChange={(value) => {
+            setEnteredRadio(value);
+          }}
+        />
+        <p className="my-3">
+          By pressing the button below I, <b className="fs-mask">{name}</b>,
+          confirm the above is true.
+        </p>
+        <button
+          className={className([
+            "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
+            (!valid || loading) && "opacity-50",
+          ])}
+          onClick={() => {
+            onComplete(enteredRadio);
+          }}
+          disabled={!valid}
+        >
+          Complete Fit for Duty Check
+        </button>
+      </form>
     </div>
   );
 };
@@ -129,7 +151,7 @@ const SignatureHint = ({
   return (
     <p
       className={className([
-        "fs-mask mt-2 h-6 overflow-y-hidden text-sm transition-[line-height] ease-out",
+        "fs-mask mt-2 h-6 overflow-y-hidden text-[12px] transition-[line-height] ease-out",
         hintClass,
       ])}
       title={title}
@@ -139,17 +161,19 @@ const SignatureHint = ({
   );
 };
 
-export const SignaturePrompt = ({
+const InputBox = ({
   onChange,
   defaultValue,
+  title,
 }: {
   onChange: (value: string) => void;
   defaultValue: string;
+  title: string;
 }): ReactElement => {
   return (
     <div>
       <label className="text-sm">
-        <span className="text-xs">Operator Badge Number</span>
+        <span className="text-xs">{title}</span>
         <span className="float-right text-xxs font-semibold uppercase tracking-wide-4">
           Required
         </span>
@@ -160,7 +184,7 @@ export const SignaturePrompt = ({
           defaultValue={defaultValue}
           // Do not set `value`- we are transforming below!
           onChange={(evt) => {
-            onChange(removeLeadingZero(evt.target.value));
+            onChange(evt.target.value);
           }}
           required
         />

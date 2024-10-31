@@ -94,8 +94,15 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
     expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
-    expect(view.getByRole("textbox")).toHaveValue(""); // Not pre-filled if manually typed
-    await userEvent.type(view.getByRole("textbox"), "123");
+    const badgeInput = view.getByLabelText(/Operator Badge Number/, {
+      selector: "input",
+    });
+    expect(badgeInput).toHaveValue(""); // Not pre-filled if manually typed
+    await userEvent.type(badgeInput, "123");
+    await userEvent.type(
+      view.getByLabelText(/Radio Number/, { selector: "input" }),
+      "22",
+    );
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
@@ -121,7 +128,14 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
     expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
-    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.type(
+      view.getByLabelText(/Operator Badge Number/, { selector: "input" }),
+      "123",
+    );
+    await userEvent.type(
+      view.getByLabelText(/Radio Number/, { selector: "input" }),
+      "22",
+    );
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
@@ -148,7 +162,14 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
     expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
-    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.type(
+      view.getByLabelText(/Operator Badge Number/, { selector: "input" }),
+      "123",
+    );
+    await userEvent.type(
+      view.getByLabelText(/Radio Number/, { selector: "input" }),
+      "22",
+    );
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
@@ -224,7 +245,14 @@ describe("OperatorSignInModal", () => {
 
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
-    await userEvent.type(view.getByRole("textbox"), "123");
+    await userEvent.type(
+      view.getByLabelText(/Operator Badge Number/, { selector: "input" }),
+      "123",
+    );
+    await userEvent.type(
+      view.getByLabelText(/Radio Number/, { selector: "input" }),
+      "22",
+    );
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );

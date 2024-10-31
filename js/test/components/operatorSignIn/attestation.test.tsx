@@ -53,20 +53,6 @@ describe("Attestation", () => {
   });
 
   describe("signature text box", () => {
-    test("it's there", () => {
-      const view = render(
-        <Attestation
-          badge="123"
-          prefill={false}
-          onComplete={jest.fn()}
-          loading={false}
-          employees={EMPLOYEES}
-        />,
-      );
-      expect(view.getByRole("textbox")).toBeInTheDocument();
-      expect(view.getByRole("textbox")).toHaveValue("");
-    });
-
     test("it pre-fills if requested", () => {
       const view = render(
         <Attestation
@@ -77,7 +63,49 @@ describe("Attestation", () => {
           employees={EMPLOYEES}
         />,
       );
-      expect(view.getByRole("textbox")).toHaveValue("123");
+      const input = view.getByLabelText(/Operator Badge Number/i, {
+        selector: "input",
+      });
+      expect(input).toHaveValue("123");
+    });
+  });
+
+  describe("radio text box", () => {
+    test("it's there", () => {
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={jest.fn()}
+          loading={false}
+          employees={EMPLOYEES}
+        />,
+      );
+      const input = view.getByLabelText(/Radio Number/i, {
+        selector: "input",
+      });
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveValue("");
+    });
+    test("cannot be blank", async () => {
+      const onComplete = jest.fn();
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={onComplete}
+          loading={false}
+          employees={EMPLOYEES}
+        />,
+      );
+      const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
+        selector: "input",
+      });
+      await userEvent.type(badgeInput, "123");
+      // Leave radio field blank
+      expect(
+        view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+      ).toBeDisabled();
     });
   });
 
@@ -97,6 +125,7 @@ describe("Attestation", () => {
   });
 
   test("valid attestation", async () => {
+    const radioNumber = "22";
     const onComplete = jest.fn();
     const view = render(
       <Attestation
@@ -107,13 +136,20 @@ describe("Attestation", () => {
         employees={EMPLOYEES}
       />,
     );
-    await userEvent.type(view.getByRole("textbox"), "123");
+    const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
+      selector: "input",
+    });
+    const radioInput = view.getByLabelText(/Radio Number/i, {
+      selector: "input",
+    });
+    await userEvent.type(badgeInput, "123");
+    await userEvent.type(radioInput, radioNumber);
     expect(view.getByText("Looks good!")).toBeInTheDocument();
 
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
-    expect(onComplete).toHaveBeenCalledOnce();
+    expect(onComplete).toHaveBeenCalledExactlyOnceWith(radioNumber);
   });
 
   test("valid attestation with leading zero", async () => {
@@ -127,7 +163,14 @@ describe("Attestation", () => {
         employees={EMPLOYEES}
       />,
     );
-    await userEvent.type(view.getByRole("textbox"), "0123");
+    const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
+      selector: "input",
+    });
+    const radioInput = view.getByLabelText(/Radio Number/i, {
+      selector: "input",
+    });
+    await userEvent.type(badgeInput, "0123");
+    await userEvent.type(radioInput, "22");
     expect(view.getByText("Looks good!")).toBeInTheDocument();
 
     await userEvent.click(
@@ -150,7 +193,12 @@ describe("Attestation", () => {
       />,
     );
 
-    await user.type(view.getByRole("textbox"), "4123");
+    await user.type(
+      view.getByLabelText(/Operator Badge Number/i, {
+        selector: "input",
+      }),
+      "4123",
+    );
     act(() => {
       jest.runAllTimers();
     });
