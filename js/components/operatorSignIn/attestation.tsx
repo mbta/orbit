@@ -5,7 +5,7 @@ import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
 import { useSignInText } from "./text";
-import { ChangeEvent, ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 
 export const Attestation = ({
   badge,
@@ -56,16 +56,16 @@ export const Attestation = ({
         <InputBox
           title={"Operator Badge Number"}
           defaultValue={defaultValue}
-          onChange={(evt) => {
-            setEnteredBadge(removeLeadingZero(evt.target.value));
+          onChange={(value) => {
+            setEnteredBadge(removeLeadingZero(value));
           }}
         />
         <SignatureHint badge={badge} signatureText={enteredBadge} />
         <InputBox
           title={"Radio Number"}
           defaultValue={""}
-          onChange={(evt) => {
-            setEnteredRadio(evt.target.value);
+          onChange={(value) => {
+            setEnteredRadio(value);
           }}
         />
         <p className="my-3">
@@ -161,12 +161,12 @@ const SignatureHint = ({
   );
 };
 
-export const InputBox = ({
+const InputBox = ({
   onChange,
   defaultValue,
   title,
 }: {
-  onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
   defaultValue: string;
   title: string;
 }): ReactElement => {
@@ -183,7 +183,9 @@ export const InputBox = ({
           inputMode="numeric"
           defaultValue={defaultValue}
           // Do not set `value`- we are transforming below!
-          onChange={onChange}
+          onChange={(evt) => {
+            onChange(evt.target.value);
+          }}
           required
         />
       </label>

@@ -53,23 +53,6 @@ describe("Attestation", () => {
   });
 
   describe("signature text box", () => {
-    test("it's there", () => {
-      const view = render(
-        <Attestation
-          badge="123"
-          prefill={false}
-          onComplete={jest.fn()}
-          loading={false}
-          employees={EMPLOYEES}
-        />,
-      );
-      const input = view.getByLabelText(/Operator Badge Number/i, {
-        selector: "input",
-      });
-      expect(input).toBeInTheDocument();
-      expect(input).toHaveValue("");
-    });
-
     test("it pre-fills if requested", () => {
       const view = render(
         <Attestation
@@ -103,6 +86,26 @@ describe("Attestation", () => {
       });
       expect(input).toBeInTheDocument();
       expect(input).toHaveValue("");
+    });
+    test("cannot be blank", async () => {
+      const onComplete = jest.fn();
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={onComplete}
+          loading={false}
+          employees={EMPLOYEES}
+        />,
+      );
+      const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
+        selector: "input",
+      });
+      await userEvent.type(badgeInput, "123");
+      // Leave radio field blank
+      expect(
+        view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+      ).toBeDisabled();
     });
   });
 
