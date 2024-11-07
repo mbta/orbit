@@ -7,7 +7,6 @@ import pluginJs from "@eslint/js";
 import configPrettier from "eslint-config-prettier";
 // @ts-expect-error no types for this plugin
 import pluginBetterMutation from "eslint-plugin-better-mutation";
-// @ts-expect-error no types for this plugin
 import pluginJest from "eslint-plugin-jest";
 // @ts-expect-error no types for this plugin
 import pluginJestDom from "eslint-plugin-jest-dom";
