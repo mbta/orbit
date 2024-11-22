@@ -3,6 +3,11 @@
 # Copy the template to dev.secret.exs, then uncomment and fill in any sections you need.
 import Config
 
+# Appcues
+config :orbit,
+  appcues_enabled?: true,
+  appcues_id: "SOME_ID"
+
 # FullStory
 # Only turn this on if you're testing sending data to FullStory, not for regular use.
 config :orbit,

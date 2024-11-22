@@ -1,6 +1,8 @@
 import Config
 
 config :orbit,
+  appcues_enabled?: true,
+  appcues_id: "APPKEWES",
   allow_test_data?: true,
   environment: "test",
   release: "test",

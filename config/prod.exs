@@ -4,6 +4,7 @@ import Config
 
 config :orbit,
   # loaded at compile time
+  appcues_enabled?: true,
   release: System.get_env("RELEASE")
 
 config :orbit, Orbit.Repo,
