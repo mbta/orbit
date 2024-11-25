@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fullstory/browser": "2.0.6",
-    "@restart/ui": "1.8.0",
+    "@restart/ui": "1.9.1",
     "@sentry/fullstory": "3.0.0",
     "@sentry/react": "8.40.0",
     "@tailwindcss/forms": "0.5.9",
