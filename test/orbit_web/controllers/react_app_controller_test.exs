@@ -15,6 +15,9 @@ defmodule OrbitWeb.ReactAppControllerTest do
     })
 
     reassign_env(:sentry, :dsn, "https://example.com")
+    reassign_env(:orbit, :appcues_enabled?, true)
+    reassign_env(:orbit, :appcues_id, "APPKEWES")
+    reassign_env(:orbit, :full_story_org_id, "RAWR")
   end
 
   @tag :authenticated
