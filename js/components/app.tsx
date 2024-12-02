@@ -1,5 +1,6 @@
 import { reload } from "../browser";
 import { paths } from "../paths";
+import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
 import { Home } from "./home";
 import { HelpMenu, Menu } from "./menus";
@@ -49,6 +50,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     element: (
       <>
+        <AppcuesTrackPage />
         <Header />
         <Outlet />
       </>

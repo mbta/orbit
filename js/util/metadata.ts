@@ -1,4 +1,5 @@
 export type MetaDataKey =
+  | "appcuesUserId"
   | "csrf-token"
   | "fullStoryOrgId"
   | "sentryDsn"

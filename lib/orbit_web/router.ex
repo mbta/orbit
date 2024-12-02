@@ -15,7 +15,7 @@ defmodule OrbitWeb.Router do
 
     plug :put_secure_browser_headers, %{
       "content-security-policy" =>
-        "default-src 'self'; connect-src 'self' *.sentry.io *.fullstory.com; script-src 'self' *.fullstory.com"
+        "default-src 'self'; connect-src 'self' *.sentry.io *.fullstory.com fast.appcues.com ws: api.appcues.net; script-src 'self' *.fullstory.com fast.appcues.com; style-src 'self' fast.appcues.com;"
     }
   end
 
