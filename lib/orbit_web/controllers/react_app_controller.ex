@@ -6,9 +6,21 @@ defmodule OrbitWeb.ReactAppController do
     # so skip the default app layout.
     render(conn, :react_app,
       layout: false,
-      sentry_dsn: Application.get_env(:sentry, :dsn),
+      appcues_enabled?: Application.get_env(:orbit, :appcues_enabled?),
+      appcues_id: Application.get_env(:orbit, :appcues_id),
+      appcues_uid: appcues_uid(conn),
       environment: Application.get_env(:orbit, :environment),
-      full_story_org_id: Application.get_env(:orbit, :full_story_org_id)
+      full_story_org_id: Application.get_env(:orbit, :full_story_org_id),
+      sentry_dsn: Application.get_env(:sentry, :dsn)
     )
+  end
+
+  # Use half a sha256 of the email address as user id.
+  # This is not secure! But we're eliminating randomness
+  #  while not being trivially overridable.
+  defp appcues_uid(conn) do
+    :crypto.hash(:sha3_256, conn.assigns[:email])
+    |> Base.encode16(case: :lower)
+    |> String.slice(0..32)
   end
 end

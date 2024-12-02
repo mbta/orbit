@@ -15,6 +15,9 @@ defmodule OrbitWeb.ReactAppControllerTest do
     })
 
     reassign_env(:sentry, :dsn, "https://example.com")
+    reassign_env(:orbit, :appcues_enabled?, true)
+    reassign_env(:orbit, :appcues_id, "APPKEWES")
+    reassign_env(:orbit, :full_story_org_id, "RAWR")
   end
 
   @tag :authenticated
@@ -27,6 +30,7 @@ defmodule OrbitWeb.ReactAppControllerTest do
     assert response =~ "<meta name=\"release\" content=\"test\">"
     assert response =~ "<meta name=\"userEmail\" content=\"user@example.com\">"
     assert response =~ "<meta name=\"userName\" content=\"Art Read\">"
+    assert response =~ "<script src=\"//fast.appcues.com/APPKEWES.js\">"
     assert response =~ "<meta name=\"sentryDsn\" content=\"https://example.com\">"
     assert response =~ "<meta name=\"environment\" content=\"test\">"
     assert response =~ "<meta name=\"fullStoryOrgId\" content=\"RAWR\">"

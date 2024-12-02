@@ -31,9 +31,17 @@
     <%= if @conn.assigns[:full_story_org_id] do %>
       <meta name="fullStoryOrgId" content={@full_story_org_id} />
     <% end %>
+    <%= if @conn.assigns[:appcues_uid] do %>
+      <meta name="appcuesUserId" content={@appcues_uid} />
+    <% end %>
 
     <title><%= assigns[:page_title] || "Orbit" %></title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />
+
+    <%= if @conn.assigns[:appcues_enabled?] && @conn.assigns[:appcues_id] do %>
+      <script src={"//fast.appcues.com/#{@appcues_id}.js"}>
+      </script>
+    <% end %>
   </head>
   <body class="bg-white antialiased">
     <%= @inner_content %>

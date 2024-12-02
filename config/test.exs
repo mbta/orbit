@@ -4,7 +4,6 @@ config :orbit,
   allow_test_data?: true,
   environment: "test",
   release: "test",
-  full_story_org_id: "RAWR",
   force_https?: false
 
 # Database config
