@@ -39,7 +39,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.6.0"},
+      {:bandit, "== 1.6.1"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "== 4.0.0", only: :dev},
       {:credo, "== 1.7.10", only: [:dev, :test], runtime: false},
