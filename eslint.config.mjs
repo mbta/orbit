@@ -8,7 +8,6 @@ import configPrettier from "eslint-config-prettier";
 // @ts-expect-error no types for this plugin
 import pluginBetterMutation from "eslint-plugin-better-mutation";
 import pluginJest from "eslint-plugin-jest";
-// @ts-expect-error no types for this plugin
 import pluginJestDom from "eslint-plugin-jest-dom";
 // @ts-expect-error no types for this plugin
 import pluginJsxA11y from "eslint-plugin-jsx-a11y";
@@ -18,7 +17,6 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-expect-error no types for this plugin
 import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
-// @ts-expect-error no types for this plugin
 import pluginTestingLibrary from "eslint-plugin-testing-library";
 import globals from "globals";
 import tseslint from "typescript-eslint";
