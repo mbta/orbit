@@ -27,7 +27,7 @@
     "zod": "3.24.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.16.0",
+    "@eslint/js": "9.17.0",
     "@ianvs/prettier-plugin-sort-imports": "4.4.0",
     "@storybook/addon-essentials": "8.4.7",
     "@storybook/addon-interactions": "8.4.7",
