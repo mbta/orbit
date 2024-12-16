@@ -95,6 +95,8 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-function": "off",
       // expect.any is untyped and triggers this all the time.
       "@typescript-eslint/no-unsafe-assignment": "off",
+      // sometimes the easiest way to mock a complex test setup is to mutate something
+      "better-mutation/no-mutation": "off",
       /* we do `view = render(); view.getBy()` which also doesn't require destructuring
       and has less global mutable state than `screen`. */
       "testing-library/prefer-screen-queries": "off",
