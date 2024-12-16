@@ -123,6 +123,14 @@ describe("get", () => {
 });
 
 describe("useApiResult", () => {
+  let spyConsoleError: jest.SpiedFunction<typeof console.error>;
+  beforeEach(() => {
+    spyConsoleError = jest.spyOn(console, "error");
+  });
+  afterEach(() => {
+    spyConsoleError.mockRestore();
+  });
+
   test("returns loading state", () => {
     const RawData = z.string();
     const parser = (s: string) => s;
@@ -167,8 +175,10 @@ describe("useApiResult", () => {
     const RawData = z.string();
     const parser = (s: string) => s;
 
-    const { promise, resolve } = PromiseWithResolvers<Response>();
+    // this test triggers console.error. quiet it.
+    spyConsoleError.mockImplementationOnce(() => {});
 
+    const { promise, resolve } = PromiseWithResolvers<Response>();
     jest.mocked(fetch).mockReturnValue(promise);
 
     const { result } = renderHook(useApiResult, {
@@ -192,8 +202,10 @@ describe("useApiResult", () => {
     const RawData = z.string();
     const parser = (s: string) => s;
 
-    const { promise, resolve } = PromiseWithResolvers<Response>();
+    // this test triggers console.error. quiet it.
+    spyConsoleError.mockImplementationOnce(() => {});
 
+    const { promise, resolve } = PromiseWithResolvers<Response>();
     jest.mocked(fetch).mockReturnValue(promise);
 
     const { result } = renderHook(useApiResult, {
@@ -218,8 +230,10 @@ describe("useApiResult", () => {
     const RawData = z.string();
     const parser = (s: string) => s;
 
-    const { promise, resolve } = PromiseWithResolvers<Response>();
+    // this test triggers console.error. quiet it.
+    spyConsoleError.mockImplementationOnce(() => {});
 
+    const { promise, resolve } = PromiseWithResolvers<Response>();
     jest.mocked(fetch).mockReturnValue(promise);
 
     const { result } = renderHook(useApiResult, {

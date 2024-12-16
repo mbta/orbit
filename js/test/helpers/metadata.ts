@@ -1,4 +1,3 @@
-/* eslint-disable better-mutation/no-mutation */
 import { MetaDataKey } from "../../util/metadata";
 
 export const putMetaData = (key: MetaDataKey, value: string) => {
