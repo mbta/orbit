@@ -29,7 +29,8 @@ config :orbit, Oban,
   plugins: [Oban.Plugins.Pruner, {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(60)}],
   queues: [
     personnel_import: 1,
-    rfid_import: 1
+    rfid_import: 1,
+    cert_import: 1
   ]
 
 config :elixir, :time_zone_database, Tz.TimeZoneDatabase

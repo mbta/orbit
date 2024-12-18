@@ -39,4 +39,13 @@ defmodule Orbit.Factory do
       badge_serial: sequence("employee_badge_serial")
     }
   end
+
+  def certification_factory do
+    %Orbit.Certification{
+      badge: "1234",
+      type: :rail,
+      rail_line: :blue,
+      expires: "2023-12-11"
+    }
+  end
 end

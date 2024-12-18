@@ -21,7 +21,20 @@ config :orbit, Oban,
        # the top of every hour, any day, any month, any day of the week
        {"0 * * * *", Orbit.Import.PersonnelWorker},
        # the bottom of every hour, any day, any month, any day of the week
-       {"30 * * * *", Orbit.Import.RfidWorker}
+       {"30 * * * *", Orbit.Import.RfidWorker},
+       # Every half hour
+       {"*/30 * * * *", Orbit.Import.ImportCertifications,
+        args: %{
+          type: :right_of_way,
+          s3_ref: :glides_global,
+          s3_path: "cornerstone/right_of_way_certification.csv"
+        }},
+       {"*/30 * * * *", Orbit.Import.ImportCertifications,
+        args: %{
+          type: :rail,
+          s3_ref: :glides_global,
+          s3_path: "cornerstone/rail_certifications.csv"
+        }}
      ]}
   ]
 
