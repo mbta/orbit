@@ -1,14 +1,15 @@
-import { ApiResult } from "../../../api";
 import { Attestation } from "../../../components/operatorSignIn/attestation";
+import { Certification } from "../../../models/certification";
 import { Employee } from "../../../models/employee";
-import { employeeFactory } from "../../helpers/factory";
+import { certificationFactory, employeeFactory } from "../../helpers/factory";
 import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const EMPLOYEES: ApiResult<Employee[]> = {
-  status: "ok",
-  result: [employeeFactory.build({ badge: "123" })],
-};
+const EMPLOYEES: Employee[] = [employeeFactory.build({ badge: "123" })];
+const CERTIFICATIONS_NONE: Certification[] = [];
+const CERTIFICATIONS_ONE_EXPIRED: Certification[] = [
+  certificationFactory.build(),
+];
 
 describe("Attestation", () => {
   test("displays sign-in text", () => {
@@ -19,6 +20,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     expect(
@@ -34,6 +36,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     expect(view.getByText("Preferredy Lasty")).toBeInTheDocument();
@@ -47,6 +50,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     expect(view.getByText("Operator #00000000")).toBeInTheDocument();
@@ -61,6 +65,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
+          certifications={CERTIFICATIONS_NONE}
         />,
       );
       const input = view.getByLabelText(/Operator Badge Number/i, {
@@ -79,6 +84,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
+          certifications={CERTIFICATIONS_NONE}
         />,
       );
       const input = view.getByLabelText(/Radio Number/i, {
@@ -96,6 +102,7 @@ describe("Attestation", () => {
           onComplete={onComplete}
           loading={false}
           employees={EMPLOYEES}
+          certifications={CERTIFICATIONS_NONE}
         />,
       );
       const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -117,6 +124,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     expect(
@@ -134,6 +142,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -161,6 +170,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -190,6 +200,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
+        certifications={CERTIFICATIONS_NONE}
       />,
     );
 
@@ -215,5 +226,43 @@ describe("Attestation", () => {
 
     expect(onComplete).not.toHaveBeenCalled();
     jest.useRealTimers();
+  });
+
+  describe("expiry", () => {
+    test("displays expired mode if expired", () => {
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={jest.fn()}
+          loading={false}
+          employees={EMPLOYEES}
+          certifications={CERTIFICATIONS_ONE_EXPIRED}
+        />,
+      );
+      expect(view.getByText("Expired card")).toBeInTheDocument();
+      expect(
+        view.getByText("Continue to Fit for Duty Check."),
+      ).toBeInTheDocument();
+    });
+
+    test("can bypass expired mode", async () => {
+      const view = render(
+        <Attestation
+          badge="123"
+          prefill={false}
+          onComplete={jest.fn()}
+          loading={false}
+          employees={EMPLOYEES}
+          certifications={CERTIFICATIONS_ONE_EXPIRED}
+        />,
+      );
+      await userEvent.click(
+        view.getByRole("button", { name: "Continue to Fit for Duty Check →" }),
+      );
+      expect(
+        view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+      ).toBeInTheDocument();
+    });
   });
 });
