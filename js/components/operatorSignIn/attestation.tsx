@@ -1,90 +1,100 @@
-import { ApiResult } from "../../api";
-import { reload } from "../../browser";
+import { useNow } from "../../dateTime";
 import { lookupDisplayName } from "../../hooks/useEmployees";
+import { anyOfExpired, Certification } from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
+import { Bypass, CertificateBoxes, Instructions } from "./expiry";
 import { useSignInText } from "./text";
 import { ReactElement, useEffect, useState } from "react";
 
 export const Attestation = ({
   badge,
   employees,
+  certifications,
   onComplete,
   loading,
   prefill,
 }: {
   badge: string;
-  employees: ApiResult<Employee[]>;
+  employees: Employee[];
+  certifications: Certification[];
   onComplete: (radio: string) => void;
   loading: boolean;
   prefill: boolean;
 }): ReactElement => {
   const defaultValue = prefill ? badge : "";
+  const now = useNow("second");
 
   const [enteredBadge, setEnteredBadge] = useState<string>(defaultValue);
   const [enteredRadio, setEnteredRadio] = useState<string>("");
   const valid = enteredBadge === badge && enteredRadio !== "";
+  const [bypass, setBypass] = useState<boolean>(false);
 
-  if (employees.status === "loading") {
-    return <div>Loading...</div>;
-  } else if (employees.status === "error") {
-    return (
-      <div className="text-center">
-        <div className="mb-4">Unable to download employee data</div>
-        <div>
-          <button
-            className="rounded bg-blue text-gray-200 w-1/4 max-w-20"
-            onClick={reload}
-          >
-            Reload
-          </button>
-        </div>
-      </div>
-    );
-  }
-  const name = lookupDisplayName(badge, employees.result);
+  const name = lookupDisplayName(badge, employees);
+  const expired = anyOfExpired(certifications, now);
+
   return (
     <div className="text-sm">
-      Step 2 of 2
-      <SignInText />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-      >
-        <InputBox
-          title={"Operator Badge Number"}
-          defaultValue={defaultValue}
-          onChange={(value) => {
-            setEnteredBadge(removeLeadingZero(value));
-          }}
-        />
-        <SignatureHint badge={badge} signatureText={enteredBadge} />
-        <InputBox
-          title={"Radio Number"}
-          defaultValue={""}
-          onChange={(value) => {
-            setEnteredRadio(value);
-          }}
-        />
-        <p className="my-3">
-          By pressing the button below I, <b className="fs-mask">{name}</b>,
-          confirm the above is true.
-        </p>
-        <button
-          className={className([
-            "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
-            (!valid || loading) && "opacity-50",
-          ])}
-          onClick={() => {
-            onComplete(enteredRadio);
-          }}
-          disabled={!valid}
-        >
-          Complete Fit for Duty Check
-        </button>
-      </form>
+      <CertificateBoxes
+        certifications={certifications}
+        displayName={name}
+        ignoreExpired={bypass}
+        now={now}
+      />
+      {!expired || bypass ?
+        <>
+          <SignInText />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <InputBox
+              title={"Operator Badge Number"}
+              defaultValue={defaultValue}
+              onChange={(value) => {
+                setEnteredBadge(removeLeadingZero(value));
+              }}
+            />
+            <SignatureHint badge={badge} signatureText={enteredBadge} />
+            <InputBox
+              title={"Radio Number"}
+              defaultValue={""}
+              onChange={(value) => {
+                setEnteredRadio(value);
+              }}
+            />
+            <p className="my-3">
+              By pressing the button below I, <b className="fs-mask">{name}</b>,
+              confirm the above is true.
+            </p>
+            <button
+              className={className([
+                "block w-full md:max-w-64 mx-auto h-10 px-5 bg-gray-500 text-gray-200 rounded-md",
+                (!valid || loading) && "opacity-50",
+              ])}
+              onClick={() => {
+                onComplete(enteredRadio);
+              }}
+              disabled={!valid}
+            >
+              Complete Fit for Duty Check
+            </button>
+          </form>
+        </>
+      : <>
+          <Instructions displayName={name} />
+          <Bypass
+            certifications={certifications}
+            displayName={name}
+            now={now}
+            onContinue={function (): void {
+              setBypass(true);
+            }}
+          />
+        </>
+      }
     </div>
   );
 };
