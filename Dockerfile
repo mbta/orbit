@@ -1,5 +1,5 @@
 ### Elixir Deps
-FROM hexpm/elixir:1.18.0-erlang-27.2-alpine-3.20.3 AS elixir-deps
+FROM hexpm/elixir:1.18.0-erlang-27.2-alpine-3.21.0 AS elixir-deps
 
 # git is needed to fetch some mix deps
 RUN apk add --no-cache git
@@ -15,7 +15,7 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-FROM node:22.12.0-alpine3.20 AS node
+FROM node:22.12.0-alpine3.21 AS node
 
 # npm deps
 ENV NODE_ENV=production
@@ -56,7 +56,7 @@ RUN mix release --path /app-release
 
 ### Production Stage
 # Run in minimal Alpine container
-FROM alpine:3.20.3 AS runtime
+FROM alpine:3.21.0 AS runtime
 
 # HTTP port
 EXPOSE 4001
