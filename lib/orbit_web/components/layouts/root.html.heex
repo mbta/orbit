@@ -35,7 +35,7 @@
       <meta name="appcuesUserId" content={@appcues_uid} />
     <% end %>
 
-    <title><%= assigns[:page_title] || "Orbit" %></title>
+    <title>{assigns[:page_title] || "Orbit"}</title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />
 
     <%= if @conn.assigns[:appcues_enabled?] && @conn.assigns[:appcues_id] do %>
@@ -44,6 +44,6 @@
     <% end %>
   </head>
   <body class="bg-white antialiased">
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>
