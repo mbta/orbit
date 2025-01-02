@@ -20,9 +20,7 @@ export const PromiseWithResolvers = <T>(): {
   let resolve: ((value: T | PromiseLike<T>) => void) | undefined = undefined;
   let reject: ((reason?: unknown) => void) | undefined = undefined;
   const promise = new Promise<T>((res, rej) => {
-    // eslint-disable-next-line better-mutation/no-mutation
     resolve = res;
-    // eslint-disable-next-line better-mutation/no-mutation
     reject = rej;
   });
 

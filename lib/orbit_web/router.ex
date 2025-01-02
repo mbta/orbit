@@ -14,8 +14,16 @@ defmodule OrbitWeb.Router do
     plug :protect_from_forgery
 
     plug :put_secure_browser_headers, %{
-      "content-security-policy" =>
-        "default-src 'self'; connect-src 'self' *.sentry.io *.fullstory.com fast.appcues.com ws: api.appcues.net; script-src 'self' *.fullstory.com fast.appcues.com; style-src 'self' fast.appcues.com;"
+      # much of this is necessary for Appcues: https://docs.appcues.com/user-experiences-faq/faq-content-security-policies
+      "content-security-policy" => "\
+        connect-src 'self' *.sentry.io *.fullstory.com https://*.appcues.com https://*.appcues.net wss://*.appcues.net wss://*.appcues.com;\
+        default-src 'self';\
+        font-src self' https://fonts.gstatic.com;\
+        frame-src 'self' https://*.appcues.com;\
+        img-src 'self' https://*.appcues.com https://*.appcues.net res.cloudinary.com cdn.jsdelivr.net;\
+        script-src 'self' *.fullstory.com https://*.appcues.com https://*.appcues.net;\
+        style-src 'self' https://*.appcues.com https://*.appcues.net https://fonts.googleapis.com https://fonts.google.com 'unsafe-inline';\
+        "
     }
   end
 

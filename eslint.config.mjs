@@ -17,6 +17,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-expect-error no types for this plugin
 import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
+import pluginStorybook from "eslint-plugin-storybook";
 import pluginTestingLibrary from "eslint-plugin-testing-library";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -30,6 +31,7 @@ export default tseslint.config(
     ...pluginReactRecommended,
     settings: { react: { version: "detect" } },
   },
+  ...pluginStorybook.configs["flat/recommended"],
   pluginReactJsx,
   configPrettier,
   {
@@ -64,9 +66,11 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
+          args: "all",
           argsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_",
           destructuredArrayIgnorePattern: "^_",
+          reportUsedIgnorePattern: true,
           varsIgnorePattern: "^_",
         },
       ],
@@ -95,6 +99,8 @@ export default tseslint.config(
       "@typescript-eslint/no-empty-function": "off",
       // expect.any is untyped and triggers this all the time.
       "@typescript-eslint/no-unsafe-assignment": "off",
+      // sometimes the easiest way to mock a complex test setup is to mutate something
+      "better-mutation/no-mutation": "off",
       /* we do `view = render(); view.getBy()` which also doesn't require destructuring
       and has less global mutable state than `screen`. */
       "testing-library/prefer-screen-queries": "off",
