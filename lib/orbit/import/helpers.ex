@@ -22,7 +22,7 @@ defmodule Orbit.Import.ImportHelpers do
   end
 
   @doc """
-  Read the csv from the path
+  Read a file from the specified path
   """
   @spec import_from_file!(String.t()) :: File.Stream.t()
   def import_from_file!(file_path) do
@@ -31,7 +31,7 @@ defmodule Orbit.Import.ImportHelpers do
   end
 
   @doc """
-  Read the csv from the `:glides` S3 ref in the given path, and pass it to the provided importer
+  Read a file from S3 by line
   """
   @spec import_from_s3!(Orbit.S3.s3_ref(), String.t()) :: Enumerable.t()
   def import_from_s3!(s3_ref, s3_path) do
