@@ -12,27 +12,27 @@ import { DateTime } from "luxon";
 const CERTIFICATIONS_ONE: Certification[] = [
   certificationFactory.build({
     type: "rail",
-    expires: DateTime.fromISO("2024-05-18"),
+    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
   }),
 ];
 const CERTIFICATIONS_TWO: Certification[] = [
   certificationFactory.build({
     type: "rail",
-    expires: DateTime.fromISO("2024-05-18"),
+    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
   }),
   certificationFactory.build({
     type: "right_of_way",
-    expires: DateTime.fromISO("2024-05-18"),
+    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
   }),
 ];
 const CERTIFICATIONS_TWO_SPLIT = [
   certificationFactory.build({
     type: "rail",
-    expires: DateTime.fromISO("2024-05-04"),
+    expires: DateTime.fromISO("2024-05-04", { zone: "America/New_York" }),
   }),
   certificationFactory.build({
     type: "right_of_way",
-    expires: DateTime.fromISO("2024-05-14"),
+    expires: DateTime.fromISO("2024-05-14", { zone: "America/New_York" }),
   }),
 ];
 
@@ -181,7 +181,9 @@ describe("CertificateBoxes", () => {
               ...CERTIFICATIONS_ONE,
               certificationFactory.build({
                 type: "right_of_way",
-                expires: DateTime.fromISO("2024-07-06"),
+                expires: DateTime.fromISO("2024-07-06", {
+                  zone: "America/New_York",
+                }),
               }),
             ]}
             displayName="Test Name"
