@@ -19,5 +19,5 @@ export const certificationDataFactory = Factory.define<CertificationData>(
 export const certificationFactory = Factory.define<Certification>(() => ({
   type: "rail",
   expires: DateTime.fromISO("2023-12-12", { zone: "America/New_York" }),
-  rail_line: "blue",
+  railLine: "blue",
 }));

@@ -29,7 +29,7 @@ const CERTIFICATIONS = [
   certificationFactory.build({
     type: "rail",
     expires: DateTime.fromISO("2082-12-12", { zone: "America/New_York" }),
-    rail_line: "blue",
+    railLine: "blue",
   }),
 ];
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return

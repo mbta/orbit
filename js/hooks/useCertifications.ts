@@ -1,5 +1,6 @@
-import { useApiResult } from "../api";
+import { ApiResult, useApiResult } from "../api";
 import {
+  Certification,
   CertificationDataList,
   certificationFromData,
 } from "../models/certification";
@@ -10,7 +11,9 @@ const parse = (list: CertificationDataList) => {
   return list.map(certificationFromData);
 };
 
-export const useCertifications = (badge: string | null) => {
+export const useCertifications = (
+  badge: string | null,
+): ApiResult<Certification[]> => {
   return useApiResult({
     RawData: CertificationDataList,
     url: `${CERTIFICATIONS_API_PATH}?badge=${badge}`,

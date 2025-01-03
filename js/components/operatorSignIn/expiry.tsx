@@ -5,7 +5,6 @@ import {
   isExpired,
 } from "../../models/certification";
 import { className } from "../../util/dom";
-import { WarningParagraph } from "./warningParagraph";
 import { DateTime } from "luxon";
 import { ReactElement } from "react";
 
@@ -53,19 +52,21 @@ const CertificateBox = ({
       .join(" and ") +
     ".";
   return (
-    <WarningParagraph
+    <div
       className={className([
-        "border-0 light:bg-opacity-40 dark:bg-opacity-30 dark:text-white",
+        "mb-4 mt-2 flex flex-row rounded border-0 px-3 py-2",
         mode === "warning" && "bg-[#FFDE9E]",
         mode === "error" && "bg-[#FF919A]",
       ])}
     >
-      <p className="font-bold uppercase">{title}</p>
-      <p className="mt-2">{innerString}</p>
-      {mode === "warning" && (
-        <p className="mt-2">Please have them call the Office.</p>
-      )}
-    </WarningParagraph>
+      <div className="m-0 flex-1 text-xs leading-4">
+        <p className="font-bold uppercase">{title}</p>
+        <p className="mt-2">{innerString}</p>
+        {mode === "warning" && (
+          <p className="mt-2">Please have them call the Office.</p>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -92,7 +93,7 @@ export const CertificateBoxes = ({
           now={now}
           mode="warning"
           title={
-            expiresSoon.length === 2 ? "Cards expire soon" : "Card expires soon"
+            expiresSoon.length === 1 ? "Card expires soon" : "Cards expire soon"
           }
           operatorName={displayName}
           certifications={expiresSoon}
@@ -102,7 +103,7 @@ export const CertificateBoxes = ({
         <CertificateBox
           now={now}
           mode="error"
-          title={expired.length === 2 ? "Expired cards" : "Expired card"}
+          title={expired.length === 1 ? "Expired card" : "Expired cards"}
           operatorName={displayName}
           certifications={expired}
         />
@@ -111,32 +112,15 @@ export const CertificateBoxes = ({
   );
 };
 
-export const Instructions = ({
-  displayName,
-}: {
-  displayName: string;
-}): ReactElement => {
-  return (
-    <ol className="m-8 mr-0 list-decimal">
-      <li>Do not allow {displayName} to drive.</li>
-      <li>Call the Office.</li>
-      <li>Send {displayName} to the Supervisors&#39; Office.</li>
-    </ol>
-  );
-};
 export const Bypass = ({
   displayName,
-  certifications,
-  now,
+  expireds,
   onContinue,
 }: {
   displayName: string;
-  certifications: Certification[];
-  now: DateTime;
+  expireds: Certification[];
   onContinue: () => void;
 }): ReactElement => {
-  const expireds = certifications.filter((c) => isExpired(c, now));
-
   return (
     <>
       <hr className="h-[2px] bg-gray-300" />
@@ -148,8 +132,8 @@ export const Bypass = ({
         </span>
         <ol className="mb-4 ml-10 mr-0 mt-2 list-decimal">
           <li className="m-0">
-            Take a picture of{" "}
-            {expireds.length === 2 ? "both cards" : "the card"}.
+            Take a picture of {expireds.length === 1 ? "the card" : "the cards"}
+            .
           </li>
           <li className="m-0">Email pictures to supervisors.</li>
           <li className="m-0">Continue to Fit for Duty Check.</li>

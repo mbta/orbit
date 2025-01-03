@@ -229,23 +229,6 @@ describe("Attestation", () => {
   });
 
   describe("expiry", () => {
-    test("displays expired mode if expired", () => {
-      const view = render(
-        <Attestation
-          badge="123"
-          prefill={false}
-          onComplete={jest.fn()}
-          loading={false}
-          employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_ONE_EXPIRED}
-        />,
-      );
-      expect(view.getByText("Expired card")).toBeInTheDocument();
-      expect(
-        view.getByText("Continue to Fit for Duty Check."),
-      ).toBeInTheDocument();
-    });
-
     test("can bypass expired mode", async () => {
       const view = render(
         <Attestation
@@ -257,6 +240,7 @@ describe("Attestation", () => {
           certifications={CERTIFICATIONS_ONE_EXPIRED}
         />,
       );
+      expect(view.getByText("Expired card")).toBeInTheDocument();
       await userEvent.click(
         view.getByRole("button", { name: "Continue to Fit for Duty Check →" }),
       );

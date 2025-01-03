@@ -1,7 +1,6 @@
 import {
   Bypass,
   CertificateBoxes,
-  Instructions,
 } from "../../../components/operatorSignIn/expiry";
 import { Certification } from "../../../models/certification";
 import { certificationFactory } from "../../helpers/factory";
@@ -317,8 +316,7 @@ describe("Bypass", () => {
     const user = userEvent.setup();
     const view = render(
       <Bypass
-        certifications={CERTIFICATIONS_ONE}
-        now={DateTime.fromISO("2024-05-26T09:08:34.123")}
+        expireds={CERTIFICATIONS_ONE}
         displayName="Test Name"
         onContinue={continueFn}
       />,
@@ -332,25 +330,23 @@ describe("Bypass", () => {
       const continueFn = jest.fn();
       const view = render(
         <Bypass
-          now={DateTime.fromISO("2024-05-23T09:08:34.123")}
-          certifications={CERTIFICATIONS_ONE}
+          expireds={CERTIFICATIONS_ONE}
           displayName="Test Name"
           onContinue={continueFn}
         />,
       );
       expect(view.getByText(/the card./)).toBeInTheDocument();
     });
-    test("plural if two cards", () => {
+    test("plural if multiple cards", () => {
       const continueFn = jest.fn();
       const view = render(
         <Bypass
-          now={DateTime.fromISO("2024-05-23T09:08:34.123")}
-          certifications={CERTIFICATIONS_TWO}
+          expireds={CERTIFICATIONS_TWO}
           displayName="Test Name"
           onContinue={continueFn}
         />,
       );
-      expect(view.getByText(/both cards./)).toBeInTheDocument();
+      expect(view.getByText(/the cards./)).toBeInTheDocument();
     });
   });
 
@@ -358,19 +354,11 @@ describe("Bypass", () => {
     const continueFn = jest.fn();
     const view = render(
       <Bypass
-        now={DateTime.fromISO("2024-05-26T09:08:34.123")}
-        certifications={CERTIFICATIONS_TWO}
+        expireds={CERTIFICATIONS_TWO}
         displayName="Test Name"
         onContinue={continueFn}
       />,
     );
     expect(view.getByText(/ROW Card/)).toBeInTheDocument();
-  });
-});
-
-describe("Instructions", () => {
-  test("Contains ordered list", () => {
-    const view = render(<Instructions displayName="Test Name" />);
-    expect(view.getByRole("list")).toBeInTheDocument();
   });
 });

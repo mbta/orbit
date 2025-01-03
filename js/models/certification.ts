@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export type Certification = {
   type: string;
-  rail_line: string;
+  railLine: string;
   expires: DateTime;
 };
 
@@ -20,7 +20,7 @@ export type CertificationDataList = z.infer<typeof CertificationDataList>;
 export const certificationFromData = (cd: CertificationData): Certification => {
   return {
     type: cd.type,
-    rail_line: cd.rail_line,
+    railLine: cd.rail_line,
     expires: DateTime.fromISO(cd.expires, { zone: "America/New_York" }),
   };
 };

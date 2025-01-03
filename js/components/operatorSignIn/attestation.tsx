@@ -1,10 +1,10 @@
 import { useNow } from "../../dateTime";
 import { lookupDisplayName } from "../../hooks/useEmployees";
-import { anyOfExpired, Certification } from "../../models/certification";
+import { Certification, getExpired } from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
-import { Bypass, CertificateBoxes, Instructions } from "./expiry";
+import { Bypass, CertificateBoxes } from "./expiry";
 import { useSignInText } from "./text";
 import { ReactElement, useEffect, useState } from "react";
 
@@ -32,7 +32,7 @@ export const Attestation = ({
   const [bypass, setBypass] = useState<boolean>(false);
 
   const name = lookupDisplayName(badge, employees);
-  const expired = anyOfExpired(certifications, now);
+  const expireds = getExpired(certifications, now);
 
   return (
     <div className="text-sm">
@@ -42,7 +42,7 @@ export const Attestation = ({
         ignoreExpired={bypass}
         now={now}
       />
-      {!expired || bypass ?
+      {expireds.length === 0 || bypass ?
         <>
           <SignInText />
           <form
@@ -84,11 +84,14 @@ export const Attestation = ({
           </form>
         </>
       : <>
-          <Instructions displayName={name} />
+          <ol className="m-8 mr-0 list-decimal">
+            <li>Do not allow {name} to drive.</li>
+            <li>Call the Office.</li>
+            <li>Send {name} to the Supervisors&#39; Office.</li>
+          </ol>
           <Bypass
-            certifications={certifications}
+            expireds={expireds}
             displayName={name}
-            now={now}
             onContinue={function (): void {
               setBypass(true);
             }}
