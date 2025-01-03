@@ -30,7 +30,7 @@ export const Modal = ({
           <img
             src="/images/close.svg"
             alt="Close"
-            className="w-4 fill-black hover:opacity-50"
+            className="w-4 hover:opacity-50"
           />
         </button>
         <div className="[grid-area:contents]">{children}</div>
