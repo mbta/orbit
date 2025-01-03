@@ -39,5 +39,4 @@ npm-debug.log
 config/dev.secret.exs
 
 # Ignore files used by MacOS Finder
-.DS_Store
-*/.DS_Store
+*.DS_Store
