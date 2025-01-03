@@ -37,3 +37,7 @@ npm-debug.log
 
 *storybook.log
 config/dev.secret.exs
+
+# Ignore files used by MacOS Finder
+.DS_Store
+*/.DS_Store

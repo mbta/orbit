@@ -27,7 +27,7 @@ export const Modal = ({
       <div className='grid grid-cols-[1fr_max-content] grid-rows-[max-content_1fr] [grid-template-areas:"title_close"_"contents_contents"] overflow-scroll'>
         <div className="[grid-area:title]">{title}</div>
         <button className="[grid-area:close]" onClick={onClose}>
-          [x]
+          <img src="/images/close.svg" alt="Close" className="w-4 fill-black hover:bg-gray-300"/>
         </button>
         <div className="[grid-area:contents]">{children}</div>
       </div>
