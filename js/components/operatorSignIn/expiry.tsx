@@ -54,7 +54,7 @@ const CertificateBox = ({
   return (
     <div
       className={className([
-        "mb-4 mt-2 flex flex-row rounded border-0 px-3 py-2",
+        "mb-4 mt-2 flex flex-row rounded px-3 py-2",
         mode === "warning" && "bg-[#FFDE9E]",
         mode === "error" && "bg-[#FF919A]",
       ])}

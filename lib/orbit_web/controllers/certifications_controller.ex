@@ -20,19 +20,5 @@ defmodule OrbitWeb.CertificationsController do
       )
 
     json(conn, %{data: certs})
-    # json(conn, %{
-    #   data: [
-    #     %{
-    #       type: "rail",
-    #       rail_line: "blue",
-    #       expires: "2024-12-24"
-    #     },
-    #     %{
-    #       type: "right_of_way",
-    #       rail_line: "blue",
-    #       expires: "2025-01-24"
-    #     }
-    #   ]
-    # })
   end
 end
