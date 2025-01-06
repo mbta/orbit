@@ -85,7 +85,7 @@ describe("OperatorSignInModal", () => {
       <OperatorSignInModal show={true} onComplete={jest.fn()} close={close} />,
     );
 
-    await userEvent.click(view.getByRole("button", { name: "[x]" }));
+    await userEvent.click(view.getByRole("button", { name: "Close" }));
     expect(close).toHaveBeenCalled();
     view.rerender(
       <OperatorSignInModal show={false} onComplete={jest.fn()} close={close} />,
