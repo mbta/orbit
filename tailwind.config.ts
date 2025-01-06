@@ -35,8 +35,7 @@ export default {
       green: "#145A06",
       orange: "#ED8B00",
       red: {
-        100: "#DA291C",
-        200: "#B3000F",
+        200: "#FF4531"
       },
       white: "#ffffff",
       yellow: "#FFC961",
