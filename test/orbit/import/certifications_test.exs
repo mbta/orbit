@@ -119,7 +119,7 @@ defmodule Orbit.Import.CertificationsTest do
              ] = Repo.all(from(c in Certification, order_by: [desc: :expires]))
     end
 
-    test "missing rail line becomes nil" do
+    test "missing rail line becomes :none" do
       rows = [
         %{
           "User - User ID" => "01234",
@@ -132,7 +132,7 @@ defmodule Orbit.Import.CertificationsTest do
 
       assert [
                %Certification{
-                 rail_line: nil
+                 rail_line: :none
                }
              ] = Repo.all(from(c in Certification))
     end

@@ -10,7 +10,7 @@ defmodule Orbit.Certification do
   @type t :: %__MODULE__{
           badge: String.t(),
           type: certification_type(),
-          rail_line: RailLine.t() | nil,
+          rail_line: RailLine.t(),
           expires: Date.t()
         }
   schema "certifications" do

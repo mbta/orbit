@@ -44,7 +44,7 @@ defmodule Orbit.Import.ImportCertifications do
             :red
 
           true ->
-            nil
+            :none
         end
 
       %Certification{
@@ -60,7 +60,7 @@ defmodule Orbit.Import.ImportCertifications do
     end)
     |> Enum.each(
       &Repo.insert(&1,
-        on_conflict: :replace_all,
+        on_conflict: {:replace_all_except, [:id, :inserted_at]},
         conflict_target: [:badge, :type, :rail_line]
       )
     )
