@@ -30,7 +30,7 @@ export const isExpired = (c: Certification, now: DateTime) => {
   return now >= c.expires.startOf("day");
 };
 
-export const filterRelevantForOperator = (
+export const filterRelevantForOperators = (
   cs: Certification[],
   line: HeavyRailLine,
 ) => {

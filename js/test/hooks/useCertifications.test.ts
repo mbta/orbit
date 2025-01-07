@@ -1,6 +1,6 @@
 import { fetch } from "../../browser";
 import { useCertifications } from "../../hooks/useCertifications";
-import { filterRelevantForOperator } from "../../models/certification";
+import { filterRelevantForOperators } from "../../models/certification";
 import {
   certificationDataFactory,
   certificationFactory,
@@ -17,7 +17,7 @@ jest.mock("../../browser", () => ({
 jest.mock("../../models/certification", () => ({
   ...jest.requireActual("../../models/certification"),
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  filterRelevantForOperator: jest.fn((cs, _line) => cs),
+  filterRelevantForOperators: jest.fn((cs, _line) => cs),
 }));
 
 const TEST_DATA = {
@@ -46,7 +46,7 @@ describe("useCertifications", () => {
     });
   });
 
-  test("calls filterRelevantForOperator", async () => {
+  test("calls filterRelevantForOperators", async () => {
     const { promise, resolve } = PromiseWithResolvers<Response>();
     jest.mocked(fetch).mockReturnValue(promise);
 
@@ -63,7 +63,7 @@ describe("useCertifications", () => {
     } as Response);
 
     await waitFor(() => {
-      expect(filterRelevantForOperator).toHaveBeenCalledWith(
+      expect(filterRelevantForOperators).toHaveBeenCalledWith(
         [
           {
             expires: expect.any(DateTime),

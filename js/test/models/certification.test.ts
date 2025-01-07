@@ -1,10 +1,10 @@
-import { filterRelevantForOperator } from "../../models/certification";
+import { filterRelevantForOperators } from "../../models/certification";
 import { certificationFactory } from "../helpers/factory";
 
-describe("filterRelevantForOperator", () => {
+describe("filterRelevantForOperators", () => {
   test("keep rail cert for BL", () => {
     expect(
-      filterRelevantForOperator(
+      filterRelevantForOperators(
         [
           certificationFactory.build({
             railLine: "blue",
@@ -18,7 +18,7 @@ describe("filterRelevantForOperator", () => {
 
   test("ignore rail cert OL when BL", () => {
     expect(
-      filterRelevantForOperator(
+      filterRelevantForOperators(
         [
           certificationFactory.build({
             railLine: "orange",
@@ -32,7 +32,7 @@ describe("filterRelevantForOperator", () => {
 
   test("ignore rail cert for none line when BL", () => {
     expect(
-      filterRelevantForOperator(
+      filterRelevantForOperators(
         [
           certificationFactory.build({
             railLine: "none",
@@ -46,7 +46,7 @@ describe("filterRelevantForOperator", () => {
 
   test("keep ROW cert with none line for BL", () => {
     expect(
-      filterRelevantForOperator(
+      filterRelevantForOperators(
         [
           certificationFactory.build({
             railLine: "none",
@@ -60,7 +60,7 @@ describe("filterRelevantForOperator", () => {
 
   test("keep ROW cert with blue line for BL", () => {
     expect(
-      filterRelevantForOperator(
+      filterRelevantForOperators(
         [
           certificationFactory.build({
             railLine: "blue",

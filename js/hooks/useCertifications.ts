@@ -3,7 +3,7 @@ import {
   Certification,
   CertificationDataList,
   certificationFromData,
-  filterRelevantForOperator,
+  filterRelevantForOperators,
 } from "../models/certification";
 import { HeavyRailLine } from "../types";
 import { useCallback } from "react";
@@ -16,7 +16,7 @@ export const useCertifications = (
 ): ApiResult<Certification[]> => {
   const parse = useCallback(
     (data: CertificationDataList) => {
-      return filterRelevantForOperator(data.map(certificationFromData), line);
+      return filterRelevantForOperators(data.map(certificationFromData), line);
     },
     [line],
   );
