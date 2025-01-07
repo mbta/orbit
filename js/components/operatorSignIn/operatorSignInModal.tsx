@@ -20,8 +20,6 @@ import { captureException } from "@sentry/react";
 import { DateTime } from "luxon";
 import { ReactElement, useEffect, useState } from "react";
 
-const LINE = "blue";
-
 enum CompleteState {
   SUCCESS,
   SIGN_IN_ERROR,
@@ -43,7 +41,7 @@ const submit = (
     bypass,
     signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
-    line: LINE,
+    line: "blue",
     radio_number: radio,
     method: badgeEntry.method,
   })
@@ -199,9 +197,7 @@ const OperatorSignInModalContent = ({
             );
           }}
           employees={employees.result}
-          certifications={certifications.result.filter(
-            (c: Certification) => c.railLine === LINE,
-          )}
+          certifications={certifications.result}
         />
       }
     </>

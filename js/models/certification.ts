@@ -3,13 +3,13 @@ import { z } from "zod";
 
 export type Certification = {
   type: string;
-  railLine: string | null;
+  railLine: string;
   expires: DateTime;
 };
 
 export const CertificationData = z.object({
   type: z.string(),
-  rail_line: z.string().nullable(),
+  rail_line: z.string(),
   expires: z.string(),
 });
 export type CertificationData = z.infer<typeof CertificationData>;
