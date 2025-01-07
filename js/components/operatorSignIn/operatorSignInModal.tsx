@@ -3,7 +3,7 @@ import { reload } from "../../browser";
 import { useNow } from "../../dateTime";
 import { useCertifications } from "../../hooks/useCertifications";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
-import { Certification, getExpired } from "../../models/certification";
+import { Certification, filterExpired } from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
@@ -108,7 +108,7 @@ const OperatorSignInModalContent = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const now = useNow("second");
-  const certifications = useCertifications(badge?.number ?? null);
+  const certifications = useCertifications(badge?.number ?? null, "blue");
 
   // Hide modal after timer on success
   useEffect(() => {
@@ -157,7 +157,7 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              getExpired(certifications.result, now),
+              filterExpired(certifications.result, now),
               setComplete,
               setLoading,
               onComplete,
@@ -190,7 +190,7 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              getExpired(certifications.result, now),
+              filterExpired(certifications.result, now),
               setComplete,
               setLoading,
               onComplete,

@@ -1,6 +1,6 @@
 import { useNow } from "../../dateTime";
 import { lookupDisplayName } from "../../hooks/useEmployees";
-import { Certification, getExpired } from "../../models/certification";
+import { Certification, filterExpired } from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
@@ -32,7 +32,7 @@ export const Attestation = ({
   const [bypass, setBypass] = useState<boolean>(false);
 
   const name = lookupDisplayName(badge, employees);
-  const expireds = getExpired(certifications, now);
+  const expireds = filterExpired(certifications, now);
 
   return (
     <div className="text-sm">

@@ -1,15 +1,16 @@
+import { HeavyRailLine } from "../types";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
 export type Certification = {
   type: string;
-  railLine: string;
+  railLine: HeavyRailLine;
   expires: DateTime;
 };
 
 export const CertificationData = z.object({
   type: z.string(),
-  rail_line: z.string(),
+  rail_line: HeavyRailLine,
   expires: z.string(),
 });
 export type CertificationData = z.infer<typeof CertificationData>;
@@ -29,7 +30,20 @@ export const isExpired = (c: Certification, now: DateTime) => {
   return now >= c.expires.startOf("day");
 };
 
-export const getExpired = (cs: Certification[] | undefined, now: DateTime) => {
+export const filterRelevantForOperator = (
+  cs: Certification[],
+  line: HeavyRailLine,
+) => {
+  return cs.filter(
+    (c) =>
+      (c.type === "rail" && c.railLine === line) || c.type === "right_of_way",
+  );
+};
+
+export const filterExpired = (
+  cs: Certification[] | undefined,
+  now: DateTime,
+) => {
   if (cs === undefined) {
     return [];
   }
@@ -40,7 +54,7 @@ export const anyOfExpired = (
   cs: Certification[] | undefined,
   now: DateTime,
 ) => {
-  return getExpired(cs, now).length > 0;
+  return filterExpired(cs, now).length > 0;
 };
 
 export const humanReadableType = (type: string): string => {
