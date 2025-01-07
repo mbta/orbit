@@ -15,13 +15,15 @@ defmodule OrbitWeb.Router do
 
     plug :put_secure_browser_headers, %{
       # much of this is necessary for Appcues: https://docs.appcues.com/user-experiences-faq/faq-content-security-policies
+      # script-src-elem 'unsafe-inline' is for react developer tools
       "content-security-policy" => "\
         connect-src 'self' *.sentry.io *.fullstory.com https://*.appcues.com https://*.appcues.net wss://*.appcues.net wss://*.appcues.com;\
         default-src 'self';\
-        font-src self' https://fonts.gstatic.com;\
+        font-src 'self' https://fonts.gstatic.com;\
         frame-src 'self' https://*.appcues.com;\
         img-src 'self' https://*.appcues.com https://*.appcues.net res.cloudinary.com cdn.jsdelivr.net;\
         script-src 'self' *.fullstory.com https://*.appcues.com https://*.appcues.net;\
+        script-src-elem 'self' 'unsafe-inline';\
         style-src 'self' https://*.appcues.com https://*.appcues.net https://fonts.googleapis.com https://fonts.google.com 'unsafe-inline';\
         "
     }
