@@ -1,5 +1,9 @@
 import { ApiResult, post } from "../../api";
+import { reload } from "../../browser";
+import { useNow } from "../../dateTime";
+import { useCertifications } from "../../hooks/useCertifications";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
+import { Certification, getExpired } from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
@@ -26,6 +30,7 @@ enum CompleteState {
 const submit = (
   badgeEntry: BadgeEntry,
   radio: string,
+  bypass: Certification[],
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
@@ -33,6 +38,7 @@ const submit = (
   setLoading(true);
 
   post("/api/signin", {
+    bypass,
     signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
     line: "blue",
@@ -101,6 +107,9 @@ const OperatorSignInModalContent = ({
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  const now = useNow("second");
+  const certifications = useCertifications(badge?.number ?? null);
+
   // Hide modal after timer on success
   useEffect(() => {
     if (complete === CompleteState.SUCCESS) {
@@ -119,14 +128,40 @@ const OperatorSignInModalContent = ({
     : null;
   const name: string = employee?.first_name ?? `Operator ${badge?.number}`;
 
+  const requestLoading =
+    employees.status === "loading" || certifications.status === "loading";
+  const requestError =
+    employees.status === "error" || certifications.status === "error";
+
   return (
     <>
-      {complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
+      {requestError ?
+        <div className="text-center">
+          <div className="mb-4">Unable to download data</div>
+          <div>
+            <button
+              className="rounded bg-blue text-gray-200 w-1/4 max-w-20"
+              onClick={reload}
+            >
+              Reload
+            </button>
+          </div>
+        </div>
+      : requestLoading ?
+        <div>Loading...</div>
+      : complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
         <SignInError
           name={name}
           loading={loading}
           onTryAgain={() => {
-            submit(badge, radio, setComplete, setLoading, onComplete);
+            submit(
+              badge,
+              radio,
+              getExpired(certifications.result, now),
+              setComplete,
+              setLoading,
+              onComplete,
+            );
           }}
         />
       : complete === CompleteState.BADGE_SERIAL_LOOKUP_ERROR ?
@@ -152,9 +187,17 @@ const OperatorSignInModalContent = ({
           loading={loading}
           onComplete={(radio: string) => {
             setRadio(radio);
-            submit(badge, radio, setComplete, setLoading, onComplete);
+            submit(
+              badge,
+              radio,
+              getExpired(certifications.result, now),
+              setComplete,
+              setLoading,
+              onComplete,
+            );
           }}
-          employees={employees}
+          employees={employees.result}
+          certifications={certifications.result}
         />
       }
     </>

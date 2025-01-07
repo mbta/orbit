@@ -3,7 +3,7 @@ import { OperatorSignInModal } from "../../../components/operatorSignIn/operator
 import { fetchEmployeeByBadgeSerial } from "../../../hooks/useEmployees";
 import { useNfc } from "../../../hooks/useNfc";
 import { nfcSupported } from "../../../util/nfc";
-import { employeeFactory } from "../../helpers/factory";
+import { certificationFactory, employeeFactory } from "../../helpers/factory";
 import { putMetaData } from "../../helpers/metadata";
 import {
   neverPromise,
@@ -11,6 +11,7 @@ import {
 } from "../../helpers/promiseWithResolvers";
 import { act, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { DateTime } from "luxon";
 
 const EMPLOYEES = [employeeFactory.build()];
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -22,6 +23,22 @@ jest.mock("../../../hooks/useEmployees", () => ({
   })),
   findEmployeeByBadge: jest.fn(() => EMPLOYEES[0]),
   fetchEmployeeByBadgeSerial: jest.fn(() => neverPromise),
+}));
+
+const CERTIFICATIONS = [
+  certificationFactory.build({
+    type: "rail",
+    expires: DateTime.fromISO("2082-12-12", { zone: "America/New_York" }),
+    railLine: "blue",
+  }),
+];
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+jest.mock("../../../hooks/useCertifications", () => ({
+  ...jest.requireActual("../../../hooks/useCertifications"),
+  useCertifications: jest.fn().mockImplementation(() => ({
+    status: "ok",
+    result: CERTIFICATIONS,
+  })),
 }));
 
 jest.mock("../../../util/nfc", () => ({
@@ -93,7 +110,6 @@ describe("OperatorSignInModal", () => {
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
-    expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
     const badgeInput = view.getByLabelText(/Operator Badge Number/, {
       selector: "input",
     });
@@ -127,7 +143,6 @@ describe("OperatorSignInModal", () => {
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
-    expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
     await userEvent.type(
       view.getByLabelText(/Operator Badge Number/, { selector: "input" }),
       "123",
@@ -161,7 +176,6 @@ describe("OperatorSignInModal", () => {
     await userEvent.type(view.getByRole("textbox"), "123");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
 
-    expect(view.getByText("Step 2 of 2")).toBeInTheDocument();
     await userEvent.type(
       view.getByLabelText(/Operator Badge Number/, { selector: "input" }),
       "123",
