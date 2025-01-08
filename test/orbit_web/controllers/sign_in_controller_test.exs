@@ -166,7 +166,14 @@ defmodule OrbitWeb.SignInControllerTest do
           "signed_in_at" => 1_721_164_459,
           "line" => "blue",
           "method" => "manual",
-          "radio_number" => "22"
+          "radio_number" => "22",
+          "override" => [
+            %{
+              "expires" => "2024-06-08T00:00:00.000-04:00",
+              "rail_line" => "blue",
+              "type" => "rail"
+            }
+          ]
         })
 
       assert "OK" = response(conn, 200)
@@ -176,7 +183,14 @@ defmodule OrbitWeb.SignInControllerTest do
                signed_in_at: ~U[2024-07-16 21:14:19Z],
                rail_line: :blue,
                sign_in_method: :manual,
-               radio_number: "22"
+               radio_number: "22",
+               override: [
+                 %{
+                   "expires" => "2024-06-08T00:00:00.000-04:00",
+                   "rail_line" => "blue",
+                   "type" => "rail"
+                 }
+               ]
              } =
                Repo.one!(
                  from(si in OperatorSignIn,
@@ -199,6 +213,49 @@ defmodule OrbitWeb.SignInControllerTest do
         })
 
       assert "Employee not found" = response(conn, 404)
+    end
+
+    @tag :authenticated
+    test "replies 400 when invalid override (invalid type)", %{conn: conn} do
+      conn =
+        post(conn, ~p"/api/signin", %{
+          "signed_in_employee_badge" => "123",
+          "signed_in_at" => 1_721_164_459,
+          "line" => "blue",
+          "method" => "manual",
+          "radio_number" => "22",
+          "override" => [
+            %{
+              "expires" => "2024-06-08T00:00:00.000-04:00",
+              "rail_line" => "blue",
+              "type" => "NOT_A_REAL_TYPE"
+            }
+          ]
+        })
+
+      assert "Invalid override\n" = response(conn, 400)
+    end
+
+    @tag :authenticated
+    test "replies 400 when invalid override (extraneous key)", %{conn: conn} do
+      conn =
+        post(conn, ~p"/api/signin", %{
+          "signed_in_employee_badge" => "123",
+          "signed_in_at" => 1_721_164_459,
+          "line" => "blue",
+          "method" => "manual",
+          "radio_number" => "22",
+          "override" => [
+            %{
+              "expires" => "2024-06-08T00:00:00.000-04:00",
+              "rail_line" => "blue",
+              "type" => "rail",
+              "SOME_OTHER_KEY" => "SHOULD_NOT_BE_HERE"
+            }
+          ]
+        })
+
+      assert "Invalid override\n" = response(conn, 400)
     end
   end
 end

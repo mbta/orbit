@@ -38,4 +38,12 @@ defmodule Util.Time do
     {DateTime.new!(service_date, ~T[03:00:00], @timezone),
      DateTime.new!(Date.add(service_date, 1), ~T[03:00:00], @timezone)}
   end
+
+  @spec valid_iso8601?(String.t()) :: boolean()
+  def valid_iso8601?(string) do
+    case DateTime.from_iso8601(string) do
+      {:ok, _, _} -> true
+      _ -> false
+    end
+  end
 end

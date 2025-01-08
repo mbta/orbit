@@ -6,6 +6,7 @@ defmodule Orbit.Certification do
 
   # Over in Glides "rail" is referred to as "operator", but it's the same thing.
   @type certification_type :: :right_of_way | :rail
+  def certification_type_strings, do: MapSet.new(["right_of_way", "rail"])
 
   @type t :: %__MODULE__{
           badge: String.t(),

@@ -25,6 +25,14 @@ export const certificationFromData = (cd: CertificationData): Certification => {
   };
 };
 
+export const certificationToData = (c: Certification): CertificationData => {
+  return {
+    type: c.type,
+    rail_line: c.railLine,
+    expires: c.expires.toISO() ?? "TODO why would this be null...",
+  };
+};
+
 export const isExpired = (c: Certification, now: DateTime) => {
   return now >= c.expires.startOf("day");
 };

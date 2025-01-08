@@ -87,4 +87,14 @@ defmodule Util.TimeTest do
              } == Util.Time.service_date_boundaries(~D[2024-11-04])
     end
   end
+
+  describe "valid_iso8601?" do
+    test "returns true if valid" do
+      assert true == Util.Time.valid_iso8601?("2025-01-08T20:35:02.084Z")
+    end
+
+    test "returns false if invalid" do
+      assert false == Util.Time.valid_iso8601?("2025----01-08T20:35:02.084Z")
+    end
+  end
 end

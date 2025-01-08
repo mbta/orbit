@@ -1,4 +1,5 @@
 defmodule OrbitWeb.SignInController do
+  alias Orbit.Certification
   alias Orbit.Employee
   alias Orbit.OperatorSignIn
   alias OrbitWeb.Auth.Auth
@@ -61,33 +62,48 @@ defmodule OrbitWeb.SignInController do
     )
   end
 
+  @spec validate_override(map()) :: boolean()
+  defp validate_override(override) do
+    Enum.all?(override, fn cert ->
+      Util.Map.has_only(cert, MapSet.new(["type", "expires", "rail_line"])) and
+        MapSet.member?(Certification.certification_type_strings(), cert["type"]) and
+        Util.Time.valid_iso8601?(cert["expires"])
+    end)
+  end
+
   @spec submit(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def submit(conn, %{
         "signed_in_employee_badge" => signed_in_employee_badge,
         "signed_in_at" => signed_in_at,
         "line" => line,
         "method" => method,
-        "radio_number" => radio_number
+        "radio_number" => radio_number,
+        "override" => override
       }) do
     signed_in_at = DateTime.from_unix!(signed_in_at)
 
-    case Repo.one(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)) do
-      nil ->
-        conn |> send_resp(404, "Employee not found") |> halt()
+    if !validate_override(override) do
+      conn |> send_resp(400, "Invalid override\n") |> halt()
+    else
+      case Repo.one(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)) do
+        nil ->
+          conn |> send_resp(404, "Employee not found") |> halt()
 
-      emp ->
-        %OperatorSignIn{
-          signed_in_employee: emp,
-          signed_in_by_user: Auth.logged_in_user(conn),
-          signed_in_at: signed_in_at,
-          rail_line: String.to_existing_atom(line),
-          sign_in_method: String.to_existing_atom(method),
-          radio_number: radio_number
-        }
-        |> OperatorSignIn.changeset()
-        |> Repo.insert!()
+        emp ->
+          %OperatorSignIn{
+            signed_in_employee: emp,
+            signed_in_by_user: Auth.logged_in_user(conn),
+            signed_in_at: signed_in_at,
+            rail_line: String.to_existing_atom(line),
+            sign_in_method: String.to_existing_atom(method),
+            radio_number: radio_number,
+            override: override
+          }
+          |> OperatorSignIn.changeset()
+          |> Repo.insert!()
 
-        text(conn, "OK")
+          text(conn, "OK")
+      end
     end
   end
 end
