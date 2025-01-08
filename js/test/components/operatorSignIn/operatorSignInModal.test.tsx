@@ -32,12 +32,20 @@ const CERTIFICATIONS = [
     railLine: "blue",
   }),
 ];
+const CERTIFICATIONS_ONE_EXPIRED = [
+  certificationFactory.build({
+    type: "rail",
+    expires: DateTime.fromISO("2023-12-12", { zone: "America/New_York" }),
+    railLine: "blue",
+  }),
+];
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
 jest.mock("../../../hooks/useCertifications", () => ({
   ...jest.requireActual("../../../hooks/useCertifications"),
-  useCertifications: jest.fn().mockImplementation(() => ({
+  useCertifications: jest.fn().mockImplementation((badge: string) => ({
     status: "ok",
-    result: CERTIFICATIONS,
+    result: badge === "123" ? CERTIFICATIONS : CERTIFICATIONS_ONE_EXPIRED,
   })),
 }));
 
@@ -96,7 +104,7 @@ describe("OperatorSignInModal", () => {
 
   test("submits successful attestation to the server", async () => {
     putMetaData("csrf-token", "TEST-CSRF-TOKEN");
-    jest.mocked(fetch).mockResolvedValueOnce({
+    const fetchMock = jest.mocked(fetch).mockResolvedValueOnce({
       ok: true,
     } as Response);
 
@@ -121,6 +129,54 @@ describe("OperatorSignInModal", () => {
     );
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/signin",
+      expect.objectContaining({
+        body: expect.stringMatching(/"override":null/),
+      }),
+    );
+    expect(view.getByText("signed in successfully")).toBeInTheDocument();
+  });
+
+  test("submits successful attestation to the server with override", async () => {
+    putMetaData("csrf-token", "TEST-CSRF-TOKEN");
+    const fetchMock = jest.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+    } as Response);
+
+    const view = render(
+      <OperatorSignInModal
+        show={true}
+        onComplete={jest.fn()}
+        close={jest.fn()}
+      />,
+    );
+    await userEvent.type(view.getByRole("textbox"), "1234");
+    await userEvent.click(view.getByRole("button", { name: "OK" }));
+    await userEvent.click(
+      view.getByRole("button", { name: "Continue to Fit for Duty Check →" }),
+    );
+
+    const badgeInput = view.getByLabelText(/Operator Badge Number/, {
+      selector: "input",
+    });
+    expect(badgeInput).toHaveValue(""); // Not pre-filled if manually typed
+    await userEvent.type(badgeInput, "1234");
+    await userEvent.type(
+      view.getByLabelText(/Radio Number/, { selector: "input" }),
+      "22",
+    );
+    await userEvent.click(
+      view.getByRole("button", { name: "Complete Fit for Duty Check" }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/signin",
+      expect.objectContaining({
+        body: expect.stringContaining(
+          '[{"type":"rail","rail_line":"blue","expires":"2023-12-12T00:00:00.000-05:00"}]',
+        ),
+      }),
     );
     expect(view.getByText("signed in successfully")).toBeInTheDocument();
   });

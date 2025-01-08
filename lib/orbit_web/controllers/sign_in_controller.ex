@@ -72,17 +72,20 @@ defmodule OrbitWeb.SignInController do
   end
 
   @spec submit(Plug.Conn.t(), map()) :: Plug.Conn.t()
-  def submit(conn, %{
-        "signed_in_employee_badge" => signed_in_employee_badge,
-        "signed_in_at" => signed_in_at,
-        "line" => line,
-        "method" => method,
-        "radio_number" => radio_number,
-        "override" => override
-      }) do
+  def submit(conn, params) do
+    %{
+      "signed_in_employee_badge" => signed_in_employee_badge,
+      "signed_in_at" => signed_in_at,
+      "line" => line,
+      "method" => method,
+      "radio_number" => radio_number
+    } = params
+
+    # Override is separate for backward compatibility
+    override = params["override"]
     signed_in_at = DateTime.from_unix!(signed_in_at)
 
-    if !validate_override(override) do
+    if override != nil and !validate_override(override) do
       conn |> send_resp(400, "Invalid override\n") |> halt()
     else
       case Repo.one(from(e in Employee, where: e.badge_number == ^signed_in_employee_badge)) do
