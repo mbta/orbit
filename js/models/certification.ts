@@ -26,10 +26,18 @@ export const certificationFromData = (cd: CertificationData): Certification => {
 };
 
 export const certificationToData = (c: Certification): CertificationData => {
+  const expires = c.expires.toISO();
+  if (expires === null) {
+    // Unclear why luxon's `toISO` could return null, but realistically that
+    //  should never happen
+    throw new Error(
+      "Cannot transform Certification to CertificationData; toISO failed",
+    );
+  }
   return {
     type: c.type,
     rail_line: c.railLine,
-    expires: c.expires.toISO() ?? "TODO why would this be null...",
+    expires,
   };
 };
 
