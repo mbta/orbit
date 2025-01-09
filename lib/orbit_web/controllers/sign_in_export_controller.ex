@@ -31,6 +31,18 @@ defmodule OrbitWeb.SignInExportController do
     end
   end
 
+  @spec override_expiration_date([map()], String.t()) :: String.t()
+  def override_expiration_date(override_list, type) do
+    {:ok, datetime, _} =
+      Enum.find(override_list, fn cert -> cert["type"] == type end)["expires"]
+      |> DateTime.from_iso8601()
+
+    datetime
+    |> DateTime.shift_zone!("America/New_York")
+    |> DateTime.to_date()
+    |> Date.to_iso8601()
+  end
+
   @spec fetch_sign_ins_csv(Date.t()) :: String.t()
   defp fetch_sign_ins_csv(service_date) do
     {start_datetime, end_datetime} = Util.Time.service_date_boundaries(service_date)
@@ -78,6 +90,17 @@ defmodule OrbitWeb.SignInExportController do
             :nfc -> "tap"
             :manual -> "type"
           end,
+        lms_expiration_overridden: if(&1.operator_sign_in.override != nil, do: "yes", else: ""),
+        lms_rail_expiration:
+          if(&1.operator_sign_in.override != nil,
+            do: override_expiration_date(&1.operator_sign_in.override, "rail"),
+            else: ""
+          ),
+        lms_row_expiration:
+          if(&1.operator_sign_in.override != nil,
+            do: override_expiration_date(&1.operator_sign_in.override, "right_of_way"),
+            else: ""
+          ),
         text_version: 1
       }
     )
@@ -91,6 +114,9 @@ defmodule OrbitWeb.SignInExportController do
         official_name: "Official Name",
         location: "Location",
         method: "Method",
+        lms_expiration_overridden: "LMS Expiration Overridden",
+        lms_rail_expiration: "LMS Recertification Expiration Date",
+        lms_row_expiration: "LMS ROW Expiration Date",
         text_version: "Text Version"
       ],
       delimiter: "\n"
