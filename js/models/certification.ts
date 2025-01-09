@@ -36,7 +36,8 @@ export const filterRelevantForOperators = (
 ) => {
   return cs.filter(
     (c) =>
-      (c.type === "rail" && c.railLine === line) || c.type === "right_of_way",
+      (c.type === "rail" && c.railLine === line) || // Rail cert: line must match
+      (c.type === "right_of_way" && [line, "none"].includes(c.railLine)), // ROW cert: must be 'none' or same line
   );
 };
 

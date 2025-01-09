@@ -71,4 +71,18 @@ describe("filterRelevantForOperators", () => {
       ),
     ).toHaveLength(1);
   });
+
+  test("ignore ROW cert OL for BL", () => {
+    expect(
+      filterRelevantForOperators(
+        [
+          certificationFactory.build({
+            railLine: "orange",
+            type: "right_of_way",
+          }),
+        ],
+        "blue",
+      ),
+    ).toHaveLength(0);
+  });
 });
