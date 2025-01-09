@@ -6,7 +6,7 @@ import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
 import {
   Certification,
   certificationToData,
-  getExpired,
+  filterExpired,
 } from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
@@ -112,7 +112,7 @@ const OperatorSignInModalContent = ({
   const [loading, setLoading] = useState<boolean>(false);
 
   const now = useNow("second");
-  const certifications = useCertifications(badge?.number ?? null);
+  const certifications = useCertifications(badge?.number ?? null, "blue");
 
   // Hide modal after timer on success
   useEffect(() => {
@@ -161,7 +161,7 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              getExpired(certifications.result, now),
+              filterExpired(certifications.result, now),
               setComplete,
               setLoading,
               onComplete,
@@ -194,7 +194,7 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              getExpired(certifications.result, now),
+              filterExpired(certifications.result, now),
               setComplete,
               setLoading,
               onComplete,

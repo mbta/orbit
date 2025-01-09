@@ -3,17 +3,23 @@ import {
   Certification,
   CertificationDataList,
   certificationFromData,
+  filterRelevantForOperators,
 } from "../models/certification";
+import { HeavyRailLine } from "../types";
+import { useCallback } from "react";
 
 const CERTIFICATIONS_API_PATH = "/api/certifications";
 
-const parse = (list: CertificationDataList) => {
-  return list.map(certificationFromData);
-};
-
 export const useCertifications = (
   badge: string | null,
+  line: HeavyRailLine,
 ): ApiResult<Certification[]> => {
+  const parse = useCallback(
+    (data: CertificationDataList) => {
+      return filterRelevantForOperators(data.map(certificationFromData), line);
+    },
+    [line],
+  );
   return useApiResult({
     RawData: CertificationDataList,
     url: `${CERTIFICATIONS_API_PATH}?badge=${badge}`,
