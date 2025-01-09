@@ -1,6 +1,5 @@
 import { fetch } from "../../browser";
 import { useCertifications } from "../../hooks/useCertifications";
-import { filterRelevantForOperators } from "../../models/certification";
 import {
   certificationDataFactory,
   certificationFactory,
@@ -13,15 +12,13 @@ jest.mock("../../browser", () => ({
   fetch: jest.fn(),
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-jest.mock("../../models/certification", () => ({
-  ...jest.requireActual("../../models/certification"),
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  filterRelevantForOperators: jest.fn((cs, _line) => cs),
-}));
-
 const TEST_DATA = {
-  data: [certificationDataFactory.build()],
+  data: [
+    certificationDataFactory.build(),
+    certificationDataFactory.build({
+      rail_line: "orange",
+    }),
+  ],
 };
 
 const TEST_PARSED = [certificationFactory.build()];
@@ -46,13 +43,13 @@ describe("useCertifications", () => {
     });
   });
 
-  test("calls filterRelevantForOperators", async () => {
+  test("filters relevant operators", async () => {
     const { promise, resolve } = PromiseWithResolvers<Response>();
     jest.mocked(fetch).mockReturnValue(promise);
 
     const line = "blue";
 
-    renderHook(() => useCertifications("1234", line));
+    const { result } = renderHook(() => useCertifications("1234", line));
 
     resolve({
       status: 200,
@@ -63,16 +60,16 @@ describe("useCertifications", () => {
     } as Response);
 
     await waitFor(() => {
-      expect(filterRelevantForOperators).toHaveBeenCalledWith(
-        [
+      expect(result.current).toEqual({
+        status: "ok",
+        result: [
           {
             expires: expect.any(DateTime),
             railLine: "blue",
             type: "rail",
           },
         ],
-        line,
-      );
+      });
     });
   });
 });
