@@ -24,8 +24,8 @@ defmodule OrbitWeb.MetadataChannelTest do
       assert %{authenticated: false} = reply
     end
 
-    # @authenticated makes a socket for us, but this test ignores it and makes its own socket so we can pass custom params
-    # but we still need the @authenticated tag so we get a user and token set up for us
+    # @tag: authenticated makes a socket for us, but this test makes its own socket so we can pass custom params
+    # but we still need the authenticated tag so we get a user and token set up for us
     @tag :authenticated
     test "replies to out of date release", %{token: token} do
       server_release = Application.fetch_env!(:orbit, :release)

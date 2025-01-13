@@ -61,11 +61,7 @@ defmodule OrbitWeb.UserSocket do
       authentication_error: authentication_error
     }
 
-    metadata_log =
-      metadata
-      |> Enum.map(fn {key, val} -> "#{key}=#{val}" end)
-      |> Enum.join(" ")
-
+    metadata_log = Enum.map_join(metadata, " ", fn {key, val} -> "#{key}=#{val}" end)
     Logger.info("user_socket connected #{metadata_log}")
 
     {:ok, assign(socket, metadata)}
