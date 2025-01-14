@@ -169,7 +169,7 @@ defmodule OrbitWeb.SignInControllerTest do
           "radio_number" => "22",
           "override" => [
             %{
-              "expires" => "2024-06-08T00:00:00.000-04:00",
+              "expires" => "2024-06-08",
               "rail_line" => "blue",
               "type" => "rail"
             }
@@ -186,7 +186,7 @@ defmodule OrbitWeb.SignInControllerTest do
                radio_number: "22",
                override: [
                  %{
-                   "expires" => "2024-06-08T00:00:00.000-04:00",
+                   "expires" => "2024-06-08",
                    "rail_line" => "blue",
                    "type" => "rail"
                  }

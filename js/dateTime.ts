@@ -1,6 +1,14 @@
 import { getNow } from "./now";
-import { DateTime } from "luxon";
+import { DateTime, Settings as LuxonSettings } from "luxon";
 import { useEffect, useState } from "react";
+
+// eslint-disable-next-line better-mutation/no-mutation
+LuxonSettings.throwOnInvalid = true;
+
+export const dateTimeFromISO = (isoDateTime: string): DateTime =>
+  DateTime.fromISO(isoDateTime, { zone: "America/New_York" });
+
+export const dateTimeToISODate = (dt: DateTime<true>): string => dt.toISODate();
 
 export const daysBetween = (now: DateTime, date: DateTime) => {
   return date.diff(now, "days").days;

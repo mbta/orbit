@@ -67,7 +67,7 @@ defmodule OrbitWeb.SignInController do
     Enum.all?(override, fn cert ->
       Util.Map.has_exactly?(cert, MapSet.new(["type", "expires", "rail_line"])) and
         MapSet.member?(Certification.certification_type_strings(), cert["type"]) and
-        Util.Time.valid_iso8601?(cert["expires"])
+        Util.Date.valid_iso8601?(cert["expires"])
     end)
   end
 

@@ -1,3 +1,4 @@
+import { dateTimeFromISO, dateTimeToISODate } from "../dateTime";
 import { HeavyRailLine } from "../types";
 import { DateTime } from "luxon";
 import { z } from "zod";
@@ -19,22 +20,16 @@ export const CertificationDataList = z.array(CertificationData);
 export type CertificationDataList = z.infer<typeof CertificationDataList>;
 
 export const certificationFromData = (cd: CertificationData): Certification => {
+  const expires = dateTimeFromISO(cd.expires);
   return {
     type: cd.type,
     railLine: cd.rail_line,
-    expires: DateTime.fromISO(cd.expires, { zone: "America/New_York" }),
+    expires,
   };
 };
 
 export const certificationToData = (c: Certification): CertificationData => {
-  const expires = c.expires.toISO();
-  if (expires === null) {
-    // Unclear why luxon's `toISO` could return null, but realistically that
-    //  should never happen
-    throw new Error(
-      "Cannot transform Certification to CertificationData; toISO failed",
-    );
-  }
+  const expires = dateTimeToISODate(c.expires);
   return {
     type: c.type,
     rail_line: c.railLine,

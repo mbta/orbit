@@ -176,7 +176,7 @@ describe("OperatorSignInModal", () => {
       "/api/signin",
       expect.objectContaining({
         body: expect.stringContaining(
-          '[{"type":"rail","rail_line":"blue","expires":"2023-12-12T00:00:00.000-05:00"}]',
+          '[{"type":"rail","rail_line":"blue","expires":"2023-12-12"}]',
         ),
       }),
     );
