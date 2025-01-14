@@ -26,7 +26,7 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  [
                    %{
                      "type" => "rail",
-                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "expires" => "2025-01-08",
                      "rail_line" => "blue"
                    }
                  ],
@@ -40,7 +40,7 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  [
                    %{
                      "type" => "rail",
-                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "expires" => "2025-01-08",
                      "rail_line" => "blue"
                    }
                  ],
@@ -54,12 +54,12 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  [
                    %{
                      "type" => "right_of_way",
-                     "expires" => "2025-01-06T00:00:00.000-05:00",
+                     "expires" => "2025-01-06",
                      "rail_line" => "blue"
                    },
                    %{
                      "type" => "rail",
-                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "expires" => "2025-01-08",
                      "rail_line" => "blue"
                    }
                  ],
@@ -99,10 +99,10 @@ defmodule OrbitWeb.SignInExportControllerTest do
         override: [
           %{
             "type" => "right_of_way",
-            "expires" => "2025-01-08T00:00:00.000-05:00",
+            "expires" => "2025-01-08",
             "rail_line" => "none"
           },
-          %{"type" => "rail", "expires" => "2025-01-08T00:00:00.000-05:00", "rail_line" => "blue"}
+          %{"type" => "rail", "expires" => "2025-01-08", "rail_line" => "blue"}
         ]
       })
 

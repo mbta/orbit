@@ -38,12 +38,7 @@ defmodule OrbitWeb.SignInExportController do
         ""
 
       cert ->
-        {:ok, expires_dt, _} = DateTime.from_iso8601(cert["expires"])
-
-        expires_dt
-        |> DateTime.shift_zone!("America/New_York")
-        |> DateTime.to_date()
-        |> Date.to_iso8601()
+        cert["expires"]
     end
   end
 
