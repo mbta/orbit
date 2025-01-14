@@ -33,14 +33,18 @@ defmodule OrbitWeb.SignInExportController do
 
   @spec override_expiration_date([map()], String.t()) :: String.t()
   def override_expiration_date(override_list, type) do
-    {:ok, datetime, _} =
-      Enum.find(override_list, fn cert -> cert["type"] == type end)["expires"]
-      |> DateTime.from_iso8601()
+    case Enum.find(override_list, fn cert -> cert["type"] == type end) do
+      nil ->
+        ""
 
-    datetime
-    |> DateTime.shift_zone!("America/New_York")
-    |> DateTime.to_date()
-    |> Date.to_iso8601()
+      cert ->
+        {:ok, expires_dt, _} = DateTime.from_iso8601(cert["expires"])
+
+        expires_dt
+        |> DateTime.shift_zone!("America/New_York")
+        |> DateTime.to_date()
+        |> Date.to_iso8601()
+    end
   end
 
   @spec fetch_sign_ins_csv(Date.t()) :: String.t()

@@ -1,4 +1,5 @@
 defmodule OrbitWeb.SignInExportControllerTest do
+  alias OrbitWeb.SignInExportController
   use OrbitWeb.ConnCase
 
   import Orbit.Factory
@@ -15,6 +16,55 @@ defmodule OrbitWeb.SignInExportControllerTest do
       conn = get(conn, ~p"/sign-in-export", %{"date" => "2024-08-28"})
 
       assert redirected_to(conn) == ~p"/sign-in-export/sign-ins-2024-08-28.csv"
+    end
+  end
+
+  describe "override_expiration_date/2" do
+    test "works" do
+      assert "2025-01-08" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "rail"
+               )
+    end
+
+    test "works when a type of override is missing" do
+      assert "" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "right_of_way"
+               )
+    end
+
+    test "works when multiple overrides are present" do
+      assert "2025-01-06" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "right_of_way",
+                     "expires" => "2025-01-06T00:00:00.000-05:00",
+                     "rail_line" => "blue"
+                   },
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08T00:00:00.000-05:00",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "right_of_way"
+               )
     end
   end
 

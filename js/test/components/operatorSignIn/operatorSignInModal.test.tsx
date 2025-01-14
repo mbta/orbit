@@ -152,6 +152,8 @@ describe("OperatorSignInModal", () => {
         close={jest.fn()}
       />,
     );
+    // Badge number matters; per the mock, not "123" causes expired certifications that
+    //  must be overridden
     await userEvent.type(view.getByRole("textbox"), "1234");
     await userEvent.click(view.getByRole("button", { name: "OK" }));
     await userEvent.click(
