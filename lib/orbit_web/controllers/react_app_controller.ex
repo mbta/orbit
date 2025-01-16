@@ -11,6 +11,7 @@ defmodule OrbitWeb.ReactAppController do
       appcues_uid: appcues_uid(conn),
       environment: Application.get_env(:orbit, :environment),
       full_story_org_id: Application.get_env(:orbit, :full_story_org_id),
+      guardian_token: Guardian.Plug.current_token(conn),
       sentry_dsn: Application.get_env(:sentry, :dsn)
     )
   end

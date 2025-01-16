@@ -1,12 +1,13 @@
 export type MetaDataKey =
   | "appcuesUserId"
   | "csrf-token"
-  | "fullStoryOrgId"
-  | "sentryDsn"
   | "environment"
+  | "fullStoryOrgId"
+  | "guardianToken"
+  | "release"
+  | "sentryDsn"
   | "userEmail"
-  | "userName"
-  | "release";
+  | "userName";
 
 export const getMetaContent = (field: MetaDataKey): string | null => {
   const element = document.querySelector(`meta[name=${field}]`);
