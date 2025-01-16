@@ -13,7 +13,8 @@ defmodule Orbit.OperatorSignIn do
           signed_in_at: DateTime.t(),
           rail_line: RailLine.t(),
           radio_number: String.t() | nil,
-          sign_in_method: SignInMethod.t()
+          sign_in_method: SignInMethod.t(),
+          override: [map()] | nil
         }
 
   schema "operator_sign_ins" do
@@ -23,6 +24,7 @@ defmodule Orbit.OperatorSignIn do
     field(:rail_line, RailLine)
     field(:radio_number, :string)
     field(:sign_in_method, SignInMethod)
+    field(:override, {:array, :map})
 
     timestamps()
   end

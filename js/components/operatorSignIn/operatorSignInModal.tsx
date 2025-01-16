@@ -3,7 +3,11 @@ import { reload } from "../../browser";
 import { useNow } from "../../dateTime";
 import { useCertifications } from "../../hooks/useCertifications";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
-import { Certification, filterExpired } from "../../models/certification";
+import {
+  Certification,
+  certificationToData,
+  filterExpired,
+} from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
 import { Modal } from "../modal";
@@ -30,7 +34,7 @@ enum CompleteState {
 const submit = (
   badgeEntry: BadgeEntry,
   radio: string,
-  bypass: Certification[],
+  override: Certification[],
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
@@ -38,7 +42,7 @@ const submit = (
   setLoading(true);
 
   post("/api/signin", {
-    bypass,
+    override: override.length === 0 ? null : override.map(certificationToData),
     signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
     line: "blue",

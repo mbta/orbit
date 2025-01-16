@@ -1,4 +1,5 @@
 defmodule OrbitWeb.SignInExportControllerTest do
+  alias OrbitWeb.SignInExportController
   use OrbitWeb.ConnCase
 
   import Orbit.Factory
@@ -15,6 +16,55 @@ defmodule OrbitWeb.SignInExportControllerTest do
       conn = get(conn, ~p"/sign-in-export", %{"date" => "2024-08-28"})
 
       assert redirected_to(conn) == ~p"/sign-in-export/sign-ins-2024-08-28.csv"
+    end
+  end
+
+  describe "override_expiration_date/2" do
+    test "works" do
+      assert "2025-01-08" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "rail"
+               )
+    end
+
+    test "works when a type of override is missing" do
+      assert "" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "right_of_way"
+               )
+    end
+
+    test "works when multiple overrides are present" do
+      assert "2025-01-06" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "right_of_way",
+                     "expires" => "2025-01-06",
+                     "rail_line" => "blue"
+                   },
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "right_of_way"
+               )
     end
   end
 
@@ -45,7 +95,15 @@ defmodule OrbitWeb.SignInExportControllerTest do
         signed_in_at: signed_in_at1,
         sign_in_method: :manual,
         signed_in_employee: build(:employee, %{badge_number: "1234"}),
-        signed_in_by_user: official_user1
+        signed_in_by_user: official_user1,
+        override: [
+          %{
+            "type" => "right_of_way",
+            "expires" => "2025-01-08",
+            "rail_line" => "none"
+          },
+          %{"type" => "rail", "expires" => "2025-01-08", "rail_line" => "blue"}
+        ]
       })
 
       insert(:operator_sign_in, %{
@@ -80,6 +138,9 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "Official Name" => "Fake Official",
                  "Location" => "Orient Heights",
                  "Method" => "type",
+                 "LMS Expiration Overridden" => "yes",
+                 "LMS Recertification Expiration Date" => "2025-01-08",
+                 "LMS ROW Expiration Date" => "2025-01-08",
                  "Text Version" => "1"
                },
                %{
@@ -91,6 +152,9 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "Official Name" => "official2@mbta.com",
                  "Location" => "Orient Heights",
                  "Method" => "tap",
+                 "LMS Expiration Overridden" => "",
+                 "LMS Recertification Expiration Date" => "",
+                 "LMS ROW Expiration Date" => "",
                  "Text Version" => "1"
                }
              ] = result
