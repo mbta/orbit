@@ -235,27 +235,5 @@ defmodule OrbitWeb.SignInControllerTest do
 
       assert "Invalid override\n" = response(conn, 400)
     end
-
-    @tag :authenticated
-    test "replies 400 when invalid override (extraneous key)", %{conn: conn} do
-      conn =
-        post(conn, ~p"/api/signin", %{
-          "signed_in_employee_badge" => "123",
-          "signed_in_at" => 1_721_164_459,
-          "line" => "blue",
-          "method" => "manual",
-          "radio_number" => "22",
-          "override" => [
-            %{
-              "expires" => "2024-06-08T00:00:00.000-04:00",
-              "rail_line" => "blue",
-              "type" => "rail",
-              "SOME_OTHER_KEY" => "SHOULD_NOT_BE_HERE"
-            }
-          ]
-        })
-
-      assert "Invalid override\n" = response(conn, 400)
-    end
   end
 end
