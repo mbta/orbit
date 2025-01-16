@@ -14,6 +14,12 @@ const CERTIFICATIONS_ONE: Certification[] = [
     expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
   }),
 ];
+const CERTIFICATIONS_ONE_ROW: Certification[] = [
+  certificationFactory.build({
+    type: "right_of_way",
+    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
+  }),
+];
 const CERTIFICATIONS_TWO: Certification[] = [
   certificationFactory.build({
     type: "rail",
@@ -286,6 +292,38 @@ describe("CertificateBoxes", () => {
         ).toBeInTheDocument();
       });
     });
+
+    describe("missing data", () => {
+      test("displays an error box for missing right of way cert", () => {
+        const view = render(
+          <CertificateBoxes
+            now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
+            displayName="Test Name"
+            certifications={CERTIFICATIONS_ONE}
+            ignoreExpired={false}
+          />,
+        );
+        expect(
+          view.getByText("We have no record of Test Name's ROW Card."),
+        ).toBeInTheDocument();
+      });
+
+      test("displays an error box for missing rail cert", () => {
+        const view = render(
+          <CertificateBoxes
+            now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
+            displayName="Test Name"
+            certifications={CERTIFICATIONS_ONE_ROW}
+            ignoreExpired={false}
+          />,
+        );
+        expect(
+          view.getByText(
+            "We have no record of Test Name's Certification Card.",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
   });
   test("ignoreExpired=true suppresses the expired box", () => {
     const view = render(
@@ -317,6 +355,7 @@ describe("Bypass", () => {
     const view = render(
       <Bypass
         expireds={CERTIFICATIONS_ONE}
+        missing={[]}
         displayName="Test Name"
         onContinue={continueFn}
       />,
@@ -331,6 +370,7 @@ describe("Bypass", () => {
       const view = render(
         <Bypass
           expireds={CERTIFICATIONS_ONE}
+          missing={[]}
           displayName="Test Name"
           onContinue={continueFn}
         />,
@@ -342,6 +382,7 @@ describe("Bypass", () => {
       const view = render(
         <Bypass
           expireds={CERTIFICATIONS_TWO}
+          missing={[]}
           displayName="Test Name"
           onContinue={continueFn}
         />,
@@ -355,6 +396,7 @@ describe("Bypass", () => {
     const view = render(
       <Bypass
         expireds={CERTIFICATIONS_TWO}
+        missing={[]}
         displayName="Test Name"
         onContinue={continueFn}
       />,

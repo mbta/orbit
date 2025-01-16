@@ -65,9 +65,8 @@ defmodule OrbitWeb.SignInController do
   @spec validate_override(map()) :: boolean()
   defp validate_override(override) do
     Enum.all?(override, fn cert ->
-      Util.Map.has_exactly?(cert, MapSet.new(["type", "expires", "rail_line"])) and
-        MapSet.member?(Certification.certification_type_strings(), cert["type"]) and
-        Util.Date.valid_iso8601?(cert["expires"])
+      MapSet.member?(Certification.certification_type_strings(), cert["type"]) and
+        (cert["expires"] == nil || Util.Date.valid_iso8601?(cert["expires"]))
     end)
   end
 
