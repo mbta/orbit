@@ -1,6 +1,10 @@
 import { useNow } from "../../dateTime";
 import { lookupDisplayName } from "../../hooks/useEmployees";
-import { Certification, filterExpired } from "../../models/certification";
+import {
+  Certification,
+  filterExpired,
+  getMissing,
+} from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
@@ -32,6 +36,7 @@ export const Attestation = ({
   const [bypass, setBypass] = useState<boolean>(false);
 
   const name = lookupDisplayName(badge, employees);
+  const missing = getMissing(certifications, "blue");
   const expireds = filterExpired(certifications, now);
 
   return (
@@ -42,7 +47,7 @@ export const Attestation = ({
         ignoreExpired={bypass}
         now={now}
       />
-      {expireds.length === 0 || bypass ?
+      {(expireds.length === 0 && missing.length === 0) || bypass ?
         <>
           <SignInText />
           <form
@@ -91,6 +96,7 @@ export const Attestation = ({
           </ol>
           <Bypass
             expireds={expireds}
+            missing={missing}
             displayName={name}
             onContinue={function (): void {
               setBypass(true);

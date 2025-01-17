@@ -66,6 +66,24 @@ defmodule OrbitWeb.SignInExportControllerTest do
                  "right_of_way"
                )
     end
+
+    test "missing certification override gets 'missing' in CSV" do
+      assert "missing" =
+               SignInExportController.override_expiration_date(
+                 [
+                   %{
+                     "type" => "right_of_way",
+                     "rail_line" => "blue"
+                   },
+                   %{
+                     "type" => "rail",
+                     "expires" => "2025-01-08",
+                     "rail_line" => "blue"
+                   }
+                 ],
+                 "right_of_way"
+               )
+    end
   end
 
   describe "get/2" do

@@ -1,12 +1,14 @@
 import { daysBetween } from "../../dateTime";
 import {
   Certification,
+  getMissing,
   humanReadableType,
   isExpired,
+  MissingCertification,
 } from "../../models/certification";
 import { className } from "../../util/dom";
 import { DateTime } from "luxon";
-import { ReactElement } from "react";
+import { ReactElement, ReactNode } from "react";
 
 const WARN_WITHIN_D = 60;
 
@@ -26,7 +28,49 @@ const englishDaysBetween = (now: DateTime, date: DateTime) => {
   }
 };
 
-const CertificateBox = ({
+const Box = ({
+  title,
+  mode,
+  children,
+}: {
+  title: string;
+  mode: "warning" | "error";
+  children: ReactNode;
+}): ReactElement => {
+  return (
+    <div
+      className={className([
+        "mb-4 mt-2 flex flex-row rounded px-3 py-2",
+        mode === "warning" && "bg-[#FFDE9E]",
+        mode === "error" && "bg-[#FF919A]",
+      ])}
+    >
+      <div className="m-0 flex-1 text-xs leading-4">
+        <p className="font-bold uppercase">{title}</p>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const MissingBox = ({
+  missing,
+  operatorName,
+}: {
+  missing: MissingCertification[];
+  operatorName: string;
+}): ReactElement => {
+  return (
+    <Box mode={"error"} title={"Missing card data"}>
+      <p className="mt-2">
+        We have no record of {operatorName}&apos;s{" "}
+        {missing.map((m) => humanReadableType(m.type)).join(" nor ")}.
+      </p>
+    </Box>
+  );
+};
+
+const ExpiryBox = ({
   now,
   mode,
   title,
@@ -52,21 +96,12 @@ const CertificateBox = ({
       .join(" and ") +
     ".";
   return (
-    <div
-      className={className([
-        "mb-4 mt-2 flex flex-row rounded px-3 py-2",
-        mode === "warning" && "bg-[#FFDE9E]",
-        mode === "error" && "bg-[#FF919A]",
-      ])}
-    >
-      <div className="m-0 flex-1 text-xs leading-4">
-        <p className="font-bold uppercase">{title}</p>
-        <p className="mt-2">{innerString}</p>
-        {mode === "warning" && (
-          <p className="mt-2">Please have them call the Office.</p>
-        )}
-      </div>
-    </div>
+    <Box mode={mode} title={title}>
+      <p className="mt-2">{innerString}</p>
+      {mode === "warning" && (
+        <p className="mt-2">Please have them call the Office.</p>
+      )}
+    </Box>
   );
 };
 
@@ -82,6 +117,8 @@ export const CertificateBoxes = ({
   certifications: Certification[];
 }): ReactElement => {
   const expired = certifications.filter((cert) => isExpired(cert, now));
+  const missing = getMissing(certifications, "blue");
+
   const expiresSoon = certifications.filter((cert) => {
     const delta = daysBetween(now, cert.expires);
     return !isExpired(cert, now) && delta <= WARN_WITHIN_D;
@@ -89,7 +126,7 @@ export const CertificateBoxes = ({
   return (
     <>
       {expiresSoon.length > 0 && (
-        <CertificateBox
+        <ExpiryBox
           now={now}
           mode="warning"
           title={
@@ -100,13 +137,16 @@ export const CertificateBoxes = ({
         />
       )}
       {expired.length > 0 && !ignoreExpired && (
-        <CertificateBox
+        <ExpiryBox
           now={now}
           mode="error"
           title={expired.length === 1 ? "Expired card" : "Expired cards"}
           operatorName={displayName}
           certifications={expired}
         />
+      )}
+      {missing.length > 0 && (
+        <MissingBox operatorName={displayName} missing={missing} />
       )}
     </>
   );
@@ -115,20 +155,25 @@ export const CertificateBoxes = ({
 export const Bypass = ({
   displayName,
   expireds,
+  missing,
   onContinue,
 }: {
   displayName: string;
   expireds: Certification[];
+  missing: MissingCertification[];
   onContinue: () => void;
 }): ReactElement => {
+  const expiredAndMissing = [
+    ...expireds.map((c) => humanReadableType(c.type)),
+    ...missing.map((m) => humanReadableType(m.type)),
+  ];
   return (
     <>
       <hr className="h-[2px] bg-gray-300" />
       <div className="m-2 text-sm text-gray-400">
         <p>Is this warning incorrect?</p>
         <span>
-          If {displayName} has a valid{" "}
-          {expireds.map((c) => humanReadableType(c.type)).join(" and ")}:
+          If {displayName} has a valid {expiredAndMissing.join(" and ")}:
         </span>
         <ol className="mb-4 ml-10 mr-0 mt-2 list-decimal">
           <li className="m-0">

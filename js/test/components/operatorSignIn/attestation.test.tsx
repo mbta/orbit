@@ -4,9 +4,21 @@ import { Employee } from "../../../models/employee";
 import { certificationFactory, employeeFactory } from "../../helpers/factory";
 import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { DateTime } from "luxon";
 
 const EMPLOYEES: Employee[] = [employeeFactory.build({ badge: "123" })];
-const CERTIFICATIONS_NONE: Certification[] = [];
+const CERTIFICATIONS_NONE: Certification[] = [
+  {
+    expires: DateTime.fromISO("2030-01-01"),
+    railLine: "blue",
+    type: "rail",
+  },
+  {
+    expires: DateTime.fromISO("2030-01-01"),
+    railLine: "none",
+    type: "right_of_way",
+  },
+];
 const CERTIFICATIONS_ONE_EXPIRED: Certification[] = [
   certificationFactory.build(),
 ];

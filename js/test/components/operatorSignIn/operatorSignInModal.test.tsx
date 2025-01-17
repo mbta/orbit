@@ -31,6 +31,11 @@ const CERTIFICATIONS = [
     expires: DateTime.fromISO("2082-12-12", { zone: "America/New_York" }),
     railLine: "blue",
   }),
+  certificationFactory.build({
+    type: "right_of_way",
+    expires: DateTime.fromISO("2082-12-12", { zone: "America/New_York" }),
+    railLine: "none",
+  }),
 ];
 const CERTIFICATIONS_ONE_EXPIRED = [
   certificationFactory.build({
@@ -61,6 +66,10 @@ jest.mock("../../../hooks/useNfc", () => ({
 }));
 
 describe("OperatorSignInModal", () => {
+  beforeAll(() => {
+    jest.useFakeTimers({ advanceTimers: true });
+    jest.setSystemTime(new Date("2024-07-12"));
+  });
   test("shows badge tap message by default", () => {
     const view = render(
       <OperatorSignInModal
@@ -172,14 +181,14 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
-    expect(fetchMock).toHaveBeenCalledWith(
-      "/api/signin",
-      expect.objectContaining({
-        body: expect.stringContaining(
-          '[{"type":"rail","rail_line":"blue","expires":"2023-12-12"}]',
-        ),
-      }),
-    );
+    expect(fetchMock).toHaveBeenCalledWith("/api/signin", {
+      body: '{"override":[{"type":"rail","rail_line":"blue","expires":"2023-12-12"},{"type":"right_of_way","rail_line":"blue"}],"signed_in_employee_badge":"1234","signed_in_at":1720742401,"line":"blue","radio_number":"22","method":"manual"}',
+      headers: {
+        "content-type": "application/json",
+        "x-csrf-token": "TEST-CSRF-TOKEN",
+      },
+      method: "post",
+    });
     expect(view.getByText("signed in successfully")).toBeInTheDocument();
   });
 
