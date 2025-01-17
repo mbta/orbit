@@ -81,6 +81,8 @@ defmodule OrbitWeb.SignInController do
       "radio_number" => radio_number
     } = params
 
+    raise "preston error"
+
     # Override is separate for backward compatibility
     override = params["override"]
     signed_in_at = DateTime.from_unix!(signed_in_at)
