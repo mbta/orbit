@@ -4,6 +4,7 @@ defmodule Orbit.Application do
   @impl true
   def start(_type, _args) do
     Orbit.Sentry.add_logger_handler!()
+    Orbit.Telemetry.setup_telemetry()
 
     children = [
       OrbitWeb.Telemetry,
