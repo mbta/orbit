@@ -97,10 +97,15 @@ export default tseslint.config(
       ...pluginTestingLibrary.configs["flat/react"].rules,
       // empty functions are fine
       "@typescript-eslint/no-empty-function": "off",
+      // ! is fine in tests
+      "@typescript-eslint/no-non-null-assertion": "off",
       // expect.any is untyped and triggers this all the time.
       "@typescript-eslint/no-unsafe-assignment": "off",
+      // expect(method) triggers this
+      "@typescript-eslint/unbound-method": "off",
       // sometimes the easiest way to mock a complex test setup is to mutate something
       "better-mutation/no-mutation": "off",
+      "better-mutation/no-mutating-methods": "off",
       /* we do `view = render(); view.getBy()` which also doesn't require destructuring
       and has less global mutable state than `screen`. */
       "testing-library/prefer-screen-queries": "off",
