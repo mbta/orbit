@@ -67,7 +67,7 @@ defmodule Orbit.MixProject do
       {:httpoison, "== 2.2.1"},
       {:jason, "== 1.4.4"},
       {:lcov_ex, "== 0.3.3", only: [:test], runtime: false},
-      {:logster, "== 2.0.0-rc.3"},
+      {:logster, "== 2.0.0-rc.5"},
       {:oban, "== 2.18.3"},
       {:phoenix, "== 1.7.18"},
       {:phoenix_ecto, "== 4.6.3"},
@@ -83,7 +83,7 @@ defmodule Orbit.MixProject do
       {:timex, "== 3.7.11"},
       {:tz, "== 0.28.1"},
       {:ueberauth, "== 0.10.8"},
-      {:ueberauth_oidcc, "== 0.4.0"}
+      {:ueberauth_oidcc, "== 0.4.1"}
     ]
   end
 
