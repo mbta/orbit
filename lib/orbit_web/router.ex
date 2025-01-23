@@ -23,7 +23,7 @@ defmodule OrbitWeb.Router do
         frame-src 'self' https://*.appcues.com;\
         img-src 'self' https://*.appcues.com https://*.appcues.net res.cloudinary.com cdn.jsdelivr.net;\
         script-src 'self' *.fullstory.com https://*.appcues.com https://*.appcues.net;\
-        script-src-elem 'self' 'unsafe-inline';\
+        script-src-elem 'self' *.fullstory.com https://*.appcues.com https://*.appcues.net 'unsafe-inline';\
         style-src 'self' https://*.appcues.com https://*.appcues.net https://fonts.googleapis.com https://fonts.google.com 'unsafe-inline';\
         "
     }
