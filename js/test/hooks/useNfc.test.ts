@@ -85,7 +85,6 @@ describe("useNfc", () => {
 
     const { result, unmount } = renderHook(useNfc);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const abortSpy = jest.spyOn(result.current.abortController!, "abort");
 
     unmount();
@@ -99,7 +98,6 @@ describe("useNfc", () => {
     const { result } = renderHook(useNfc);
 
     act(() => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       result.current.abortController!.abort();
     });
 

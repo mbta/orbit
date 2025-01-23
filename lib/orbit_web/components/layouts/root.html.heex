@@ -14,6 +14,9 @@
     <%= if @conn.assigns[:logged_in_user] do %>
       <meta name="email" content={@logged_in_user.email} />
     <% end %>
+    <%= if @conn.assigns[:guardian_token] do %>
+      <meta name="guardianToken" content={@guardian_token} />
+    <% end %>
     <meta name="release" content={@release} />
 
     <%= if @conn.assigns[:sentry_dsn] do %>
