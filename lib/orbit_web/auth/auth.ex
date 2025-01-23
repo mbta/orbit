@@ -8,18 +8,16 @@ defmodule OrbitWeb.Auth.Auth do
   def login(conn, username, ttl_seconds, groups, logout_url) do
     email = String.downcase(username)
 
-    case Repo.get_by(User, email: email) do
-      nil ->
-        Repo.insert!(%User{email: email})
+    user =
+      case Repo.get_by(User, email: email) do
+        nil -> Repo.insert!(%User{email: email})
+        u -> u
+      end
 
-      u ->
-        u
-    end
-
-    # We use username (email) as the Guardian resource
+    # We use a user struct as the Guardian resource
     conn
     |> OrbitWeb.Auth.Guardian.Plug.sign_in(
-      %User{email: email},
+      user,
       # claims
       %{groups: groups},
       ttl: {ttl_seconds, :seconds}
@@ -28,7 +26,7 @@ defmodule OrbitWeb.Auth.Auth do
     |> Plug.Conn.put_session(:logout_url, logout_url)
   end
 
-  @spec logged_in_user(Conn.t()) :: map() | nil
+  @spec logged_in_user(Conn.t()) :: User.t() | nil
   def logged_in_user(conn) do
     if Map.has_key?(conn.assigns, :logged_in_user) do
       conn.assigns[:logged_in_user]

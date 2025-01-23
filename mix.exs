@@ -39,11 +39,11 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.6.1"},
+      {:bandit, "== 1.6.5"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "== 4.0.0", only: :dev},
-      {:credo, "== 1.7.10", only: [:dev, :test], runtime: false},
-      {:csv, "== 3.2.1"},
+      {:credo, "== 1.7.11", only: [:dev, :test], runtime: false},
+      {:csv, "== 3.2.2"},
       {:dialyxir, "== 1.4.5", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
@@ -67,14 +67,14 @@ defmodule Orbit.MixProject do
       {:httpoison, "== 2.2.1"},
       {:jason, "== 1.4.4"},
       {:lcov_ex, "== 0.3.3", only: [:test], runtime: false},
-      {:logster, "== 2.0.0-rc.3"},
-      {:oban, "== 2.18.3"},
+      {:logster, "== 2.0.0-rc.5"},
+      {:oban, "== 2.19.0"},
       {:phoenix, "== 1.7.18"},
       {:phoenix_ecto, "== 4.6.3"},
       {:phoenix_html, "== 4.1.1"},
-      {:phoenix_live_dashboard, "== 0.8.5"},
+      {:phoenix_live_dashboard, "== 0.8.6"},
       {:phoenix_live_reload, "== 1.5.3", only: :dev},
-      {:phoenix_live_view, "== 1.0.1"},
+      {:phoenix_live_view, "== 1.0.2"},
       {:postgrex, "== 0.19.3"},
       {:sentry, "== 10.8.1"},
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
@@ -83,7 +83,7 @@ defmodule Orbit.MixProject do
       {:timex, "== 3.7.11"},
       {:tz, "== 0.28.1"},
       {:ueberauth, "== 0.10.8"},
-      {:ueberauth_oidcc, "== 0.4.0"}
+      {:ueberauth_oidcc, "== 0.4.1"}
     ]
   end
 

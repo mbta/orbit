@@ -10,10 +10,9 @@ defmodule OrbitWeb.Plugs.RequireLogin do
   @impl Plug
   def call(conn, _opts) do
     if user = Auth.logged_in_user(conn) do
-      # TODO: Sentry
-      # Sentry.Context.set_user_context(%{
-      #   email: user.email
-      # })
+      Sentry.Context.set_user_context(%{
+        email: user.email
+      })
 
       # TODO: Logger
       # Logger.metadata(remote_ip: nil)
