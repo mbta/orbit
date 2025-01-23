@@ -40,8 +40,8 @@ export const initSocket = () => {
         console.warn(response);
       })
       .receive("error", (response: unknown) => {
-        console.warn("channel error");
-        console.warn(response);
+        console.error("channel error");
+        console.error(response);
       });
   });
 
