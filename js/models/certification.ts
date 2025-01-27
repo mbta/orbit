@@ -11,6 +11,11 @@ export type Certification = {
   expires: DateTime;
 };
 
+/**
+ * MissingCertification(s) aren't sent by the server; they're computed
+ *  here on the frontend and are included in the sign-in's override
+ *  payload if needed
+ */
 export type MissingCertification = Omit<Certification, "expires">;
 export const MissingCertificationData = z.object({
   type: z.string(),

@@ -3,6 +3,7 @@ defmodule Orbit.OperatorSignIn do
   import Ecto.Changeset
 
   alias Orbit.Authentication.User
+  alias Orbit.Certification
   alias Orbit.Employee
   alias Orbit.RailLine
   alias Orbit.SignInMethod
@@ -14,7 +15,17 @@ defmodule Orbit.OperatorSignIn do
           rail_line: RailLine.t(),
           radio_number: String.t() | nil,
           sign_in_method: SignInMethod.t(),
-          override: [map()] | nil
+          override:
+            [
+              %{
+                type: Certification.certification_type(),
+                rail_line: RailLine.t(),
+                # The frontend will send an expires=null if the certificate was required
+                #  but missing
+                expires: String.t() | nil
+              }
+            ]
+            | nil
         }
 
   schema "operator_sign_ins" do
