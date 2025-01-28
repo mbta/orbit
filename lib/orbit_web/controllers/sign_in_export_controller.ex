@@ -38,7 +38,7 @@ defmodule OrbitWeb.SignInExportController do
         ""
 
       cert ->
-        cert["expires"]
+        cert["expires"] || "missing"
     end
   end
 

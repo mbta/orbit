@@ -3,11 +3,25 @@ import { HeavyRailLine } from "../types";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
+const CERT_TYPES = ["right_of_way", "rail"];
+
 export type Certification = {
   type: string;
   railLine: HeavyRailLine;
   expires: DateTime;
 };
+
+/**
+ * MissingCertification(s) aren't sent by the server; they're computed
+ *  here on the frontend and are included in the sign-in's override
+ *  payload if needed
+ */
+export type MissingCertification = Omit<Certification, "expires">;
+export const MissingCertificationData = z.object({
+  type: z.string(),
+  rail_line: HeavyRailLine,
+});
+export type MissingCertificationData = z.infer<typeof MissingCertificationData>;
 
 export const CertificationData = z.object({
   type: z.string(),
@@ -34,6 +48,15 @@ export const certificationToData = (c: Certification): CertificationData => {
     type: c.type,
     rail_line: c.railLine,
     expires,
+  };
+};
+
+export const missingCertificationToData = (
+  mc: MissingCertification,
+): MissingCertificationData => {
+  return {
+    type: mc.type,
+    rail_line: mc.railLine,
   };
 };
 
@@ -67,6 +90,21 @@ export const anyOfExpired = (
   now: DateTime,
 ) => {
   return filterExpired(cs, now).length > 0;
+};
+
+export const getMissing = (
+  cs: Certification[] | undefined,
+  line: HeavyRailLine,
+): MissingCertification[] => {
+  const stringTypesMissing =
+    cs !== undefined ?
+      CERT_TYPES.filter((type) => !cs.some((c) => c.type === type))
+    : CERT_TYPES;
+
+  return stringTypesMissing.map((t) => ({
+    type: t,
+    railLine: line,
+  }));
 };
 
 export const humanReadableType = (type: string): string => {

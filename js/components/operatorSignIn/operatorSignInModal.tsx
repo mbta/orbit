@@ -7,6 +7,9 @@ import {
   Certification,
   certificationToData,
   filterExpired,
+  getMissing,
+  MissingCertification,
+  missingCertificationToData,
 } from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
 import { nfcSupported } from "../../util/nfc";
@@ -34,15 +37,21 @@ enum CompleteState {
 const submit = (
   badgeEntry: BadgeEntry,
   radio: string,
-  override: Certification[],
+  expired: Certification[],
+  missing: MissingCertification[],
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
 ) => {
   setLoading(true);
 
+  const override = [
+    ...expired.map(certificationToData),
+    ...missing.map(missingCertificationToData),
+  ];
+
   post("/api/signin", {
-    override: override.length === 0 ? null : override.map(certificationToData),
+    override: override.length === 0 ? null : override,
     signed_in_employee_badge: badgeEntry.number,
     signed_in_at: DateTime.now().toUnixInteger(),
     line: "blue",
@@ -162,6 +171,7 @@ const OperatorSignInModalContent = ({
               badge,
               radio,
               filterExpired(certifications.result, now),
+              getMissing(certifications.result, "blue"),
               setComplete,
               setLoading,
               onComplete,
@@ -195,6 +205,7 @@ const OperatorSignInModalContent = ({
               badge,
               radio,
               filterExpired(certifications.result, now),
+              getMissing(certifications.result, "blue"),
               setComplete,
               setLoading,
               onComplete,

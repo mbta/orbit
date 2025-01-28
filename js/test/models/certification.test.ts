@@ -1,4 +1,8 @@
-import { filterRelevantForOperators } from "../../models/certification";
+import { dateTimeFromISO } from "../../dateTime";
+import {
+  filterRelevantForOperators,
+  getMissing,
+} from "../../models/certification";
 import { certificationFactory } from "../helpers/factory";
 
 describe("filterRelevantForOperators", () => {
@@ -84,5 +88,80 @@ describe("filterRelevantForOperators", () => {
         "blue",
       ),
     ).toHaveLength(0);
+  });
+});
+
+describe("getMissing", () => {
+  test("emits right_of_way when missing", () => {
+    expect(
+      getMissing(
+        [
+          {
+            type: "rail",
+            expires: dateTimeFromISO("2082-01-01"),
+            railLine: "blue",
+          },
+        ],
+        "blue",
+      ),
+    ).toEqual([
+      {
+        type: "right_of_way",
+        railLine: "blue",
+      },
+    ]);
+  });
+
+  test("emits rail when missing", () => {
+    expect(
+      getMissing(
+        [
+          {
+            type: "right_of_way",
+            expires: dateTimeFromISO("2082-01-01"),
+            railLine: "blue",
+          },
+        ],
+        "blue",
+      ),
+    ).toEqual([
+      {
+        type: "rail",
+        railLine: "blue",
+      },
+    ]);
+  });
+
+  test("emits both when both missing", () => {
+    expect(getMissing([], "blue")).toEqual([
+      {
+        type: "right_of_way",
+        railLine: "blue",
+      },
+      {
+        type: "rail",
+        railLine: "blue",
+      },
+    ]);
+  });
+
+  test("emits nothing when both present", () => {
+    expect(
+      getMissing(
+        [
+          {
+            type: "rail",
+            expires: dateTimeFromISO("2082-01-01"),
+            railLine: "blue",
+          },
+          {
+            type: "right_of_way",
+            expires: dateTimeFromISO("2082-01-01"),
+            railLine: "blue",
+          },
+        ],
+        "blue",
+      ),
+    ).toEqual([]);
   });
 });

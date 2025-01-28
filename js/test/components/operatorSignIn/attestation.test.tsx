@@ -4,9 +4,21 @@ import { Employee } from "../../../models/employee";
 import { certificationFactory, employeeFactory } from "../../helpers/factory";
 import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { DateTime } from "luxon";
 
 const EMPLOYEES: Employee[] = [employeeFactory.build({ badge: "123" })];
-const CERTIFICATIONS_NONE: Certification[] = [];
+const CERTIFICATIONS_NORMAL: Certification[] = [
+  {
+    expires: DateTime.fromISO("2030-01-01"),
+    railLine: "blue",
+    type: "rail",
+  },
+  {
+    expires: DateTime.fromISO("2030-01-01"),
+    railLine: "none",
+    type: "right_of_way",
+  },
+];
 const CERTIFICATIONS_ONE_EXPIRED: Certification[] = [
   certificationFactory.build(),
 ];
@@ -20,7 +32,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     expect(
@@ -36,7 +48,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     expect(view.getByText("Preferredy Lasty")).toBeInTheDocument();
@@ -50,7 +62,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     expect(view.getByText("Operator #00000000")).toBeInTheDocument();
@@ -65,7 +77,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NONE}
+          certifications={CERTIFICATIONS_NORMAL}
         />,
       );
       const input = view.getByLabelText(/Operator Badge Number/i, {
@@ -84,7 +96,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NONE}
+          certifications={CERTIFICATIONS_NORMAL}
         />,
       );
       const input = view.getByLabelText(/Radio Number/i, {
@@ -102,7 +114,7 @@ describe("Attestation", () => {
           onComplete={onComplete}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NONE}
+          certifications={CERTIFICATIONS_NORMAL}
         />,
       );
       const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -124,7 +136,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     expect(
@@ -142,7 +154,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -170,7 +182,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -200,7 +212,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NONE}
+        certifications={CERTIFICATIONS_NORMAL}
       />,
     );
 
