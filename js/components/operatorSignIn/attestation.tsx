@@ -1,10 +1,6 @@
 import { useNow } from "../../dateTime";
 import { lookupDisplayName } from "../../hooks/useEmployees";
-import {
-  Certification,
-  filterExpired,
-  getMissing,
-} from "../../models/certification";
+import { CertificationStatus } from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { className } from "../../util/dom";
 import { removeLeadingZero } from "../../util/string";
@@ -15,14 +11,14 @@ import { ReactElement, useEffect, useState } from "react";
 export const Attestation = ({
   badge,
   employees,
-  certifications,
+  certificationStatus,
   onComplete,
   loading,
   prefill,
 }: {
   badge: string;
   employees: Employee[];
-  certifications: Certification[];
+  certificationStatus: CertificationStatus;
   onComplete: (radio: string) => void;
   loading: boolean;
   prefill: boolean;
@@ -36,18 +32,20 @@ export const Attestation = ({
   const [bypass, setBypass] = useState<boolean>(false);
 
   const name = lookupDisplayName(badge, employees);
-  const missing = getMissing(certifications, "blue");
-  const expireds = filterExpired(certifications, now);
 
   return (
     <div className="text-sm">
       <CertificateBoxes
-        certifications={certifications}
+        certificationStatus={certificationStatus}
         displayName={name}
         ignoreExpired={bypass}
         now={now}
       />
-      {(expireds.length === 0 && missing.length === 0) || bypass ?
+      {(
+        (certificationStatus.expired.length === 0 &&
+          certificationStatus.missing.length === 0) ||
+        bypass
+      ) ?
         <>
           <SignInText />
           <form
@@ -95,8 +93,8 @@ export const Attestation = ({
             <li>Send {name} to the Supervisors&#39; Office.</li>
           </ol>
           <Bypass
-            expireds={expireds}
-            missing={missing}
+            expireds={certificationStatus.expired}
+            missing={certificationStatus.missing}
             displayName={name}
             onContinue={function (): void {
               setBypass(true);

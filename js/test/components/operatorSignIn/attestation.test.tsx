@@ -1,5 +1,5 @@
 import { Attestation } from "../../../components/operatorSignIn/attestation";
-import { Certification } from "../../../models/certification";
+import { CertificationStatus } from "../../../models/certification";
 import { Employee } from "../../../models/employee";
 import { certificationFactory, employeeFactory } from "../../helpers/factory";
 import { act, render } from "@testing-library/react";
@@ -7,21 +7,27 @@ import userEvent from "@testing-library/user-event";
 import { DateTime } from "luxon";
 
 const EMPLOYEES: Employee[] = [employeeFactory.build({ badge: "123" })];
-const CERTIFICATIONS_NORMAL: Certification[] = [
-  {
-    expires: DateTime.fromISO("2030-01-01"),
-    railLine: "blue",
-    type: "rail",
-  },
-  {
-    expires: DateTime.fromISO("2030-01-01"),
-    railLine: "none",
-    type: "right_of_way",
-  },
-];
-const CERTIFICATIONS_ONE_EXPIRED: Certification[] = [
-  certificationFactory.build(),
-];
+const CERTIFICATION_STATUS_NORMAL: CertificationStatus = {
+  active: [
+    {
+      expires: DateTime.fromISO("2030-01-01"),
+      railLine: "blue",
+      type: "rail",
+    },
+    {
+      expires: DateTime.fromISO("2030-01-01"),
+      railLine: "none",
+      type: "right_of_way",
+    },
+  ],
+  expired: [],
+  missing: [],
+};
+const CERTIFICATION_STATUS_ONE_EXPIRED: CertificationStatus = {
+  active: [],
+  expired: [certificationFactory.build()],
+  missing: [],
+};
 
 describe("Attestation", () => {
   test("displays sign-in text", () => {
@@ -32,7 +38,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     expect(
@@ -48,7 +54,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     expect(view.getByText("Preferredy Lasty")).toBeInTheDocument();
@@ -62,7 +68,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     expect(view.getByText("Operator #00000000")).toBeInTheDocument();
@@ -77,7 +83,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NORMAL}
+          certificationStatus={CERTIFICATION_STATUS_NORMAL}
         />,
       );
       const input = view.getByLabelText(/Operator Badge Number/i, {
@@ -96,7 +102,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NORMAL}
+          certificationStatus={CERTIFICATION_STATUS_NORMAL}
         />,
       );
       const input = view.getByLabelText(/Radio Number/i, {
@@ -114,7 +120,7 @@ describe("Attestation", () => {
           onComplete={onComplete}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_NORMAL}
+          certificationStatus={CERTIFICATION_STATUS_NORMAL}
         />,
       );
       const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -136,7 +142,7 @@ describe("Attestation", () => {
         onComplete={jest.fn()}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     expect(
@@ -154,7 +160,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -182,7 +188,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
     const badgeInput = view.getByLabelText(/Operator Badge Number/i, {
@@ -212,7 +218,7 @@ describe("Attestation", () => {
         onComplete={onComplete}
         loading={false}
         employees={EMPLOYEES}
-        certifications={CERTIFICATIONS_NORMAL}
+        certificationStatus={CERTIFICATION_STATUS_NORMAL}
       />,
     );
 
@@ -249,7 +255,7 @@ describe("Attestation", () => {
           onComplete={jest.fn()}
           loading={false}
           employees={EMPLOYEES}
-          certifications={CERTIFICATIONS_ONE_EXPIRED}
+          certificationStatus={CERTIFICATION_STATUS_ONE_EXPIRED}
         />,
       );
       expect(view.getByText("Expired card")).toBeInTheDocument();
