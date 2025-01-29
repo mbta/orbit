@@ -71,7 +71,7 @@ defmodule Orbit.MixProject do
       {:oban, "== 2.19.1"},
       {:phoenix, "== 1.7.18"},
       {:phoenix_ecto, "== 4.6.3"},
-      {:phoenix_html, "== 4.1.1"},
+      {:phoenix_html, "== 4.2.0"},
       {:phoenix_live_dashboard, "== 0.8.6"},
       {:phoenix_live_reload, "== 1.5.3", only: :dev},
       {:phoenix_live_view, "== 1.0.3"},
