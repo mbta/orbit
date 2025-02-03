@@ -115,6 +115,7 @@ export const CertificateBoxes = ({
   certificationStatus: CertificationStatus;
 }): ReactElement => {
   const expiresSoon = filterExpiresSoon(certificationStatus.active, now);
+  const { expired, missing } = certificationStatus;
 
   return (
     <>
@@ -129,24 +130,17 @@ export const CertificateBoxes = ({
           certifications={expiresSoon}
         />
       )}
-      {certificationStatus.expired.length > 0 && !ignoreExpired && (
+      {expired.length > 0 && !ignoreExpired && (
         <ExpiryBox
           now={now}
           mode="error"
-          title={
-            certificationStatus.expired.length === 1 ?
-              "Expired card"
-            : "Expired cards"
-          }
+          title={expired.length === 1 ? "Expired card" : "Expired cards"}
           operatorName={displayName}
-          certifications={certificationStatus.expired}
+          certifications={expired}
         />
       )}
-      {certificationStatus.missing.length > 0 && (
-        <MissingBox
-          operatorName={displayName}
-          missing={certificationStatus.missing}
-        />
+      {missing.length > 0 && (
+        <MissingBox operatorName={displayName} missing={missing} />
       )}
     </>
   );

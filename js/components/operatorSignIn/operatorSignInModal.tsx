@@ -35,15 +35,11 @@ enum CompleteState {
 const submit = (
   badgeEntry: BadgeEntry,
   radio: string,
-  certificationStatus: CertificationStatus | null,
+  certificationStatus: CertificationStatus,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
 ) => {
-  if (certificationStatus === null) {
-    return;
-  }
-
   setLoading(true);
 
   const override = [
@@ -154,7 +150,9 @@ const OperatorSignInModalContent = ({
 
   return (
     <>
-      {requestError ?
+      {requestLoading ?
+        <div>Loading...</div>
+      : requestError || certificationStatus === null ?
         <div className="text-center">
           <div className="mb-4">Unable to download data</div>
           <div>
@@ -166,8 +164,6 @@ const OperatorSignInModalContent = ({
             </button>
           </div>
         </div>
-      : requestLoading ?
-        <div>Loading...</div>
       : complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
         <SignInError
           name={name}
@@ -216,7 +212,7 @@ const OperatorSignInModalContent = ({
             );
           }}
           employees={employees.result}
-          certificationStatus={getStatus(certifications.result, now, "blue")}
+          certificationStatus={certificationStatus}
         />
       }
     </>
