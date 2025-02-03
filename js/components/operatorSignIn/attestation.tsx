@@ -33,6 +33,8 @@ export const Attestation = ({
 
   const name = lookupDisplayName(badge, employees);
 
+  const { expired, missing } = certificationStatus;
+
   return (
     <div className="text-sm">
       <CertificateBoxes
@@ -41,11 +43,7 @@ export const Attestation = ({
         ignoreExpired={bypass}
         now={now}
       />
-      {(
-        (certificationStatus.expired.length === 0 &&
-          certificationStatus.missing.length === 0) ||
-        bypass
-      ) ?
+      {(expired.length === 0 && missing.length === 0) || bypass ?
         <>
           <SignInText />
           <form
@@ -93,8 +91,8 @@ export const Attestation = ({
             <li>Send {name} to the Supervisors&#39; Office.</li>
           </ol>
           <Bypass
-            expireds={certificationStatus.expired}
-            missing={certificationStatus.missing}
+            expireds={expired}
+            missing={missing}
             displayName={name}
             onContinue={function (): void {
               setBypass(true);
