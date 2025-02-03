@@ -4,11 +4,9 @@ import { useNow } from "../../dateTime";
 import { useCertifications } from "../../hooks/useCertifications";
 import { findEmployeeByBadge, useEmployees } from "../../hooks/useEmployees";
 import {
-  Certification,
+  CertificationStatus,
   certificationToData,
-  filterExpired,
-  getMissing,
-  MissingCertification,
+  getStatus,
   missingCertificationToData,
 } from "../../models/certification";
 import { EmployeeList } from "../../models/employee";
@@ -37,8 +35,7 @@ enum CompleteState {
 const submit = (
   badgeEntry: BadgeEntry,
   radio: string,
-  expired: Certification[],
-  missing: MissingCertification[],
+  certificationStatus: CertificationStatus,
   setComplete: React.Dispatch<React.SetStateAction<CompleteState | null>>,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   onComplete: () => void,
@@ -46,8 +43,8 @@ const submit = (
   setLoading(true);
 
   const override = [
-    ...expired.map(certificationToData),
-    ...missing.map(missingCertificationToData),
+    ...certificationStatus.expired.map(certificationToData),
+    ...certificationStatus.missing.map(missingCertificationToData),
   ];
 
   post("/api/signin", {
@@ -146,9 +143,16 @@ const OperatorSignInModalContent = ({
   const requestError =
     employees.status === "error" || certifications.status === "error";
 
+  const certificationStatus =
+    certifications.status !== "loading" && certifications.status !== "error" ?
+      getStatus(certifications.result, now, "blue")
+    : null;
+
   return (
     <>
-      {requestError ?
+      {requestLoading ?
+        <div>Loading...</div>
+      : requestError || certificationStatus === null ?
         <div className="text-center">
           <div className="mb-4">Unable to download data</div>
           <div>
@@ -160,8 +164,6 @@ const OperatorSignInModalContent = ({
             </button>
           </div>
         </div>
-      : requestLoading ?
-        <div>Loading...</div>
       : complete === CompleteState.SIGN_IN_ERROR && badge !== null ?
         <SignInError
           name={name}
@@ -170,8 +172,7 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              filterExpired(certifications.result, now),
-              getMissing(certifications.result, "blue"),
+              certificationStatus,
               setComplete,
               setLoading,
               onComplete,
@@ -204,15 +205,14 @@ const OperatorSignInModalContent = ({
             submit(
               badge,
               radio,
-              filterExpired(certifications.result, now),
-              getMissing(certifications.result, "blue"),
+              certificationStatus,
               setComplete,
               setLoading,
               onComplete,
             );
           }}
           employees={employees.result}
-          certifications={certifications.result}
+          certificationStatus={certificationStatus}
         />
       }
     </>

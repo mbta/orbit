@@ -1,9 +1,10 @@
-import { dateTimeFromISO, dateTimeToISODate } from "../dateTime";
+import { dateTimeFromISO, dateTimeToISODate, daysBetween } from "../dateTime";
 import { HeavyRailLine } from "../types";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
 const CERT_TYPES = ["right_of_way", "rail"];
+const WARN_WITHIN_D = 60;
 
 export type Certification = {
   type: string;
@@ -22,6 +23,12 @@ export const MissingCertificationData = z.object({
   rail_line: HeavyRailLine,
 });
 export type MissingCertificationData = z.infer<typeof MissingCertificationData>;
+
+export type CertificationStatus = {
+  active: Certification[];
+  expired: Certification[];
+  missing: MissingCertification[];
+};
 
 export const CertificationData = z.object({
   type: z.string(),
@@ -75,21 +82,25 @@ export const filterRelevantForOperators = (
   );
 };
 
-export const filterExpired = (
-  cs: Certification[] | undefined,
+export const filterExpiresSoon = (
+  cs: Certification[],
   now: DateTime,
-) => {
-  if (cs === undefined) {
-    return [];
-  }
-  return cs.filter((c) => isExpired(c, now));
+): Certification[] => {
+  return cs.filter((cert) => {
+    return daysBetween(now, cert.expires) <= WARN_WITHIN_D;
+  });
 };
 
-export const anyOfExpired = (
-  cs: Certification[] | undefined,
+export const getStatus = (
+  cs: Certification[],
   now: DateTime,
-) => {
-  return filterExpired(cs, now).length > 0;
+  line: HeavyRailLine,
+): CertificationStatus => {
+  return {
+    active: cs.filter((c) => !isExpired(c, now)),
+    expired: cs.filter((c) => isExpired(c, now)),
+    missing: getMissing(cs, line),
+  };
 };
 
 export const getMissing = (

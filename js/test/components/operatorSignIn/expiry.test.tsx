@@ -2,44 +2,30 @@ import {
   Bypass,
   CertificateBoxes,
 } from "../../../components/operatorSignIn/expiry";
-import { Certification } from "../../../models/certification";
 import { certificationFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { DateTime } from "luxon";
 
-const CERTIFICATIONS_ONE: Certification[] = [
-  certificationFactory.build({
-    type: "rail",
-    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
-  }),
-];
-const CERTIFICATIONS_ONE_ROW: Certification[] = [
-  certificationFactory.build({
-    type: "right_of_way",
-    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
-  }),
-];
-const CERTIFICATIONS_TWO: Certification[] = [
-  certificationFactory.build({
-    type: "rail",
-    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
-  }),
-  certificationFactory.build({
-    type: "right_of_way",
-    expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
-  }),
-];
-const CERTIFICATIONS_TWO_SPLIT = [
-  certificationFactory.build({
-    type: "rail",
-    expires: DateTime.fromISO("2024-05-04", { zone: "America/New_York" }),
-  }),
-  certificationFactory.build({
-    type: "right_of_way",
-    expires: DateTime.fromISO("2024-05-14", { zone: "America/New_York" }),
-  }),
-];
+const CERTIFICATION_RAIL_5_18 = certificationFactory.build({
+  type: "rail",
+  expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
+});
+
+const CERTIFICATION_ROW_5_18 = certificationFactory.build({
+  type: "right_of_way",
+  expires: DateTime.fromISO("2024-05-18", { zone: "America/New_York" }),
+});
+
+const CERTIFICATION_RAIL_5_4 = certificationFactory.build({
+  type: "rail",
+  expires: DateTime.fromISO("2024-05-04", { zone: "America/New_York" }),
+});
+
+const CERTIFICATION_ROW_5_14 = certificationFactory.build({
+  type: "right_of_way",
+  expires: DateTime.fromISO("2024-05-14", { zone: "America/New_York" }),
+});
 
 describe("CertificateBoxes", () => {
   describe("title grammar", () => {
@@ -47,7 +33,11 @@ describe("CertificateBoxes", () => {
       const view = render(
         <CertificateBoxes
           now={DateTime.fromISO("2024-05-10T03:55:00.000Z")}
-          certifications={CERTIFICATIONS_ONE}
+          certificationStatus={{
+            active: [CERTIFICATION_RAIL_5_18],
+            expired: [],
+            missing: [],
+          }}
           ignoreExpired={false}
           displayName={"Test Name"}
         />,
@@ -58,7 +48,11 @@ describe("CertificateBoxes", () => {
       const view = render(
         <CertificateBoxes
           now={DateTime.fromISO("2024-05-10T03:55:00.000Z")}
-          certifications={CERTIFICATIONS_TWO}
+          certificationStatus={{
+            active: [CERTIFICATION_RAIL_5_18, CERTIFICATION_ROW_5_18],
+            expired: [],
+            missing: [],
+          }}
           displayName={"Test Name"}
           ignoreExpired={false}
         />,
@@ -72,7 +66,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-02-10T03:55:00.000Z")}
-            certifications={CERTIFICATIONS_TWO}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18, CERTIFICATION_ROW_5_18],
+              expired: [],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -87,7 +85,11 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18],
+              expired: [],
+              missing: [],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -102,7 +104,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-04-18T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18],
+              expired: [],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -118,7 +124,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-17T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18],
+              expired: [],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -134,7 +144,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-18T03:55:00.000Z")}
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18],
+              expired: [],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -151,7 +165,11 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-18T04:30:00.000Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [],
+              expired: [CERTIFICATION_RAIL_5_18],
+              missing: [],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -167,7 +185,11 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-03-27T19:19:02.485Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_TWO}
+            certificationStatus={{
+              active: [CERTIFICATION_RAIL_5_18, CERTIFICATION_ROW_5_18],
+              expired: [],
+              missing: [],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -182,15 +204,19 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
-            certifications={[
-              ...CERTIFICATIONS_ONE,
-              certificationFactory.build({
-                type: "right_of_way",
-                expires: DateTime.fromISO("2024-07-06", {
-                  zone: "America/New_York",
+            certificationStatus={{
+              active: [
+                CERTIFICATION_RAIL_5_18,
+                certificationFactory.build({
+                  type: "right_of_way",
+                  expires: DateTime.fromISO("2024-07-06", {
+                    zone: "America/New_York",
+                  }),
                 }),
-              }),
-            ]}
+              ],
+              expired: [],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -208,7 +234,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-18T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [],
+              expired: [CERTIFICATION_RAIL_5_18],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -225,7 +255,11 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-23T19:19:02.485Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [],
+              expired: [CERTIFICATION_RAIL_5_18],
+              missing: [],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -240,7 +274,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-23T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_TWO}
+            certificationStatus={{
+              active: [],
+              expired: [CERTIFICATION_RAIL_5_18, CERTIFICATION_ROW_5_18],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -256,7 +294,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-19T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [],
+              expired: [CERTIFICATION_RAIL_5_18],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -274,7 +316,11 @@ describe("CertificateBoxes", () => {
         const view = render(
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-09T19:19:02.485Z")}
-            certifications={CERTIFICATIONS_TWO_SPLIT}
+            certificationStatus={{
+              active: [CERTIFICATION_ROW_5_14],
+              expired: [CERTIFICATION_RAIL_5_4],
+              missing: [],
+            }}
             displayName="Test Name"
             ignoreExpired={false}
           />,
@@ -299,7 +345,16 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_ONE}
+            certificationStatus={{
+              active: [],
+              expired: [],
+              missing: [
+                {
+                  railLine: "blue",
+                  type: "right_of_way",
+                },
+              ],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -313,7 +368,16 @@ describe("CertificateBoxes", () => {
           <CertificateBoxes
             now={DateTime.fromISO("2024-05-06T19:19:02.485Z")}
             displayName="Test Name"
-            certifications={CERTIFICATIONS_ONE_ROW}
+            certificationStatus={{
+              active: [],
+              expired: [],
+              missing: [
+                {
+                  railLine: "blue",
+                  type: "rail",
+                },
+              ],
+            }}
             ignoreExpired={false}
           />,
         );
@@ -329,7 +393,11 @@ describe("CertificateBoxes", () => {
     const view = render(
       <CertificateBoxes
         now={DateTime.fromISO("2024-05-09T19:19:02.485Z")}
-        certifications={CERTIFICATIONS_TWO_SPLIT}
+        certificationStatus={{
+          active: [CERTIFICATION_ROW_5_14],
+          expired: [CERTIFICATION_RAIL_5_4],
+          missing: [],
+        }}
         displayName="Test Name"
         ignoreExpired={true}
       />,
@@ -354,7 +422,7 @@ describe("Bypass", () => {
     const user = userEvent.setup();
     const view = render(
       <Bypass
-        expireds={CERTIFICATIONS_ONE}
+        expireds={[CERTIFICATION_RAIL_5_4]}
         missing={[]}
         displayName="Test Name"
         onContinue={continueFn}
@@ -369,7 +437,7 @@ describe("Bypass", () => {
       const continueFn = jest.fn();
       const view = render(
         <Bypass
-          expireds={CERTIFICATIONS_ONE}
+          expireds={[CERTIFICATION_RAIL_5_4]}
           missing={[]}
           displayName="Test Name"
           onContinue={continueFn}
@@ -381,7 +449,7 @@ describe("Bypass", () => {
       const continueFn = jest.fn();
       const view = render(
         <Bypass
-          expireds={CERTIFICATIONS_TWO}
+          expireds={[CERTIFICATION_RAIL_5_4, CERTIFICATION_ROW_5_14]}
           missing={[]}
           displayName="Test Name"
           onContinue={continueFn}
@@ -395,7 +463,7 @@ describe("Bypass", () => {
     const continueFn = jest.fn();
     const view = render(
       <Bypass
-        expireds={CERTIFICATIONS_TWO}
+        expireds={[CERTIFICATION_RAIL_5_4, CERTIFICATION_ROW_5_14]}
         missing={[]}
         displayName="Test Name"
         onContinue={continueFn}

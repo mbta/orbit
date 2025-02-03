@@ -1,16 +1,14 @@
 import { daysBetween } from "../../dateTime";
 import {
   Certification,
-  getMissing,
+  CertificationStatus,
+  filterExpiresSoon,
   humanReadableType,
-  isExpired,
   MissingCertification,
 } from "../../models/certification";
 import { className } from "../../util/dom";
 import { DateTime } from "luxon";
 import { ReactElement, ReactNode } from "react";
-
-const WARN_WITHIN_D = 60;
 
 const englishDaysBetween = (now: DateTime, date: DateTime) => {
   const delta = daysBetween(now, date);
@@ -109,20 +107,16 @@ export const CertificateBoxes = ({
   now,
   displayName,
   ignoreExpired,
-  certifications,
+  certificationStatus,
 }: {
   now: DateTime;
   displayName: string;
   ignoreExpired: boolean;
-  certifications: Certification[];
+  certificationStatus: CertificationStatus;
 }): ReactElement => {
-  const expired = certifications.filter((cert) => isExpired(cert, now));
-  const missing = getMissing(certifications, "blue");
+  const expiresSoon = filterExpiresSoon(certificationStatus.active, now);
+  const { expired, missing } = certificationStatus;
 
-  const expiresSoon = certifications.filter((cert) => {
-    const delta = daysBetween(now, cert.expires);
-    return !isExpired(cert, now) && delta <= WARN_WITHIN_D;
-  });
   return (
     <>
       {expiresSoon.length > 0 && (
