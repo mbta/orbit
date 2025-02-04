@@ -39,7 +39,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.6.6"},
+      {:bandit, "== 1.6.7"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "== 4.0.0", only: :dev},
       {:credo, "== 1.7.11", only: [:dev, :test], runtime: false},
@@ -69,12 +69,12 @@ defmodule Orbit.MixProject do
       {:lcov_ex, "== 0.3.3", only: [:test], runtime: false},
       {:logster, "== 2.0.0-rc.5"},
       {:oban, "== 2.19.1"},
-      {:phoenix, "== 1.7.18"},
+      {:phoenix, "== 1.7.19"},
       {:phoenix_ecto, "== 4.6.3"},
       {:phoenix_html, "== 4.2.0"},
       {:phoenix_live_dashboard, "== 0.8.6"},
       {:phoenix_live_reload, "== 1.5.3", only: :dev},
-      {:phoenix_live_view, "== 1.0.3"},
+      {:phoenix_live_view, "== 1.0.4"},
       {:postgrex, "== 0.19.3"},
       {:sentry, "== 10.8.1"},
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
