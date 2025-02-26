@@ -56,7 +56,7 @@ defmodule Orbit.MixProject do
       {:guardian, "== 2.3.2"},
       {:guardian_phoenix, "== 2.0.1"},
       # used by ex_aws
-      {:hackney, "== 1.22.0"},
+      {:hackney, "== 1.23.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
