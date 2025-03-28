@@ -3,6 +3,7 @@ import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
 import { Home } from "./home";
+import { Ladder } from "./ladderPage/ladder";
 import { HelpMenu, Menu } from "./menus";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
       {
         path: paths.help,
         element: <HelpMenu />,
+      },
+      {
+        path: paths.ladder,
+        element: <Ladder />,
       },
     ],
   },

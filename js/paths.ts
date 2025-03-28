@@ -3,4 +3,5 @@ export const paths = {
   menu: "/menu",
   help: "/help",
   logout: "/logout",
+  ladder: "/ladder",
 } as const;
