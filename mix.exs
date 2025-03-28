@@ -69,7 +69,7 @@ defmodule Orbit.MixProject do
       {:lcov_ex, "== 0.3.4", only: [:test], runtime: false},
       {:logster, "== 2.0.0-rc.5"},
       {:oban, "== 2.19.4"},
-      {:phoenix, "== 1.7.20"},
+      {:phoenix, "== 1.7.21"},
       {:phoenix_ecto, "== 4.6.3"},
       {:phoenix_html, "== 4.2.1"},
       {:phoenix_live_dashboard, "== 0.8.6"},
