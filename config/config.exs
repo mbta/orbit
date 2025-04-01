@@ -7,7 +7,9 @@ config :orbit,
   ecto_repos: [Orbit.Repo],
   generators: [timestamp_type: :utc_datetime],
   force_https?: true,
-  timezone: "America/New_York"
+  timezone: "America/New_York",
+  poll_rtr?: :true,
+  rtr_poll_delay: 3_000
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
