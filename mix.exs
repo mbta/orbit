@@ -76,7 +76,7 @@ defmodule Orbit.MixProject do
       {:phoenix_live_reload, "== 1.5.3", only: :dev},
       {:phoenix_live_view, "== 1.0.9"},
       {:postgrex, "== 0.20.0"},
-      {:sentry, "== 10.8.1"},
+      {:sentry, "== 10.9.0"},
       {:sobelow, "== 0.13.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.1.0"},
       {:telemetry_poller, "== 1.1.0"},
