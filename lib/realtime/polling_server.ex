@@ -82,7 +82,7 @@ defmodule Realtime.PollingServer do
 
     Task.start_link(fn ->
       try do
-        log_level_ok = if Application.get_env(:glides, :log_polls?, true), do: :info, else: nil
+        log_level_ok = if Application.get_env(:orbit, :log_polls?, true), do: :info, else: nil
         response = Orbit.S3.read(state.s3_ref, state.s3_path, log_level_ok: log_level_ok)
         send(server, {:got_poll, response})
       after
