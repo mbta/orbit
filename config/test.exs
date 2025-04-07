@@ -26,7 +26,8 @@ config :orbit, Oban, testing: :inline
 
 config :orbit, Orbit.S3,
   folders: [
-    glides_global: "local-s3-stub://glides/global/"
+    glides_global: "local-s3-stub://glides/global/",
+    rtr_public: "s3-anonymous://mbta-gtfs-s3/"
   ]
 
 # Test import CSVs
