@@ -10,8 +10,6 @@ defmodule Realtime.PollingServerTest do
   end
 
   setup do
-    reassign_env(:orbit, Orbit.S3, folders: [rtr_public: "local-s3-stub://polling-server-test/"])
-
     s3_dir = Application.app_dir(:orbit, "priv/s3/polling-server-test")
     File.mkdir_p!(s3_dir)
     File.write("#{s3_dir}/VehiclePositions_enhanced.json", "0")
