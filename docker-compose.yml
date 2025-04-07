@@ -25,6 +25,7 @@ services:
       - KEYCLOAK_CLIENT_ID=docker_fake_keycloak_client_id
       - KEYCLOAK_CLIENT_SECRET=docker_fake_keycloak_client_secret
       - GLIDES_BUCKET=example.com
+      - S3_RTR_PUBLIC=local-s3-stub
       - GLIDES_PERSONNEL_PATHNAME=personnel/demo.csv
       - GLIDES_RFID_PATHNAME=rfid/demo.csv
     ports:
