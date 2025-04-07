@@ -8,7 +8,7 @@ config :orbit,
   generators: [timestamp_type: :utc_datetime],
   force_https?: true,
   timezone: "America/New_York",
-  poll_rtr?: :true,
+  poll_rtr?: true,
   rtr_poll_delay: 3_000
 
 # Endpoint config
