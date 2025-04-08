@@ -4,7 +4,8 @@ config :orbit,
   allow_test_data?: true,
   environment: "test",
   release: "test",
-  force_https?: false
+  force_https?: false,
+  poll_rtr?: false
 
 # Database config
 config :orbit, Orbit.Repo,
