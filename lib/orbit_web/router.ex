@@ -63,12 +63,11 @@ defmodule OrbitWeb.Router do
     get "/", ReactAppController, :home
     get "/menu", ReactAppController, :home
     get "/help", ReactAppController, :home
+    get "/ladder", ReactAppController, :home
     get "/logout", AuthController, :logout
 
     get "/sign-in-export/:filename", SignInExportController, :get
     get "/sign-in-export", SignInExportController, :get_redirect
-
-    get "/ladder", ReactAppController, :home
   end
 
   scope "/", OrbitWeb do
