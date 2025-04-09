@@ -40,7 +40,6 @@ defmodule Realtime.PollingServerTest do
         id: :vehicle_positions_test
       )
 
-    # PollingServer.subscribe(self(), :vehicle_positions_test)
     :ok
   end
 
