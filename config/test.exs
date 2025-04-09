@@ -4,7 +4,8 @@ config :orbit,
   allow_test_data?: true,
   environment: "test",
   release: "test",
-  force_https?: false
+  force_https?: false,
+  poll_rtr?: false
 
 # Database config
 config :orbit, Orbit.Repo,
@@ -26,7 +27,8 @@ config :orbit, Oban, testing: :inline
 
 config :orbit, Orbit.S3,
   folders: [
-    glides_global: "local-s3-stub://glides/global/"
+    glides_global: "local-s3-stub://glides/global/",
+    rtr_public: "local-s3-stub://polling-server-test/"
   ]
 
 # Test import CSVs

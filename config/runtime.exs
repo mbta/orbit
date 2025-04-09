@@ -40,7 +40,8 @@ if config_env() == :prod do
   # S3
   config :orbit, Orbit.S3,
     folders: [
-      glides_global: "s3://#{System.fetch_env!("GLIDES_BUCKET")}/global"
+      glides_global: "s3://#{System.fetch_env!("GLIDES_BUCKET")}/global",
+      rtr_public: System.fetch_env!("S3_RTR_PUBLIC")
     ]
 
   # CSV import jobs

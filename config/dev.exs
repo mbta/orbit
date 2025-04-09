@@ -47,7 +47,8 @@ config :orbit, OrbitWeb.Endpoint,
 
 config :orbit, Orbit.S3,
   folders: [
-    glides_global: "local-s3-stub://glides/global/"
+    glides_global: "local-s3-stub://glides/global/",
+    rtr_public: "s3-anonymous://mbta-gtfs-s3/"
   ]
 
 # CSV import jobs
@@ -88,6 +89,9 @@ config :ueberauth_oidcc,
       client_secret: "dev-secret"
     ]
   ]
+
+config :orbit,
+  log_polls?: false
 
 if File.exists?(Path.expand("dev.secret.exs", __DIR__)) do
   import_config "dev.secret.exs"
