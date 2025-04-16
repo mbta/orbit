@@ -7,15 +7,6 @@ defmodule Realtime.RTR do
   alias Realtime.Data.VehiclePosition
   alias Realtime.PollingServer
 
-  def parse_data(filedata) do
-    json = Jason.decode!(filedata)
-
-    %{
-      timestamp: json["header"]["timestamp"],
-      entities: json["entity"]
-    }
-  end
-
   # Parse VehiclePositions from the enhanced json file. Special cased for empty files.
   @spec parse_vehicle_positions(String.t()) ::
           PollingServer.realtime_info(VehiclePosition.t()) | nil
