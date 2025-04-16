@@ -31,26 +31,4 @@ defmodule Realtime.Data.VehiclePosition do
     field(:trip, :map, virtual: true, default: nil)
     timestamps()
   end
-
-  # TODO: schema "vehicle_positions" ???
-
-  # when is this used -- also what is it doing?
-  # defimpl Jason.Encoder do
-  #   def encode(value, opts) do
-  #     value
-  #     |> Map.take([
-  #       :route_id,
-  #       :direction,
-  #       :label,
-  #       :position,
-  #       :heading,
-  #       :station_id,
-  #       :current_status,
-  #       :timestamp,
-  #       :trip
-  #     ])
-  #     |> Map.update(:timestamp, nil, &if(not is_nil(&1), do: DateTime.to_unix(&1)))
-  #     |> Jason.Encode.map(opts)
-  #   end
-  # end
 end

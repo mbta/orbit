@@ -21,4 +21,19 @@ defmodule Realtime.RTRTest do
       assert RTR.parse_vehicle_positions("") == nil
     end
   end
+
+  describe "TripUpdates decode from json" do
+    test "parses individual trip update entities" do
+      {:ok, trip_updates} = File.read(__DIR__ <> "/TripUpdates_enhanced.json")
+
+      assert %{
+               timestamp: _time,
+               entities: [_ | _]
+             } = RTR.parse_trip_updates(trip_updates)
+    end
+
+    test "returns nil on empty file" do
+      assert RTR.parse_trip_updates("") == nil
+    end
+  end
 end

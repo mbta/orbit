@@ -35,21 +35,21 @@ defmodule Orbit.Application do
                    }
                  ]}
             },
-            # %{
-            #   id: :trip_updates,
-            #   start:
-            #     {Realtime.PollingServer, :start_link,
-            #      [
-            #        %Realtime.PollingServer.Opts{
-            #          server_name: :trip_updates,
-            #          entity_type: :trip_updates,
-            #          s3_ref: :rtr_public,
-            #          s3_path: "rtr/TripUpdates_enhanced.json",
-            #          poll_delay: Application.get_env(:orbit, :rtr_poll_delay),
-            #          decode_fn: &Realtime.RTR.parse_data/1
-            #        }
-            #      ]}
-            # }
+            %{
+              id: :trip_updates,
+              start:
+                {Realtime.PollingServer, :start_link,
+                 [
+                   %Realtime.PollingServer.Opts{
+                     server_name: :trip_updates,
+                     entity_type: :trip_updates,
+                     s3_ref: :rtr_public,
+                     s3_path: "rtr/TripUpdates_enhanced.json",
+                     poll_delay: Application.get_env(:orbit, :rtr_poll_delay),
+                     decode_fn: &Realtime.RTR.parse_trip_updates/1
+                   }
+                 ]}
+            }
           ]
         else
           []

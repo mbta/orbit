@@ -3,6 +3,7 @@ defmodule Realtime.RTR do
   for parsing data out of RTR's json feeds
   """
 
+  alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.PollingServer
 
@@ -15,6 +16,7 @@ defmodule Realtime.RTR do
     }
   end
 
+  # Parse VehiclePositions from the enhanced json file. Special cased for empty files.
   @spec parse_vehicle_positions(String.t()) ::
           PollingServer.realtime_info(VehiclePosition.t()) | nil
   def parse_vehicle_positions(""), do: nil
@@ -47,6 +49,44 @@ defmodule Realtime.RTR do
       vehicle_id: vehicle["vehicle"]["id"],
       # attached later
       trip: nil
+    }
+  end
+
+  # Parse TripUpdates from the enhanced json file. Special cased for empty files.
+  @spec parse_trip_updates(String.t()) :: PollingServer.realtime_info(TripUpdate.t()) | nil
+  def parse_trip_updates(""), do: nil
+
+  def parse_trip_updates(filedata) do
+    json = Jason.decode!(filedata)
+
+    %{
+      timestamp: json["header"]["timestamp"],
+      entities:
+        json["entity"]
+        |> Enum.map(&parse_trip_update/1)
+        |> Enum.filter(fn tu -> tu.route_id != nil end)
+    }
+  end
+
+  @spec parse_trip_update(map()) :: TripUpdate.t()
+  def parse_trip_update(entity_json) do
+    trip_update = entity_json["trip_update"]
+
+    %TripUpdate{
+      label: trip_update["vehicle"]["label"],
+      route_id: Realtime.Data.route_id_from_string(trip_update["trip"]["route_id"]),
+      direction: trip_update["trip"]["direction_id"],
+      stop_time_updates:
+        (trip_update["stop_time_update"] || []) |> Enum.map(&parse_stop_time_update/1)
+    }
+  end
+
+  @spec parse_stop_time_update(map()) :: Realtime.Data.TripUpdate.StopTimeUpdate.t()
+  defp parse_stop_time_update(stu_json) do
+    %Realtime.Data.TripUpdate.StopTimeUpdate{
+      station_id: Realtime.Data.Stations.platforms_to_stations()[stu_json["stop_id"]],
+      predicted_arrival_time: stu_json["arrival"] && stu_json["arrival"]["time"],
+      predicted_departure_time: stu_json["departure"] && stu_json["departure"]["time"]
     }
   end
 
