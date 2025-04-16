@@ -16,5 +16,9 @@ defmodule Realtime.RTRTest do
                entities: [_ | _]
              } = context[:vehicle_positions]
     end
+
+    test "returns nil on empty file" do
+      assert RTR.parse_vehicle_positions("") == nil
+    end
   end
 end
