@@ -34,6 +34,36 @@ defmodule Orbit.Factory do
     }
   end
 
+  def vehicle_position_factory do
+    %Realtime.Data.VehiclePosition{
+      route_id: :Red,
+      direction: 0,
+      label: "1700",
+      position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},
+      station_id: "place-chmnl",
+      current_status: :STOPPED_AT,
+      timestamp: DateTime.from_unix!(1_640_000_000),
+      vehicle_id: "R-547210A7"
+    }
+  end
+
+  def trip_update_factory do
+    %Realtime.Data.TripUpdate{
+      label: "1700",
+      route_id: :Red,
+      direction: 0,
+      stop_time_updates: [build(:stop_time_update)]
+    }
+  end
+
+  def stop_time_update_factory do
+    %Realtime.Data.TripUpdate.StopTimeUpdate{
+      station_id: "place-chmnl",
+      predicted_arrival_time: DateTime.from_unix!(1_640_000_000),
+      predicted_departure_time: DateTime.from_unix!(1_640_000_100)
+    }
+  end
+
   def badge_serial_factory do
     %Orbit.BadgeSerial{
       badge_serial: sequence("employee_badge_serial")
