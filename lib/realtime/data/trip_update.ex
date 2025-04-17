@@ -46,7 +46,7 @@ defmodule Realtime.Data.TripUpdate do
     @type t :: %__MODULE__{
             label: String.t(),
             route_id: Realtime.Data.route_id(),
-            direction: Realtime.Data.direction(),
+            direction: integer(),
             station_id: String.t(),
             predicted_time: Util.Time.timestamp()
           }
