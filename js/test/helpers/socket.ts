@@ -50,6 +50,8 @@ export const makeMockChannel = (): {
   const { push: joinPush, receive: joinReceive } = makeMockPush();
   const channel = {
     join: jest.fn(() => joinPush),
+    on: jest.fn(),
+    leave: jest.fn(),
   } as Partial<Channel> as jest.Mocked<Channel>;
   return {
     channel,
