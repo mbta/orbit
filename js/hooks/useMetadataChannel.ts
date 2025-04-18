@@ -13,12 +13,12 @@ const parser = (data: unknown) => {
   return MetadataJoinResponse.parse(data);
 };
 
-export const MetadataSocket = () => {
-  useMetadataSocket();
+export const MetadataChannel = () => {
+  useMetadataChannel();
   return null;
 };
 
-const useMetadataSocket = () => {
+export const useMetadataChannel = () => {
   const result = useChannel({
     actuallyConnect: true,
     topic: "metadata",

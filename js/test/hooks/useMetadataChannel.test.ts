@@ -1,6 +1,6 @@
 import { reload } from "../../browser";
 import { SocketProvider } from "../../contexts/socketContext";
-import { useMetadataSocket } from "../../hooks/useMetadataSocket";
+import { useMetadataChannel } from "../../hooks/useMetadataChannel";
 import { MetaDataKey } from "../../util/metadata";
 import { makeMockSocket } from "../helpers/socket";
 import { act, renderHook } from "@testing-library/react";
@@ -18,7 +18,7 @@ jest.mock("phoenix", () => ({
 
 const mockSocket = Socket as jest.MockedClass<typeof Socket>;
 
-describe("useMetadataSocket", () => {
+describe("useMetadataChannel", () => {
   jest.spyOn(console, "warn").mockImplementation(() => {});
   jest.spyOn(console, "error").mockImplementation(() => {});
 
@@ -26,7 +26,7 @@ describe("useMetadataSocket", () => {
     const { socket, onOpen, getChannel } = makeMockSocket();
     mockSocket.mockImplementationOnce(() => socket);
 
-    renderHook(() => useMetadataSocket(), {
+    renderHook(() => useMetadataChannel(), {
       wrapper: SocketProvider,
     });
     expect(mockSocket).toHaveBeenCalledWith("/socket", {
@@ -51,7 +51,7 @@ describe("useMetadataSocket", () => {
   test("reloads if auth fails", () => {
     const { socket, onOpen, getChannel } = makeMockSocket();
     mockSocket.mockImplementationOnce(() => socket);
-    renderHook(() => useMetadataSocket(), {
+    renderHook(() => useMetadataChannel(), {
       wrapper: SocketProvider,
     });
     onOpen();
@@ -69,7 +69,7 @@ describe("useMetadataSocket", () => {
   test("reloads if server version changes", () => {
     const { socket, onOpen, getChannel } = makeMockSocket();
     mockSocket.mockImplementationOnce(() => socket);
-    renderHook(() => useMetadataSocket(), {
+    renderHook(() => useMetadataChannel(), {
       wrapper: SocketProvider,
     });
     onOpen();
@@ -88,7 +88,7 @@ describe("useMetadataSocket", () => {
   test("doesn't reload if socket doesn't connect", () => {
     const { socket } = makeMockSocket();
     mockSocket.mockImplementationOnce(() => socket);
-    renderHook(() => useMetadataSocket(), {
+    renderHook(() => useMetadataChannel(), {
       wrapper: SocketProvider,
     });
     expect(reload).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe("useMetadataSocket", () => {
   test("doesn't reload if channel doesn't join", () => {
     const { socket, onOpen, getChannel } = makeMockSocket();
     mockSocket.mockImplementationOnce(() => socket);
-    renderHook(() => useMetadataSocket(), {
+    renderHook(() => useMetadataChannel(), {
       wrapper: SocketProvider,
     });
     expect(reload).not.toHaveBeenCalled();
