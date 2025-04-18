@@ -1,4 +1,6 @@
 import { reload } from "../browser";
+import { SocketProvider } from "../contexts/socketContext";
+import { MetadataSocket } from "../hooks/useMetadataSocket";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -51,6 +53,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     element: (
       <>
+        <MetadataSocket />
         <AppcuesTrackPage />
         <Header />
         <Outlet />
@@ -77,5 +80,9 @@ const router = createBrowserRouter([
   },
 ]);
 export const App = (): ReactElement => {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <SocketProvider>
+      <RouterProvider router={router}></RouterProvider>
+    </SocketProvider>
+  );
 };
