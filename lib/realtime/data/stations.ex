@@ -2,7 +2,10 @@ defmodule Realtime.Data.Stations do
   @spec platforms_to_stations :: %{required(String.t()) => String.t()}
   def platforms_to_stations do
     %{
-      # southbound platform followed by northbound platform for stations listed twice
+      # generally the pattern is southbound platform followed by northbound platform for stations listed twice
+      # there are exceptions like Alewife which has a general stop_id and also child ids for the different tracks
+      "Alewife-01" => "place-alfcl",
+      "Alewife-02" => "place-alfcl",
       "70061" => "place-alfcl",
       "70063" => "place-davis",
       "70064" => "place-davis",
@@ -48,7 +51,9 @@ defmodule Realtime.Data.Stations do
       "70102" => "place-qnctr",
       "70103" => "place-qamnl",
       "70104" => "place-qamnl",
-      "70105" => "place-brntn"
+      "70105" => "place-brntn",
+      "Braintree-01" => "place-brntn",
+      "Braintree-02" => "place-brntn"
     }
   end
 end
