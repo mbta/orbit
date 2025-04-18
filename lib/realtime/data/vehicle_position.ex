@@ -5,7 +5,7 @@ defmodule Realtime.Data.VehiclePosition do
   use Ecto.Schema
 
   @type t :: %__MODULE__{
-          route_id: Realtime.Data.route_id() | nil,
+          route_id: Realtime.Data.route_id(),
           direction: integer(),
           label: String.t(),
           position: Util.Position.t() | nil,
@@ -21,7 +21,7 @@ defmodule Realtime.Data.VehiclePosition do
   schema "vehicle_positions" do
     field(:route_id, Util.AtomType)
     field(:direction, :integer)
-    field(:label, :string, default: "")
+    field(:label, :string)
     field(:position, Util.PositionType, default: nil)
     field(:heading, :float, default: nil)
     field(:station_id, :string, default: nil)

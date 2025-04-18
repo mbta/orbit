@@ -20,7 +20,7 @@ defmodule Realtime.RTR do
       entities:
         json["entity"]
         |> Enum.map(&parse_vehicle_position/1)
-        |> Enum.filter(fn vp -> vp.route_id != nil end)
+        |> Enum.filter(fn vp -> vp.route_id != nil && vp.label != nil end)
     }
   end
 
@@ -82,7 +82,7 @@ defmodule Realtime.RTR do
   end
 
   @spec parse_position(map() | nil) :: Util.Position.t() | nil
-  defp parse_position(%{"latitude" => latitude, "logitude" => longitude}) do
+  defp parse_position(%{"latitude" => latitude, "longitude" => longitude}) do
     %Util.Position{latitude: latitude, longitude: longitude}
   end
 
