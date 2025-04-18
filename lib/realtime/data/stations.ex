@@ -2,7 +2,7 @@ defmodule Realtime.Data.Stations do
   @spec platforms_to_stations :: %{required(String.t()) => String.t()}
   def platforms_to_stations do
     %{
-      # southbound platform followed by northbound platform
+      # southbound platform followed by northbound platform for stations listed twice
       "70061" => "place-alfcl",
       "70063" => "place-davis",
       "70064" => "place-davis",
