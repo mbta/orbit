@@ -1,6 +1,7 @@
 defmodule Realtime.PollingServerTest do
   use ExUnit.Case
 
+  import Orbit.Factory
   import Test.Support.Helpers
   alias Realtime.PollingServer
 
@@ -31,9 +32,7 @@ defmodule Realtime.PollingServerTest do
              timestamp ->
                %{
                  timestamp: String.to_integer(timestamp),
-
-                 # update this later to build(:vehicle_position)
-                 entities: []
+                 entities: [build(:vehicle_position)]
                }
            end
          }},
@@ -52,7 +51,7 @@ defmodule Realtime.PollingServerTest do
       end
       |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
 
-    assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=1 count=0"]
+    assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=1 count=1"]
 
     log =
       capture_log do
@@ -71,6 +70,6 @@ defmodule Realtime.PollingServerTest do
       end
       |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
 
-    assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=2 count=0"]
+    assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=2 count=1"]
   end
 end
