@@ -49,11 +49,13 @@ defmodule Realtime.RTRTest do
 
     test "correctly parses single entity", context do
       tu = context[:trip_updates][:entities] |> Enum.at(0)
+
       assert %Realtime.Data.TripUpdate{
-        label: "1840",
-        route_id: :Red,
-        direction: 1
-      } = tu
+               label: "1840",
+               route_id: :Red,
+               direction: 1
+             } = tu
+
       assert tu.stop_time_updates != nil
     end
 
