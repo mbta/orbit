@@ -72,4 +72,34 @@ defmodule Realtime.PollingServerTest do
 
     assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=2 count=1"]
   end
+
+  test "subscribed clients get data pushed to them" do
+    PollingServer.subscribe(self(), :vehicle_positions_test)
+    offer_timestamp(1)
+    send(:vehicle_positions_test, :poll)
+
+    assert_receive(
+      {:new_data, :vehicle_positions, %{entities: []}},
+      200,
+      "Client didn't receive vehicle positions"
+    )
+  end
+
+  test "closed clients don't get message" do
+    PollingServer.subscribe(self(), :vehicle_positions_test)
+
+    send(
+      :vehicle_positions_test,
+      {:DOWN, :_monitor_ref, :process, self(), "closed for testing"}
+    )
+
+    offer_timestamp(1)
+    send(:vehicle_positions_test, :poll)
+
+    refute_receive(
+      {:new_data, :vehicle_positions, _new_data},
+      200,
+      "Closed client shouldn't have gotten vehicle positions"
+    )
+  end
 end

@@ -8,6 +8,9 @@ LuxonSettings.throwOnInvalid = true;
 export const dateTimeFromISO = (isoDateTime: string): DateTime =>
   DateTime.fromISO(isoDateTime, { zone: "America/New_York" });
 
+export const dateTimeFromUnix = (unixSeconds: number): DateTime =>
+  DateTime.fromSeconds(unixSeconds, { zone: "America/New_York" });
+
 export const dateTimeToISODate = (dt: DateTime<true>): string => dt.toISODate();
 
 export const daysBetween = (now: DateTime, date: DateTime) => {
