@@ -84,7 +84,7 @@ defmodule Realtime.RTR do
 
   @spec parse_cars([map()]) :: [String.t()]
   defp parse_cars(carriage_details) do
-    carriage_details |> Enum.map(fn car -> car["label"] end)
+    Enum.map(carriage_details, fn car -> car["label"] end)
   end
 
   @spec parse_position(map() | nil) :: Util.Position.t() | nil

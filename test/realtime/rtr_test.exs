@@ -11,8 +11,9 @@ defmodule Realtime.RTRTest do
 
     test "correctly parses single entity", context do
       vp =
-        context[:vehicle_positions][:entities]
-        |> Enum.filter(fn vp -> vp.timestamp == ~U[2025-04-23 16:06:35Z] end)
+        Enum.filter(context[:vehicle_positions][:entities], fn vp ->
+          vp.timestamp == ~U[2025-04-23 16:06:35Z]
+        end)
 
       assert vp == [
                %Realtime.Data.VehiclePosition{
@@ -49,7 +50,7 @@ defmodule Realtime.RTRTest do
     end
 
     test "correctly parses single entity", context do
-      tu = context[:trip_updates][:entities] |> Enum.at(0)
+      tu = Enum.at(context[:trip_updates][:entities], 0)
 
       assert %Realtime.Data.TripUpdate{
                label: "1840",
