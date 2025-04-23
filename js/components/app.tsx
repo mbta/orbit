@@ -1,9 +1,10 @@
 import { reload } from "../browser";
+import { alewifeAndrewStationsArray } from "../data/stations";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
 import { Home } from "./home";
-import { Ladder } from "./ladderPage/ladder";
+import { Ladder, StationList } from "./ladderPage/ladder";
 import { HelpMenu, Menu } from "./menus";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
@@ -71,7 +72,8 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <Ladder />,
+        // element: <Ladder />,
+        element: <StationList stations={alewifeAndrewStationsArray} />
       },
     ],
   },
