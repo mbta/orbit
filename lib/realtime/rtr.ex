@@ -32,6 +32,7 @@ defmodule Realtime.RTR do
       route_id: Realtime.Data.route_id_from_string(vehicle["trip"]["route_id"]),
       direction: vehicle["trip"]["direction_id"],
       label: vehicle["vehicle"]["label"],
+      cars: parse_cars(vehicle["multi_carriage_details"]),
       position: parse_position(vehicle["position"]),
       heading: vehicle["position"]["bearing"],
       station_id: Realtime.Data.Stations.platforms_to_stations()[vehicle["stop_id"]],
@@ -79,6 +80,11 @@ defmodule Realtime.RTR do
       predicted_arrival_time: stu_json["arrival"] && stu_json["arrival"]["time"],
       predicted_departure_time: stu_json["departure"] && stu_json["departure"]["time"]
     }
+  end
+
+  @spec parse_cars([map()]) :: [String.t()]
+  defp parse_cars(carriage_details) do
+    carriage_details |> Enum.map(fn car -> car["label"] end)
   end
 
   @spec parse_position(map() | nil) :: Util.Position.t() | nil

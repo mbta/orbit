@@ -8,6 +8,7 @@ defmodule Realtime.Data.VehiclePosition do
           route_id: Realtime.Data.route_id(),
           direction: integer(),
           label: String.t(),
+          cars: [String.t()],
           position: Util.Position.t(),
           heading: float() | nil,
           station_id: String.t() | nil,
@@ -22,6 +23,7 @@ defmodule Realtime.Data.VehiclePosition do
     field(:route_id, Util.AtomType)
     field(:direction, :integer)
     field(:label, :string)
+    field(:cars, {:array, :string})
     field(:position, Util.PositionType)
     field(:heading, :float, default: nil)
     field(:station_id, :string, default: nil)

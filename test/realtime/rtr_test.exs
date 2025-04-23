@@ -12,19 +12,20 @@ defmodule Realtime.RTRTest do
     test "correctly parses single entity", context do
       vp =
         context[:vehicle_positions][:entities]
-        |> Enum.filter(fn vp -> vp.timestamp == ~U[2024-02-08 18:58:00Z] end)
+        |> Enum.filter(fn vp -> vp.timestamp == ~U[2025-04-23 16:06:35Z] end)
 
       assert vp == [
                %Realtime.Data.VehiclePosition{
                  route_id: :Red,
-                 direction: 1,
-                 label: "1813",
-                 position: %Util.Position{latitude: 42.36126, longitude: -71.07162},
-                 heading: 275.0,
-                 station_id: "place-chmnl",
-                 current_status: :STOPPED_AT,
-                 timestamp: ~U[2024-02-08 18:58:00Z],
-                 vehicle_id: "R-547AA8E1"
+                 direction: 0,
+                 label: "1855",
+                 cars: ["1855", "1854", "1809", "1808", "1858", "1859"],
+                 position: %Util.Position{latitude: 42.36393, longitude: -71.10155},
+                 heading: 130.0,
+                 station_id: "place-knncl",
+                 current_status: :INCOMING_AT,
+                 timestamp: ~U[2025-04-23 16:06:35Z],
+                 vehicle_id: "R-5482A2DC"
                }
              ]
     end
