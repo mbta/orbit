@@ -8,7 +8,6 @@ import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
-  // return <StationLists stations={alewifeAndrewStationsArray} />;
   return (
     <div className="flex">
       <StationLists stations={alewifeAndrewStationsArray} />
@@ -22,11 +21,11 @@ const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
   return (
     <div className="flex-auto relative mt-20 mb-20">
       <ul className="relative mx-auto w-32 border-x-[6px] border-solid border-gray-300">
-        <li className="pt-12" />
+        <li className="pt-20" />
 
-        {/* triangle on top right */}
+        {/* northbound triangle on top right */}
         <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300"></div>
-        {/* triangle on bottom left */}
+        {/* southbound triangle on bottom left */}
         <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300"></div>
 
         {stations.map((station) => {
@@ -34,8 +33,6 @@ const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
             <li
               key={station.id}
               className={className([
-                "relative",
-                "text-center",
                 station.spacing == 40 ? "mb-40"
                 : station.spacing == 28 ? "mb-28"
                 : station.spacing == 20 ? "mb-20"
@@ -50,11 +47,13 @@ const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
               {/* station dots on left and right */}
               <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
               <div className="absolute bg-white mt-0.5 right-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              {station.name}
+              <div className="text-center mx-auto text-wrap w-20">
+                {station.name}
+              </div>
             </li>
           );
         })}
-        <li className="pb-12" />
+        <li className="pb-20" />
       </ul>
     </div>
   );
