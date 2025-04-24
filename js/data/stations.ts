@@ -18,5 +18,5 @@ export const alewifeAndrewStationsArray: Station[] = [
   buildStation("place-dwnxg", "Dwt Xing", 11),
   buildStation("place-sstat", "South Sta", 11),
   buildStation("place-brdwy", "Broadway", 10),
-  buildStation("place-andrw", "Andrew", 8),
+  buildStation("place-andrw", "Andrew", 0),
 ];
