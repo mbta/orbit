@@ -1,14 +1,26 @@
+import {
+  alewifeAndrewStationsArray,
+  jfkAshmontStationsArray,
+  jfkBraintreeStationsArray,
+} from "../../data/stations";
 import { Station } from "../../models/station";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
-export const Ladder = ({ stations }: { stations: Station[] }): ReactElement => {
-  return <StationList stations={stations} />;
+export const Ladder = (): ReactElement => {
+  // return <StationLists stations={alewifeAndrewStationsArray} />;
+  return (
+    <div className="flex">
+      <StationLists stations={alewifeAndrewStationsArray} />
+      <StationLists stations={jfkAshmontStationsArray} />
+      <StationLists stations={jfkBraintreeStationsArray} />
+    </div>
+  );
 };
 
-const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
+const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
   return (
-    <div className="relative mt-20 mb-20">
+    <div className="flex-auto relative mt-20 mb-20">
       <ul className="relative mx-auto w-32 border-x-[6px] border-solid border-gray-300">
         <li className="pt-12" />
 
@@ -24,7 +36,8 @@ const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
               className={className([
                 "relative",
                 "text-center",
-                station.spacing == 28 ? "mb-28"
+                station.spacing == 40 ? "mb-40"
+                : station.spacing == 28 ? "mb-28"
                 : station.spacing == 20 ? "mb-20"
                 : station.spacing == 14 ? "mb-14"
                 : station.spacing == 12 ? "mb-12"

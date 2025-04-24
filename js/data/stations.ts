@@ -20,3 +20,20 @@ export const alewifeAndrewStationsArray: Station[] = [
   buildStation("place-brdwy", "Broadway", 10),
   buildStation("place-andrw", "Andrew", 0),
 ];
+
+export const jfkAshmontStationsArray: Station[] = [
+  buildStation("place-jfk", "JFK", 12),
+  buildStation("place-shmnl", "Savin Hill", 10),
+  buildStation("place-fldcr", "Flds Corner", 10),
+  buildStation("place-smmnl", "Shawmut", 8),
+  buildStation("place-asmnl", "Ashmont", 0),
+];
+
+export const jfkBraintreeStationsArray: Station[] = [
+  buildStation("place-jfk", "JFK", 40),
+  buildStation("place-nqncy", "N Quincy", 12),
+  buildStation("place-wlsta", "Wollaston", 20),
+  buildStation("place-qnctr", "Quincy Ctr", 28),
+  buildStation("place-qamnl", "Quincy Adams", 40),
+  buildStation("place-brntn", "Braintree", 0),
+];
