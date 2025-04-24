@@ -1,6 +1,5 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
-import { MetadataChannel } from "../hooks/useMetadataChannel";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -53,7 +52,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     element: (
       <>
-        <MetadataChannel />
         <AppcuesTrackPage />
         <Header />
         <Outlet />
