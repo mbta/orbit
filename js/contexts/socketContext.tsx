@@ -35,11 +35,6 @@ export const SocketProvider = ({ children }: { children?: ReactNode }) => {
       console.error(err);
     });
     const metadataChannel = initialSocket.channel("metadata");
-    // Reload our session if the auth has expired
-    metadataChannel.on("auth_expired", () => {
-      console.warn("Received auth_expired. Reloading.");
-      reload();
-    });
 
     join(metadataChannel, MetadataJoinResponse, (response) => {
       if (clientRelease !== response.server_release) {

@@ -1,4 +1,3 @@
-import { reload } from "../browser";
 import { join } from "../util/channel";
 import { usePageVisibility } from "./usePageVisibility";
 import { Channel, Socket } from "phoenix";
@@ -14,12 +13,10 @@ import { z } from "zod";
  */
 export const useRawChannel = ({
   socket,
-  actuallyConnect = true,
   joinParams,
   topic,
 }: {
   socket: Socket | null;
-  actuallyConnect?: boolean;
   joinParams?: object;
   topic: string;
 }): Channel | null => {
@@ -28,14 +25,8 @@ export const useRawChannel = ({
   >([null, topic]);
   const visible: boolean = usePageVisibility();
   useEffect(() => {
-    if (visible && actuallyConnect && socket !== null) {
+    if (visible && socket !== null) {
       const channel = socket.channel(topic, joinParams);
-
-      // Reload our session if the auth has expired
-      channel.on("auth_expired", () => {
-        reload();
-      });
-
       setChannelAndTopic([channel, topic]);
 
       return () => {
@@ -43,7 +34,7 @@ export const useRawChannel = ({
         setChannelAndTopic([null, topic]);
       };
     }
-  }, [topic, joinParams, socket, visible, actuallyConnect]);
+  }, [topic, joinParams, socket, visible]);
 
   // if topic has changed and channel is stale, don't return channel at all
   return channelTopic === topic ? channel : null;
@@ -57,7 +48,6 @@ export const useRawChannel = ({
  */
 export const useChannel = <RawData, Data>({
   socket,
-  actuallyConnect = true,
   topic,
   event,
   RawData,
@@ -65,14 +55,13 @@ export const useChannel = <RawData, Data>({
   defaultResult,
 }: {
   socket: Socket | null;
-  actuallyConnect?: boolean;
   topic: string;
   event: string;
   RawData: z.ZodType<RawData>;
   parser: (rawData: RawData) => Data;
   defaultResult: Data | (() => Data);
 }): Data => {
-  const channel = useRawChannel({ socket, actuallyConnect, topic });
+  const channel = useRawChannel({ socket, topic });
   const [data, setData] = useState<Data>(defaultResult);
   useEffect(() => {
     if (channel !== null) {
