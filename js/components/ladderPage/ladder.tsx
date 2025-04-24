@@ -14,6 +14,9 @@ const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
 
         {/* triangle on top right */}
         <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300"></div>
+        {/* triangle on bottom left */}
+        <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300"></div>
+
         {stations.map((station) => {
           return (
             <li
@@ -31,8 +34,9 @@ const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
                 : "",
               ])}
             >
-              <div className="absolute bg-white mt-0.5 left-[-12.6px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="absolute bg-white mt-0.5 right-[-12.6px] size-5 rounded-full border-4 border-gray-300" />
+              {/* station dots on left and right */}
+              <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
+              <div className="absolute bg-white mt-0.5 right-[-13px] size-5 rounded-full border-4 border-gray-300" />
               {station.name}
             </li>
           );
