@@ -9,7 +9,7 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   return (
-    <div className="flex">
+    <div className="flex justify-center">
       <StationLists stations={alewifeAndrewStationsArray} />
       <StationLists stations={jfkAshmontStationsArray} />
       <StationLists stations={jfkBraintreeStationsArray} />
@@ -19,8 +19,8 @@ export const Ladder = (): ReactElement => {
 
 const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
   return (
-    <div className="flex-auto relative mt-20 mb-20">
-      <ul className="relative mx-auto w-32 border-x-[6px] border-solid border-gray-300">
+    <div className="relative mt-20 mb-20">
+      <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
         <li className="pt-20" />
 
         {/* northbound triangle on top right */}
@@ -47,7 +47,7 @@ const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
               {/* station dots on left and right */}
               <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
               <div className="absolute bg-white mt-0.5 right-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="text-center mx-auto text-wrap w-20">
+              <div className="text-center mx-auto text-wrap w-24">
                 {station.name}
               </div>
             </li>
