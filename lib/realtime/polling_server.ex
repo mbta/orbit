@@ -59,6 +59,11 @@ defmodule Realtime.PollingServer do
     {:ok, pid}
   end
 
+  @spec subscribe(pid(), atom()) :: realtime_info(term())
+  def subscribe(pid, server_name) do
+    GenServer.call(server_name, {:subscribe, pid})
+  end
+
   # GenServer callbacks
 
   @impl true
@@ -127,5 +132,15 @@ defmodule Realtime.PollingServer do
       end
 
     {:noreply, new_state}
+  end
+
+  def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
+    {:noreply, %{state | subscriptions: MapSet.delete(state.subscriptions, pid)}}
+  end
+
+  @impl true
+  def handle_call({:subscribe, pid}, _from, state) do
+    Process.monitor(pid)
+    {:reply, state.cached_data, %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
   end
 end
