@@ -1,8 +1,8 @@
-import { useChannel } from "../../contexts/socketContext";
+import { useChannel } from "../../hooks/useChannel";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { renderHook } from "@testing-library/react";
 
-jest.mock("../../contexts/socketContext", () => ({
+jest.mock("../../hooks/useChannel", () => ({
   __esModule: true,
   useChannel: jest.fn(),
 }));

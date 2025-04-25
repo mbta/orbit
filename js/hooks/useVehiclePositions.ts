@@ -1,4 +1,5 @@
-import { useChannel } from "../contexts/socketContext";
+import { useSocket } from "../contexts/socketContext";
+import { useChannel } from "./useChannel";
 import { z } from "zod";
 
 const parser = (data: unknown): { data: string } => {
@@ -9,8 +10,9 @@ const RawData = z.object({
   data: z.string(),
 });
 export const useVehiclePositions = (): string => {
+  const socket = useSocket();
   const result = useChannel({
-    actuallyConnect: true,
+    socket,
     topic: "train_locations",
     parser,
     event: "vehicle_positions",

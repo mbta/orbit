@@ -79,7 +79,7 @@ defmodule Realtime.PollingServerTest do
     send(:vehicle_positions_test, :poll)
 
     assert_receive(
-      {:new_data, :vehicle_positions, %{entities: []}},
+      {:new_data, :vehicle_positions, %{entities: [_]}},
       200,
       "Client didn't receive vehicle positions"
     )
