@@ -5,13 +5,13 @@ defmodule OrbitWeb.TrainLocationsChannel do
   @impl true
   def join("train_locations", _payload, socket) do
     current_positions = Realtime.PollingServer.subscribe(self(), :vehicle_positions)
-    {:ok, %{data: JSON.encode!(current_positions)}, socket}
+    {:ok, %{data: Jason.encode!(current_positions)}, socket}
   end
 
   @impl true
   def handle_info({:new_data, entity_type, data}, socket) do
     if Auth.socket_token_valid?(socket) do
-      push(socket, Atom.to_string(entity_type), %{data: JSON.encode!(data)})
+      push(socket, Atom.to_string(entity_type), %{data: Jason.encode!(data)})
       {:noreply, socket}
     else
       push(socket, "auth_expired", %{})

@@ -19,6 +19,20 @@ defmodule Realtime.Data.VehiclePosition do
           trip: nil
         }
 
+  @derive {Jason.Encoder,
+           only: [
+             :route_id,
+             :direction,
+             :label,
+             :cars,
+             :position,
+             :heading,
+             :station_id,
+             :current_status,
+             :timestamp,
+             :vehicle_id,
+             :trip
+           ]}
   schema "vehicle_positions" do
     field(:route_id, Util.AtomType)
     field(:direction, :integer)

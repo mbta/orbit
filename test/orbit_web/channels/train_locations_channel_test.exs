@@ -1,6 +1,7 @@
 defmodule OrbitWeb.TrainLocationsChannelTest do
   use OrbitWeb.ChannelCase
 
+  import Orbit.Factory
   alias Orbit.Authentication.User
   alias OrbitWeb.TrainLocationsChannel
   alias Realtime.PollingServer
@@ -27,9 +28,9 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
              timestamp ->
                %{
                  timestamp: String.to_integer(timestamp),
-
-                 # update this later to build(:vehicle_position)
-                 entities: []
+                 entities: [
+                   build(:vehicle_position)
+                 ]
                }
            end
          }},
@@ -46,10 +47,10 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
 
       vehicle_positions = %{
         timestamp: 0,
-        entities: []
+        entities: [build(:vehicle_position)]
       }
 
-      json_encoded_stub = JSON.encode!(vehicle_positions)
+      json_encoded_stub = Jason.encode!(vehicle_positions)
 
       send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
       assert_push("vehicle_positions", %{data: ^json_encoded_stub})
@@ -68,7 +69,7 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
       # (must ensure token has been expired for an entire second since Guardian's timestamps are in seconds)
       Process.sleep(1000)
 
-      vehicle_positions = %{timestamp: 0, entities: []}
+      vehicle_positions = %{timestamp: 0, entities: [build(:vehicle_position)]}
       send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
       assert_push("auth_expired", %{})
     end
