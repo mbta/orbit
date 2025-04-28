@@ -23,9 +23,9 @@ const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
         <li className="pt-20" />
 
-        {/* northbound triangle on top right */}
+        {/* northbound arrow on top right */}
         <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300"></div>
-        {/* southbound triangle on bottom left */}
+        {/* southbound arrow on bottom left */}
         <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300"></div>
 
         {stations.map((station) => {
