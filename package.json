@@ -15,16 +15,16 @@
   "dependencies": {
     "@fullstory/browser": "2.0.6",
     "@restart/ui": "1.9.4",
-    "@sentry/fullstory": "3.0.1",
-    "@sentry/react": "9.9.0",
+    "@sentry/fullstory": "4.0.0",
+    "@sentry/react": "9.14.0",
     "@tailwindcss/forms": "0.5.10",
-    "esbuild": "0.25.2",
-    "luxon": "3.5.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "esbuild": "0.25.3",
+    "luxon": "3.6.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-router-dom": "6.30.0",
     "tailwindcss": "3.4.17",
-    "zod": "3.24.2"
+    "zod": "3.24.3"
   },
   "devDependencies": {
     "@eslint/js": "9.19.0",

@@ -1,6 +1,7 @@
 defmodule OrbitWeb.Auth.Auth do
   alias Orbit.Authentication.User
   alias Orbit.Repo
+  alias Phoenix.Socket
   alias Plug.Conn
 
   @spec login(Conn.t(), String.t(), integer(), [String.t()], String.t() | nil) ::
@@ -40,5 +41,18 @@ defmodule OrbitWeb.Auth.Auth do
     conn
     |> Plug.Conn.assign(:logged_in_user, nil)
     |> OrbitWeb.Auth.Guardian.Plug.sign_out()
+  end
+
+  @spec socket_token_valid?(Socket.t()) :: boolean()
+  def socket_token_valid?(socket) do
+    token = Guardian.Phoenix.Socket.current_token(socket)
+
+    case OrbitWeb.Auth.Guardian.decode_and_verify(token) do
+      {:ok, _} ->
+        true
+
+      {:error, _} ->
+        false
+    end
   end
 end

@@ -1,5 +1,5 @@
 ### Elixir Deps
-FROM hexpm/elixir:1.18.2-erlang-27.2.1-alpine-3.21.2 AS elixir-deps
+FROM hexpm/elixir:1.18.3-erlang-27.3.3-alpine-3.21.3 AS elixir-deps
 
 # git is needed to fetch some mix deps
 RUN apk add --no-cache git
@@ -15,7 +15,7 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-FROM node:22.14.0-alpine3.21 AS node
+FROM node:22.15.0-alpine3.21 AS node
 
 # npm deps
 ENV NODE_ENV=production

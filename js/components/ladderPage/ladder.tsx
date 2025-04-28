@@ -3,17 +3,22 @@ import {
   jfkAshmontStationsArray,
   jfkBraintreeStationsArray,
 } from "../../data/stations";
+import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
+  const vehiclePositions = useVehiclePositions();
   return (
-    <div className="flex justify-center">
-      <StationLists stations={alewifeAndrewStationsArray} />
-      <StationLists stations={jfkAshmontStationsArray} />
-      <StationLists stations={jfkBraintreeStationsArray} />
-    </div>
+    <>
+      <div className="flex justify-center">
+        <StationLists stations={alewifeAndrewStationsArray} />
+        <StationLists stations={jfkAshmontStationsArray} />
+        <StationLists stations={jfkBraintreeStationsArray} />
+      </div>
+      <div>Vehicle positions: {vehiclePositions}</div>
+    </>
   );
 };
 
