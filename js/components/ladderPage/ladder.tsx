@@ -1,14 +1,13 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
   return (
     <>
-      <div className="flex justify-center">
+      <div className="flex px-80 overflow-x-auto">
         <StationList stations={StationSets.AlewifeAndrew} />
         <StationList stations={StationSets.JFKAshmont} />
         <StationList stations={StationSets.JFKBraintree} />
@@ -28,13 +27,23 @@ const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
         <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300" />
 
         {stations.map((station) => {
+          const stationId = station.id;
           return (
             <li
-              key={station.id}
-              className={className([
-                station.marginBottom ?? "",
-                station.extraStyling ?? "",
-              ])}
+              key={stationId}
+              style={{ marginBottom: station.spacingRatio * 32 }}
+              className={
+                stationId == "place-alfcl" ? "pt-20"
+                : stationId == "place-andrw" ?
+                  "pb-20"
+                : stationId == "place-jfk" ?
+                  "pt-20"
+                : stationId == "place-asmnl" ?
+                  "pb-20"
+                : stationId == "place-brntn" ?
+                  "pb-20"
+                : ""
+              }
             >
               {/* station dots on left and right */}
               <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
