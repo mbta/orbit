@@ -20,7 +20,7 @@ export const Ladder = (): ReactElement => {
 
 const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
   return (
-    <div className="relative mt-20 mb-20">
+    <div className="mt-20 mb-20">
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
         {/* northbound arrow on top right */}
         <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300" />
