@@ -1,8 +1,4 @@
-import {
-  alewifeAndrewStationsArray,
-  jfkAshmontStationsArray,
-  jfkBraintreeStationsArray,
-} from "../../data/stations";
+import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
 import { className } from "../../util/dom";
@@ -13,25 +9,25 @@ export const Ladder = (): ReactElement => {
   return (
     <>
       <div className="flex justify-center">
-        <StationLists stations={alewifeAndrewStationsArray} />
-        <StationLists stations={jfkAshmontStationsArray} />
-        <StationLists stations={jfkBraintreeStationsArray} />
+        <StationList stations={StationSets.AlewifeAndrew} />
+        <StationList stations={StationSets.JFKAshmont} />
+        <StationList stations={StationSets.JFKBraintree} />
       </div>
       <div>Vehicle positions: {vehiclePositions}</div>
     </>
   );
 };
 
-const StationLists = ({ stations }: { stations: Station[] }): ReactElement => {
+const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
   return (
     <div className="relative mt-20 mb-20">
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
         <li className="pt-20" />
 
         {/* northbound arrow on top right */}
-        <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300"></div>
+        <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300" />
         {/* southbound arrow on bottom left */}
-        <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300"></div>
+        <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300" />
 
         {stations.map((station) => {
           return (
