@@ -1,6 +1,6 @@
 import { HelpMenu, Menu } from "../../components/menus";
 import { render } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 describe("menu", () => {
   test("has links", () => {

@@ -1,6 +1,6 @@
 import { paths } from "../paths";
 import { className } from "../util/dom";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
 
 export const Header = () => {
   const currentLocation = useLocation();

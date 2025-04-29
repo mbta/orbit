@@ -1,6 +1,6 @@
 import { getMetaContent } from "../util/metadata";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 
 declare global {
   const Appcues: {

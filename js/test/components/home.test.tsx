@@ -3,7 +3,7 @@ import { Home } from "../../components/home";
 import { neverPromise } from "../helpers/promiseWithResolvers";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 jest.mock("../../components/operatorSignIn/operatorSignInModal", () => ({
   __esModule: true,
