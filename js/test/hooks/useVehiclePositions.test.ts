@@ -26,6 +26,6 @@ describe("useVehiclePositions", () => {
 
   test("stringifies output (for now)", () => {
     const { result } = renderHook(useVehiclePositions);
-    expect(result.current).toEqual(JSON.stringify({ data: [] }));
+    expect(result.current).toEqual({ data: [] });
   });
 });

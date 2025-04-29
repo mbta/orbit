@@ -50,10 +50,8 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
         entities: [build(:vehicle_position)]
       }
 
-      json_encoded_stub = Jason.encode!(vehicle_positions)
-
       send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
-      assert_push("vehicle_positions", %{data: ^json_encoded_stub})
+      assert_push("vehicle_positions", %{data: ^vehicle_positions})
     end
 
     test "channel sends auth_expired after token expires" do

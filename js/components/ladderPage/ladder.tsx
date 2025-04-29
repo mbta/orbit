@@ -11,13 +11,18 @@ export const Ladder = (): ReactElement => {
   // ^ this should potentially be handled in a future <LadderPage />.
   return (
     <>
+      <span>
+        Status:{" "}
+        {vehiclePositions !== null ?
+          <>Connected ({vehiclePositions.length} vehicles)</>
+        : <>Loading...</>}
+      </span>
       <div className="overflow-x-hidden">
         <div className="flex px-80 overflow-x-auto">
           <StationList stations={StationSets.AlewifeAndrew} />
           <StationList stations={StationSets.JFKAshmont} />
           <StationList stations={StationSets.JFKBraintree} />
         </div>
-        <div>Vehicle positions: {vehiclePositions}</div>
       </div>
     </>
   );

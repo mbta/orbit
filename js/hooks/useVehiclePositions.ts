@@ -1,24 +1,25 @@
 import { useSocket } from "../contexts/socketContext";
+import {
+  VehiclePosition,
+  vehiclePositionFromData,
+  VehiclePositionMessage,
+} from "../models/vehiclePosition";
 import { useChannel } from "./useChannel";
-import { z } from "zod";
 
-const parser = (data: unknown): { data: string } => {
-  return RawData.parse(data);
+const parser = (message: VehiclePositionMessage): VehiclePosition[] => {
+  return message.data.entities.map(vehiclePositionFromData);
 };
 
-const RawData = z.object({
-  data: z.string(),
-});
-export const useVehiclePositions = (): string => {
+export const useVehiclePositions = (): VehiclePosition[] | null => {
   const socket = useSocket();
   const result = useChannel({
     socket,
     topic: "train_locations",
     parser,
     event: "vehicle_positions",
-    RawData,
-    defaultResult: { data: "Haven't received any yet" },
+    RawData: VehiclePositionMessage,
+    defaultResult: null,
   });
 
-  return JSON.stringify(result);
+  return result;
 };

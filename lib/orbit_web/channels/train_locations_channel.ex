@@ -11,7 +11,7 @@ defmodule OrbitWeb.TrainLocationsChannel do
   @impl true
   def handle_info({:new_data, entity_type, data}, socket) do
     if Auth.socket_token_valid?(socket) do
-      push(socket, Atom.to_string(entity_type), %{data: Jason.encode!(data)})
+      push(socket, Atom.to_string(entity_type), %{data: data})
       {:noreply, socket}
     else
       push(socket, "auth_expired", %{})

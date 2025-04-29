@@ -1,4 +1,4 @@
-import { dateTimeFromUnix } from "../dateTime";
+import { dateTimeFromISO } from "../dateTime";
 import { CarId, DirectionId, RouteId, StationId } from "./common";
 import { LatLng } from "./latlng";
 import { DateTime } from "luxon";
@@ -12,7 +12,7 @@ export enum StopStatus {
 const StopStatusData = z.enum(["INCOMING_AT", "STOPPED_AT", "IN_TRANSIT_TO"]);
 type StopStatusData = z.infer<typeof StopStatusData>;
 
-const stopStatusFromData = (data: StopStatusData): StopStatus => {
+export const stopStatusFromData = (data: StopStatusData): StopStatus => {
   switch (data) {
     case "INCOMING_AT":
     case "IN_TRANSIT_TO":
@@ -22,19 +22,29 @@ const stopStatusFromData = (data: StopStatusData): StopStatus => {
   }
 };
 
-export type VehiclePositionData = {
-  route_id: string;
-  direction: number;
-  label: string;
-  cars: string[];
-  position: { latitude: number; longitude: number } | null;
-  heading: number | null;
-  station_id: string | null;
-  current_status: StopStatusData;
-  timestamp: number | null;
-  vehicle_id: string | null;
-  // trip: TripEndData | null;
-};
+export const VehiclePositionData = z.object({
+  route_id: z.string(),
+  direction: z.number(),
+  label: z.string(),
+  cars: z.array(z.string()),
+  position: z
+    .object({ latitude: z.number(), longitude: z.number() })
+    .nullable(),
+  heading: z.number().nullable(),
+  station_id: z.string().nullable(),
+  current_status: StopStatusData,
+  timestamp: z.string().nullable(),
+  vehicle_id: z.string().nullable(),
+});
+export type VehiclePositionData = z.infer<typeof VehiclePositionData>;
+
+export const VehiclePositionMessage = z.object({
+  data: z.object({
+    timestamp: z.number(),
+    entities: z.array(VehiclePositionData),
+  }),
+});
+export type VehiclePositionMessage = z.infer<typeof VehiclePositionMessage>;
 
 export type VehiclePosition = {
   routeId: RouteId;
@@ -61,7 +71,7 @@ export const vehiclePositionFromData = (
   stopStatus: stopStatusFromData(data.current_status),
   position: data.position,
   heading: data.heading,
-  timestamp: data.timestamp !== null ? dateTimeFromUnix(data.timestamp) : null,
+  timestamp: data.timestamp !== null ? dateTimeFromISO(data.timestamp) : null,
   vehicleId: data.vehicle_id,
   // trip: data.trip !== null ? tripEndFromData(data.trip) : null,
 });

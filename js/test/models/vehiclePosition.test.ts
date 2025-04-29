@@ -2,8 +2,15 @@ import { dateTimeFromISO } from "../../dateTime";
 import { Direction } from "../../models/common";
 import {
   StopStatus,
+  stopStatusFromData,
   vehiclePositionFromData,
-} from "../../models/vehicle_position";
+} from "../../models/vehiclePosition";
+
+describe("stopStatusFromData", () => {
+  test("turns INCOMING_AT into IN_TRANSIT_TO", () => {
+    expect(stopStatusFromData("INCOMING_AT")).toBe(StopStatus.InTransitTo);
+  });
+});
 
 describe("vehiclePositionFromData", () => {
   test("parses a typical position from raw data", () => {
@@ -17,7 +24,7 @@ describe("vehiclePositionFromData", () => {
         heading: 350,
         station_id: "place-portr",
         current_status: "INCOMING_AT",
-        timestamp: 1745437584,
+        timestamp: "2025-04-29T20:39:49Z",
         vehicle_id: "R-5482AC4E",
       }),
     ).toEqual({
@@ -29,7 +36,7 @@ describe("vehiclePositionFromData", () => {
       heading: 350,
       stationId: "place-portr",
       stopStatus: StopStatus.InTransitTo,
-      timestamp: dateTimeFromISO("2025-04-23T15:46:24.000-04:00"),
+      timestamp: dateTimeFromISO("2025-04-29T20:39:49Z"),
       vehicleId: "R-5482AC4E",
     });
   });
@@ -45,7 +52,7 @@ describe("vehiclePositionFromData", () => {
         heading: 350,
         station_id: "Alewife-02",
         current_status: "STOPPED_AT",
-        timestamp: 1745437584,
+        timestamp: "2025-04-29T20:39:49Z",
         vehicle_id: "R-5482AC4E",
       }),
     ).toEqual({
@@ -57,7 +64,7 @@ describe("vehiclePositionFromData", () => {
       heading: 350,
       stationId: "Alewife-02",
       stopStatus: StopStatus.StoppedAt,
-      timestamp: dateTimeFromISO("2025-04-23T15:46:24.000-04:00"),
+      timestamp: dateTimeFromISO("2025-04-29T20:39:49Z"),
       vehicleId: "R-5482AC4E",
     });
   });
