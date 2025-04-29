@@ -5,14 +5,20 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
+
+  // outer <div> prevents horizontal overflow from affecting the overall page layout
+  // inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
+  // ^ this should potentially be handled in a future <LadderPage />.
   return (
     <>
-      <div className="flex px-80 overflow-x-auto">
-        <StationList stations={StationSets.AlewifeAndrew} />
-        <StationList stations={StationSets.JFKAshmont} />
-        <StationList stations={StationSets.JFKBraintree} />
+      <div className="overflow-x-hidden">
+        <div className="flex px-80 overflow-x-auto">
+          <StationList stations={StationSets.AlewifeAndrew} />
+          <StationList stations={StationSets.JFKAshmont} />
+          <StationList stations={StationSets.JFKBraintree} />
+        </div>
+        <div>Vehicle positions: {vehiclePositions}</div>
       </div>
-      <div>Vehicle positions: {vehiclePositions}</div>
     </>
   );
 };
