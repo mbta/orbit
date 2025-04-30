@@ -1,7 +1,6 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { Train } from "./train";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
@@ -12,20 +11,18 @@ export const Ladder = (): ReactElement => {
   // ^ this should potentially be handled in a future <LadderPage />.
   return (
     <>
+      <span>
+        Status:{" "}
+        {vehiclePositions !== null ?
+          <>Connected ({vehiclePositions.length} vehicles)</>
+        : <>Loading...</>}
+      </span>
       <div className="overflow-x-hidden">
         <div className="flex px-80 overflow-x-auto">
           <StationList stations={StationSets.AlewifeAndrew} />
           <StationList stations={StationSets.JFKAshmont} />
           <StationList stations={StationSets.JFKBraintree} />
         </div>
-        <Train className="absolute top-16" route="Red-Ashmont" label="1742" />
-        <Train
-          className="absolute top-28"
-          route="Red-Braintree"
-          label="1904"
-          highlight={true}
-        />
-        <div>Vehicle positions: {vehiclePositions}</div>
       </div>
     </>
   );
