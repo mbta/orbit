@@ -5,7 +5,7 @@ defmodule OrbitWeb.TrainLocationsChannel do
   @impl true
   def join("train_locations", _payload, socket) do
     current_positions = Realtime.PollingServer.subscribe(self(), :vehicle_positions)
-    {:ok, %{data: Jason.encode!(current_positions)}, socket}
+    {:ok, %{data: current_positions}, socket}
   end
 
   @impl true

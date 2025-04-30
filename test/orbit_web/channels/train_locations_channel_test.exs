@@ -42,6 +42,12 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
 
   describe "TrainLocationsChannel" do
     @tag :authenticated
+    test "channel sends data object to client on join", %{socket: socket} do
+      {:ok, data, _socket} = subscribe_and_join(socket, TrainLocationsChannel, "train_locations")
+      assert %{data: %{timestamp: _, entities: _}} = data
+    end
+
+    @tag :authenticated
     test "channel forwards train locations to client", %{socket: socket} do
       {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "train_locations")
 
