@@ -25,6 +25,7 @@ export default {
       "mbta-blue": "#003DA5",
       black: "#000000",
       blue: "#003DA5",
+      crimson: "#960018",
       gray: {
         100: "#F6F6F6",
         200: "#E8E8E8",
@@ -37,6 +38,7 @@ export default {
       red: {
         200: "#FF4531",
       },
+      tangerine: "#CF8300",
       white: "#ffffff",
       yellow: "#FFC961",
     },
