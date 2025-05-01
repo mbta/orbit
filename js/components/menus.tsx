@@ -3,7 +3,7 @@ import { paths } from "../paths";
 import { className } from "../util/dom";
 import { getMetaContent } from "../util/metadata";
 import { ReactElement } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const MenuLink = ({
   to,

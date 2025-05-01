@@ -13,7 +13,7 @@ import {
   Outlet,
   RouterProvider,
   useRouteError,
-} from "react-router-dom";
+} from "react-router";
 
 const ErrorBoundary = (): ReactElement => {
   const error = useRouteError();

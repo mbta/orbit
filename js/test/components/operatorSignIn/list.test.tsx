@@ -3,7 +3,7 @@ import { displayName } from "../../../models/employee";
 import { employeeFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import { DateTime } from "luxon";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 
 const EMPLOYEES = [employeeFactory.build()];
 jest.mock("../../../hooks/useEmployees", () => ({
