@@ -32,7 +32,8 @@ export const Train = ({
         {/* line that connects to ladder */}
         <div
           className={className([
-            "absolute top-1/2 w-5 h-1.5 transform -translate-y-1/2 translate-x-full",
+            "absolute top-1/2 w-5 h-1.5 transform -translate-y-1/2",
+            direction == 0 ? "translate-x-full": "-translate-x-full",
             bgColor,
             orientation,
           ])}
@@ -40,7 +41,8 @@ export const Train = ({
         {/* dot attached to the ladder */}
         <div
           className={className([
-            "absolute rounded-full h-[15px] w-[15px] -trainslate-y-1/2 translate-x-[calc(100%+16px)]",
+            "absolute rounded-full h-[15px] w-[15px] -trainslate-y-1/2",
+            direction == 0 ? "translate-x-[calc(100%+16px)]" : "-translate-x-[calc(100%+16px)]",
             bgColor,
             orientation,
           ])}
