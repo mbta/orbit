@@ -1,6 +1,8 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
+import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { height } from "./height";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
@@ -19,6 +21,36 @@ export const Ladder = (): ReactElement => {
       </span>
       <div className="overflow-x-hidden">
         <div className="flex px-80 overflow-x-auto">
+          {vehiclePositions?.map((pos: VehiclePosition) => {
+            if (pos.directionId === 1 || pos.position === null) {
+              return null;
+            }
+
+            if (
+              StationSets.AlewifeAndrew.findIndex(
+                (station) => station.id === pos.stationId,
+              ) === -1
+            ) {
+              return null;
+            }
+
+            const px = height(pos, StationSets.AlewifeAndrew) + 100;
+
+            return (
+              <div
+                style={{
+                  position: "absolute",
+                  top: `${px}px`,
+                  left: "400px",
+                }}
+                key={pos.vehicleId}
+              >
+                {pos.label}{" "}
+                {pos.stopStatus === StopStatus.StoppedAt ? "at" : "itt"}{" "}
+                {pos.stationId}
+              </div>
+            );
+          })}
           <StationList stations={StationSets.AlewifeAndrew} />
           <StationList stations={StationSets.JFKAshmont} />
           <StationList stations={StationSets.JFKBraintree} />
