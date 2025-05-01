@@ -1,6 +1,7 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
+import { Train } from "./train";
 import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
@@ -19,12 +20,24 @@ export const Ladder = (): ReactElement => {
       </span>
       <div className="overflow-x-hidden">
         <div className="flex px-80 overflow-x-auto">
-          <StationList stations={StationSets.AlewifeAndrew} />
-          <StationList stations={StationSets.JFKAshmont} />
-          <StationList stations={StationSets.JFKBraintree} />
+          <TrainsAndStations />
         </div>
       </div>
     </>
+  );
+};
+
+// TODO: update to accept trains: Train[] parameter?
+const TrainsAndStations = (): ReactElement => {
+  return (
+    <div className="relative flex">
+      <StationList stations={StationSets.AlewifeAndrew} />
+      <StationList stations={StationSets.JFKAshmont} />
+      <StationList stations={StationSets.JFKBraintree} />
+      <div className="absolute top-[284px] left-[24px]">
+        <Train route="Red-Braintree" label="1888" direction={0} />
+      </div>
+    </div>
   );
 };
 
