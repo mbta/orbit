@@ -39,11 +39,14 @@ export const Train = ({
           ])}
         />
         {/* dot attached to the ladder */}
+        {/* TODO: add semi-transparent border */}
         <div
           className={className([
             "absolute rounded-full h-[16px] w-[16px] -trainslate-y-1/2",
             direction == 0 ?
-              "translate-x-[calc(100%+16px)]"
+              highlight ? "translate-x-[calc(100%+18px)]"
+              : "translate-x-[calc(100%+16px)]"
+            : highlight ? "-translate-x-[calc(100%+18px)]"
             : "-translate-x-[calc(100%+16px)]",
             bgColor,
             orientation,
