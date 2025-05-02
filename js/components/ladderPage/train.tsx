@@ -42,7 +42,7 @@ export const Train = ({
         {/* TODO: add semi-transparent border */}
         <div
           className={className([
-            "absolute rounded-full h-[16px] w-[16px] -trainslate-y-1/2",
+            "absolute rounded-full h-[16px] w-[16px]",
             direction == 0 ?
               highlight ? "translate-x-[calc(100%+18px)]"
               : "translate-x-[calc(100%+16px)]"
