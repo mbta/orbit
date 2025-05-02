@@ -37,7 +37,7 @@ const TrainsAndStations = (): ReactElement => {
       <div className="absolute top-[284px] left-[24px]">
         <Train route="Red-Braintree" label="1888" direction={0} />
       </div>
-      <div className="absolute top-[284px] left-[287px]">
+      <div className="absolute top-[348px] left-[704px]">
         <Train route="Red-Ashmont" label="1889" direction={1} />
       </div>
     </div>
