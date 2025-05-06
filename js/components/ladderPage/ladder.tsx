@@ -6,10 +6,6 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
-
-  // outer <div> prevents horizontal overflow from affecting the overall page layout
-  // inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
-  // ^ this should potentially be handled in a future <LadderPage />.
   return (
     <>
       <span>
@@ -18,33 +14,43 @@ export const Ladder = (): ReactElement => {
           <>Connected ({vehiclePositions.length} vehicles)</>
         : <>Loading...</>}
       </span>
+
+      {/* outer <div> prevents horizontal overflow from affecting the overall page layout
+      inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
+      ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
-        <div className="flex px-80 overflow-x-auto">
-          <TrainsAndStations />
+        <div className="relative flex px-80 overflow-x-auto">
+          <TrainsAndStations stations={StationSets.AlewifeAndrew} />
+          <TrainsAndStations stations={StationSets.JFKAshmont} />
+          <TrainsAndStations stations={StationSets.JFKBraintree} />
+          <div className="absolute top-[284px] left-[344px]">
+            <Train
+              route="Red-Braintree"
+              label="1888"
+              direction={0}
+              highlight={true}
+            />
+          </div>
+          <div className="absolute top-[316px] left-[1024px]">
+            <Train route="Red-Ashmont" label="1889" direction={1} />
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-// TODO: update to accept trains: Train[] parameter?
-const TrainsAndStations = (): ReactElement => {
+// TODO: accept VehiclePositions and use them to determine the <Train />'s to render
+const TrainsAndStations = ({
+  stations,
+  // vps
+}: {
+  stations: Station[];
+  // vps: VehiclePosition[]
+}): ReactElement => {
   return (
     <div className="relative flex">
-      <StationList stations={StationSets.AlewifeAndrew} />
-      <StationList stations={StationSets.JFKAshmont} />
-      <StationList stations={StationSets.JFKBraintree} />
-      <div className="absolute top-[284px] left-[24px]">
-        <Train
-          route="Red-Braintree"
-          label="1888"
-          direction={0}
-          highlight={true}
-        />
-      </div>
-      <div className="absolute top-[316px] left-[704px]">
-        <Train route="Red-Ashmont" label="1889" direction={1} />
-      </div>
+      <StationList stations={stations} />
     </div>
   );
 };
