@@ -8,6 +8,37 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
+  // categorize the vp's by which branch they're on
+  // how do I use the 3 StationSets as keys???
+  const stationSets = [
+    StationSets.AlewifeAndrew,
+    StationSets.JFKAshmont,
+    StationSets.JFKBraintree,
+  ];
+  // create a new map of each StationSet -> array of vps located on that set
+  const vpsByBranch = vehiclePositions?.reduce(
+    (accumulator, vp) => {
+      // find which StationSet contains a Station whose id matches the VehiclePosition's station
+      const matchingStationSet = stationSets.find((stations) =>
+        // check if any station within the current stations array matches the vehicleposition
+        stations.some((station) => station.id === vp.stationId),
+      );
+
+      if (matchingStationSet) {
+        const vpsForStationSet = accumulator.get(matchingStationSet);
+        vpsForStationSet?.push(vp);
+      }
+
+      return accumulator;
+    },
+    // default map of StationSets => array of VehiclePositions
+    new Map<(typeof stationSets)[number], VehiclePosition[]>(
+      stationSets.map((stationSet) => [stationSet, []]),
+    ),
+  );
+
+  console.log(vpsByBranch)
+
   return (
     <>
       <span>
@@ -22,7 +53,7 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
-          {vehiclePositions?.map((pos: VehiclePosition) => {
+          {/* {vehiclePositions?.map((pos: VehiclePosition) => {
             if (pos.directionId === 1 || pos.position === null) {
               return null;
             }
@@ -51,22 +82,11 @@ export const Ladder = (): ReactElement => {
                 {pos.stationId}
               </div>
             );
-          })}
+          })} */}
 
           <TrainsAndStations stations={StationSets.AlewifeAndrew} />
           <TrainsAndStations stations={StationSets.JFKAshmont} />
           <TrainsAndStations stations={StationSets.JFKBraintree} />
-          <div className="absolute top-[284px] left-[344px]">
-            <Train
-              route="Red-Braintree"
-              label="1888"
-              direction={0}
-              highlight={true}
-            />
-          </div>
-          <div className="absolute top-[316px] left-[1024px]">
-            <Train route="Red-Ashmont" label="1889" direction={1} />
-          </div>
         </div>
       </div>
     </>
@@ -84,6 +104,14 @@ const TrainsAndStations = ({
   return (
     <div className="relative flex">
       <StationList stations={stations} />
+      <div className="absolute top-[284px] left-[24px]">
+        <Train
+          route="Red-Braintree"
+          label="1888"
+          direction={0}
+          highlight={true}
+        />
+      </div>
     </div>
   );
 };
