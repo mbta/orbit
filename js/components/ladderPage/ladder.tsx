@@ -8,8 +8,7 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
-  // categorize the vp's by which branch they're on
-  // how do I use the 3 StationSets as keys???
+  // categorize the vp's by which branch (stationset) they're on
   const stationSets = [
     StationSets.AlewifeAndrew,
     StationSets.JFKAshmont,
@@ -31,12 +30,14 @@ export const Ladder = (): ReactElement => {
 
       return accumulator;
     },
-    // default map of StationSets => array of VehiclePositions
+    // initial map of {StationSets: VehiclePositions[]}
     new Map<(typeof stationSets)[number], VehiclePosition[]>(
       stationSets.map((stationSet) => [stationSet, []]),
     ),
   );
 
+  // TODO pass each {stationSet, VehiclePosition[]} in vpsByBranch
+  // to TrainsAndStations to render
   console.log(vpsByBranch)
 
   return (
