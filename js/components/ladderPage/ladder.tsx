@@ -1,7 +1,7 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
@@ -11,8 +11,8 @@ export const Ladder = (): ReactElement => {
   // categorize the vp's by which branch (stationset) they're on
   const stationSets = [
     StationSets.AlewifeAndrew,
-    StationSets.JFKAshmont,
-    StationSets.JFKBraintree,
+    // StationSets.JFKAshmont,
+    // StationSets.JFKBraintree,
   ];
   // create a new map of each StationSet -> array of vps located on that set
   const vpsByBranch = vehiclePositions?.reduce(
@@ -25,7 +25,10 @@ export const Ladder = (): ReactElement => {
 
       if (matchingStationSet) {
         const vpsForStationSet = accumulator.get(matchingStationSet);
-        vpsForStationSet?.push(vp);
+        // TODO: remove direction restriction when northbound is ready
+        if (vp.directionId == 0) {
+          vpsForStationSet?.push(vp);
+        }
       }
 
       return accumulator;
@@ -36,9 +39,8 @@ export const Ladder = (): ReactElement => {
     ),
   );
 
-  // TODO pass each {stationSet, VehiclePosition[]} in vpsByBranch
-  // to TrainsAndStations to render
-  console.log(vpsByBranch)
+  // TODO: remove
+  // console.log(vpsByBranch)
 
   return (
     <>
@@ -54,65 +56,61 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
-          {/* {vehiclePositions?.map((pos: VehiclePosition) => {
-            if (pos.directionId === 1 || pos.position === null) {
-              return null;
-            }
-
-            if (
-              StationSets.AlewifeAndrew.findIndex(
-                (station) => station.id === pos.stationId,
-              ) === -1
-            ) {
-              return null;
-            }
-
-            const px = height(pos, StationSets.AlewifeAndrew) + 100;
-
-            return (
-              <div
-                style={{
-                  position: "absolute",
-                  top: `${px}px`,
-                  left: "400px",
-                }}
-                key={pos.vehicleId}
-              >
-                {pos.label}{" "}
-                {pos.stopStatus === StopStatus.StoppedAt ? "at" : "itt"}{" "}
-                {pos.stationId}
-              </div>
-            );
-          })} */}
-
-          <TrainsAndStations stations={StationSets.AlewifeAndrew} />
-          <TrainsAndStations stations={StationSets.JFKAshmont} />
-          <TrainsAndStations stations={StationSets.JFKBraintree} />
+          {vpsByBranch &&
+            Array.from(vpsByBranch.entries()).map(
+              ([stationSets, vps], index) => (
+                <TrainsAndStations
+                  key={index}
+                  stations={stationSets}
+                  vps={vps}
+                />
+              ),
+            )}
         </div>
       </div>
     </>
   );
 };
 
-// TODO: accept VehiclePositions and use them to determine the <Train />'s to render
 const TrainsAndStations = ({
   stations,
-  // vps
+  vps,
 }: {
   stations: Station[];
-  // vps: VehiclePosition[]
+  vps: VehiclePosition[];
 }): ReactElement => {
   return (
     <div className="relative flex">
       <StationList stations={stations} />
-      <div className="absolute top-[284px] left-[24px]">
-        <Train
-          route="Red-Braintree"
-          label="1888"
-          direction={0}
-          highlight={true}
-        />
-      </div>
+      {vps.map((vp) => {
+        // might not need this if StationSets, vp pairing logic in main component is functional
+        if (
+          stations.findIndex((station) => station.id === vp.stationId) === -1
+        ) {
+          return null;
+        }
+
+        const px = height(vp, stations) + 100;
+
+        const route =
+          stations.some((station) => station.id === "place-asmnl") ?
+            "Red-Ashmont"
+          : "Red-Braintree";
+
+        return (
+          <div
+            key={vp.vehicleId}
+            style={{ position: "absolute", top: `${px}px`, left: "24px" }}
+          >
+            <Train
+              // route={vp.routeId}
+              route={route}
+              label={vp.label}
+              direction={vp.directionId}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };
