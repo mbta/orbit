@@ -20,6 +20,7 @@ defmodule OrbitWeb.UserSocket do
 
   channel "metadata", OrbitWeb.MetadataChannel
   channel "train_locations", OrbitWeb.TrainLocationsChannel
+  channel "trip_updates", OrbitWeb.TrainLocationsChannel
 
   @doc """
   fields that are added to socket.assigns

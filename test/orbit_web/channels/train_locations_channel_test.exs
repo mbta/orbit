@@ -37,6 +37,31 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
         id: :vehicle_positions
       )
 
+    {:ok, _} =
+      start_supervised(
+        {PollingServer,
+         %PollingServer.Opts{
+           server_name: :trip_updates,
+           entity_type: :trip_updates,
+           s3_ref: :rtr_public,
+           s3_path: "TripUpdates_enhanced.json",
+           poll_delay: 10_000,
+           decode_fn: fn
+             "" ->
+               nil
+
+             timestamp ->
+               %{
+                 timestamp: String.to_integer(timestamp),
+                 entities: [
+                   build(:trip_updates)
+                 ]
+               }
+           end
+         }},
+        id: :trip_updates
+      )
+
     :ok
   end
 
@@ -58,6 +83,19 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
 
       send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
       assert_push("vehicle_positions", %{data: ^vehicle_positions})
+    end
+
+    @tag :authenticated
+    test "channel forwards trip updates to client", %{socket: socket} do
+      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "trip_updates")
+
+      trip_updates = %{
+        timestamp: 0,
+        entities: [build(:trip_update)]
+      }
+
+      send(socket.channel_pid, {:new_data, :trip_updates, trip_updates})
+      assert_push("trip_updates", %{data: ^trip_updates})
     end
 
     test "channel sends auth_expired after token expires" do
