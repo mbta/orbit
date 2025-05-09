@@ -1,7 +1,7 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { VehiclePosition } from "../../models/vehiclePosition";
+import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
@@ -39,6 +39,22 @@ export const Ladder = (): ReactElement => {
     ),
   );
 
+  // single VehiclePosition for testing
+  // const soloVP: VehiclePosition = {
+  //   routeId: "Red",
+  //   directionId: 0,
+  //   label: "1888",
+  //   cars: ["1888", "1889"],
+  //   //42.3909504,-71.1210361
+  //   position: { latitude: 42.3909504, longitude: -71.1210361 },
+  //   stationId: "place-cntsq",
+  //   // stopStatus: StopStatus.StoppedAt,
+  //   stopStatus: StopStatus.InTransitTo,
+  //   heading: 85, // doesn't matter?,
+  //   timestamp: null,
+  //   vehicleId: "R-1888",
+  // };
+
   // TODO: remove
   // console.log(vpsByBranch)
 
@@ -56,6 +72,13 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
+
+          {/* using single VehiclePosition for testing */}
+          {/* <TrainsAndStations
+            stations={StationSets.AlewifeAndrew}
+            vps={[soloVP]}
+          /> */}
+
           {vpsByBranch &&
             Array.from(vpsByBranch.entries()).map(
               ([stationSets, vps], index) => (
@@ -90,8 +113,11 @@ const TrainsAndStations = ({
           return null;
         }
 
-        const px = height(vp, stations) + 100;
+        // add 80 for top margin above the station list borders 
+        const px = height(vp, stations) + 80;
 
+        // this is very naive and also flat-out ignores that Ashmont-bound trains
+        // may be on the main ladder
         const route =
           stations.some((station) => station.id === "place-asmnl") ?
             "Red-Ashmont"
