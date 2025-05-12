@@ -11,24 +11,23 @@ export const Ladder = (): ReactElement => {
   // categorize the vp's by which branch (stationset) they're on
   const stationSets = [
     StationSets.AlewifeAndrew,
-    // StationSets.JFKAshmont,
-    // StationSets.JFKBraintree,
+    StationSets.JFKAshmont,
+    StationSets.JFKBraintree,
   ];
   // create a new map of each StationSet -> array of vps located on that set
   const vpsByBranch = vehiclePositions?.reduce(
     (accumulator, vp) => {
       // find which StationSet contains a Station whose id matches the VehiclePosition's station
       const matchingStationSet = stationSets.find((stations) =>
-        // check if any station within the current stations array matches the vehicleposition
-        stations.some((station) => station.id === vp.stationId),
+        // check if any station within the current stations array includes the vehicleposition's stopId
+        stations.some((station) =>
+          station.stop_ids.some((stopId) => stopId === vp.stopId),
+        ),
       );
 
       if (matchingStationSet) {
         const vpsForStationSet = accumulator.get(matchingStationSet);
-        // TODO: remove direction restriction when northbound is ready
-        if (vp.directionId == 0) {
-          vpsForStationSet?.push(vp);
-        }
+        vpsForStationSet?.push(vp);
       }
 
       return accumulator;
@@ -42,21 +41,19 @@ export const Ladder = (): ReactElement => {
   // single VehiclePosition for testing
   // const soloVP: VehiclePosition = {
   //   routeId: "Red",
-  //   directionId: 0,
+  //   directionId: 1,
   //   label: "1888",
   //   cars: ["1888", "1889"],
-  //   //42.3909504,-71.1210361
-  //   position: { latitude: 42.3909504, longitude: -71.1210361 },
-  //   stationId: "place-cntsq",
-  //   // stopStatus: StopStatus.StoppedAt,
-  //   stopStatus: StopStatus.InTransitTo,
-  //   heading: 85, // doesn't matter?,
+  //   //42.321724, -71.052581
+  //   position: { latitude: 42.321724, longitude: -71.052581 },
+  //   stationId: "place-wlsta",
+  //   stopId: "70104",
+  //   stopStatus: StopStatus.StoppedAt,
+  //   // stopStatus: StopStatus.InTransitTo,
+  //   heading: 85,
   //   timestamp: null,
   //   vehicleId: "R-1888",
   // };
-
-  // TODO: remove
-  // console.log(vpsByBranch)
 
   return (
     <>
@@ -72,10 +69,9 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
-
           {/* using single VehiclePosition for testing */}
           {/* <TrainsAndStations
-            stations={StationSets.AlewifeAndrew}
+            stations={StationSets.JFKBraintree}
             vps={[soloVP]}
           /> */}
 
@@ -113,7 +109,7 @@ const TrainsAndStations = ({
           return null;
         }
 
-        // add 80 for top margin above the station list borders 
+        // add 80 for top margin above the station list borders
         const px = height(vp, stations) + 80;
 
         // this is very naive and also flat-out ignores that Ashmont-bound trains
@@ -126,7 +122,8 @@ const TrainsAndStations = ({
         return (
           <div
             key={vp.vehicleId}
-            style={{ position: "absolute", top: `${px}px`, left: "24px" }}
+            style={{ position: "absolute", top: `${px}px` }}
+            className={vp.directionId === 0 ? "left-[24px]" : "right-[24px]"}
           >
             <Train
               // route={vp.routeId}
