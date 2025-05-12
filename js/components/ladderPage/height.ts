@@ -20,17 +20,12 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     up to (but NOT including) i. now add proportional progress towards i
     */
 
-    if (pos.stopStatus === StopStatus.StoppedAt) {
-      if (index === 0) {
-        return height;
-      } else {
-        // handle case where trains InTransitTo are above the stationSet bounds
-        return 20;
-      }
+    // handle case where trains InTransitTo are "above" the first station
+    if (index === 0 && pos.stopStatus === StopStatus.InTransitTo) {
+      return 20;
     }
 
-    // train is still in transit, southbound
-    if (pos.position !== null) {
+    if (pos.position !== null && pos.stopStatus === StopStatus.InTransitTo) {
       height -=
         (1 -
           proportionBetweenLatLngs(
