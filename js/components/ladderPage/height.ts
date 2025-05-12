@@ -2,16 +2,15 @@ import { proportionBetweenLatLngs } from "../../models/latlng";
 import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 
-// TODO: get both directions working, then cleanup/DRY
+// TODO: cleanup/DRY
+// TODO: index === -1 case?
 export const height = (pos: VehiclePosition, stationSet: Station[]) => {
+  const index = stationSet.findIndex((station) => pos.stationId === station.id);
+  let height = 68;
+
   if (pos.directionId === 0) {
     // southbound
 
-    const index = stationSet.findIndex(
-      (station) => pos.stationId === station.id,
-    );
-
-    let height = 68;
     if (index === 0) {
       if (pos.stopStatus === StopStatus.StoppedAt) {
         return height;
@@ -27,11 +26,7 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
       height += stationSet[i].spacingRatio * 32 + 24;
     }
 
-    if (
-      pos.stopStatus === StopStatus.InTransitTo &&
-      pos.position !== null &&
-      index !== -1
-    ) {
+    if (pos.stopStatus === StopStatus.InTransitTo && pos.position !== null) {
       height -=
         (1 -
           proportionBetweenLatLngs(
@@ -45,12 +40,6 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     return height;
   } else {
     // northbound
-
-    const index = stationSet.findIndex(
-      (station) => pos.stationId === station.id,
-    );
-
-    let height = 68;
 
     for (let i = 0; i <= index; i += 1) {
       height += stationSet[i].spacingRatio * 32 + 24;
@@ -68,7 +57,7 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
         return height + 40;
       }
 
-      if (pos.position !== null && index !== -1) {
+      if (pos.position !== null) {
         height -=
           proportionBetweenLatLngs(
             stationSet[index + 1].location,
