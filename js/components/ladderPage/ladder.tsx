@@ -38,6 +38,10 @@ export const Ladder = (): ReactElement => {
     ),
   );
 
+  // TODO: remove
+  // console.log(vpsByBranch)
+
+  // TODO: remove
   // single VehiclePosition for testing
   // const soloVP: VehiclePosition = {
   //   routeId: "Red",
@@ -69,6 +73,7 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
+          {/* TODO: remove */}
           {/* using single VehiclePosition for testing */}
           {/* <TrainsAndStations
             stations={StationSets.JFKBraintree}
