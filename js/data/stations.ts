@@ -9,7 +9,7 @@ const buildStation = (
   longitude: number,
 ): Station => ({
   id,
-stop_ids,
+  stop_ids,
   name,
   spacingRatio,
   location: {
