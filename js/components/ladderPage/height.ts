@@ -1,4 +1,4 @@
-import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
+import { proportionBetweenLatLngs } from "../../models/latlng";
 import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 
@@ -13,6 +13,10 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     // spacingRatio * 32 = actual px value of bottom margin
     // 24 = height of the station name
     height += stationSet[i].spacingRatio * 32 + 24;
+  }
+
+  if (stationSet[index].id === "place-brntn") {
+    height += 24; // extra padding because "Quincy Adams" wraps
   }
 
   let travelLength = 0;
@@ -39,9 +43,6 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
         travelLength;
     }
   } else {
-    if (stationSet[index].id === "place-brntn") {
-      height += 24; // extra padding because "Quincy Adams" wraps
-    }
     // handle case where trains InTransitTo are "below" the first station
     if (
       index === stationSet.length - 1 &&
