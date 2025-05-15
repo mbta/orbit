@@ -19,15 +19,16 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     height += 24; // extra padding because "Quincy Adams" wraps
   }
 
+  if (pos.stopStatus === StopStatus.StoppedAt) {
+    return height;
+  }
+
   let travelLength = 0;
   let heightAdjustment = 0;
   if (pos.directionId === 0) {
     // handle case where trains InTransitTo are "above" the first station
-    if (index === 0 && pos.stopStatus === StopStatus.InTransitTo) {
+    if (index === 0) {
       return 20;
-    }
-    if (pos.stopStatus === StopStatus.StoppedAt) {
-      return height;
     }
 
     // proportionally backtrack progress if train is still in transit towards the station
@@ -44,14 +45,8 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     }
   } else {
     // handle case where trains InTransitTo are "below" the first station
-    if (
-      index === stationSet.length - 1 &&
-      pos.stopStatus === StopStatus.InTransitTo
-    ) {
+    if (index === stationSet.length - 1) {
       return height + 40;
-    }
-    if (pos.stopStatus === StopStatus.StoppedAt) {
-      return height;
     }
 
     /*
