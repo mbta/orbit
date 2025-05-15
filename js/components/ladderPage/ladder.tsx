@@ -1,7 +1,7 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
@@ -19,7 +19,7 @@ export const Ladder = (): ReactElement => {
     (accumulator, vp) => {
       // find which StationSet contains a Station whose id matches the VehiclePosition's station
       const matchingStationSet = stationSets.find((stations) =>
-        // check if any station within the current stations array includes the vehicleposition's stopId
+        // check if any station within the current stations array includes the VehiclePosition's stopId
         stations.some((station) =>
           station.stop_ids.some((stopId) => stopId === vp.stopId),
         ),
@@ -38,27 +38,6 @@ export const Ladder = (): ReactElement => {
     ),
   );
 
-  // TODO: remove
-  // console.log(vpsByBranch)
-
-  // TODO: remove
-  // single VehiclePosition for testing
-  // const soloVP: VehiclePosition = {
-  //   routeId: "Red",
-  //   directionId: 1,
-  //   label: "1888",
-  //   cars: ["1888", "1889"],
-  //   //42.321724, -71.052581
-  //   position: { latitude: 42.321724, longitude: -71.052581 },
-  //   stationId: "place-wlsta",
-  //   stopId: "70104",
-  //   stopStatus: StopStatus.StoppedAt,
-  //   // stopStatus: StopStatus.InTransitTo,
-  //   heading: 85,
-  //   timestamp: null,
-  //   vehicleId: "R-1888",
-  // };
-
   return (
     <>
       <span>
@@ -73,13 +52,6 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
-          {/* TODO: remove */}
-          {/* using single VehiclePosition for testing */}
-          {/* <TrainsAndStations
-            stations={StationSets.JFKBraintree}
-            vps={[soloVP]}
-          /> */}
-
           {vpsByBranch &&
             Array.from(vpsByBranch.entries()).map(
               ([stationSets, vps], index) => (
@@ -117,24 +89,28 @@ const TrainsAndStations = ({
         // add 80 for top margin above the station list borders
         const px = height(vp, stations) + 80;
 
-        // this is very naive and also flat-out ignores that Ashmont-bound trains
-        // may be on the main ladder
+        // TODO: this flat-out ignores that Ashmont-bound trains may be on the main ladder
         const route =
           stations.some((station) => station.id === "place-asmnl") ?
             "Red-Ashmont"
           : "Red-Braintree";
 
+        const direction =
+          vp.stopId && ["Alewife-02", "Braintree-02"].includes(vp.stopId) ? 0
+          : vp.stopId && ["Alewife-01", "Braintree-01"].includes(vp.stopId) ? 1
+          : vp.directionId;
+
         return (
           <div
             key={vp.vehicleId}
             style={{ position: "absolute", top: `${px}px` }}
-            className={vp.directionId === 0 ? "left-[24px]" : "right-[24px]"}
+            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
             <Train
               // route={vp.routeId}
               route={route}
               label={vp.label}
-              direction={vp.directionId}
+              direction={direction}
             />
           </div>
         );
