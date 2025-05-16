@@ -42,7 +42,7 @@ describe("useVehiclePositions", () => {
           label: "1877",
           routeId: "Red",
           stationId: "place-jfk",
-          stopId: "70096"
+          stopId: "70096",
         }),
       ],
     });

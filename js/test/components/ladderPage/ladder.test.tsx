@@ -1,6 +1,6 @@
 import { Ladder } from "../../../components/ladderPage/ladder";
 import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
-import { StopStatus, VehiclePosition } from "../../../models/vehiclePosition";
+import { StopStatus } from "../../../models/vehiclePosition";
 import { vehiclePositionFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 
@@ -38,11 +38,11 @@ describe("Ladder", () => {
         stopStatus: StopStatus.StoppedAt,
       }),
       vehiclePositionFactory.build({
-        label:"1999",
+        label: "1999",
         position: null,
         stationId: null,
-        stopId: null
-      })
+        stopId: null,
+      }),
     ]);
     const view = render(<Ladder />);
     expect(view.getByText("1877")).toBeInTheDocument();
