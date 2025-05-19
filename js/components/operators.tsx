@@ -3,7 +3,7 @@ import { OperatorSignInModal } from "./operatorSignIn/operatorSignInModal";
 import { DateTime } from "luxon";
 import { ReactElement, useMemo, useState } from "react";
 
-export const Home = (): ReactElement => {
+export const Operators = (): ReactElement => {
   const [modalOpen, setModalOpen] = useState(false);
 
   // Keep track of sign-in count. When this changes, we re-render

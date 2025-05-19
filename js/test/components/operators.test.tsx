@@ -1,5 +1,5 @@
 import { fetch } from "../../browser";
-import { Home } from "../../components/home";
+import { Operators } from "../../components/operators";
 import { neverPromise } from "../helpers/promiseWithResolvers";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -29,11 +29,11 @@ jest.doMock("../../browser", () => ({
   fetch: jest.fn().mockReturnValue(neverPromise),
 }));
 
-describe("home", () => {
+describe("operators", () => {
   test("can open modal", async () => {
     const view = render(
       <MemoryRouter>
-        <Home />
+        <Operators />
       </MemoryRouter>,
     );
     expect(view.queryByText(/fit for duty/i)).not.toBeInTheDocument();
@@ -46,7 +46,7 @@ describe("home", () => {
   test("can reload the List on new sign-in", async () => {
     const view = render(
       <MemoryRouter>
-        <Home />
+        <Operators />
       </MemoryRouter>,
     );
     await userEvent.click(

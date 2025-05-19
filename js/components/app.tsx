@@ -3,13 +3,14 @@ import { SocketProvider } from "../contexts/socketContext";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
-import { Home } from "./home";
 import { Ladder } from "./ladderPage/ladder";
 import { HelpMenu, Menu } from "./menus";
+import { Operators } from "./operators";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
   useRouteError,
@@ -60,7 +61,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.root,
-        element: <Home />,
+        // element: <Home />,
+        element: <Navigate to="/operators" />,
       },
       {
         path: paths.menu,
@@ -73,6 +75,10 @@ const router = createBrowserRouter([
       {
         path: paths.ladder,
         element: <Ladder />,
+      },
+      {
+        path: paths.operators,
+        element: <Operators />,
       },
     ],
   },
