@@ -68,6 +68,10 @@ defmodule Realtime.RTR do
       label: trip_update["vehicle"]["label"],
       route_id: Realtime.Data.route_id_from_string(trip_update["trip"]["route_id"]),
       direction: trip_update["trip"]["direction_id"],
+      route_pattern_id: trip_update["trip"]["route_pattern_id"],
+      trip_id: trip_update["trip"]["trip_id"],
+      vehicle_id: trip_update["vehicle"]["id"],
+      timestamp: trip_update["timestamp"],
       stop_time_updates:
         (trip_update["stop_time_update"] || []) |> Enum.map(&parse_stop_time_update/1)
     }

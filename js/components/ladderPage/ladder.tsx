@@ -1,4 +1,5 @@
 import { StationSets } from "../../data/stations";
+import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
 import { Train } from "./train";
@@ -6,12 +7,16 @@ import { ReactElement } from "react";
 
 export const Ladder = (): ReactElement => {
   const vehiclePositions = useVehiclePositions();
+  const tripUpdates = useTripUpdates();
   return (
     <>
       <span>
         Status:{" "}
-        {vehiclePositions !== null ?
-          <>Connected ({vehiclePositions.length} vehicles)</>
+        {vehiclePositions !== null && tripUpdates !== null ?
+          <>
+            Connected ({vehiclePositions.length} vehicles, {tripUpdates.length}{" "}
+            tripUpdates)
+          </>
         : <>Loading...</>}
       </span>
 
