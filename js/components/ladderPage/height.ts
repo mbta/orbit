@@ -23,7 +23,7 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
   }
 
   let start: LatLng = { latitude: 0.0, longitude: 0.0 };
-  let finish: LatLng = { latitude: 0.0, longitude: 0.0 };
+  const finish = stationSet[index].location;
   let travelLength = 0.0;
   if (pos.directionId === 0) {
     // handle case where trains InTransitTo are "above" the first station
@@ -31,7 +31,6 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
       return 20;
     }
     start = stationSet[index - 1].location;
-    finish = stationSet[index].location;
     travelLength = stationSet[index - 1].spacingRatio * 32 + 24;
   } else {
     // handle case where trains InTransitTo are "below" the first station
@@ -45,7 +44,6 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
     height += stationSet[index].spacingRatio * 32 + 24;
 
     start = stationSet[index + 1].location;
-    finish = stationSet[index].location;
     travelLength = stationSet[index].spacingRatio * 32 + 24;
   }
   if (pos.position !== null) {
