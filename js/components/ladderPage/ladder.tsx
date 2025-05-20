@@ -1,7 +1,7 @@
 import { StationSets } from "../../data/stations";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
-import { VehiclePosition } from "../../models/vehiclePosition";
+import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
@@ -79,10 +79,7 @@ const TrainsAndStations = ({
     <div className="relative flex">
       <StationList stations={stations} />
       {vps.map((vp) => {
-        // might not need this if StationSets, vp pairing logic in main component is functional
-        if (
-          stations.findIndex((station) => station.id === vp.stationId) === -1
-        ) {
+        if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
           return null;
         }
 
@@ -106,12 +103,7 @@ const TrainsAndStations = ({
             style={{ position: "absolute", top: `${px}px` }}
             className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
-            <Train
-              // route={vp.routeId}
-              route={route}
-              label={vp.label}
-              direction={direction}
-            />
+            <Train route={route} label={vp.label} direction={direction} />
           </div>
         );
       })}
