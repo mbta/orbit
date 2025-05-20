@@ -1,4 +1,3 @@
-import { StationSets } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
@@ -7,15 +6,15 @@ import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
 
-export const Ladder = (): ReactElement => {
+export const Ladder = ({
+  stationSets,
+}: {
+  stationSets: Station[][];
+}): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
+
   // categorize the vp's by which branch (stationset) they're on
-  const stationSets = [
-    StationSets.AlewifeAndrew,
-    StationSets.JFKAshmont,
-    StationSets.JFKBraintree,
-  ];
   // create a new map of each StationSet -> array of vps located on that set
   const vpsByBranch = vehiclePositions?.reduce(
     (accumulator, vp) => {

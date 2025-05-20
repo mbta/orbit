@@ -1,5 +1,6 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
+import { StationSets } from "../data/stations";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -72,7 +73,15 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <Ladder />,
+        element: (
+          <Ladder
+            stationSets={[
+              StationSets.AlewifeAndrew,
+              StationSets.JFKAshmont,
+              StationSets.JFKBraintree,
+            ]}
+          />
+        ),
       },
     ],
   },
