@@ -4,19 +4,28 @@ defmodule Realtime.Data.TripUpdate do
   """
 
   @type t :: %__MODULE__{
-          label: String.t(),
+          label: String.t() | nil,
           route_id: Realtime.Data.route_id(),
           direction: String.t(),
+          route_pattern_id: String.t(),
+          trip_id: String.t(),
+          vehicle_id: String.t(),
+          timestamp: DateTime.t(),
           stop_time_updates: []
         }
 
+  @derive Jason.Encoder
   @enforce_keys [
-    :label,
+    :vehicle_id,
     :route_id
   ]
   defstruct [
     :label,
     :route_id,
+    :timestamp,
+    :trip_id,
+    :vehicle_id,
+    route_pattern_id: nil,
     direction: nil,
     stop_time_updates: []
   ]
@@ -28,6 +37,7 @@ defmodule Realtime.Data.TripUpdate do
             predicted_departure_time: Util.Time.timestamp() | nil
           }
 
+    @derive Jason.Encoder
     @enforce_keys [
       :station_id
     ]
@@ -35,36 +45,6 @@ defmodule Realtime.Data.TripUpdate do
       :station_id,
       :predicted_arrival_time,
       :predicted_departure_time
-    ]
-  end
-
-  defmodule Prediction do
-    @moduledoc """
-    Represents a trip update after it's been filtered to be a prediction for a specific stop
-    """
-
-    @type t :: %__MODULE__{
-            label: String.t(),
-            route_id: Realtime.Data.route_id(),
-            direction: integer(),
-            station_id: String.t(),
-            predicted_time: Util.Time.timestamp()
-          }
-
-    @derive Jason.Encoder
-    @enforce_keys [
-      :label,
-      :route_id,
-      :direction,
-      :station_id,
-      :predicted_time
-    ]
-    defstruct [
-      :label,
-      :route_id,
-      :direction,
-      :station_id,
-      :predicted_time
     ]
   end
 end

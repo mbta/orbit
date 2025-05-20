@@ -53,6 +53,10 @@ defmodule Orbit.Factory do
       label: "1700",
       route_id: :Red,
       direction: 0,
+      trip_id: "68078228",
+      route_pattern_id: "Red-1-0",
+      vehicle_id: "R-547210A7",
+      timestamp: DateTime.from_unix!(1_640_000_000),
       stop_time_updates: [build(:stop_time_update)]
     }
   end

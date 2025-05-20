@@ -46,7 +46,8 @@ defmodule Realtime.RTRTest do
 
   describe "TripUpdates decode from json" do
     setup do
-      {:ok, trip_updates} = File.read(__DIR__ <> "/TripUpdates_enhanced.json")
+      {:ok, trip_updates_gzipped} = File.read(__DIR__ <> "/TripUpdates_enhanced.json.gz")
+      trip_updates = :zlib.gunzip(trip_updates_gzipped)
       {:ok, trip_updates: RTR.parse_trip_updates(trip_updates)}
     end
 
@@ -54,7 +55,8 @@ defmodule Realtime.RTRTest do
       tu = Enum.at(context[:trip_updates][:entities], 0)
 
       assert %Realtime.Data.TripUpdate{
-               label: "1840",
+               label: nil,
+               vehicle_id: "R-5483204E",
                route_id: :Red,
                direction: 1
              } = tu
