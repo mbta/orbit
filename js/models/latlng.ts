@@ -32,5 +32,7 @@ export const proportionBetweenLatLngs = (
     totalLatDelta * pointLatDelta + totalLngDelta * pointLngDelta;
   const startToFinishMagnitudeSquared: number =
     totalLatDelta * totalLatDelta + totalLngDelta * totalLngDelta;
-  return dotProductStartToPoint / startToFinishMagnitudeSquared;
+  return startToFinishMagnitudeSquared === 0.0 ? 0.0 : (
+      dotProductStartToPoint / startToFinishMagnitudeSquared
+    );
 };
