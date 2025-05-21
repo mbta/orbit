@@ -1,3 +1,4 @@
+import { RedStationLists } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
@@ -6,13 +7,27 @@ import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
 
-export const Ladder = ({
-  stationLists,
-}: {
-  stationLists: Station[][];
-}): ReactElement => {
+export const Ladder = ({ routeId }: { routeId: string }): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
+  const stationLists: Station[][] =
+    routeId === "Red" ?
+      [
+        RedStationLists.AlewifeAndrew,
+        RedStationLists.JFKAshmont,
+        RedStationLists.JFKBraintree,
+      ]
+    : [];
+
+  const forcedDirections =
+    routeId === "Red" ?
+      new Map([
+        ["Alewife-01", 1],
+        ["Alewife-02", 0],
+        ["Braintree-01", 1],
+        ["Braintree-02", 0],
+      ])
+    : null;
 
   // categorize the vp's by which branch (stationset) they're on
   // create a new map of each StationSet -> array of vps located on that set
@@ -63,6 +78,7 @@ export const Ladder = ({
                   key={index}
                   stations={StationLists}
                   vps={vps}
+                  forcedDirections={forcedDirections}
                 />
               ),
             )}
@@ -75,9 +91,11 @@ export const Ladder = ({
 const TrainsAndStations = ({
   stations,
   vps,
+  forcedDirections,
 }: {
   stations: Station[];
   vps: VehiclePosition[];
+  forcedDirections: Map<string, number> | null;
 }): ReactElement => {
   return (
     <div className="relative flex">
@@ -103,9 +121,9 @@ const TrainsAndStations = ({
             "Red-Ashmont"
           : "Red-Braintree";
 
-        const direction =
-          vp.stopId && ["Alewife-02", "Braintree-02"].includes(vp.stopId) ? 0
-          : vp.stopId && ["Alewife-01", "Braintree-01"].includes(vp.stopId) ? 1
+        const direction: number =
+          vp.stopId && forcedDirections?.has(vp.stopId) ?
+            (forcedDirections.get(vp.stopId) ?? vp.directionId)
           : vp.directionId;
 
         return (
