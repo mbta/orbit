@@ -45,7 +45,7 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
       return height + 40;
     }
 
-    // northbound stationSets are in reverse order of travel -- in order to
+    // northbound StationLists are in reverse order of travel -- in order to
     // backtrack progress towards the station the vp is in relation to,
     // we must add on the current station's bottom margin to travel back towards it
     height += stationSet[index].spacingRatio * 32 + 24;

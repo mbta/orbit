@@ -7,9 +7,9 @@ import { Train } from "./train";
 import { ReactElement } from "react";
 
 export const Ladder = ({
-  stationSets,
+  stationLists,
 }: {
-  stationSets: Station[][];
+  stationLists: Station[][];
 }): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
@@ -19,7 +19,7 @@ export const Ladder = ({
   const vpsByBranch = vehiclePositions?.reduce(
     (accumulator, vp) => {
       // find which StationSet contains a Station whose id matches the VehiclePosition's station
-      const matchingStationSet = stationSets.find((stations) =>
+      const matchingStationSet = stationLists.find((stations) =>
         // check if any station within the current stations array includes the VehiclePosition's stopId
         stations.some((station) =>
           station.stop_ids.some((stopId) => stopId === vp.stopId),
@@ -33,9 +33,9 @@ export const Ladder = ({
 
       return accumulator;
     },
-    // initial map of {StationSets: VehiclePositions[]}
-    new Map<(typeof stationSets)[number], VehiclePosition[]>(
-      stationSets.map((stationSet) => [stationSet, []]),
+    // initial map of {StationLists: VehiclePositions[]}
+    new Map<(typeof stationLists)[number], VehiclePosition[]>(
+      stationLists.map((stationList) => [stationList, []]),
     ),
   );
 
@@ -58,10 +58,10 @@ export const Ladder = ({
         <div className="relative flex px-80 overflow-x-auto">
           {vpsByBranch &&
             Array.from(vpsByBranch.entries()).map(
-              ([stationSets, vps], index) => (
+              ([StationLists, vps], index) => (
                 <TrainsAndStations
                   key={index}
-                  stations={stationSets}
+                  stations={StationLists}
                   vps={vps}
                 />
               ),

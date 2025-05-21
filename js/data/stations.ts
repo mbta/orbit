@@ -1,4 +1,4 @@
-export const StationSets = {
+export const StationLists = {
   AlewifeAndrew: [
     {
       id: "place-alfcl",
