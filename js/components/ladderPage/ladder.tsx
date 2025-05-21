@@ -88,7 +88,6 @@ const TrainsAndStations = ({
         }
 
         const trainHeight = height(vp, stations);
-
         // add 80 for top margin above the station list borders
         const px = trainHeight == -1 ? -1 : trainHeight + 80;
         if (px === -1) {
