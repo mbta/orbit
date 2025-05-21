@@ -3,25 +3,32 @@ import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 
 export const height = (pos: VehiclePosition, stationSet: Station[]) => {
-  const index = stationSet.findIndex((station) => pos.stationId === station.id);
   let height = 68;
-
-  // add up the bottom margins of stations up to index
-  // this will get us to the station that the vp is in relation to
-  for (let i = 0; i < index; i += 1) {
+  let index = -1;
+  // add up the bottom margins of stations while finding the vp's station's index
+  // this will get us right up to the station on the ladder
+  for (let i = 0; i < stationSet.length; i += 1) {
+    if (pos.stationId === stationSet[i].id) {
+      index = i;
+      break;
+    }
     // spacingRatio * 32 = actual px value of bottom margin
     // 24 = height of the station name
     height += stationSet[i].spacingRatio * 32 + 24;
   }
 
+  // somehow the vp was not in the correct stationlist (unlikely)
+  if (index === -1) {
+    return -1;
+  }
   if (stationSet[index].id === "place-brntn") {
     height += 24; // extra padding because "Quincy Adams" wraps
   }
-
   if (pos.stopStatus === StopStatus.StoppedAt) {
     return height;
   }
 
+  // proportionally backtrack progress if train is still in transit towards the station
   let start: LatLng = { latitude: 0.0, longitude: 0.0 };
   const finish = stationSet[index].location;
   let travelLength = 0.0;
@@ -58,7 +65,6 @@ export const height = (pos: VehiclePosition, stationSet: Station[]) => {
   return height;
 };
 
-// proportionally backtrack progress if train is still in transit towards the station
 const proportionalProgress = (
   start: LatLng,
   finish: LatLng,

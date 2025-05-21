@@ -87,8 +87,16 @@ const TrainsAndStations = ({
           return null;
         }
 
+        const trainHeight = height(vp, stations);
+
         // add 80 for top margin above the station list borders
-        const px = height(vp, stations) + 80;
+        const px = trainHeight == -1 ? -1 : trainHeight + 80;
+        if (px === -1) {
+          console.error(
+            `VehiclePosition ${vp.vehicleId} not found on station list.`,
+          );
+          return null;
+        }
 
         // TODO: this flat-out ignores that Ashmont-bound trains may be on the main ladder
         const route =
