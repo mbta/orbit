@@ -167,3 +167,14 @@ export const RedStationLists = {
     },
   ],
 };
+
+// track-level stopIds which are specfic to one side of the station
+export const trackSides = {
+  Red: new Map([
+    ["Alewife-01", 1],
+    ["Alewife-02", 0],
+    ["Braintree-01", 1],
+    ["Braintree-02", 0],
+  ]),
+  Orange: [],
+};

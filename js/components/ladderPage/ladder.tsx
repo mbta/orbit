@@ -1,4 +1,5 @@
-import { RedStationLists } from "../../data/stations";
+import { routeLists } from "../../data/routes";
+import { trackSides } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { Station } from "../../models/station";
@@ -10,24 +11,8 @@ import { ReactElement } from "react";
 export const Ladder = ({ routeId }: { routeId: string }): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
-  const stationLists: Station[][] =
-    routeId === "Red" ?
-      [
-        RedStationLists.AlewifeAndrew,
-        RedStationLists.JFKAshmont,
-        RedStationLists.JFKBraintree,
-      ]
-    : [];
-
-  const forcedDirections =
-    routeId === "Red" ?
-      new Map([
-        ["Alewife-01", 1],
-        ["Alewife-02", 0],
-        ["Braintree-01", 1],
-        ["Braintree-02", 0],
-      ])
-    : null;
+  const stationLists: Station[][] = routeId === "Red" ? routeLists.Red : [];
+  const forcedDirections = routeId === "Red" ? trackSides.Red : null;
 
   // categorize the vp's by which branch (stationset) they're on
   // create a new map of each StationSet -> array of vps located on that set

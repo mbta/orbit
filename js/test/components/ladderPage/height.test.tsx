@@ -12,7 +12,17 @@ describe("height()", () => {
       expect(height(pos, RedStationLists.JFKBraintree)).toBe(68);
     });
 
-    test("for a valid InTransitTo VehiclePosition", () => {
+    test("for a valid southbound InTransitTo VehiclePosition", () => {
+      const pos = vehiclePositionFactory.build({
+        directionId: 0,
+        stationId: "place-davis",
+        stopId: "70063",
+        position: { latitude: 42.397631, longitude: -71.130443 },
+      });
+      expect(height(pos, RedStationLists.AlewifeAndrew)).toBeCloseTo(144.16);
+    });
+
+    test("for a valid northbound InTransitTo VehiclePosition", () => {
       const pos = vehiclePositionFactory.build({
         position: { latitude: 42.298885, longitude: -71.053602 },
       });

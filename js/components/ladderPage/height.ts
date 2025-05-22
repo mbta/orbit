@@ -37,21 +37,21 @@ export const height = (pos: VehiclePosition, stationList: Station[]) => {
     if (index === 0) {
       return 20;
     }
-    start = stationList[index - 1].location;
-    travelLength = stationList[index - 1].spacingRatio * 32 + 24;
+    const prevStation = stationList[index - 1];
+    start = prevStation.location;
+    travelLength = prevStation.spacingRatio * 32 + 24;
   } else {
     // handle case where trains InTransitTo are "below" the first station
     if (index === stationList.length - 1) {
       return height + 40;
     }
-
-    // northbound StationLists are in reverse order of travel -- in order to
-    // backtrack progress towards the station the vp is in relation to,
-    // we must add on the current station's bottom margin to travel back towards it
-    height += stationList[index].spacingRatio * 32 + 24;
-
-    start = stationList[index + 1].location;
     travelLength = stationList[index].spacingRatio * 32 + 24;
+
+    // northbound StationLists are in reverse order of travel (up). to backtrack
+    // progress towards the station the vp is in relation to, we must add on the
+    // current station's bottom margin (aka the travelLength) to travel back towards it
+    height += travelLength;
+    start = stationList[index + 1].location;
   }
   if (pos.position !== null) {
     height -= proportionalProgress(
