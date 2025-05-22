@@ -21,7 +21,9 @@ export const height = (pos: VehiclePosition, stationList: Station[]) => {
   if (index === -1) {
     return -1;
   }
-  if (stationList[index].id === "place-brntn") {
+
+  const currentStation = stationList[index];
+  if (currentStation.id === "place-brntn") {
     height += 24; // extra padding because "Quincy Adams" wraps
   }
   if (pos.stopStatus === StopStatus.StoppedAt) {
@@ -30,7 +32,7 @@ export const height = (pos: VehiclePosition, stationList: Station[]) => {
 
   // proportionally backtrack progress if train is still in transit towards the station
   let start: LatLng = { latitude: 0.0, longitude: 0.0 };
-  const finish = stationList[index].location;
+  const finish = currentStation.location;
   let travelLength = 0.0;
   if (pos.directionId === 0) {
     // handle case where trains InTransitTo are "above" the first station
@@ -45,7 +47,7 @@ export const height = (pos: VehiclePosition, stationList: Station[]) => {
     if (index === stationList.length - 1) {
       return height + 40;
     }
-    travelLength = stationList[index].spacingRatio * 32 + 24;
+    travelLength = currentStation.spacingRatio * 32 + 24;
 
     // northbound StationLists are in reverse order of travel (up). to backtrack
     // progress towards the station the vp is in relation to, we must add on the

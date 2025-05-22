@@ -2,13 +2,14 @@ import { routeLists } from "../../data/routes";
 import { trackSides } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
+import { RouteId } from "../../models/common";
 import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
 
-export const Ladder = ({ routeId }: { routeId: string }): ReactElement => {
+export const Ladder = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
   const stationLists: Station[][] = routeId === "Red" ? routeLists.Red : [];
@@ -92,7 +93,7 @@ const TrainsAndStations = ({
 
         const trainHeight = height(vp, stations);
         // add 80 for top margin above the station list borders
-        const px = trainHeight == -1 ? -1 : trainHeight + 80;
+        const px = trainHeight === -1 ? -1 : trainHeight + 80;
         if (px === -1) {
           console.error(
             `VehiclePosition ${vp.vehicleId} not found on station list.`,
