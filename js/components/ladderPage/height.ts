@@ -79,9 +79,14 @@ const proportionalProgress = (
   travelLength: number,
   direction: number,
 ) => {
+  const proportionBetweenStartFinish = proportionBetweenLatLngs(
+    start,
+    finish,
+    point,
+  );
   if (direction === 0) {
-    return (1 - proportionBetweenLatLngs(start, finish, point)) * travelLength;
+    return (1 - proportionBetweenStartFinish) * travelLength;
   } else {
-    return proportionBetweenLatLngs(start, finish, point) * travelLength;
+    return proportionBetweenStartFinish * travelLength;
   }
 };
