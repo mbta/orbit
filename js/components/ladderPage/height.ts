@@ -1,8 +1,8 @@
+import { Ladder } from "../../data/stations";
 import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
-import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 
-export const height = (pos: VehiclePosition, stationList: Station[]) => {
+export const height = (pos: VehiclePosition, stationList: Ladder) => {
   let height = 68;
   let index = -1;
   // add up the bottom margins of stations while finding the vp's station's index

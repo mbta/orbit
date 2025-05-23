@@ -1,4 +1,4 @@
-import { Ladder } from "../../../components/ladderPage/ladder";
+import { Ladders } from "../../../components/ladderPage/ladder";
 import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
 import { StopStatus } from "../../../models/vehiclePosition";
 import { vehiclePositionFactory } from "../../helpers/factory";
@@ -15,7 +15,7 @@ const mockUseVehiclePositions = useVehiclePositions as jest.MockedFunction<
 describe("Ladder", () => {
   test("shows station names", () => {
     mockUseVehiclePositions.mockReturnValue([]);
-    const view = render(<Ladder routeId={"Red"} />);
+    const view = render(<Ladders routeId={"Red"} />);
     expect(view.getByText("Alewife")).toBeInTheDocument();
     expect(view.getByText("Ashmont")).toBeInTheDocument();
     expect(view.getByText("Braintree")).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("Ladder", () => {
         stopId: null,
       }),
     ]);
-    const view = render(<Ladder routeId="Red" />);
+    const view = render(<Ladders routeId="Red" />);
     expect(view.getByText("1877")).toBeInTheDocument();
     expect(view.getByText("1888")).toBeInTheDocument();
     expect(view.getByText("1889")).toBeInTheDocument();

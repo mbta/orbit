@@ -1,41 +1,34 @@
-import { routeLists } from "../../data/routes";
-import { trackSides } from "../../data/stations";
+import { Ladder, Stations } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { RouteId } from "../../models/common";
-import { Station } from "../../models/station";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
 
-export const Ladder = ({ routeId }: { routeId: RouteId }): ReactElement => {
+export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
-  const stationLists: Station[][] = routeId === "Red" ? routeLists.Red : [];
-  const forcedDirections = routeId === "Red" ? trackSides.Red : null;
+  const stationLists = Stations[routeId];
 
-  // categorize the vp's by which branch (stationset) they're on
-  // create a new map of each StationSet -> array of vps located on that set
   const vpsByBranch = vehiclePositions?.reduce(
     (accumulator, vp) => {
-      // find which StationSet contains a Station whose id matches the VehiclePosition's station
-      const matchingStationSet = stationLists.find((stations) =>
+      // find which StationList contains a Station whose id matches the VehiclePosition's station
+      const matchingStationList = stationLists.find((stations) =>
         // check if any station within the current stations array includes the VehiclePosition's stopId
         stations.some((station) =>
           station.stop_ids.some((stopId) => stopId === vp.stopId),
         ),
       );
-
-      if (matchingStationSet) {
-        const vpsForStationSet = accumulator.get(matchingStationSet);
-        vpsForStationSet?.push(vp);
+      if (matchingStationList) {
+        const vpsForStationList = accumulator.get(matchingStationList);
+        vpsForStationList?.push(vp);
       }
-
       return accumulator;
     },
-    // initial map of {StationLists: VehiclePositions[]}
-    new Map<(typeof stationLists)[number], VehiclePosition[]>(
+    // initial map of {[stations on the ladder]: VehiclePositions[]}
+    new Map<Ladder, VehiclePosition[]>(
       stationLists.map((stationList) => [stationList, []]),
     ),
   );
@@ -64,7 +57,6 @@ export const Ladder = ({ routeId }: { routeId: RouteId }): ReactElement => {
                   key={index}
                   stations={StationLists}
                   vps={vps}
-                  forcedDirections={forcedDirections}
                 />
               ),
             )}
@@ -77,11 +69,9 @@ export const Ladder = ({ routeId }: { routeId: RouteId }): ReactElement => {
 const TrainsAndStations = ({
   stations,
   vps,
-  forcedDirections,
 }: {
-  stations: Station[];
+  stations: Ladder;
   vps: VehiclePosition[];
-  forcedDirections: Map<string, number> | null;
 }): ReactElement => {
   return (
     <div className="relative flex">
@@ -107,9 +97,18 @@ const TrainsAndStations = ({
             "Red-Ashmont"
           : "Red-Braintree";
 
+        const stationWithForcedDirection = stations.find(
+          (station) =>
+            station.forcedDirections !== undefined &&
+            station.stop_ids.some((stop_id) => stop_id === vp.stopId),
+        );
         const direction: number =
-          vp.stopId && forcedDirections?.has(vp.stopId) ?
-            (forcedDirections.get(vp.stopId) ?? vp.directionId)
+          (
+            vp.stopId &&
+            stationWithForcedDirection?.forcedDirections !== undefined
+          ) ?
+            (stationWithForcedDirection.forcedDirections.get(vp.stopId) ??
+            vp.directionId)
           : vp.directionId;
 
         return (
@@ -126,7 +125,7 @@ const TrainsAndStations = ({
   );
 };
 
-const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
+const StationList = ({ stations }: { stations: Ladder }): ReactElement => {
   return (
     <div className="mt-20 mb-20">
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
