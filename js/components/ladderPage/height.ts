@@ -1,8 +1,8 @@
-import { Ladder } from "../../data/stations";
+import { LadderConfig } from "../../data/stations";
 import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 
-export const height = (pos: VehiclePosition, stationList: Ladder) => {
+export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
   let height = 68;
   let index = -1;
   // add up the bottom margins of stations while finding the vp's station's index
@@ -30,31 +30,36 @@ export const height = (pos: VehiclePosition, stationList: Ladder) => {
     return height;
   }
 
-  // proportionally backtrack progress if train is still in transit towards the station
-  let start: LatLng = { latitude: 0.0, longitude: 0.0 };
-  const finish = currentStation.location;
-  let travelLength = 0.0;
-  if (pos.directionId === 0) {
-    // handle case where trains InTransitTo are "above" the first station
-    if (index === 0) {
-      return 20;
-    }
-    const prevStation = stationList[index - 1];
-    start = prevStation.location;
-    travelLength = prevStation.spacingRatio * 32 + 24;
-  } else {
-    // handle case where trains InTransitTo are "below" the first station
-    if (index === stationList.length - 1) {
-      return height + 40;
-    }
-    travelLength = currentStation.spacingRatio * 32 + 24;
+  // --- proportionally backtrack progress if train is still in transit towards the station ---
 
-    // northbound StationLists are in reverse order of travel (up). to backtrack
-    // progress towards the station the vp is in relation to, we must add on the
-    // current station's bottom margin (aka the travelLength) to travel back towards it
-    height += travelLength;
-    start = stationList[index + 1].location;
+  // handle case where trains InTransitTo are "above" the first station
+  if (pos.directionId === 0 && index === 0) {
+    return 20;
   }
+  // handle case where trains InTransitTo are "below" the first station
+  if (pos.directionId === 1 && index === stationList.length - 1) {
+    return height + 40;
+  }
+
+  const start =
+    pos.directionId === 0 ?
+      stationList[index - 1].location
+    : stationList[index + 1].location;
+
+  const finish = currentStation.location;
+
+  const travelLength =
+    pos.directionId === 0 ?
+      stationList[index - 1].spacingRatio * 32 + 24
+    : currentStation.spacingRatio * 32 + 24;
+
+  // northbound StationLists are in reverse order of travel (up). to backtrack
+  // progress towards the station the vp is in relation to, we must add on the
+  // current station's bottom margin (aka the travelLength) to travel back towards it
+  if (pos.directionId === 1) {
+    height += travelLength;
+  }
+
   if (pos.position !== null) {
     height -= proportionalProgress(
       start,

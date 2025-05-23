@@ -1,4 +1,4 @@
-import { Ladder, Stations } from "../../data/stations";
+import { LadderConfig, Stations } from "../../data/stations";
 import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { RouteId } from "../../models/common";
@@ -28,7 +28,7 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
       return accumulator;
     },
     // initial map of {[stations on the ladder]: VehiclePositions[]}
-    new Map<Ladder, VehiclePosition[]>(
+    new Map<LadderConfig, VehiclePosition[]>(
       stationLists.map((stationList) => [stationList, []]),
     ),
   );
@@ -70,7 +70,7 @@ const TrainsAndStations = ({
   stations,
   vps,
 }: {
-  stations: Ladder;
+  stations: LadderConfig;
   vps: VehiclePosition[];
 }): ReactElement => {
   return (
@@ -125,7 +125,11 @@ const TrainsAndStations = ({
   );
 };
 
-const StationList = ({ stations }: { stations: Ladder }): ReactElement => {
+const StationList = ({
+  stations,
+}: {
+  stations: LadderConfig;
+}): ReactElement => {
   return (
     <div className="mt-20 mb-20">
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">

@@ -72,7 +72,7 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <Ladders routeId={"Red"} />,
+        element: <Ladders routeId="Red" />,
       },
     ],
   },

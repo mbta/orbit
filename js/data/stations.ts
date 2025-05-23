@@ -1,9 +1,9 @@
 import { RouteId } from "../models/common";
 import { Station } from "../models/station";
 
-export type Ladder = Station[];
+export type LadderConfig = Station[];
 
-export const Stations: Record<RouteId, Ladder[]> = {
+export const Stations: Record<RouteId, LadderConfig[]> = {
   Red: [
     // Alewife <-> Andrew
     [
