@@ -12,6 +12,7 @@ defmodule Realtime.Data.VehiclePosition do
           position: Util.Position.t(),
           heading: float() | nil,
           station_id: String.t() | nil,
+          stop_id: String.t() | nil,
           current_status: :INCOMING_AT | :STOPPED_AT | :IN_TRANSIT_TO,
           timestamp: DateTime.t(),
           # GTFS-RT id, e.g. "R-54826B16".
@@ -28,6 +29,7 @@ defmodule Realtime.Data.VehiclePosition do
              :position,
              :heading,
              :station_id,
+             :stop_id,
              :current_status,
              :timestamp,
              :vehicle_id,
@@ -41,6 +43,7 @@ defmodule Realtime.Data.VehiclePosition do
     field(:position, Util.PositionType)
     field(:heading, :float, default: nil)
     field(:station_id, :string, default: nil)
+    field(:stop_id, :string, default: nil)
     field(:current_status, Util.AtomType, default: :IN_TRANSIT_TO)
     field(:timestamp, :utc_datetime)
     field(:vehicle_id, :string, virtual: true, default: nil)

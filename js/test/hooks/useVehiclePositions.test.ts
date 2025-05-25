@@ -41,7 +41,8 @@ describe("useVehiclePositions", () => {
         expect.objectContaining({
           label: "1877",
           routeId: "Red",
-          stationId: "70096",
+          stationId: "place-jfk",
+          stopId: "70096",
         }),
       ],
     });

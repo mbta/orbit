@@ -80,4 +80,16 @@ describe("proportionBetweenLatLngs", () => {
     };
     expect(proportionBetweenLatLngs(a, b, point)).toBeCloseTo(0.75);
   });
+
+  test("same start and finish returns null", () => {
+    const c: LatLng = {
+      latitude: 1.0,
+      longitude: 11.0,
+    };
+    const point: LatLng = {
+      latitude: 1.5,
+      longitude: 11.5,
+    };
+    expect(proportionBetweenLatLngs(a, c, point)).toBeNull();
+  });
 });

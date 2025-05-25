@@ -36,6 +36,7 @@ defmodule Realtime.RTR do
       position: parse_position(vehicle["position"]),
       heading: vehicle["position"]["bearing"],
       station_id: Realtime.Data.Stations.platforms_to_stations()[vehicle["stop_id"]],
+      stop_id: vehicle["stop_id"],
       current_status: parse_current_status(vehicle["current_status"]),
       timestamp: DateTime.from_unix!(vehicle["timestamp"]),
       vehicle_id: vehicle["vehicle"]["id"],

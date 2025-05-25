@@ -24,6 +24,7 @@ defmodule Realtime.RTRTest do
                  position: %Util.Position{latitude: 42.36393, longitude: -71.10155},
                  heading: 130.0,
                  station_id: "place-knncl",
+                 stop_id: "70071",
                  current_status: :INCOMING_AT,
                  timestamp: ~U[2025-04-23 16:06:35Z],
                  vehicle_id: "R-5482A2DC"

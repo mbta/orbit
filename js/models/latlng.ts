@@ -23,7 +23,7 @@ export const proportionBetweenLatLngs = (
   start: LatLng,
   finish: LatLng,
   point: LatLng,
-): number => {
+): number | null => {
   const totalLatDelta: number = finish.latitude - start.latitude;
   const totalLngDelta: number = finish.longitude - start.longitude;
   const pointLatDelta: number = point.latitude - start.latitude;
@@ -32,5 +32,7 @@ export const proportionBetweenLatLngs = (
     totalLatDelta * pointLatDelta + totalLngDelta * pointLngDelta;
   const startToFinishMagnitudeSquared: number =
     totalLatDelta * totalLatDelta + totalLngDelta * totalLngDelta;
-  return dotProductStartToPoint / startToFinishMagnitudeSquared;
+  return startToFinishMagnitudeSquared === 0.0 ? null : (
+      dotProductStartToPoint / startToFinishMagnitudeSquared
+    );
 };
