@@ -52,10 +52,10 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
         <div className="relative flex px-80 overflow-x-auto">
           {vpsByBranch &&
             Array.from(vpsByBranch.entries()).map(
-              ([StationLists, vps], index) => (
+              ([stationList, vps], index) => (
                 <TrainsAndStations
                   key={index}
-                  stations={StationLists}
+                  ladderConfig={stationList}
                   vps={vps}
                 />
               ),
@@ -67,37 +67,44 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
 };
 
 const TrainsAndStations = ({
-  stations,
+  ladderConfig,
   vps,
 }: {
-  stations: LadderConfig;
+  ladderConfig: LadderConfig;
   vps: VehiclePosition[];
 }): ReactElement => {
   return (
     <div className="relative flex">
-      <StationList stations={stations} />
+      <StationList stations={ladderConfig} />
       {vps.map((vp) => {
+        // should still be able to render trains that ARE StoppedAt a station,
+        // even if they have a null position
         if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
           return null;
         }
 
-        const trainHeight = height(vp, stations);
-        // add 80 for top margin above the station list borders
-        const px = trainHeight === -1 ? -1 : trainHeight + 80;
-        if (px === -1) {
+        const trainHeight = height(vp, ladderConfig);
+        if (trainHeight === -1) {
           console.error(
-            `VehiclePosition ${vp.vehicleId} not found on station list.`,
+            `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
+          );
+          return null;
+        } else if (trainHeight === null) {
+          console.error(
+            `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
           );
           return null;
         }
+        // add 80 for top margin above the station list borders
+        const px = trainHeight + 80;
 
         // TODO: this flat-out ignores that Ashmont-bound trains may be on the main ladder
         const route =
-          stations.some((station) => station.id === "place-asmnl") ?
+          ladderConfig.some((station) => station.id === "place-asmnl") ?
             "Red-Ashmont"
           : "Red-Braintree";
 
-        const stationWithForcedDirection = stations.find(
+        const stationWithForcedDirection = ladderConfig.find(
           (station) =>
             station.forcedDirections !== undefined &&
             station.stop_ids.some((stop_id) => stop_id === vp.stopId),

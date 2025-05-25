@@ -81,7 +81,7 @@ describe("proportionBetweenLatLngs", () => {
     expect(proportionBetweenLatLngs(a, b, point)).toBeCloseTo(0.75);
   });
 
-  test("same start and finish returns 0.0", () => {
+  test("same start and finish returns null", () => {
     const c: LatLng = {
       latitude: 1.0,
       longitude: 11.0,
@@ -90,6 +90,6 @@ describe("proportionBetweenLatLngs", () => {
       latitude: 1.5,
       longitude: 11.5,
     };
-    expect(proportionBetweenLatLngs(a, c, point)).toBe(0.0);
+    expect(proportionBetweenLatLngs(a, c, point)).toBeNull();
   });
 });

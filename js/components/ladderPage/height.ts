@@ -35,9 +35,8 @@ export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
   // handle case where trains InTransitTo are "above" the first station
   if (pos.directionId === 0 && index === 0) {
     return 20;
-  }
-  // handle case where trains InTransitTo are "below" the first station
-  if (pos.directionId === 1 && index === stationList.length - 1) {
+  } else if (pos.directionId === 1 && index === stationList.length - 1) {
+    // handle case where trains InTransitTo are "below" the first station
     return height + 40;
   }
 
@@ -61,13 +60,18 @@ export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
   }
 
   if (pos.position !== null) {
-    height -= proportionalProgress(
+    const progress = proportionalProgress(
       start,
       finish,
       pos.position,
       travelLength,
       pos.directionId,
     );
+    if (progress) {
+      height -= progress;
+    } else {
+      return null;
+    }
   }
   return height;
 };
@@ -84,9 +88,13 @@ const proportionalProgress = (
     finish,
     point,
   );
-  if (direction === 0) {
-    return (1 - proportionBetweenStartFinish) * travelLength;
+  if (proportionBetweenStartFinish) {
+    if (direction === 0) {
+      return (1 - proportionBetweenStartFinish) * travelLength;
+    } else {
+      return proportionBetweenStartFinish * travelLength;
+    }
   } else {
-    return proportionBetweenStartFinish * travelLength;
+    return null;
   }
 };
