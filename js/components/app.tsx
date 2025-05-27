@@ -4,6 +4,7 @@ import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
 import { Ladder } from "./ladderPage/ladder";
+import { LandingPage } from "./landing";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
 import { captureException } from "@sentry/react";
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: paths.operators,
         element: <Operators />,
+      },
+      {
+        path: paths.landing,
+        element: <LandingPage />,
       },
     ],
   },

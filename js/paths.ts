@@ -5,4 +5,5 @@ export const paths = {
   help: "/help",
   logout: "/logout",
   ladder: "/ladder",
+  landing: "/landing",
 } as const;
