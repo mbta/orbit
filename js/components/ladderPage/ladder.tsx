@@ -1,17 +1,47 @@
-import { StationSets } from "../../data/stations";
+import { LadderConfig, Stations } from "../../data/stations";
+import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
-import { Station } from "../../models/station";
+import { RouteId } from "../../models/common";
+import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { height } from "./height";
 import { Train } from "./train";
 import { ReactElement } from "react";
 
-export const Ladder = (): ReactElement => {
+export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
+  const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
+  const stationLists = Stations[routeId];
+
+  const vpsByBranch = vehiclePositions?.reduce(
+    (accumulator, vp) => {
+      // find which StationList contains a Station whose id matches the VehiclePosition's station
+      const matchingStationList = stationLists.find((stations) =>
+        // check if any station within the current stations array includes the VehiclePosition's stopId
+        stations.some((station) =>
+          station.stop_ids.some((stopId) => stopId === vp.stopId),
+        ),
+      );
+      if (matchingStationList) {
+        const vpsForStationList = accumulator.get(matchingStationList);
+        vpsForStationList?.push(vp);
+      }
+      return accumulator;
+    },
+    // initial map of {[stations on the ladder]: VehiclePositions[]}
+    new Map<LadderConfig, VehiclePosition[]>(
+      stationLists.map((stationList) => [stationList, []]),
+    ),
+  );
+
   return (
     <>
       <span>
         Status:{" "}
-        {vehiclePositions !== null ?
-          <>Connected ({vehiclePositions.length} vehicles)</>
+        {vehiclePositions !== null && tripUpdates !== null ?
+          <>
+            Connected ({vehiclePositions.length} vehicles, {tripUpdates.length}{" "}
+            tripUpdates)
+          </>
         : <>Loading...</>}
       </span>
 
@@ -20,42 +50,88 @@ export const Ladder = (): ReactElement => {
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
         <div className="relative flex px-80 overflow-x-auto">
-          <TrainsAndStations stations={StationSets.AlewifeAndrew} />
-          <TrainsAndStations stations={StationSets.JFKAshmont} />
-          <TrainsAndStations stations={StationSets.JFKBraintree} />
-          <div className="absolute top-[284px] left-[344px]">
-            <Train
-              route="Red-Braintree"
-              label="1888"
-              direction={0}
-              highlight={true}
-            />
-          </div>
-          <div className="absolute top-[316px] left-[1024px]">
-            <Train route="Red-Ashmont" label="1889" direction={1} />
-          </div>
+          {vpsByBranch &&
+            Array.from(vpsByBranch.entries()).map(
+              ([stationList, vps], index) => (
+                <TrainsAndStations
+                  key={index}
+                  ladderConfig={stationList}
+                  vps={vps}
+                />
+              ),
+            )}
         </div>
       </div>
     </>
   );
 };
 
-// TODO: accept VehiclePositions and use them to determine the <Train />'s to render
 const TrainsAndStations = ({
-  stations,
-  // vps
+  ladderConfig,
+  vps,
 }: {
-  stations: Station[];
-  // vps: VehiclePosition[]
+  ladderConfig: LadderConfig;
+  vps: VehiclePosition[];
 }): ReactElement => {
   return (
     <div className="relative flex">
-      <StationList stations={stations} />
+      <StationList stations={ladderConfig} />
+      {vps.map((vp) => {
+        // should still be able to render trains that ARE StoppedAt a station,
+        // even if they have a null position
+        if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
+          return null;
+        }
+
+        const trainHeight = height(vp, ladderConfig);
+        if (trainHeight === -1) {
+          console.error(
+            `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
+          );
+          return null;
+        } else if (trainHeight === null) {
+          console.error(
+            `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
+          );
+          return null;
+        }
+        // add 80 for top margin above the station list borders
+        const px = trainHeight + 80;
+
+        // TODO: this flat-out ignores that Ashmont-bound trains may be on the main ladder
+        const route =
+          ladderConfig.some((station) => station.id === "place-asmnl") ?
+            "Red-Ashmont"
+          : "Red-Braintree";
+
+        const station = ladderConfig.find((station) =>
+          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
+        );
+
+        const direction =
+          vp.stopId !== null ?
+            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
+          : vp.directionId;
+
+        return (
+          <div
+            key={vp.vehicleId}
+            style={{ position: "absolute", top: `${px}px` }}
+            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
+          >
+            <Train route={route} label={vp.label} direction={direction} />
+          </div>
+        );
+      })}
     </div>
   );
 };
 
-const StationList = ({ stations }: { stations: Station[] }): ReactElement => {
+const StationList = ({
+  stations,
+}: {
+  stations: LadderConfig;
+}): ReactElement => {
   return (
     <div className="mt-20 mb-20">
       <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">

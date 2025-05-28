@@ -36,6 +36,7 @@ defmodule Realtime.RTR do
       position: parse_position(vehicle["position"]),
       heading: vehicle["position"]["bearing"],
       station_id: Realtime.Data.Stations.platforms_to_stations()[vehicle["stop_id"]],
+      stop_id: vehicle["stop_id"],
       current_status: parse_current_status(vehicle["current_status"]),
       timestamp: DateTime.from_unix!(vehicle["timestamp"]),
       vehicle_id: vehicle["vehicle"]["id"],
@@ -68,6 +69,10 @@ defmodule Realtime.RTR do
       label: trip_update["vehicle"]["label"],
       route_id: Realtime.Data.route_id_from_string(trip_update["trip"]["route_id"]),
       direction: trip_update["trip"]["direction_id"],
+      route_pattern_id: trip_update["trip"]["route_pattern_id"],
+      trip_id: trip_update["trip"]["trip_id"],
+      vehicle_id: trip_update["vehicle"]["id"],
+      timestamp: trip_update["timestamp"],
       stop_time_updates:
         (trip_update["stop_time_update"] || []) |> Enum.map(&parse_stop_time_update/1)
     }

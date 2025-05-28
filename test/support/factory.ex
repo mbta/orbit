@@ -41,6 +41,7 @@ defmodule Orbit.Factory do
       label: "1700",
       position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},
       station_id: "place-chmnl",
+      stop_id: "70073",
       current_status: :STOPPED_AT,
       timestamp: DateTime.from_unix!(1_640_000_000),
       vehicle_id: "R-547210A7"
@@ -52,6 +53,10 @@ defmodule Orbit.Factory do
       label: "1700",
       route_id: :Red,
       direction: 0,
+      trip_id: "68078228",
+      route_pattern_id: "Red-1-0",
+      vehicle_id: "R-547210A7",
+      timestamp: DateTime.from_unix!(1_640_000_000),
       stop_time_updates: [build(:stop_time_update)]
     }
   end

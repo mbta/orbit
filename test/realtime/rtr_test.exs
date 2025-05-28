@@ -24,6 +24,7 @@ defmodule Realtime.RTRTest do
                  position: %Util.Position{latitude: 42.36393, longitude: -71.10155},
                  heading: 130.0,
                  station_id: "place-knncl",
+                 stop_id: "70071",
                  current_status: :INCOMING_AT,
                  timestamp: ~U[2025-04-23 16:06:35Z],
                  vehicle_id: "R-5482A2DC"
@@ -45,7 +46,8 @@ defmodule Realtime.RTRTest do
 
   describe "TripUpdates decode from json" do
     setup do
-      {:ok, trip_updates} = File.read(__DIR__ <> "/TripUpdates_enhanced.json")
+      {:ok, trip_updates_gzipped} = File.read(__DIR__ <> "/TripUpdates_enhanced.json.gz")
+      trip_updates = :zlib.gunzip(trip_updates_gzipped)
       {:ok, trip_updates: RTR.parse_trip_updates(trip_updates)}
     end
 
@@ -53,7 +55,8 @@ defmodule Realtime.RTRTest do
       tu = Enum.at(context[:trip_updates][:entities], 0)
 
       assert %Realtime.Data.TripUpdate{
-               label: "1840",
+               label: nil,
+               vehicle_id: "R-5483204E",
                route_id: :Red,
                direction: 1
              } = tu

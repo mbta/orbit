@@ -3,7 +3,7 @@ import { SocketProvider } from "../contexts/socketContext";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
-import { Ladder } from "./ladderPage/ladder";
+import { Ladders } from "./ladderPage/ladder";
 import { LandingPage } from "./landing";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <Ladder />,
+        element: <Ladders routeId="Red" />,
       },
       {
         path: paths.operators,

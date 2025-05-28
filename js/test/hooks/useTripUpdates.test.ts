@@ -1,6 +1,7 @@
+import { dateTimeFromISO } from "../../dateTime";
 import { useChannel } from "../../hooks/useChannel";
-import { useVehiclePositions } from "../../hooks/useVehiclePositions";
-import { vehiclePositionFactory } from "../helpers/factory";
+import { useTripUpdates } from "../../hooks/useTripUpdates";
+import { tripUpdateFactory } from "../helpers/factory";
 import { renderHook } from "@testing-library/react";
 
 jest.mock("../../hooks/useChannel", () => ({
@@ -9,40 +10,40 @@ jest.mock("../../hooks/useChannel", () => ({
 }));
 const mockUseChannel = useChannel as jest.MockedFunction<typeof useChannel>;
 
-describe("useVehiclePositions", () => {
+describe("useTripUpdates", () => {
   beforeAll(() => {
     mockUseChannel.mockReturnValue({
       data: [],
     });
   });
+
   test("subscribes to the proper topic", () => {
-    renderHook(useVehiclePositions);
+    renderHook(useTripUpdates);
     expect(mockUseChannel).toHaveBeenCalledWith(
       expect.objectContaining({
-        topic: "train_locations",
-        event: "vehicle_positions",
+        topic: "trip_updates",
+        event: "trip_updates",
       }),
     );
   });
 
-  test("parses no vehicle positions", () => {
-    const { result } = renderHook(useVehiclePositions);
-    expect(result.current).toEqual({ data: [] });
-  });
-
-  test("parses one vehicle position", () => {
+  test("parses a trip update", () => {
     mockUseChannel.mockReturnValue({
-      data: [vehiclePositionFactory.build()],
+      data: [tripUpdateFactory.build()],
     });
-    const { result } = renderHook(useVehiclePositions);
+    const { result } = renderHook(useTripUpdates);
 
     expect(result.current).toEqual({
       data: [
         expect.objectContaining({
           label: "1877",
           routeId: "Red",
-          stationId: "place-jfk",
-          stopId: "70096",
+          timestamp: dateTimeFromISO("2025-04-29T21:27:26.679Z"),
+          stopTimeUpdates: [
+            expect.objectContaining({
+              stationId: "place-brdwy",
+            }),
+          ],
         }),
       ],
     });

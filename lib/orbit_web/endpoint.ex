@@ -16,7 +16,7 @@ defmodule OrbitWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  socket "/socket", OrbitWeb.UserSocket
+  socket "/socket", OrbitWeb.UserSocket, websocket: [compress: true]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
