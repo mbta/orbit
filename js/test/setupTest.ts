@@ -4,7 +4,6 @@ import { neverPromise } from "./helpers/promiseWithResolvers";
 // add all jest-extended matchers
 import * as jestExtendedMatchers from "jest-extended";
 import { Channel, Push, Socket } from "phoenix";
-import "whatwg-fetch";
 
 expect.extend(jestExtendedMatchers);
 
