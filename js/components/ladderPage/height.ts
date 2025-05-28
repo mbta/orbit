@@ -67,10 +67,10 @@ export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
       travelLength,
       pos.directionId,
     );
-    if (progress) {
-      height -= progress;
-    } else {
+    if (progress === null) {
       return null;
+    } else {
+      height -= progress;
     }
   }
   return height;
@@ -88,13 +88,13 @@ const proportionalProgress = (
     finish,
     point,
   );
-  if (proportionBetweenStartFinish) {
-    if (direction === 0) {
-      return (1 - proportionBetweenStartFinish) * travelLength;
-    } else {
-      return proportionBetweenStartFinish * travelLength;
-    }
-  } else {
+  if (proportionBetweenStartFinish === null) {
     return null;
+  }
+
+  if (direction === 0) {
+    return (1 - proportionBetweenStartFinish) * travelLength;
+  } else {
+    return proportionBetweenStartFinish * travelLength;
   }
 };

@@ -104,18 +104,13 @@ const TrainsAndStations = ({
             "Red-Ashmont"
           : "Red-Braintree";
 
-        const stationWithForcedDirection = ladderConfig.find(
-          (station) =>
-            station.forcedDirections !== undefined &&
-            station.stop_ids.some((stop_id) => stop_id === vp.stopId),
+        const station = ladderConfig.find((station) =>
+          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
         );
-        const direction: number =
-          (
-            vp.stopId &&
-            stationWithForcedDirection?.forcedDirections !== undefined
-          ) ?
-            (stationWithForcedDirection.forcedDirections.get(vp.stopId) ??
-            vp.directionId)
+
+        const direction =
+          vp.stopId !== null ?
+            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
           : vp.directionId;
 
         return (
