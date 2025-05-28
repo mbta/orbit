@@ -62,7 +62,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.root,
-        // "/" will redirect to /operators for now since blue line ffd was previously located there.
+        // "/" will redirect to "/operators" for now since blue line ffd was previously located there.
         element: <Navigate to="/operators" />,
       },
       {
