@@ -6,14 +6,14 @@ export const LandingPage = () => {
     <div className="mt-20 mx-auto w-96 flex flex-col justify-center">
       <p className="mb-6"> Which line would you like to view?</p>
       <MenuLink
-        icon={"red-line-icon"}
+        icon={"red-line"}
         iconExtraClassName="h-6 mr-2"
         to={paths.ladder}
       >
         Red Line Train Locations
       </MenuLink>
       <MenuLink
-        icon={"blue-line-icon"}
+        icon={"blue-line"}
         iconExtraClassName="h-6 mr-2"
         to={paths.operators}
       >

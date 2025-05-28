@@ -61,12 +61,12 @@ defmodule OrbitWeb.Router do
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
     get "/", ReactAppController, :home
-    get "/menu", ReactAppController, :home
-    get "/help", ReactAppController, :home
-    get "/ladder", ReactAppController, :home
-    get "/logout", AuthController, :logout
-    get "/operators", ReactAppController, :home
     get "/landing", ReactAppController, :home
+    get "/menu", ReactAppController, :home
+    get "/operators", ReactAppController, :home
+    get "/ladder", ReactAppController, :home
+    get "/help", ReactAppController, :home
+    get "/logout", AuthController, :logout
 
     get "/sign-in-export/:filename", SignInExportController, :get
     get "/sign-in-export", SignInExportController, :get_redirect
