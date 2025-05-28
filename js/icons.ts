@@ -3,6 +3,8 @@ export type IconName =
   | "clipboard"
   | "feedback"
   | "help"
+  | "blue-line"
+  | "red-line"
   | "info"
   | "logo"
   | "menu"

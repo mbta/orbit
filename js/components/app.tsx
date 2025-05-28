@@ -3,13 +3,15 @@ import { SocketProvider } from "../contexts/socketContext";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
-import { Home } from "./home";
 import { Ladders } from "./ladderPage/ladder";
+import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
+import { Operators } from "./operators";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
   useRouteError,
@@ -60,7 +62,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.root,
-        element: <Home />,
+        // "/" will redirect to "/operators" for now since blue line ffd was previously located there.
+        element: <Navigate to="/operators" />,
       },
       {
         path: paths.menu,
@@ -73,6 +76,14 @@ const router = createBrowserRouter([
       {
         path: paths.ladder,
         element: <Ladders routeId="Red" />,
+      },
+      {
+        path: paths.operators,
+        element: <Operators />,
+      },
+      {
+        path: paths.landing,
+        element: <LandingPage />,
       },
     ],
   },
