@@ -41,6 +41,7 @@ defmodule Orbit.Factory do
       label: "1700",
       position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},
       station_id: "place-chmnl",
+      stop_id: "70073",
       current_status: :STOPPED_AT,
       timestamp: DateTime.from_unix!(1_640_000_000),
       vehicle_id: "R-547210A7"

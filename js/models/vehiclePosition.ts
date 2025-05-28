@@ -32,6 +32,7 @@ export const VehiclePositionData = z.object({
     .nullable(),
   heading: z.number().nullable(),
   station_id: z.string().nullable(),
+  stop_id: z.string().nullable(),
   current_status: StopStatusData,
   timestamp: z.string().nullable(),
   vehicle_id: z.string().nullable(),
@@ -53,6 +54,7 @@ export type VehiclePosition = {
   cars: CarId[];
   position: LatLng | null;
   stationId: StationId | null;
+  stopId: string | null;
   stopStatus: StopStatus;
   heading: number | null;
   timestamp: DateTime | null;
@@ -68,6 +70,7 @@ export const vehiclePositionFromData = (
   label: data.label,
   cars: data.cars,
   stationId: data.station_id,
+  stopId: data.stop_id,
   stopStatus: stopStatusFromData(data.current_status),
   position: data.position,
   heading: data.heading,
