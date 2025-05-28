@@ -4,7 +4,7 @@ import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
 import { Ladders } from "./ladderPage/ladder";
-import { LandingPage } from "./landing";
+import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
 import { captureException } from "@sentry/react";
