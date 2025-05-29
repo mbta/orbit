@@ -17,7 +17,7 @@ defmodule Realtime.Data.VehiclePosition do
           timestamp: DateTime.t(),
           # GTFS-RT id, e.g. "R-54826B16".
           vehicle_id: String.t() | nil,
-          trip: nil
+          trip: Realtime.Data.TripDescriptor.t()
         }
 
   @derive {Jason.Encoder,
@@ -47,7 +47,7 @@ defmodule Realtime.Data.VehiclePosition do
     field(:current_status, Util.AtomType, default: :IN_TRANSIT_TO)
     field(:timestamp, :utc_datetime)
     field(:vehicle_id, :string, virtual: true, default: nil)
-    field(:trip, :map, virtual: true, default: nil)
+    field(:trip, Realtime.Data.TripDescriptorType, default: nil)
     timestamps()
   end
 end
