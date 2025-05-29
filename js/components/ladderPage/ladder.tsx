@@ -3,6 +3,7 @@ import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { RouteId } from "../../models/common";
 import {
+  trainRoutePatternFromVehicle,
   Vehicle,
   vehiclesFromPositionsAndTripUpdates,
 } from "../../models/vehicle";
@@ -108,11 +109,15 @@ const TrainsAndStations = ({
         // add 80 for top margin above the station list borders
         const px = trainHeight + 80;
 
-        // TODO: this flat-out ignores that Ashmont-bound trains may be on the main ladder
-        const route =
-          ladderConfig.some((station) => station.id === "place-asmnl") ?
-            "Red-Ashmont"
-          : "Red-Braintree";
+        // TODO: Discuss if we actually want to keep the ladder-based logic here, or just always
+        // rely on the pattern name.
+        const isAshmontLadder = ladderConfig.some(
+          (station) => station.id === "place-asmnl",
+        );
+        const routePattern =
+          isAshmontLadder ? "Red-Ashmont" : (
+            (trainRoutePatternFromVehicle(vehicle) ?? "Red-Braintree")
+          );
 
         const station = ladderConfig.find((station) =>
           station.stop_ids.some((stop_id) => stop_id === vp.stopId),
@@ -129,7 +134,11 @@ const TrainsAndStations = ({
             style={{ position: "absolute", top: `${px}px` }}
             className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
-            <Train route={route} label={vp.label} direction={direction} />
+            <Train
+              routePattern={routePattern}
+              label={vp.label}
+              direction={direction}
+            />
           </div>
         );
       })}
