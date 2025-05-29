@@ -14,6 +14,7 @@ export type TripUpdate = {
   label: string | null;
   routeId: RouteId;
   direction: number;
+  // TODO: Verify nullability of this field.
   routePatternId: string | null;
   tripId: string;
   vehicleId: string;
