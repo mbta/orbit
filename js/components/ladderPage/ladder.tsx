@@ -114,10 +114,13 @@ const TrainsAndStations = ({
         const isAshmontLadder = ladderConfig.some(
           (station) => station.id === "place-asmnl",
         );
+        const isBraintreeLadder = ladderConfig.some(
+          (station) => station.id === "place-brntn",
+        );
         const routePattern =
-          isAshmontLadder ? "Red-Ashmont" : (
-            (trainRoutePatternFromVehicle(vehicle) ?? "Red-Braintree")
-          );
+          isAshmontLadder ? "Red-Ashmont"
+          : isBraintreeLadder ? "Red-Braintree"
+          : (trainRoutePatternFromVehicle(vehicle) ?? "Red-Braintree");
 
         const station = ladderConfig.find((station) =>
           station.stop_ids.some((stop_id) => stop_id === vp.stopId),
