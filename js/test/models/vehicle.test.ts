@@ -1,5 +1,15 @@
-import { vehiclesFromPositionsAndTripUpdates } from "../../models/vehicle";
-import { tripUpdateFactory, vehiclePositionFactory } from "../helpers/factory";
+import { trainRoutePatternFromId } from "../../models/trainRoutePattern";
+import {
+  trainRoutePatternFromVehicle,
+  vehiclesFromPositionsAndTripUpdates,
+} from "../../models/vehicle";
+import {
+  tripUpdateFactory,
+  vehicleFactory,
+  vehiclePositionFactory,
+} from "../helpers/factory";
+
+jest.mock("../../models/trainRoutePattern");
 
 describe("vehiclesFromPositionsAndTripUpdates", () => {
   test("matches vehicle positions and trip updates", () => {
@@ -54,5 +64,31 @@ describe("vehiclesFromPositionsAndTripUpdates", () => {
     expect(v1890?.tripUpdate).toBeUndefined();
     expect(v1891).toBeDefined();
     expect(v1891?.tripUpdate).toBeUndefined();
+  });
+});
+
+describe("trainRoutePatternFromVehicle", () => {
+  test("derives route patterns from trip update route_pattern_id", () => {
+    jest.mocked(trainRoutePatternFromId).mockReturnValue("Red-Ashmont");
+    const vehicle = vehicleFactory.build({
+      tripUpdate: tripUpdateFactory.build({
+        routePatternId: "Red-1-0",
+      }),
+    });
+    expect(trainRoutePatternFromVehicle(vehicle)).toBe("Red-Ashmont");
+    expect(trainRoutePatternFromId).toHaveBeenCalledWith("Red-1-0");
+  });
+
+  test("returns undefined if tripUpdate or pattern ID is missing", () => {
+    const vehicle1 = vehicleFactory.build({
+      tripUpdate: tripUpdateFactory.build({
+        routePatternId: null,
+      }),
+    });
+    const vehicle2 = vehicleFactory.build({
+      tripUpdate: undefined,
+    });
+    expect(trainRoutePatternFromVehicle(vehicle1)).toBeUndefined();
+    expect(trainRoutePatternFromVehicle(vehicle2)).toBeUndefined();
   });
 });
