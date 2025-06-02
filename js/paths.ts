@@ -6,4 +6,5 @@ export const paths = {
   ladder: "/ladder",
   help: "/help",
   logout: "/logout",
+  noperms: "/no-permissions"
 } as const;

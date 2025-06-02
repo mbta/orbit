@@ -46,6 +46,11 @@ defmodule OrbitWeb.Router do
     plug(OrbitWeb.Plugs.RequireLogin)
   end
 
+  pipeline :authorized do
+    plug :authenticated
+    plug(OrbitWeb.Plugs.RequireOrbitBl)
+  end
+
   scope "/", OrbitWeb do
     pipe_through :accepts_html
 
@@ -60,12 +65,13 @@ defmodule OrbitWeb.Router do
 
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
-    get "/", ReactAppController, :home
+    # get "/", ReactAppController, :home
     get "/landing", ReactAppController, :home
     get "/menu", ReactAppController, :home
-    get "/operators", ReactAppController, :home
+    # get "/operators", ReactAppController, :home
     get "/ladder", ReactAppController, :home
     get "/help", ReactAppController, :home
+    get "no-permissions", ReactAppController, :home
     get "/logout", AuthController, :logout
 
     get "/sign-in-export/:filename", SignInExportController, :get
@@ -73,9 +79,19 @@ defmodule OrbitWeb.Router do
   end
 
   scope "/", OrbitWeb do
+    pipe_through :accepts_html
+
+    # pipe_through :authenticated
+    pipe_through :authorized
+    get "/", ReactAppController, :home
+    get "/operators", ReactAppController, :home
+  end
+
+  scope "/", OrbitWeb do
     pipe_through :browser
     pipe_through :api
     pipe_through :authenticated
+    # pipe_through :authorized
 
     get "/api/employees", EmployeesController, :index
     get "/api/certifications", CertificationsController, :index

@@ -6,6 +6,7 @@ import { Header } from "./header";
 import { Ladders } from "./ladderPage/ladder";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
+import { NoPermissions } from "./noPermissions";
 import { Operators } from "./operators";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: paths.landing,
         element: <LandingPage />,
+      },
+      {
+        path: paths.noperms,
+        element: <NoPermissions />,
       },
     ],
   },

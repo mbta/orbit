@@ -22,6 +22,8 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
             <label>
               <input type="checkbox" name="groups[]" value="orbit-admin">
               orbit-admin group
+              <input type="checkbox" name="groups[]" value="orbit-bl-test">
+              orbit-bl-test group
             </label>
             </div>
             <div>
@@ -37,7 +39,8 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
   @impl Ueberauth.Strategy
   def handle_callback!(conn) do
     # add a /.../callback?invalid query param to mock an invalid token for testing
-    if Map.has_key?(conn.params, "invalid") or is_nil(conn.params["email"]) do
+    if Map.has_key?(conn.params, "invalid") or is_nil(conn.params["email"]) or
+         conn.params["email"] === "" do
       set_errors!(conn, [error("invalid", "invalid callback")])
     else
       conn
@@ -73,6 +76,7 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
 
   @impl Ueberauth.Strategy
   def extra(conn) do
+    # setting groups via string html form above
     groups = conn.params["groups"] || []
 
     keycloak_client_id =

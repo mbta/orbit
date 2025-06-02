@@ -15,8 +15,15 @@ defmodule OrbitWeb.Auth.Guardian do
           {:ok, Guardian.Token.resource()} | {:error, atom()}
   def resource_from_claims(%{"sub" => id, "groups" => groups}) do
     case Repo.get_by(User, email: id) do
-      nil -> {:error, :user_not_found}
-      user -> {:ok, %User{user | admin?: @admin_group in groups}}
+      nil ->
+        {:error, :user_not_found}
+      user ->
+        IO.puts("-----------------------USER'S GROUPS--------------------------")
+        IO.puts(groups)
+        theUser = %User{user | groups: groups, admin?: @admin_group in groups}
+        IO.puts("theUser's groups field:")
+        IO.puts(theUser.groups)
+        {:ok, theUser}
     end
   end
 end
