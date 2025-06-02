@@ -25,7 +25,7 @@ export const vehiclesFromPositionsAndTripUpdates = (
   }
 
   return vehiclePositions.map((vehiclePosition) => {
-    const tripId = vehiclePosition.trip?.tripId;
+    const tripId = vehiclePosition.tripId;
     const tripUpdate = tripId && tripUpdateById.get(tripId);
     return {
       vehiclePosition,

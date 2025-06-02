@@ -38,7 +38,7 @@ export const vehiclePositionFactory = Factory.define<VehiclePosition>(() => ({
   stopStatus: StopStatus.InTransitTo,
   timestamp: dateTimeFromISO("2025-04-29T21:27:26.679Z"),
   vehicleId: "R-5482CAAA",
-  trip: { tripId: "68077971" },
+  tripId: "68077971",
 }));
 
 export const stopTimeUpdateFactory = Factory.define<StopTimeUpdate>(() => ({

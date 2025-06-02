@@ -1,11 +1,6 @@
 import { dateTimeFromISO } from "../dateTime";
 import { CarId, DirectionId, RouteId, StationId } from "./common";
 import { LatLng } from "./latlng";
-import {
-  TripDescriptor,
-  TripDescriptorData,
-  tripDescriptorFromData,
-} from "./tripDescriptor";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
@@ -41,7 +36,7 @@ export const VehiclePositionData = z.object({
   current_status: StopStatusData,
   timestamp: z.string().nullable(),
   vehicle_id: z.string().nullable(),
-  trip: TripDescriptorData,
+  trip_id: z.string().nullable(),
 });
 export type VehiclePositionData = z.infer<typeof VehiclePositionData>;
 
@@ -65,7 +60,7 @@ export type VehiclePosition = {
   heading: number | null;
   timestamp: DateTime | null;
   vehicleId: string | null;
-  trip: TripDescriptor | null;
+  tripId: string | null;
 };
 
 export const vehiclePositionFromData = (
@@ -82,5 +77,5 @@ export const vehiclePositionFromData = (
   heading: data.heading,
   timestamp: data.timestamp !== null ? dateTimeFromISO(data.timestamp) : null,
   vehicleId: data.vehicle_id,
-  trip: tripDescriptorFromData(data.trip),
+  tripId: data.trip_id,
 });

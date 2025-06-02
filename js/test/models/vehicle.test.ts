@@ -16,19 +16,19 @@ describe("vehiclesFromPositionsAndTripUpdates", () => {
     const vehiclePositions = [
       vehiclePositionFactory.build({
         label: "1888",
-        trip: { tripId: "11111" },
+        tripId: "11111",
       }),
       vehiclePositionFactory.build({
         label: "1889",
-        trip: { tripId: "22222" },
+        tripId: "22222",
       }),
       vehiclePositionFactory.build({
         label: "1890",
-        trip: { tripId: "33333" },
+        tripId: "33333",
       }),
       vehiclePositionFactory.build({
         label: "1891",
-        trip: null,
+        tripId: null,
       }),
     ];
 

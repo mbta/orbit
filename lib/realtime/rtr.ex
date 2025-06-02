@@ -3,7 +3,6 @@ defmodule Realtime.RTR do
   for parsing data out of RTR's json feeds
   """
 
-  alias Realtime.Data.TripDescriptor
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.PollingServer
@@ -41,7 +40,7 @@ defmodule Realtime.RTR do
       current_status: parse_current_status(vehicle["current_status"]),
       timestamp: DateTime.from_unix!(vehicle["timestamp"]),
       vehicle_id: vehicle["vehicle"]["id"],
-      trip: parse_trip_descriptor(vehicle["trip"])
+      trip_id: vehicle["trip"]["trip_id"]
     }
   end
 
@@ -103,9 +102,4 @@ defmodule Realtime.RTR do
   defp parse_current_status("INCOMING_AT"), do: :INCOMING_AT
   defp parse_current_status("STOPPED_AT"), do: :STOPPED_AT
   defp parse_current_status("IN_TRANSIT_TO"), do: :IN_TRANSIT_TO
-
-  @spec parse_trip_descriptor(map() | nil) :: TripDescriptor.t() | nil
-  defp parse_trip_descriptor(%{"trip_id" => trip_id}) do
-    %TripDescriptor{trip_id: trip_id}
-  end
 end

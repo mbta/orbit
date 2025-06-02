@@ -28,7 +28,7 @@ defmodule Realtime.RTRTest do
                  current_status: :INCOMING_AT,
                  timestamp: ~U[2025-04-23 16:06:35Z],
                  vehicle_id: "R-5482A2DC",
-                 trip: %Realtime.Data.TripDescriptor{trip_id: "67994935"}
+                 trip_id: "67994935"
                }
              ]
     end

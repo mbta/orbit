@@ -87,13 +87,13 @@ describe("Ladder", () => {
             label: "1888",
             stationId: "place-davis",
             stopId: "70064",
-            trip: { tripId: "11111" },
+            tripId: "11111",
           }),
           vehiclePositionFactory.build({
             label: "1889",
             stationId: "place-davis",
             stopId: "70064",
-            trip: { tripId: "22222" },
+            tripId: "22222",
           }),
         ]);
 
@@ -112,13 +112,13 @@ describe("Ladder", () => {
             label: "1888",
             stationId: "place-jfk",
             stopId: "70085",
-            trip: { tripId: "11111" },
+            tripId: "11111",
           }),
           vehiclePositionFactory.build({
             label: "1889",
             stationId: "place-jfk",
             stopId: "70086",
-            trip: { tripId: "22222" },
+            tripId: "22222",
           }),
         ]);
 
@@ -137,13 +137,13 @@ describe("Ladder", () => {
             label: "1888",
             stationId: "place-jfk",
             stopId: "70095",
-            trip: { tripId: "11111" },
+            tripId: "11111",
           }),
           vehiclePositionFactory.build({
             label: "1889",
             stationId: "place-jfk",
             stopId: "70096",
-            trip: { tripId: "22222" },
+            tripId: "22222",
           }),
         ]);
 
