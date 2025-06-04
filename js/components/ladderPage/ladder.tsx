@@ -87,24 +87,6 @@ const TrainsAndStations = ({
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
 }): ReactElement => {
-  const themeForVehicle = (vehicle: Vehicle): TrainTheme => {
-    const routePatternId = vehicle.tripUpdate?.routePatternId;
-    const themeFromRoute =
-      routePatternId != null ?
-        trainThemesByRoutePattern.get(routePatternId)
-      : null;
-    if (themeFromRoute) {
-      return themeFromRoute;
-    }
-
-    // Route pattern is missing or unfamiliar. Guess colors based on current
-    // ladder segment, with Braintree colors as fallback.
-    const isAshmontLadder = ladderConfig.some(
-      (station) => station.id === "place-asmnl",
-    );
-    return isAshmontLadder ? TrainThemes.tangerine : TrainThemes.crimson;
-  };
-
   return (
     <div className="relative flex">
       <StationList stations={ladderConfig} />
@@ -131,7 +113,7 @@ const TrainsAndStations = ({
         // add 80 for top margin above the station list borders
         const px = trainHeight + 80;
 
-        const trainTheme = themeForVehicle(vehicle);
+        const trainTheme = themeForVehicleOnLadder(vehicle, ladderConfig);
 
         const station = ladderConfig.find((station) =>
           station.stop_ids.some((stop_id) => stop_id === vp.stopId),
@@ -200,4 +182,25 @@ const StationList = ({
       </ul>
     </div>
   );
+};
+
+const themeForVehicleOnLadder = (
+  vehicle: Vehicle,
+  ladderConfig: LadderConfig,
+): TrainTheme => {
+  const routePatternId = vehicle.tripUpdate?.routePatternId;
+  const themeFromRoute =
+    routePatternId != null ?
+      trainThemesByRoutePattern.get(routePatternId)
+    : null;
+  if (themeFromRoute) {
+    return themeFromRoute;
+  }
+
+  // Route pattern is missing or unfamiliar. Guess colors based on current
+  // ladder segment, with Braintree colors as fallback.
+  const isAshmontLadder = ladderConfig.some(
+    (station) => station.id === "place-asmnl",
+  );
+  return isAshmontLadder ? TrainThemes.tangerine : TrainThemes.crimson;
 };
