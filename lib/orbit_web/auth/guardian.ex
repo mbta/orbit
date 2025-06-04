@@ -17,12 +17,9 @@ defmodule OrbitWeb.Auth.Guardian do
     case Repo.get_by(User, email: id) do
       nil ->
         {:error, :user_not_found}
+
       user ->
-        IO.puts("-----------------------USER'S GROUPS--------------------------")
-        IO.puts(groups)
         theUser = %User{user | groups: groups, admin?: @admin_group in groups}
-        IO.puts("theUser's groups field:")
-        IO.puts(theUser.groups)
         {:ok, theUser}
     end
   end

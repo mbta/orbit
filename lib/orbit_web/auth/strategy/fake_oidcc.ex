@@ -37,6 +37,7 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
         </html>
       )
     )
+    # ^^^ TODO: rename group to final version ^^^
     |> halt()
   end
 
@@ -79,7 +80,6 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
 
   @impl Ueberauth.Strategy
   def extra(conn) do
-    # setting groups via string html form above
     groups = conn.params["groups"] || []
 
     keycloak_client_id =

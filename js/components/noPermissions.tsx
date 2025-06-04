@@ -1,3 +1,3 @@
 export const NoPermissions = () => {
-  return ("You do not have permission to view that page.")
+  return ("Email your supervisor if you think you should have permission to use this page.")
 }

@@ -6,8 +6,8 @@ import { Header } from "./header";
 import { Ladders } from "./ladderPage/ladder";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
-import { NoPermissions } from "./noPermissions";
 import { Operators } from "./operators";
+import { RequireGroup } from "./requireGroups";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
@@ -80,15 +80,16 @@ const router = createBrowserRouter([
       },
       {
         path: paths.operators,
-        element: <Operators />,
+        element: (
+          // TODO: refactor group to final version
+          <RequireGroup group={"orbit-bl-test"}>
+            <Operators />
+          </RequireGroup>
+        ),
       },
       {
         path: paths.landing,
         element: <LandingPage />,
-      },
-      {
-        path: paths.noperms,
-        element: <NoPermissions />,
       },
     ],
   },

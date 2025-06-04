@@ -14,9 +14,8 @@ defmodule OrbitWeb.Plugs.RequireOrbitBl do
       conn
     else
       conn
-      # |> Plug.Conn.put_status(:forbidden)
-      # |> Phoenix.Controller.text("You do not have permission to view this page")
-      |> Phoenix.Controller.redirect(to: "/no-permissions")
+      |> Plug.Conn.put_status(:forbidden)
+      |> Phoenix.Controller.text("Forbidden")
       |> Plug.Conn.halt()
     end
   end
