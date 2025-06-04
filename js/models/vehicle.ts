@@ -12,11 +12,6 @@ export const vehiclesFromPositionsAndTripUpdates = (
 ): Vehicle[] => {
   const tripUpdateById = new Map<string, TripUpdate>();
   for (const tripUpdate of tripUpdates) {
-    const existing = tripUpdateById.get(tripUpdate.tripId);
-    if (existing) {
-      console.error("Multiple updates for trip. Overwriting");
-      console.error(existing);
-    }
     tripUpdateById.set(tripUpdate.tripId, tripUpdate);
   }
 
