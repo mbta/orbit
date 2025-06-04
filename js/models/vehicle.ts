@@ -22,10 +22,10 @@ export const vehiclesFromPositionsAndTripUpdates = (
 
   return vehiclePositions.map((vehiclePosition) => {
     const tripId = vehiclePosition.tripId;
-    const tripUpdate = tripId && tripUpdateById.get(tripId);
+    const tripUpdate = tripId != null ? tripUpdateById.get(tripId) : undefined;
     return {
       vehiclePosition,
-      ...(tripUpdate ? { tripUpdate } : {}),
+      tripUpdate,
     };
   });
 };
