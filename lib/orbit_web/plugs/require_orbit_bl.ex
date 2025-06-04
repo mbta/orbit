@@ -10,7 +10,7 @@ defmodule OrbitWeb.Plugs.RequireOrbitBl do
   def call(conn, _opts) do
     user = Auth.logged_in_user(conn)
 
-    if user != nil and "orbit-bl-test" in user.groups do
+    if user != nil and "orbit-bl-ffd" in user.groups do
       conn
     else
       conn

@@ -26,8 +26,8 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
             </div>
             <div>
             <label>
-              <input type="checkbox" name="groups[]" value="orbit-bl-test">
-              orbit-bl-test group
+              <input type="checkbox" name="groups[]" value="orbit-bl-ffd">
+              orbit-bl-ffd group
             </label>
             </div>
             <div>
@@ -37,7 +37,6 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
         </html>
       )
     )
-    # ^^^ TODO: rename group to final version ^^^
     |> halt()
   end
 
