@@ -2,6 +2,7 @@ import { dateTimeFromISO } from "../../dateTime";
 import { Certification, CertificationData } from "../../models/certification";
 import { Employee } from "../../models/employee";
 import { StopTimeUpdate, TripUpdate } from "../../models/tripUpdate";
+import { Vehicle } from "../../models/vehicle";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { Factory } from "fishery";
 import { DateTime } from "luxon";
@@ -37,6 +38,7 @@ export const vehiclePositionFactory = Factory.define<VehiclePosition>(() => ({
   stopStatus: StopStatus.InTransitTo,
   timestamp: dateTimeFromISO("2025-04-29T21:27:26.679Z"),
   vehicleId: "R-5482CAAA",
+  tripId: "68077971",
 }));
 
 export const stopTimeUpdateFactory = Factory.define<StopTimeUpdate>(() => ({
@@ -54,4 +56,9 @@ export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
   tripId: "68078228",
   vehicleId: "R-54831F04",
   stopTimeUpdates: [stopTimeUpdateFactory.build()],
+}));
+
+export const vehicleFactory = Factory.define<Vehicle>(() => ({
+  vehiclePosition: vehiclePositionFactory.build(),
+  tripUpdate: tripUpdateFactory.build(),
 }));

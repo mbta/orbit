@@ -27,6 +27,7 @@ describe("vehiclePositionFromData", () => {
         current_status: "INCOMING_AT",
         timestamp: "2025-04-29T20:39:49Z",
         vehicle_id: "R-5482AC4E",
+        trip_id: "68077971",
       }),
     ).toEqual({
       routeId: "Red",
@@ -40,6 +41,7 @@ describe("vehiclePositionFromData", () => {
       stopStatus: StopStatus.InTransitTo,
       timestamp: dateTimeFromISO("2025-04-29T20:39:49Z"),
       vehicleId: "R-5482AC4E",
+      tripId: "68077971",
     });
   });
 
@@ -57,6 +59,7 @@ describe("vehiclePositionFromData", () => {
         current_status: "STOPPED_AT",
         timestamp: "2025-04-29T20:39:49Z",
         vehicle_id: "R-5482AC4E",
+        trip_id: "68077971",
       }),
     ).toEqual({
       routeId: "Red",
@@ -70,6 +73,7 @@ describe("vehiclePositionFromData", () => {
       stopStatus: StopStatus.StoppedAt,
       timestamp: dateTimeFromISO("2025-04-29T20:39:49Z"),
       vehicleId: "R-5482AC4E",
+      tripId: "68077971",
     });
   });
 });

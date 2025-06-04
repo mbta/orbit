@@ -40,8 +40,7 @@ defmodule Realtime.RTR do
       current_status: parse_current_status(vehicle["current_status"]),
       timestamp: DateTime.from_unix!(vehicle["timestamp"]),
       vehicle_id: vehicle["vehicle"]["id"],
-      # attached later
-      trip: nil
+      trip_id: vehicle["trip"]["trip_id"]
     }
   end
 

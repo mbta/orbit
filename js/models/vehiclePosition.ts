@@ -36,6 +36,7 @@ export const VehiclePositionData = z.object({
   current_status: StopStatusData,
   timestamp: z.string().nullable(),
   vehicle_id: z.string().nullable(),
+  trip_id: z.string().nullable(),
 });
 export type VehiclePositionData = z.infer<typeof VehiclePositionData>;
 
@@ -59,7 +60,7 @@ export type VehiclePosition = {
   heading: number | null;
   timestamp: DateTime | null;
   vehicleId: string | null;
-  // trip: TripEnd | null;
+  tripId: string | null;
 };
 
 export const vehiclePositionFromData = (
@@ -76,5 +77,5 @@ export const vehiclePositionFromData = (
   heading: data.heading,
   timestamp: data.timestamp !== null ? dateTimeFromISO(data.timestamp) : null,
   vehicleId: data.vehicle_id,
-  // trip: data.trip !== null ? tripEndFromData(data.trip) : null,
+  tripId: data.trip_id,
 });
