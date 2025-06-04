@@ -80,7 +80,7 @@ describe("Ladder", () => {
       ]);
     });
 
-    describe("when trains are on alewife branch of ladder", () => {
+    describe("when route pattern is provided", () => {
       test("renders pill color based on route pattern", () => {
         mockUseVehiclePositions.mockReturnValue([
           vehiclePositionFactory.build({
@@ -105,53 +105,67 @@ describe("Ladder", () => {
       });
     });
 
-    describe("when trains are on ashmont branch of ladder", () => {
-      test("renders orange pill color regardless of route pattern", () => {
+    describe("when route pattern is not provided", () => {
+      test("renders pill color based on portion of ladder", () => {
         mockUseVehiclePositions.mockReturnValue([
+          // Ashmont portion of ladder
           vehiclePositionFactory.build({
             label: "1888",
             stationId: "place-jfk",
             stopId: "70085",
-            tripId: "11111",
+            tripId: null,
           }),
           vehiclePositionFactory.build({
             label: "1889",
             stationId: "place-jfk",
             stopId: "70086",
-            tripId: "22222",
+            tripId: null,
+          }),
+          // Braintree portion of ladder
+          vehiclePositionFactory.build({
+            label: "1890",
+            stationId: "place-jfk",
+            stopId: "70095",
+            tripId: null,
+          }),
+          vehiclePositionFactory.build({
+            label: "1891",
+            stationId: "place-jfk",
+            stopId: "70096",
+            tripId: null,
+          }),
+          // Alewife portion of ladder
+          vehiclePositionFactory.build({
+            label: "1892",
+            stationId: "place-davis",
+            stopId: "70063",
+            tripId: null,
+          }),
+          vehiclePositionFactory.build({
+            label: "1893",
+            stationId: "place-davis",
+            stopId: "70064",
+            tripId: null,
           }),
         ]);
 
         const view = render(<Ladders routeId="Red" />);
+
+        // Ashmont defaults to orange
         expect(view.getByText("1888")).toBeInTheDocument();
         expect(view.getByText("1888")).toHaveClass("border-tangerine");
         expect(view.getByText("1889")).toBeInTheDocument();
         expect(view.getByText("1889")).toHaveClass("border-tangerine");
-      });
-    });
 
-    describe("when trains are on braintree branch of ladder", () => {
-      test("renders red pill color regardless of route pattern", () => {
-        mockUseVehiclePositions.mockReturnValue([
-          vehiclePositionFactory.build({
-            label: "1888",
-            stationId: "place-jfk",
-            stopId: "70095",
-            tripId: "11111",
-          }),
-          vehiclePositionFactory.build({
-            label: "1889",
-            stationId: "place-jfk",
-            stopId: "70096",
-            tripId: "22222",
-          }),
-        ]);
-
-        const view = render(<Ladders routeId="Red" />);
-        expect(view.getByText("1888")).toBeInTheDocument();
-        expect(view.getByText("1888")).toHaveClass("border-crimson");
-        expect(view.getByText("1889")).toBeInTheDocument();
-        expect(view.getByText("1889")).toHaveClass("border-crimson");
+        // Braintree and Alewife default to red
+        expect(view.getByText("1890")).toBeInTheDocument();
+        expect(view.getByText("1890")).toHaveClass("border-crimson");
+        expect(view.getByText("1891")).toBeInTheDocument();
+        expect(view.getByText("1891")).toHaveClass("border-crimson");
+        expect(view.getByText("1892")).toBeInTheDocument();
+        expect(view.getByText("1892")).toHaveClass("border-crimson");
+        expect(view.getByText("1893")).toBeInTheDocument();
+        expect(view.getByText("1893")).toHaveClass("border-crimson");
       });
     });
   });

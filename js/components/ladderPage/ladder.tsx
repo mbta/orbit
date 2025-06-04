@@ -3,13 +3,17 @@ import { useTripUpdates } from "../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../hooks/useVehiclePositions";
 import { RouteId } from "../../models/common";
 import {
-  trainRoutePatternFromVehicle,
   Vehicle,
   vehiclesFromPositionsAndTripUpdates,
 } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { Train } from "./train";
+import {
+  TrainTheme,
+  trainThemeFromRoutePatternId,
+  TrainThemes,
+} from "./trainTheme";
 import { ReactElement } from "react";
 
 export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
@@ -83,6 +87,24 @@ const TrainsAndStations = ({
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
 }): ReactElement => {
+  const themeForVehicle = (vehicle: Vehicle): TrainTheme => {
+    const routePatternId = vehicle.tripUpdate?.routePatternId;
+    const themeFromRoute =
+      routePatternId != null ?
+        trainThemeFromRoutePatternId(routePatternId)
+      : null;
+    if (themeFromRoute) {
+      return themeFromRoute;
+    }
+
+    // Route pattern is missing or unfamiliar. Guess colors based on current
+    // ladder segment, with Braintree colors as fallback.
+    const isAshmontLadder = ladderConfig.some(
+      (station) => station.id === "place-asmnl",
+    );
+    return isAshmontLadder ? TrainThemes.tangerine : TrainThemes.crimson;
+  };
+
   return (
     <div className="relative flex">
       <StationList stations={ladderConfig} />
@@ -109,18 +131,7 @@ const TrainsAndStations = ({
         // add 80 for top margin above the station list borders
         const px = trainHeight + 80;
 
-        // TODO: Discuss if we actually want to keep the ladder-based logic here, or just always
-        // rely on the pattern name.
-        const isAshmontLadder = ladderConfig.some(
-          (station) => station.id === "place-asmnl",
-        );
-        const isBraintreeLadder = ladderConfig.some(
-          (station) => station.id === "place-brntn",
-        );
-        const routePattern =
-          isAshmontLadder ? "Red-Ashmont"
-          : isBraintreeLadder ? "Red-Braintree"
-          : (trainRoutePatternFromVehicle(vehicle) ?? "Red-Braintree");
+        const trainTheme = themeForVehicle(vehicle);
 
         const station = ladderConfig.find((station) =>
           station.stop_ids.some((stop_id) => stop_id === vp.stopId),
@@ -137,11 +148,7 @@ const TrainsAndStations = ({
             style={{ position: "absolute", top: `${px}px` }}
             className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
-            <Train
-              routePattern={routePattern}
-              label={vp.label}
-              direction={direction}
-            />
+            <Train theme={trainTheme} label={vp.label} direction={direction} />
           </div>
         );
       })}

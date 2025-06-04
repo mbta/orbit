@@ -1,7 +1,3 @@
-import {
-  TrainRoutePattern,
-  trainRoutePatternFromId,
-} from "./trainRoutePattern";
 import { TripUpdate } from "./tripUpdate";
 import { VehiclePosition } from "./vehiclePosition";
 
@@ -32,13 +28,4 @@ export const vehiclesFromPositionsAndTripUpdates = (
       ...(tripUpdate ? { tripUpdate } : {}),
     };
   });
-};
-
-export const trainRoutePatternFromVehicle = (
-  vehicle: Vehicle,
-): TrainRoutePattern | undefined => {
-  const routePatternId = vehicle.tripUpdate?.routePatternId;
-  if (routePatternId) {
-    return trainRoutePatternFromId(routePatternId);
-  }
 };
