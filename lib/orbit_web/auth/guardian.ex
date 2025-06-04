@@ -19,8 +19,7 @@ defmodule OrbitWeb.Auth.Guardian do
         {:error, :user_not_found}
 
       user ->
-        theUser = %User{user | groups: groups, admin?: @admin_group in groups}
-        {:ok, theUser}
+        {:ok, %User{user | groups: groups, admin?: @admin_group in groups}}
     end
   end
 end
