@@ -11,8 +11,8 @@ import { height } from "./height";
 import { Train } from "./train";
 import {
   TrainTheme,
-  trainThemeFromRoutePatternId,
   TrainThemes,
+  trainThemesByRoutePattern,
 } from "./trainTheme";
 import { ReactElement } from "react";
 
@@ -91,7 +91,7 @@ const TrainsAndStations = ({
     const routePatternId = vehicle.tripUpdate?.routePatternId;
     const themeFromRoute =
       routePatternId != null ?
-        trainThemeFromRoutePatternId(routePatternId)
+        trainThemesByRoutePattern.get(routePatternId)
       : null;
     if (themeFromRoute) {
       return themeFromRoute;
