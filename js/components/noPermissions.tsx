@@ -1,4 +1,3 @@
-import { paths } from "../paths";
 import { MenuLink } from "./menuLink";
 
 export const NoPermissions = () => {
@@ -9,13 +8,8 @@ export const NoPermissions = () => {
         this page.
       </h2>
 
-      <MenuLink to={paths.operators} reload={true}>
-        Retry hitting /operators w/ reload
-      </MenuLink>
-
-      {/* TODO: remove */}
       <MenuLink to={"/auth/keycloak"} reload={true}>
-        Retry hitting keycloak auth
+        Retry
       </MenuLink>
     </main>
   );
