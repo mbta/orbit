@@ -24,6 +24,15 @@ const mockUseTripUpdates = useTripUpdates as jest.MockedFunction<
   typeof useTripUpdates
 >;
 
+// Vehicle IDs get used as React component keys, so make sure we
+// use a different ID for each mock vehicle, or render will complain
+const nextVehicleId = (() => {
+  let mockVehicleId = 0;
+  return () => {
+    return `mock-id-${mockVehicleId++}`;
+  };
+})();
+
 describe("Ladder", () => {
   test("shows station names", () => {
     mockUseVehiclePositions.mockReturnValue([]);
@@ -38,12 +47,14 @@ describe("Ladder", () => {
     mockUseVehiclePositions.mockReturnValue([
       vehiclePositionFactory.build(),
       vehiclePositionFactory.build({
+        vehicleId: nextVehicleId(),
         directionId: 0,
         label: "1888",
         position: { latitude: 42.32272, longitude: -71.052925 },
         stopId: "70085",
       }),
       vehiclePositionFactory.build({
+        vehicleId: nextVehicleId(),
         label: "1889",
         stationId: "place-davis",
         stopId: "70064",
@@ -51,6 +62,7 @@ describe("Ladder", () => {
         stopStatus: StopStatus.StoppedAt,
       }),
       vehiclePositionFactory.build({
+        vehicleId: nextVehicleId(),
         label: "1999",
         position: null,
         stationId: null,
@@ -84,12 +96,14 @@ describe("Ladder", () => {
       test("renders pill color based on route pattern", () => {
         mockUseVehiclePositions.mockReturnValue([
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1888",
             stationId: "place-davis",
             stopId: "70064",
             tripId: "11111",
           }),
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1889",
             stationId: "place-davis",
             stopId: "70064",
@@ -110,12 +124,14 @@ describe("Ladder", () => {
         mockUseVehiclePositions.mockReturnValue([
           // Ashmont portion of ladder
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1888",
             stationId: "place-jfk",
             stopId: "70085",
             tripId: null,
           }),
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1889",
             stationId: "place-jfk",
             stopId: "70086",
@@ -123,12 +139,14 @@ describe("Ladder", () => {
           }),
           // Braintree portion of ladder
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1890",
             stationId: "place-jfk",
             stopId: "70095",
             tripId: null,
           }),
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1891",
             stationId: "place-jfk",
             stopId: "70096",
@@ -136,12 +154,14 @@ describe("Ladder", () => {
           }),
           // Alewife portion of ladder
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1892",
             stationId: "place-davis",
             stopId: "70063",
             tripId: null,
           }),
           vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
             label: "1893",
             stationId: "place-davis",
             stopId: "70064",
