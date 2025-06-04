@@ -1,4 +1,4 @@
-defmodule OrbitWeb.Plugs.RequireOrbitBl do
+defmodule OrbitWeb.Plugs.RequireGroup do
   @behaviour Plug
 
   alias OrbitWeb.Auth.Auth
@@ -7,10 +7,10 @@ defmodule OrbitWeb.Plugs.RequireOrbitBl do
   def init(opts), do: opts
 
   @impl Plug
-  def call(conn, _opts) do
+  def call(conn, groups) do
     user = Auth.logged_in_user(conn)
 
-    if user != nil and "orbit-bl-ffd" in user.groups do
+    if user != nil and Enum.all?(groups, fn group -> group in user.groups end) do
       conn
     else
       conn

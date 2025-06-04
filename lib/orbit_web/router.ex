@@ -46,9 +46,8 @@ defmodule OrbitWeb.Router do
     plug(OrbitWeb.Plugs.RequireLogin)
   end
 
-  pipeline :authorized do
-    plug :authenticated
-    plug(OrbitWeb.Plugs.RequireOrbitBl)
+  pipeline :orbit_bl_ffd_access do
+    plug(OrbitWeb.Plugs.RequireGroup, ["orbit-bl-ffd"])
   end
 
   scope "/", OrbitWeb do
@@ -65,6 +64,7 @@ defmodule OrbitWeb.Router do
 
     # Routes that should be handled by React
     # Avoid using a wildcard to prevent invalid 200 responses
+    # note: the front-end routes check user groups provided via <meta> tags
     get "/", ReactAppController, :home
     get "/landing", ReactAppController, :home
     get "/menu", ReactAppController, :home
@@ -81,7 +81,7 @@ defmodule OrbitWeb.Router do
     pipe_through :browser
     pipe_through :api
     pipe_through :authenticated
-    pipe_through :authorized
+    pipe_through :orbit_bl_ffd_access
 
     get "/api/employees", EmployeesController, :index
     get "/api/certifications", CertificationsController, :index
