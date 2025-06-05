@@ -23,7 +23,7 @@ defmodule OrbitWeb.Auth.GuardianTest do
     test "sets the admin flag if user is in appropriate group" do
       user = insert(:user)
 
-      assert {:ok, %User{user | admin?: true}} ==
+      assert {:ok, %User{user | groups: ["orbit-admin"], admin?: true}} ==
                Guardian.resource_from_claims(%{"sub" => user.email, "groups" => ["orbit-admin"]})
     end
   end

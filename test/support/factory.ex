@@ -4,7 +4,8 @@ defmodule Orbit.Factory do
   def user_factory do
     %Orbit.Authentication.User{
       email: sequence(:user_email, &"fake#{&1}@test.com"),
-      permissions: []
+      permissions: [],
+      groups: []
     }
   end
 

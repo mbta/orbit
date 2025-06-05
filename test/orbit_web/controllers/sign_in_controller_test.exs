@@ -8,7 +8,8 @@ defmodule OrbitWeb.SignInControllerTest do
   import Ecto.Query
   @timezone Application.compile_env!(:orbit, :timezone)
 
-  describe "index" do
+  describe "index with required permission group" do
+    @describetag groups: ["orbit-bl-ffd"]
     test "unauthenticated requests get a 401", %{conn: conn} do
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
@@ -143,6 +144,7 @@ defmodule OrbitWeb.SignInControllerTest do
   end
 
   describe "submit" do
+    @describetag groups: ["orbit-bl-ffd"]
     test "unauthenticated requests get a 401", %{conn: conn} do
       conn =
         post(conn, ~p"/api/signin", %{
@@ -234,6 +236,15 @@ defmodule OrbitWeb.SignInControllerTest do
         })
 
       assert "Invalid override\n" = response(conn, 400)
+    end
+  end
+
+  describe "index without required permission group" do
+    @tag :authenticated
+    test "returns 403", %{conn: conn} do
+      conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
+
+      assert "Forbidden" = text_response(conn, 403)
     end
   end
 end
