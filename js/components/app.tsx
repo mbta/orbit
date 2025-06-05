@@ -81,7 +81,7 @@ const router = createBrowserRouter([
       {
         path: paths.operators,
         element: (
-          <RequireGroup group={"orbit-bl-ffd"}>
+          <RequireGroup group="orbit-bl-ffd">
             <Operators />
           </RequireGroup>
         ),
