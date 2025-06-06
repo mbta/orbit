@@ -5,7 +5,7 @@ defmodule OrbitWeb.CertificationsControllerTest do
   @moduletag :authenticated
 
   describe "index with required permission group" do
-    @tag groups: ["orbit-bl-ffd"]
+    @tag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "fetches certifications for a badge", %{conn: conn} do
       emp = insert(:employee)
       insert(:certification, badge: emp.badge_number)

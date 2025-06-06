@@ -47,7 +47,7 @@ defmodule OrbitWeb.Router do
   end
 
   pipeline :require_group_orbit_bl_ffd do
-    plug(OrbitWeb.Plugs.RequireGroup, ["orbit-bl-ffd"])
+    plug(OrbitWeb.Plugs.RequireGroup, [OrbitWeb.Auth.Groups.orbit_bl_ffd()])
   end
 
   scope "/", OrbitWeb do

@@ -5,7 +5,7 @@ defmodule OrbitWeb.RfidControllerTest do
   @moduletag :authenticated
 
   describe "index with required permission group" do
-    @describetag groups: ["orbit-bl-ffd"]
+    @describetag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "fetches badge_number by badge_serial", %{conn: conn} do
       insert(:employee,
         badge_number: "123",

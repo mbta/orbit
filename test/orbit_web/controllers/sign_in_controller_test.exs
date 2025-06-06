@@ -9,7 +9,7 @@ defmodule OrbitWeb.SignInControllerTest do
   @timezone Application.compile_env!(:orbit, :timezone)
 
   describe "index with required permission group" do
-    @describetag groups: ["orbit-bl-ffd"]
+    @describetag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "unauthenticated requests get a 401", %{conn: conn} do
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
@@ -144,7 +144,7 @@ defmodule OrbitWeb.SignInControllerTest do
   end
 
   describe "submit" do
-    @describetag groups: ["orbit-bl-ffd"]
+    @describetag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "unauthenticated requests get a 401", %{conn: conn} do
       conn =
         post(conn, ~p"/api/signin", %{
