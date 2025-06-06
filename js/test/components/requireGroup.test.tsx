@@ -1,5 +1,5 @@
 import { Operators } from "../../components/operators";
-import { RequireGroup } from "../../components/requireGroups";
+import { RequireGroup } from "../../components/requireGroup";
 import { MetaDataKey } from "../../util/metadata";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";

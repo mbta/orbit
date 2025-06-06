@@ -7,7 +7,7 @@ import { Ladders } from "./ladderPage/ladder";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
-import { RequireGroup } from "./requireGroups";
+import { RequireGroup } from "./requireGroup";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
