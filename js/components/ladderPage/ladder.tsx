@@ -64,7 +64,7 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
       inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
       ^ this should potentially be handled in a future <LadderPage />. */}
       <div className="overflow-x-hidden">
-        <div className="relative flex xl:justify-center overflow-x-auto">
+        <div className="relative flex xl:justify-center overflow-x-auto snap-x snap-mandatory">
           {Array.from(vehiclesByBranch.entries()).map(
             ([stationList, vehicles], index) => (
               <TrainsAndStations
@@ -88,7 +88,7 @@ const TrainsAndStations = ({
   vehicles: Vehicle[];
 }): ReactElement => {
   return (
-    <div className="relative flex">
+    <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
       {vehicles.map((vehicle) => {
         const { vehiclePosition: vp } = vehicle;
