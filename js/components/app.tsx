@@ -1,5 +1,6 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
+import { ORBIT_BL_FFD } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -7,6 +8,7 @@ import { Ladders } from "./ladderPage/ladder";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
+import { RequireGroup } from "./requireGroup";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
@@ -79,7 +81,11 @@ const router = createBrowserRouter([
       },
       {
         path: paths.operators,
-        element: <Operators />,
+        element: (
+          <RequireGroup group={ORBIT_BL_FFD}>
+            <Operators />
+          </RequireGroup>
+        ),
       },
       {
         path: paths.landing,

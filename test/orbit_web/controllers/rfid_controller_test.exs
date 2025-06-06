@@ -4,7 +4,8 @@ defmodule OrbitWeb.RfidControllerTest do
 
   @moduletag :authenticated
 
-  describe "index" do
+  describe "index with required permission group" do
+    @describetag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "fetches badge_number by badge_serial", %{conn: conn} do
       insert(:employee,
         badge_number: "123",
@@ -22,6 +23,14 @@ defmodule OrbitWeb.RfidControllerTest do
       insert(:employee, badge_serials: [])
       conn = get(conn, ~p"/api/rfid?badge_serial=9998")
       assert response(conn, 404)
+    end
+  end
+
+  describe "index without required permission group" do
+    test "return 403", %{conn: conn} do
+      insert(:employee, badge_serials: [])
+      conn = get(conn, ~p"/api/rfid?badge_serial=9998")
+      assert response(conn, 403)
     end
   end
 end

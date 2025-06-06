@@ -25,6 +25,12 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
             </label>
             </div>
             <div>
+            <label>
+              <input type="checkbox" name="groups[]" value="orbit-bl-ffd">
+              orbit-bl-ffd group
+            </label>
+            </div>
+            <div>
               <input type="submit" value="Log In">
             </div>
           </form>
