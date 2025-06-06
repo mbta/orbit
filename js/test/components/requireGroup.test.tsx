@@ -1,5 +1,6 @@
 import { Operators } from "../../components/operators";
 import { RequireGroup } from "../../components/requireGroup";
+import { ORBIT_BL_FFD } from "../../groups";
 import { MetaDataKey } from "../../util/metadata";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
@@ -9,7 +10,7 @@ jest.mock("../../util/metadata", () => ({
     .fn()
     .mockImplementation((field: MetaDataKey): string | null => {
       if (field === "userGroups") {
-        return "orbit-bl-ffd";
+        return ORBIT_BL_FFD;
       }
       return null;
     }),
@@ -19,7 +20,7 @@ describe("RequireGroup", () => {
   test("displays child (Operators) if user has required permission group", () => {
     const view = render(
       <MemoryRouter>
-        <RequireGroup group="orbit-bl-ffd">
+        <RequireGroup group={ORBIT_BL_FFD}>
           <Operators />
         </RequireGroup>
       </MemoryRouter>,
