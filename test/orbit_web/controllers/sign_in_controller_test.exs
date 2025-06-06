@@ -244,7 +244,7 @@ defmodule OrbitWeb.SignInControllerTest do
     test "returns 403", %{conn: conn} do
       conn = get(conn, ~p"/api/signin", %{"line" => "blue"})
 
-      assert "Forbidden" = text_response(conn, 403)
+      assert "Forbidden" = response(conn, 403)
     end
   end
 end

@@ -26,7 +26,7 @@ defmodule OrbitWeb.CertificationsControllerTest do
       insert(:certification, badge: emp.badge_number)
 
       conn = get(conn, ~p"/api/certifications?badge=#{emp.badge_number}")
-      assert "Forbidden" = text_response(conn, 403)
+      assert "Forbidden" = response(conn, 403)
     end
   end
 end

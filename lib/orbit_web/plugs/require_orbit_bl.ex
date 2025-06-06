@@ -14,8 +14,7 @@ defmodule OrbitWeb.Plugs.RequireGroup do
       conn
     else
       conn
-      |> Plug.Conn.put_status(:forbidden)
-      |> Phoenix.Controller.text("Forbidden")
+      |> Plug.Conn.send_resp(:forbidden, "Forbidden")
       |> Plug.Conn.halt()
     end
   end
