@@ -3,8 +3,6 @@ defmodule OrbitWeb.Auth.Guardian do
   alias Orbit.Authentication.User
   alias Orbit.Repo
 
-  @admin_group "orbit-admin"
-
   @spec subject_for_token(Guardian.Token.resource(), Guardian.Token.claims()) ::
           {:ok, String.t()} | {:error, atom()}
   def subject_for_token(%User{email: email}, _claims) do
@@ -19,7 +17,7 @@ defmodule OrbitWeb.Auth.Guardian do
         {:error, :user_not_found}
 
       user ->
-        {:ok, %User{user | groups: groups, admin?: @admin_group in groups}}
+        {:ok, %User{user | groups: groups}}
     end
   end
 end

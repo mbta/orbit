@@ -16,15 +16,15 @@ defmodule OrbitWeb.Auth.GuardianTest do
     test "pulls user from database" do
       user = insert(:user)
 
-      assert {:ok, %User{user | admin?: false}} ==
+      assert {:ok, user} ==
                Guardian.resource_from_claims(%{"sub" => user.email, "groups" => []})
     end
 
-    test "sets the admin flag if user is in appropriate group" do
+    test "parses the user's groups" do
       user = insert(:user)
 
-      assert {:ok, %User{user | groups: ["orbit-admin"], admin?: true}} ==
-               Guardian.resource_from_claims(%{"sub" => user.email, "groups" => ["orbit-admin"]})
+      assert {:ok, %User{user | groups: ["orbit-admin", "orbit-bl-ffd"]}} ==
+               Guardian.resource_from_claims(%{"sub" => user.email, "groups" => ["orbit-admin", "orbit-bl-ffd"]})
     end
   end
 end

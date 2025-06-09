@@ -10,7 +10,7 @@ defmodule OrbitWeb.Plugs.RequireAdmin do
   def call(conn, _opts) do
     user = Auth.logged_in_user(conn)
 
-    if user != nil and user.admin? do
+    if user != nil and Enum.member?(user.groups, "orbit-admin") do
       conn
     else
       conn
