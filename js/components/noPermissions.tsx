@@ -8,7 +8,7 @@ export const NoPermissions = () => {
         this page.
       </h2>
 
-      <MenuLink to={"/auth/keycloak"} reload={true}>
+      <MenuLink to="/auth/keycloak" reload={true}>
         Retry
       </MenuLink>
     </main>

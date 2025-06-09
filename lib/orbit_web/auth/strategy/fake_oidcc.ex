@@ -1,42 +1,40 @@
 defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
   use Ueberauth.Strategy, ignores_csrf_attack: true
 
+  @html_template """
+    <!doctype html>
+    <html>
+      <h1>Fake Keycloak/Oidcc</h1>
+      <form action="/auth/keycloak/callback">
+        <div>
+          <label>
+            Email:
+            <input type="email" name="email" value="user@example.com">
+          </label>
+        </div>
+        <%= for group <- groups do %>
+          <div>
+            <label>
+              <input type="checkbox" name="groups[]" value="<%= group %>">
+              <%= group %> group
+            </label>
+          </div>
+        <% end %>
+        <div>
+          <input type="submit" value="Log In">
+        </div>
+      </form>
+    </html>
+  """
+
   @impl Ueberauth.Strategy
   def handle_request!(conn) do
+    groups = ["orbit-admin", "orbit-bl-ffd"]
+    html_string = EEx.eval_string(@html_template, groups: groups)
+
     conn
     |> put_resp_content_type("text/html")
-    |> send_resp(
-      :ok,
-      ~s(
-        <!doctype html>
-        <html>
-          <h1>Fake Keycloak/Oidcc</h1>
-          <form action="/auth/keycloak/callback">
-            <div>
-              <label>
-                Email:
-                <input type="email" name="email" value="user@example.com">
-              </label>
-            </div>
-            <div>
-            <label>
-              <input type="checkbox" name="groups[]" value="orbit-admin">
-              orbit-admin group
-            </label>
-            </div>
-            <div>
-            <label>
-              <input type="checkbox" name="groups[]" value="orbit-bl-ffd">
-              orbit-bl-ffd group
-            </label>
-            </div>
-            <div>
-              <input type="submit" value="Log In">
-            </div>
-          </form>
-        </html>
-      )
-    )
+    |> send_resp(:ok, html_string)
     |> halt()
   end
 
