@@ -1,0 +1,19 @@
+<h1>Fake Keycloak/Oidcc</h1>
+<form action="/auth/keycloak/callback">
+  <div>
+    <label>
+      Email: <input type="email" name="email" value="user@example.com" />
+    </label>
+  </div>
+  <%= for group <- @groups do %>
+    <div>
+      <label>
+        <input type="checkbox" name="groups[]" value={group} />
+        {group} group
+      </label>
+    </div>
+  <% end %>
+  <div>
+    <input type="submit" value="Log In" />
+  </div>
+</form>

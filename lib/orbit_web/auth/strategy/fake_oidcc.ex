@@ -8,7 +8,7 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
 
     conn
     |> put_resp_content_type("text/html")
-    |> put_view(OrbitWeb.Auth.Strategy.FakeLoginHTML)
+    |> put_view(OrbitWeb.Layouts)
     |> render(:fake_login, groups: groups, layout: false)
     |> halt()
   end
