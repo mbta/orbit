@@ -24,7 +24,10 @@ defmodule OrbitWeb.Auth.GuardianTest do
       user = insert(:user)
 
       assert {:ok, %User{user | groups: ["orbit-admin", "orbit-bl-ffd"]}} ==
-               Guardian.resource_from_claims(%{"sub" => user.email, "groups" => ["orbit-admin", "orbit-bl-ffd"]})
+               Guardian.resource_from_claims(%{
+                 "sub" => user.email,
+                 "groups" => ["orbit-admin", "orbit-bl-ffd"]
+               })
     end
   end
 end
