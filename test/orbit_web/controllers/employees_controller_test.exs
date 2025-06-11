@@ -2,11 +2,17 @@ defmodule OrbitWeb.EmployeesControllerTest do
   use OrbitWeb.ConnCase
   import Orbit.Factory
 
-  describe "index" do
-    @tag :authenticated
+  @moduletag :authenticated
+
+  setup do
+    insert(:employee)
+    insert(:employee, preferred_first: nil)
+    :ok
+  end
+
+  describe "index with required permission group" do
+    @tag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
     test "fetches all employees", %{conn: conn} do
-      insert(:employee)
-      insert(:employee, preferred_first: nil)
       conn = get(conn, ~p"/api/employees")
 
       assert %{
@@ -23,6 +29,13 @@ defmodule OrbitWeb.EmployeesControllerTest do
                  }
                ]
              } = json_response(conn, 200)
+    end
+  end
+
+  describe "index without required permission group" do
+    test "returns 403", %{conn: conn} do
+      conn = get(conn, ~p"/api/employees")
+      assert response(conn, 403)
     end
   end
 end

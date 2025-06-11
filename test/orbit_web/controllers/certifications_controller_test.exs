@@ -2,9 +2,11 @@ defmodule OrbitWeb.CertificationsControllerTest do
   use OrbitWeb.ConnCase
   import Orbit.Factory
 
-  describe "index" do
-    @tag :authenticated
-    test "fetches certifications for a abdge", %{conn: conn} do
+  @moduletag :authenticated
+
+  describe "index with required permission group" do
+    @tag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
+    test "fetches certifications for a badge", %{conn: conn} do
       emp = insert(:employee)
       insert(:certification, badge: emp.badge_number)
 
@@ -15,6 +17,16 @@ defmodule OrbitWeb.CertificationsControllerTest do
                  %{"expires" => "2023-12-11", "type" => "rail", "rail_line" => "blue"}
                ]
              } = json_response(conn, 200)
+    end
+  end
+
+  describe "index without required permission group" do
+    test "returns 403", %{conn: conn} do
+      emp = insert(:employee)
+      insert(:certification, badge: emp.badge_number)
+
+      conn = get(conn, ~p"/api/certifications?badge=#{emp.badge_number}")
+      assert "Forbidden" = response(conn, 403)
     end
   end
 end
