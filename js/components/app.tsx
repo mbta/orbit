@@ -4,7 +4,7 @@ import { ORBIT_BL_FFD } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
-import { Ladders } from "./ladderPage/ladder";
+import { LadderPage } from "./ladderPage/ladderPage";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <Ladders routeId="Red" />,
+        element: <LadderPage routeId="Red" />
       },
       {
         path: paths.operators,

@@ -7,6 +7,7 @@ import {
   vehiclesFromPositionsAndTripUpdates,
 } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
+import { SideBarSelection } from "../sideBar/sidebar";
 import { height } from "./height";
 import { Train } from "./train";
 import {
@@ -14,9 +15,15 @@ import {
   TrainThemes,
   trainThemesByRoutePattern,
 } from "./trainTheme";
-import { ReactElement } from "react";
+import { Dispatch, ReactElement, SetStateAction } from "react";
 
-export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
+export const Ladders = ({
+  routeId,
+  setSideBarSelection,
+}: {
+  routeId: RouteId;
+  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
+}): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
   const stationLists = Stations[routeId];
@@ -50,7 +57,7 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   return (
     <>
-      <span>
+      {/* <span>
         Status:{" "}
         {vehiclePositions !== null && tripUpdates !== null ?
           <>
@@ -58,12 +65,12 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
             tripUpdates)
           </>
         : <>Loading...</>}
-      </span>
+      </span> */}
 
       {/* outer <div> prevents horizontal overflow from affecting the overall page layout
       inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
       ^ this should potentially be handled in a future <LadderPage />. */}
-      <div className="overflow-x-hidden">
+      <div className="overflow-x-hidden mt-72">
         <div className="relative flex xl:justify-center overflow-x-auto snap-x snap-mandatory">
           {Array.from(vehiclesByBranch.entries()).map(
             ([stationList, vehicles], index) => (
@@ -71,6 +78,7 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
                 key={index}
                 ladderConfig={stationList}
                 vehicles={vehicles}
+                setSideBarSelection={setSideBarSelection}
               />
             ),
           )}
@@ -83,9 +91,11 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
 const TrainsAndStations = ({
   ladderConfig,
   vehicles,
+  setSideBarSelection,
 }: {
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
+  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   return (
     <div className="relative flex snap-center snap-always">
@@ -130,7 +140,13 @@ const TrainsAndStations = ({
             style={{ position: "absolute", top: `${px}px` }}
             className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
-            <Train theme={trainTheme} label={vp.label} direction={direction} />
+            <Train
+              theme={trainTheme}
+              label={vp.label}
+              consist={vp.cars}
+              direction={direction}
+              setSideBarSelection={setSideBarSelection}
+            />
           </div>
         );
       })}
