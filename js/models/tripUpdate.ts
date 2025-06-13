@@ -16,8 +16,8 @@ export type TripUpdate = {
   direction: number | null;
   routePatternId: string | null;
   tripId: string;
-  vehicleId: string;
-  timestamp: DateTime;
+  vehicleId: string | null;
+  timestamp: DateTime | null;
   stopTimeUpdates: StopTimeUpdate[];
 };
 
@@ -48,7 +48,7 @@ export const tripUpdateFromData = (data: TripUpdateData): TripUpdate => ({
   routePatternId: data.route_pattern_id ?? null,
   tripId: data.trip_id,
   vehicleId: data.vehicle_id,
-  timestamp: dateTimeFromUnix(data.timestamp),
+  timestamp: data.timestamp ? dateTimeFromUnix(data.timestamp) : null,
   stopTimeUpdates: data.stop_time_updates.map(stopTimeUpdateFromData),
 });
 
@@ -58,8 +58,8 @@ export const TripUpdateData = z.object({
   direction: z.number().nullable(),
   route_pattern_id: z.string().nullable(),
   trip_id: z.string(),
-  vehicle_id: z.string(),
-  timestamp: z.number(),
+  vehicle_id: z.string().nullable(),
+  timestamp: z.number().nullable(),
   stop_time_updates: z.array(StopTimeUpdateData),
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
