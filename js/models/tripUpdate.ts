@@ -13,7 +13,7 @@ export type StopTimeUpdateData = z.infer<typeof StopTimeUpdateData>;
 export type TripUpdate = {
   label: string | null;
   routeId: RouteId;
-  direction: number;
+  direction: number | null;
   routePatternId: string | null;
   tripId: string;
   vehicleId: string;
@@ -55,7 +55,7 @@ export const tripUpdateFromData = (data: TripUpdateData): TripUpdate => ({
 export const TripUpdateData = z.object({
   label: z.string().nullable(),
   route_id: z.string(),
-  direction: z.number(),
+  direction: z.number().nullable(),
   route_pattern_id: z.string().nullable(),
   trip_id: z.string(),
   vehicle_id: z.string(),
