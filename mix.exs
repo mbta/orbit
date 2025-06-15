@@ -52,7 +52,7 @@ defmodule Orbit.MixProject do
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.7"},
       {:ex_machina, "== 2.8.0", only: :test},
-      {:floki, "== 0.37.1", only: :test},
+      {:floki, "== 0.38.0", only: :test},
       {:geocalc, "== 0.8.5"},
       {:guardian, "== 2.3.2"},
       {:guardian_phoenix, "== 2.0.1"},
