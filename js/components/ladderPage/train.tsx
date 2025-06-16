@@ -1,6 +1,6 @@
 import { CarId } from "../../models/common";
 import { className } from "../../util/dom";
-import { SideBarSelection } from "../sideBar/sidebar";
+import { SideBarSelection } from "../sideBar/sideBar";
 import { TrainTheme } from "./trainTheme";
 import { Dispatch, ReactElement, SetStateAction } from "react";
 
