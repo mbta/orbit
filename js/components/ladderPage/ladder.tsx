@@ -67,22 +67,17 @@ export const Ladders = ({
         : <>Loading...</>}
       </span> */}
 
-      {/* outer <div> prevents horizontal overflow from affecting the overall page layout
-      inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
-      ^ this should potentially be handled in a future <LadderPage />. */}
-      <div className="overflow-x-hidden mt-72">
-        <div className="relative flex xl:justify-center overflow-x-auto snap-x snap-mandatory">
-          {Array.from(vehiclesByBranch.entries()).map(
-            ([stationList, vehicles], index) => (
-              <TrainsAndStations
-                key={index}
-                ladderConfig={stationList}
-                vehicles={vehicles}
-                setSideBarSelection={setSideBarSelection}
-              />
-            ),
-          )}
-        </div>
+      <div className="relative flex flex-grow xl:justify-center overflow-x-auto snap-x snap-mandatory">
+        {Array.from(vehiclesByBranch.entries()).map(
+          ([stationList, vehicles], index) => (
+            <TrainsAndStations
+              key={index}
+              ladderConfig={stationList}
+              vehicles={vehicles}
+              setSideBarSelection={setSideBarSelection}
+            />
+          ),
+        )}
       </div>
     </>
   );

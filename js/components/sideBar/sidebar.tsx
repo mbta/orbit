@@ -16,10 +16,8 @@ export const SideBar = ({
   return (
     <div
       className={className([
-        "fixed left-0 w-80 h-screen bg-gray-200",
-        selection ?
-          "transition-transform duration-300 ease-in-out translate-x-0"
-        : "-translate-x-full",
+        "absolute w-80 h-screen bg-gray-200 transition-all duration-300 ease-in-out",
+        selection ? "left-0" : "-left-[100%]",
       ])}
     >
       <button
