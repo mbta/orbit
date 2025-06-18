@@ -84,7 +84,15 @@ defmodule Orbit.MixProject do
       {:timex, "== 3.7.11"},
       {:tz, "== 0.28.1"},
       {:ueberauth, "== 0.10.8"},
-      {:ueberauth_oidcc, "== 0.4.1"}
+      {:ueberauth_oidcc, "== 0.4.1"},
+
+      # deps for broadway_kinesis
+      {:broadway, "~> 1.0"},
+      {:bypass, "~> 2.1", only: :test},
+      {:event_stream, "~> 0.1.0"},
+      {:ex_aws_kinesis, "~> 2.0"},
+      {:mint, "~> 1.0"},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 
