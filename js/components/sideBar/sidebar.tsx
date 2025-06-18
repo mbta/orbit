@@ -23,14 +23,14 @@ export const SideBar = ({
         selection.consist,
         selection.direction,
       )
-    : [""]; // TODO: what to do if no selection?
+    : [""];
 
   const leadCarIndex =
     selection && (selection.direction === 0 ? 0 : selection.consist.length - 1);
   return (
     <div
       className={className([
-        "absolute flex-grow left-0 w-80 h-dvh bg-gray-200 transition-transform duration-300 ease-in-out",
+        "absolute flex-grow left-0 w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
         selection ? "translate-x-0" : "-translate-x-full",
       ])}
     >
