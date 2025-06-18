@@ -12,7 +12,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     useState<SideBarSelection | null>(null);
 
   return (
-    <div className="relative flex h-screen items-center justify-center overflow-hidden">
+    <div className="relative flex h-screen items-center justify-center overflow-y-auto">
       <div
         className={className([
           "flex-grow overflow-x-hidden mt-72 transition-all duration-300 ease-in-out",

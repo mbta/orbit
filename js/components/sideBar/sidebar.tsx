@@ -1,9 +1,12 @@
-import { CarId } from "../../models/common";
+import { CarId, DirectionId } from "../../models/common";
+import { consistDirectionalOrder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
 export type SideBarSelection = {
+  label: CarId;
   consist: CarId[];
+  direction: DirectionId;
 };
 
 export const SideBar = ({
@@ -13,10 +16,21 @@ export const SideBar = ({
   selection: SideBarSelection | null;
   close: () => void;
 }): ReactElement => {
+  const consist: CarId[] =
+    selection ?
+      consistDirectionalOrder(
+        selection.label,
+        selection.consist,
+        selection.direction,
+      )
+    : [""]; // TODO: what to do if no selection?
+
+  const leadCarIndex =
+    selection && (selection.direction === 0 ? 0 : selection.consist.length - 1);
   return (
     <div
       className={className([
-        "absolute left-0 w-80 h-screen bg-gray-200 transition-transform duration-300 ease-in-out",
+        "absolute flex-grow left-0 w-80 h-dvh bg-gray-200 transition-transform duration-300 ease-in-out",
         selection ? "translate-x-0" : "-translate-x-full",
       ])}
     >
@@ -27,7 +41,19 @@ export const SideBar = ({
         <img src="/images/close.svg" alt="close sidebar" />
       </button>
 
-      <div className="mt-14 px-4">{selection ? selection.consist : ""}</div>
+      <div className="mt-14 px-4 flex">
+        {consist.map((label, index) => (
+          <div
+            key={index}
+            className={className([
+              "mr-2",
+              index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
+            ])}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

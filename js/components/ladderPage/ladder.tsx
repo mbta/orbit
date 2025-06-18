@@ -56,30 +56,18 @@ export const Ladders = ({
   );
 
   return (
-    <>
-      {/* <span>
-        Status:{" "}
-        {vehiclePositions !== null && tripUpdates !== null ?
-          <>
-            Connected ({vehiclePositions.length} vehicles, {tripUpdates.length}{" "}
-            tripUpdates)
-          </>
-        : <>Loading...</>}
-      </span> */}
-
-      <div className="relative flex flex-grow xl:justify-center overflow-x-auto snap-x snap-mandatory">
-        {Array.from(vehiclesByBranch.entries()).map(
-          ([stationList, vehicles], index) => (
-            <TrainsAndStations
-              key={index}
-              ladderConfig={stationList}
-              vehicles={vehicles}
-              setSideBarSelection={setSideBarSelection}
-            />
-          ),
-        )}
-      </div>
-    </>
+    <div className="relative flex flex-grow xl:justify-center overflow-x-auto snap-x snap-mandatory">
+      {Array.from(vehiclesByBranch.entries()).map(
+        ([stationList, vehicles], index) => (
+          <TrainsAndStations
+            key={index}
+            ladderConfig={stationList}
+            vehicles={vehicles}
+            setSideBarSelection={setSideBarSelection}
+          />
+        ),
+      )}
+    </div>
   );
 };
 

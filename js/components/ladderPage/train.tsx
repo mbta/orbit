@@ -1,4 +1,4 @@
-import { CarId } from "../../models/common";
+import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "../sideBar/sideBar";
 import { TrainTheme } from "./trainTheme";
@@ -17,7 +17,7 @@ export const Train = ({
   label: string;
   consist: CarId[];
   highlight?: boolean;
-  direction: number;
+  direction: DirectionId;
   className?: string;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
@@ -34,7 +34,9 @@ export const Train = ({
         ])}
         onClick={() => {
           const sideBarSelection: SideBarSelection = {
+            label: label,
             consist: consist,
+            direction: direction,
           };
           setSideBarSelection(sideBarSelection);
         }}
