@@ -9,7 +9,8 @@ config :orbit,
   force_https?: true,
   timezone: "America/New_York",
   poll_rtr?: true,
-  rtr_poll_delay: 3_000
+  rtr_poll_delay: 3_000,
+  enable_ocs_stream_consumer?: false
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
