@@ -1,4 +1,4 @@
-defmodule Orbit.Repo.Migrations.OCSTripsTable do
+defmodule Orbit.Repo.Migrations.OCSTables do
   use Ecto.Migration
 
   def change do
