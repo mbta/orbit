@@ -9,7 +9,11 @@ config :orbit,
   force_https?: true,
   timezone: "America/New_York",
   poll_rtr?: true,
-  rtr_poll_delay: 3_000
+  rtr_poll_delay: 3_000,
+
+  # OCS Stream
+  enable_ocs_stream_consumer?: false,
+  handle_ocs_message: {OCS.MessageHandler, :receive, []}
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

@@ -5,7 +5,14 @@ config :orbit,
   environment: "test",
   release: "test",
   force_https?: false,
-  poll_rtr?: false
+  poll_rtr?: false,
+
+  # OCS Stream
+  handle_ocs_message: {OCS.MessageHandler, :receive, []}
+
+config :orbit, OCS.Stream.Producer,
+  kinesis_stream_name: "fake-stream",
+  kinesis_consumer_arn: "fake-arn"
 
 # Database config
 config :orbit, Orbit.Repo,
