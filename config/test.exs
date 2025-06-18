@@ -7,6 +7,10 @@ config :orbit,
   force_https?: false,
   poll_rtr?: false
 
+config :orbit, OCS.Stream.Producer,
+  kinesis_stream_name: "fake-stream",
+  kinesis_consumer_arn: "fake-arn"
+
 # Database config
 config :orbit, Orbit.Repo,
   username: System.get_env("DATABASE_USERNAME") || "postgres",
