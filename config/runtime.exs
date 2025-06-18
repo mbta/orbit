@@ -15,6 +15,14 @@ if config_env() == :prod do
     environment: System.get_env("ENVIRONMENT"),
     full_story_org_id: System.get_env("FULLSTORY_ORG_ID")
 
+  with {:ok, stream_name} <- System.fetch_env("OCS_KINESIS_STREAM_NAME"),
+       {:ok, consumer_arn} <- System.get_env("OCS_KINESIS_CONSUMER_ARN") do
+    config :orbit, Orbit.Ocs.Stream.Producer,
+      enabled?: true,
+      kinesis_stream_name: stream_name,
+      kinesis_consumer_arn: consumer_arn
+  end
+
   config :orbit, Orbit.Repo,
     socket_options: maybe_ipv6,
     username: System.get_env("DATABASE_USERNAME"),

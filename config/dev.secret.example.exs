@@ -8,6 +8,17 @@ import Config
 #   appcues_enabled?: true,
 #   appcues_id: "SOME_ID"
 
+# Kinesis
+# config :orbit, Orbit.Ocs.Stream.Producer,
+#   enabled?: true,
+#   kinesis_stream_name: "ctd-ocs-raw-messages",
+#   kinesis_consumer_arn: "ARN"
+
+# AWS Access Keys
+# config :ex_aws,
+#   access_key_id: {:awscli, "default", 30000},
+#   secret_access_key: {:awscli, "default", 30000}
+
 # FullStory
 # Only turn this on if you're testing sending data to FullStory, not for regular use.
 # config :orbit,
