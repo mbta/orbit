@@ -30,7 +30,7 @@ export const SideBar = ({
   return (
     <div
       className={className([
-        "absolute flex-grow left-0 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
+        "fixed flex-grow left-0 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
         selection ? "translate-x-0" : "-translate-x-full",
       ])}
     >

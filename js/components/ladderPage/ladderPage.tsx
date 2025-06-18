@@ -15,7 +15,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     <div className="relative flex h-screen items-center justify-center overflow-y-auto">
       <div
         className={className([
-          "flex-grow overflow-x-hidden mt-72 transition-all duration-300 ease-in-out",
+          "flex-grow overflow-x-auto overflow-y-auto mt-72 transition-all duration-300 ease-in-out",
           (
             sideBarSelection &&
             window.innerWidth < MIN_LADDERS_CONTENT_WIDTH_PX + SIDEBAR_WIDTH_PX
