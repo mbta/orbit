@@ -27,6 +27,13 @@ config :orbit, OrbitWeb.Endpoint,
 config :orbit, Orbit.Import.Personnel, pathname: nil
 config :orbit, Orbit.Import.Rfid, pathname: nil
 
+# PersistentState
+config :orbit, PersistentState,
+  get_state_from_s3?: false,
+  s3_downloader: Fake.ExAws.S3,
+  s3_requestor: Fake.ExAws,
+  aws_operation: Fake.ExAws.Operation
+
 config :orbit, Oban,
   repo: Orbit.Repo,
   plugins: [Oban.Plugins.Pruner, {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(60)}],

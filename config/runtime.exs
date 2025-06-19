@@ -44,6 +44,14 @@ if config_env() == :prod do
       rtr_public: System.fetch_env!("S3_RTR_PUBLIC")
     ]
 
+  # S3 used for persistent state
+  # TODO: Do we need to combine these and list them in the Orbit.S3 folders?
+  config :orbit, PersistentState,
+    persistent_state_dir: System.fetch_env!("PERSISTENT_STATE_DIR"),
+    s3_state_bucket: System.fetch_env!("S3_STATE_BUCKET"),
+    # Why do we need this?
+    load_state?: System.fetch_env!("LOAD_STATE")
+
   # CSV import jobs
   config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")
   config :orbit, Orbit.Import.Rfid, pathname: System.fetch_env!("GLIDES_RFID_PATHNAME")
