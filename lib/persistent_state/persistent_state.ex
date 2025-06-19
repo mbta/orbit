@@ -1,4 +1,4 @@
-defmodule PersistentState do
+defmodule Orbit.PersistentState do
   alias Bandit.Application
   require Logger
 
@@ -13,9 +13,9 @@ defmodule PersistentState do
 
       def init_persistent_state(opts) do
         Process.flag(:trap_exit, true)
-        PersistentState.state_write(self(), opts[:save_state_time])
+        Orbit.PersistentState.state_write(self(), opts[:save_state_time])
 
-        PersistentState.init_persistent_state(
+        Orbit.PersistentState.init_persistent_state(
           unquote(state_filename),
           unquote(new_state),
           unquote(restore_fn),
@@ -26,11 +26,20 @@ defmodule PersistentState do
 
       @impl true
       def handle_info({:write, time}, state) do
-        PersistentState.state_write(self(), time)
-        PersistentState.write_to_disk(unquote(state_filename), state, unquote(current_version))
+        Orbit.PersistentState.state_write(self(), time)
 
-        Task.Supervisor.start_child(PersistentState.S3WriterSupervisor, fn ->
-          PersistentState.write_to_s3(unquote(state_filename), state, unquote(current_version))
+        Orbit.PersistentState.write_to_disk(
+          unquote(state_filename),
+          state,
+          unquote(current_version)
+        )
+
+        Task.Supervisor.start_child(Orbit.PersistentState.S3WriterSupervisor, fn ->
+          Orbit.PersistentState.write_to_s3(
+            unquote(state_filename),
+            state,
+            unquote(current_version)
+          )
         end)
 
         if Map.has_key?(state, :is_broadway), do: {:noreply, [], state}, else: {:noreply, state}
@@ -41,11 +50,19 @@ defmodule PersistentState do
         Logger.info("reason: #{inspect(reason)}")
         Logger.info("exiting, writing persistent state.")
 
-        PersistentState.write_to_disk(unquote(state_filename), state, unquote(current_version))
+        Orbit.PersistentState.write_to_disk(
+          unquote(state_filename),
+          state,
+          unquote(current_version)
+        )
 
         s3_uploader_task =
-          Task.Supervisor.async_nolink(PersistentState.S3WriterSupervisor, fn ->
-            PersistentState.write_to_s3(unquote(state_filename), state, unquote(current_version))
+          Task.Supervisor.async_nolink(Orbit.PersistentState.S3WriterSupervisor, fn ->
+            Orbit.PersistentState.write_to_s3(
+              unquote(state_filename),
+              state,
+              unquote(current_version)
+            )
           end)
 
         Task.await(s3_uploader_task)
@@ -227,7 +244,7 @@ defmodule PersistentState do
   end
 
   defp config_value!(key) do
-    config = Application.fetch_env!(:orbit, PersistentState)
+    config = Application.fetch_env!(:orbit, Orbit.PersistentState)
     IO.puts("Fetched config: #{inspect(config)}")
     config |> Keyword.get(key)
   end

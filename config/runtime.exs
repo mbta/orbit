@@ -46,7 +46,7 @@ if config_env() == :prod do
 
   # S3 used for persistent state
   # TODO: Do we need to combine these and list them in the Orbit.S3 folders?
-  config :orbit, PersistentState,
+  config :orbit, Orbit.PersistentState,
     persistent_state_dir: System.fetch_env!("PERSISTENT_STATE_DIR"),
     s3_state_bucket: System.fetch_env!("S3_STATE_BUCKET"),
     # Why do we need this?
