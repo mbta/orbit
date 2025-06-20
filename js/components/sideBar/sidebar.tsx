@@ -31,9 +31,7 @@ export const SideBar = ({
     <div
       className={className([
         "fixed flex-grow left-0 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
-        selection ?
-          "absolute inset-y-0 left-0 animate-slide-in-from-left"
-        : null,
+        selection ? "animate-slide-in-from-left" : null,
       ])}
     >
       <button
