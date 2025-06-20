@@ -13,13 +13,17 @@ config :orbit,
   enable_ocs_stream_consumer?: false,
 
   # PersistentState
+  # TODO: Consider breaking this up into sub-configs if possible
   get_state_from_s3?: false,
   load_state?: false,
   s3_downloader: Fake.ExAws.S3,
   s3_requestor: ExAws,
   persistent_state_dir: "fake-persistent-state-dir",
   s3_state_bucket: "fake-s3-state-bucket",
-  aws_operation: Fake.ExAws.Operation
+  aws_operation: Fake.ExAws.Operation,
+  # Used by S3.LocalDebugFile
+  include_timestamps: false,
+  s3_output_directory: "log"
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

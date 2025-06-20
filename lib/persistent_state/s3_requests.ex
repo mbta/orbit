@@ -3,10 +3,10 @@ defmodule Orbit.PersistentState.S3.LocalDebugFile do
 
   @spec request(ExAws.Operation.t()) :: {:ok, term}
   def request(%{body: body, path: path} = req) do
-    output_path = add_timestamp(path, Application.get_env(:rtr, :include_timestamps?) == "true")
+    output_path = add_timestamp(path, Application.get_env(:orbit, :include_timestamps?) == "true")
 
     dir =
-      :rtr
+      :orbit
       |> Application.get_env(:s3_output_directory)
       |> Path.join(output_path)
       |> Path.dirname()

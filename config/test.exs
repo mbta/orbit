@@ -9,7 +9,10 @@ config :orbit,
   # PersistentState
   persistent_state_dir: "./log/test",
   load_state?: "true",
-  s3_requestor: Orbit.PersistentState.S3.Test
+  s3_requestor: Orbit.PersistentState.S3.Test,
+  # Used by S3.LocalDebugFile
+  # TODO: Since we're not using that in Test, does this need to exist?
+  s3_output_directory: "log-test"
 
 config :orbit, OCS.Stream.Producer,
   kinesis_stream_name: "fake-stream",
