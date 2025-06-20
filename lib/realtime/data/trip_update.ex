@@ -6,11 +6,11 @@ defmodule Realtime.Data.TripUpdate do
   @type t :: %__MODULE__{
           label: String.t() | nil,
           route_id: Realtime.Data.route_id(),
-          direction: String.t(),
+          direction: String.t() | nil,
           route_pattern_id: String.t(),
           trip_id: String.t(),
-          vehicle_id: String.t(),
-          timestamp: DateTime.t(),
+          vehicle_id: String.t() | nil,
+          timestamp: DateTime.t() | nil,
           stop_time_updates: []
         }
 
