@@ -90,6 +90,7 @@ defmodule Orbit.PersistentState do
     {:ok, get_state_s3} = Application.fetch_env(:orbit, :get_state_from_s3)
     File.mkdir_p(directory)
 
+    # TODO: Why do we bother to download the state if we aren't sure that we will be loading it?
     if get_state_s3, do: download_persistent_state(state_filename)
 
     do_init_persistent_state(

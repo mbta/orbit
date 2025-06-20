@@ -94,7 +94,7 @@ defmodule PersistentStateTest do
       |> Path.join("bad_filename")
       |> File.write(binary)
 
-      log =
+      [log | _] =
         capture_log(:warning) do
           init_persistent_state(
             "bad_filename",
@@ -105,7 +105,7 @@ defmodule PersistentStateTest do
           )
         end
 
-      assert log =~ "event=persistent_state_issue Failed to download"
+      assert log =~ "[warning] event=persistent_state_issue Failed to download"
     end
 
     test "returns new state when parser returns error" do
@@ -135,7 +135,7 @@ defmodule PersistentStateTest do
       |> Path.join(@state_filename)
       |> File.write(binary)
 
-      log =
+      [_, log, _] =
         capture_log(:warning) do
           assert init_persistent_state(
                    @state_filename,
@@ -146,7 +146,7 @@ defmodule PersistentStateTest do
                  ) == {:ok, "new state"}
         end
 
-      assert log =~ "event=persistent_state_parse_error Exception"
+      assert log =~ "[error] event=persistent_state_parse_error Exception"
     end
 
     test "Returns new state when state should not be loaded" do
@@ -159,7 +159,7 @@ defmodule PersistentStateTest do
       |> Path.join(@state_filename)
       |> File.write(binary)
 
-      log =
+      [_, log] =
         capture_log(:info) do
           assert init_persistent_state(
                    @state_filename,
@@ -170,7 +170,7 @@ defmodule PersistentStateTest do
                  ) == {:ok, "new state"}
         end
 
-      assert log =~ "Not loading"
+      assert log =~ "[info] Not loading"
     end
   end
 
@@ -234,7 +234,7 @@ defmodule PersistentStateTest do
           Process.sleep(50)
         end
 
-      assert log =~ "Exiting for reason: :normal. Writing persistent state."
+      assert log =~ "[info] Exiting for reason: :normal. Writing persistent state."
     end
   end
 end
