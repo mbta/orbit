@@ -1,7 +1,6 @@
 defmodule PersistentStateTest do
   use ExUnit.Case
   import Orbit.PersistentState
-  import ExUnit.CaptureLog
   import Test.Support.Helpers
 
   @state_filename "persistent_state_filename"
@@ -96,7 +95,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log([level: :warning], fn ->
+        capture_log(level: :warning) do
           init_persistent_state(
             "bad_filename",
             "new state",
@@ -104,7 +103,7 @@ defmodule PersistentStateTest do
             1,
             __MODULE__
           )
-        end)
+        end
 
       assert log =~ "event=persistent_state_issue Failed to download"
     end
@@ -137,7 +136,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log([level: :warning], fn ->
+        capture_log(level: :warning) do
           assert init_persistent_state(
                    @state_filename,
                    "new state",
@@ -145,13 +144,13 @@ defmodule PersistentStateTest do
                    1,
                    __MODULE__
                  ) == {:ok, "new state"}
-        end)
+        end
 
       assert log =~ "event=persistent_state_parse_error Exception"
     end
 
     test "Returns new state when state should not be loaded" do
-      reassign_env(:load_state?, "false")
+      reassign_env(:orbit, :load_state?, "false")
       restore_fn = fn x, _, _ -> {:ok, :erlang.binary_to_term(x)} end
       binary = :erlang.term_to_binary("parsed state")
 
@@ -161,7 +160,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log([level: :info], fn ->
+        capture_log(level: :info) do
           assert init_persistent_state(
                    @state_filename,
                    "new state",
@@ -169,7 +168,7 @@ defmodule PersistentStateTest do
                    1,
                    __MODULE__
                  ) == {:ok, "new state"}
-        end)
+        end
 
       assert log =~ "Not loading"
     end
@@ -188,12 +187,12 @@ defmodule PersistentStateTest do
 
     test "Returns :error and logs warning when file cannot be read" do
       false_dir = "/nonexistent/testing/directory"
-      reassign_env(:persistent_state_dir, false_dir)
+      reassign_env(:orbit, :persistent_state_dir, false_dir)
 
       log =
-        capture_log([level: :warning], fn ->
+        capture_log(level: :warning) do
           assert write_to_disk(@state_filename, :initial_state, 1) == :error
-        end)
+        end
 
       assert log =~ "event=persistent_state_disk_write_error Could not save state to #{false_dir}"
     end
@@ -210,9 +209,9 @@ defmodule PersistentStateTest do
       filename = "bad_filename"
 
       log =
-        capture_log([level: :warning], fn ->
+        capture_log(level: :warning) do
           assert write_to_s3(filename, :initial_state, 1) == :error
-        end)
+        end
 
       assert log =~
                "event=persistent_state_s3_write_issues state_filename=#{filename} bucket=fake-bucket"
@@ -230,10 +229,10 @@ defmodule PersistentStateTest do
         )
 
       log =
-        capture_log([level: :info], fn ->
+        capture_log(level: :info) do
           Process.exit(pid, :normal)
           Process.sleep(50)
-        end)
+        end
 
       assert log =~ "exiting, writing persistent state."
     end
