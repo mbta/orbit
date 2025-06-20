@@ -1,6 +1,8 @@
 import { LadderPage } from "../../../components/ladderPage/ladderPage";
+import { ORBIT_RL_SIDEBAR } from "../../../groups";
 import { useTripUpdates } from "../../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
+import { getMetaContent } from "../../../util/metadata";
 import {
   tripUpdateFactory,
   vehiclePositionFactory,
@@ -26,23 +28,48 @@ const mockUseTripUpdates = useTripUpdates as jest.MockedFunction<
 >;
 mockUseTripUpdates.mockReturnValue([tripUpdateFactory.build()]);
 
+jest.mock("../../../util/metadata", () => ({
+  getMetaContent: jest.fn(),
+}));
+const mockGetMetaContent = getMetaContent as jest.MockedFunction<
+  typeof getMetaContent
+>;
+
 describe("LadderPage SideBar", () => {
-  test("clicking on train pill opens sidebar", async () => {
-    const user = userEvent.setup();
-    const view = render(<LadderPage routeId="Red" />);
-    await user.click(view.getByText("1877"));
-    expect(
-      view.getByRole("button", { name: "close sidebar" }),
-    ).toBeInTheDocument();
+  describe("with red line sidebar permissions", () => {
+    beforeAll(() => {
+      mockGetMetaContent.mockReturnValue(ORBIT_RL_SIDEBAR);
+    });
+
+    test("clicking on train pill opens sidebar", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByText("1877"));
+      expect(
+        view.getByRole("button", { name: "close sidebar" }),
+      ).toBeInTheDocument();
+    });
+
+    test("can close SideBar with close button", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByText("1877"));
+      await user.click(view.getByRole("button", { name: "close sidebar" }));
+      expect(
+        view.queryByRole("button", { name: "close sidebar" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
-  test("can close SideBar with close button", async () => {
-    const user = userEvent.setup();
-    const view = render(<LadderPage routeId="Red" />);
-    await user.click(view.getByText("1877"));
-    await user.click(view.getByRole("button", { name: "close sidebar" }));
-    expect(
-      view.queryByRole("button", { name: "close sidebar" }),
-    ).not.toBeInTheDocument();
+  describe("without red line sidebar permissions", () => {
+    test("clicking on train pill does not open sidebar", async () => {
+      mockGetMetaContent.mockReturnValue("");
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByText("1877"));
+      expect(
+        view.queryByRole("button", { name: "close sidebar" }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

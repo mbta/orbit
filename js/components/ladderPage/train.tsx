@@ -1,5 +1,7 @@
+import { ORBIT_RL_SIDEBAR } from "../../groups";
 import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
+import { getMetaContent } from "../../util/metadata";
 import { SideBarSelection } from "../sideBar/sideBar";
 import { TrainTheme } from "./trainTheme";
 import { Dispatch, ReactElement, SetStateAction } from "react";
@@ -21,6 +23,8 @@ export const Train = ({
   className?: string;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
+  const userGroups = getMetaContent("userGroups");
+
   const orientation = direction == 0 ? "right-0" : "left-0";
   return (
     <div className="relative">
@@ -33,12 +37,14 @@ export const Train = ({
           extraClassName,
         ])}
         onClick={() => {
-          const sideBarSelection: SideBarSelection = {
-            label: label,
-            consist: consist,
-            direction: direction,
-          };
-          setSideBarSelection(sideBarSelection);
+          if (userGroups?.split(",").includes(ORBIT_RL_SIDEBAR)) {
+            const sideBarSelection: SideBarSelection = {
+              label: label,
+              consist: consist,
+              direction: direction,
+            };
+            setSideBarSelection(sideBarSelection);
+          }
         }}
       >
         {label}
