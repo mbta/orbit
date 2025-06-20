@@ -46,8 +46,7 @@ defmodule Orbit.PersistentState do
 
       @impl true
       def terminate(reason, state) do
-        Logger.info("reason: #{inspect(reason)}")
-        Logger.info("exiting, writing persistent state.")
+        Logger.info("Exiting for reason: #{inspect(reason)}. Writing persistent state.")
 
         Orbit.PersistentState.write_to_disk(
           unquote(state_filename),
@@ -65,6 +64,8 @@ defmodule Orbit.PersistentState do
           end)
 
         Task.await(s3_uploader_task)
+
+        dbg("DONE WRITING")
       end
     end
   end
@@ -84,9 +85,9 @@ defmodule Orbit.PersistentState do
         current_version,
         module
       ) do
-    {:ok, load_state?} = Application.fetch_env(:rtr, :load_state?)
-    {:ok, directory} = Application.fetch_env(:rtr, :persistent_state_dir)
-    {:ok, get_state_s3} = Application.fetch_env(:rtr, :get_state_from_s3)
+    {:ok, load_state?} = Application.fetch_env(:orbit, :load_state?)
+    {:ok, directory} = Application.fetch_env(:orbit, :persistent_state_dir)
+    {:ok, get_state_s3} = Application.fetch_env(:orbit, :get_state_from_s3)
     File.mkdir_p(directory)
 
     if get_state_s3, do: download_persistent_state(state_filename)
@@ -104,15 +105,15 @@ defmodule Orbit.PersistentState do
 
   @spec download_persistent_state(String.t()) :: :ok | {:error, any()}
   defp download_persistent_state(state_filename) do
-    bucket = Application.get_env(:rtr, :s3_state_bucket)
-    filename = :rtr |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
+    bucket = Application.get_env(:orbit, :s3_state_bucket)
+    filename = :orbit |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
 
-    s3_downloader = Application.get_env(:rtr, :s3_downloader)
-    aws_operation = Application.get_env(:rtr, :aws_operation)
-    dl = s3_downloader.download_file(bucket, state_filename, filename)
+    s3_downloader = Application.get_env(:orbit, :s3_downloader) |> dbg()
+    aws_operation = Application.get_env(:orbit, :aws_operation) |> dbg()
+    dl = s3_downloader.download_file(bucket, state_filename, filename) |> dbg()
 
     try do
-      {:ok, :done} = aws_operation.perform(dl, [])
+      {:ok, :done} = aws_operation.perform(dl, []) |> dbg()
       Logger.info("Downloaded #{state_filename} from S3 bucket=#{bucket}")
     rescue
       e ->
@@ -169,7 +170,7 @@ defmodule Orbit.PersistentState do
 
   @spec write_to_disk(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_disk(state_filename, state, current_version) do
-    filename = :rtr |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
+    filename = :orbit |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
     binary = :erlang.term_to_binary({current_version, state})
 
     case File.write(filename, binary) do
@@ -188,12 +189,12 @@ defmodule Orbit.PersistentState do
   @spec write_to_s3(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_s3(state_filename, state, current_version) do
     binary = :erlang.term_to_binary({current_version, state})
-    bucket = Application.get_env(:rtr, :s3_state_bucket)
+    bucket = Application.get_env(:orbit, :s3_state_bucket)
 
     # TODO: Replace this with Orbit.S3 calls
     case bucket
          |> ExAws.S3.put_object(state_filename, binary)
-         |> Application.get_env(:rtr, :s3_requestor).request do
+         |> Application.get_env(:orbit, :s3_requestor).request do
       {:ok, _} ->
         :ok
 

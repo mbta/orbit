@@ -95,7 +95,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log(level: :warning) do
+        capture_log(:warning) do
           init_persistent_state(
             "bad_filename",
             "new state",
@@ -136,7 +136,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log(level: :warning) do
+        capture_log(:warning) do
           assert init_persistent_state(
                    @state_filename,
                    "new state",
@@ -160,7 +160,7 @@ defmodule PersistentStateTest do
       |> File.write(binary)
 
       log =
-        capture_log(level: :info) do
+        capture_log(:info) do
           assert init_persistent_state(
                    @state_filename,
                    "new state",
@@ -189,8 +189,8 @@ defmodule PersistentStateTest do
       false_dir = "/nonexistent/testing/directory"
       reassign_env(:orbit, :persistent_state_dir, false_dir)
 
-      log =
-        capture_log(level: :warning) do
+      [log] =
+        capture_log(:warning) do
           assert write_to_disk(@state_filename, :initial_state, 1) == :error
         end
 
@@ -208,13 +208,13 @@ defmodule PersistentStateTest do
     test "Returns :error and logs warning when file cannot be read" do
       filename = "bad_filename"
 
-      log =
-        capture_log(level: :warning) do
+      [log] =
+        capture_log(:warning) do
           assert write_to_s3(filename, :initial_state, 1) == :error
         end
 
       assert log =~
-               "event=persistent_state_s3_write_issues state_filename=#{filename} bucket=fake-bucket"
+               "[warning] event=persistent_state_s3_write_issues state_filename=#{filename} bucket=fake-bucket"
 
       assert_received :s3_request_bad_file
     end
@@ -228,13 +228,13 @@ defmodule PersistentStateTest do
           save_state_time: 60_000
         )
 
-      log =
-        capture_log(level: :info) do
+      [log] =
+        capture_log(:info) do
           Process.exit(pid, :normal)
           Process.sleep(50)
         end
 
-      assert log =~ "exiting, writing persistent state."
+      assert log =~ "Exiting for reason: :normal. Writing persistent state."
     end
   end
 end
