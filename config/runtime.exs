@@ -13,7 +13,13 @@ if config_env() == :prod do
     allow_test_data?: System.get_env("ALLOW_TEST_DATA", "") == "yes",
     appcues_id: System.get_env("APPCUES_ID"),
     environment: System.get_env("ENVIRONMENT"),
-    full_story_org_id: System.get_env("FULLSTORY_ORG_ID")
+    full_story_org_id: System.get_env("FULLSTORY_ORG_ID"),
+
+    # persistent state
+    # TODO: Do we need to combine these and list them in the Orbit.S3 folders?
+    persistent_state_dir: System.fetch_env!("PERSISTENT_STATE_DIR"),
+    s3_state_bucket: System.fetch_env!("S3_STATE_BUCKET"),
+    load_state?: System.fetch_env!("LOAD_STATE")
 
   config :orbit, Orbit.Repo,
     socket_options: maybe_ipv6,
@@ -47,14 +53,6 @@ if config_env() == :prod do
   config :orbit, OCS.Stream.Producer,
     kinesis_stream_name: System.fetch_env!("OCS_KINSESIS_STREAM_NAME"),
     kinesis_consumer_arn: System.fetch_env!("OCS_KINESIS_CONSUMER_ARN")
-
-  # S3 used for persistent state
-  # TODO: Do we need to combine these and list them in the Orbit.S3 folders?
-  config :orbit, Orbit.PersistentState,
-    persistent_state_dir: System.fetch_env!("PERSISTENT_STATE_DIR"),
-    s3_state_bucket: System.fetch_env!("S3_STATE_BUCKET"),
-    # Why do we need this?
-    load_state?: System.fetch_env!("LOAD_STATE")
 
   # CSV import jobs
   config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")

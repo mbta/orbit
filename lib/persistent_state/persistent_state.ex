@@ -1,5 +1,4 @@
 defmodule Orbit.PersistentState do
-  alias Bandit.Application
   require Logger
 
   defmacro __using__(
@@ -85,9 +84,9 @@ defmodule Orbit.PersistentState do
         current_version,
         module
       ) do
-    {:ok, load_state?} = config_value(:load_state?)
-    {:ok, directory} = config_value(:persistent_state_dir)
-    {:ok, get_state_s3} = config_value(:get_state_from_s3)
+    {:ok, load_state?} = Application.fetch_env(:rtr, :load_state?)
+    {:ok, directory} = Application.fetch_env(:rtr, :persistent_state_dir)
+    {:ok, get_state_s3} = Application.fetch_env(:rtr, :get_state_from_s3)
     File.mkdir_p(directory)
 
     if get_state_s3, do: download_persistent_state(state_filename)
@@ -105,11 +104,11 @@ defmodule Orbit.PersistentState do
 
   @spec download_persistent_state(String.t()) :: :ok | {:error, any()}
   defp download_persistent_state(state_filename) do
-    bucket = config_value!(:s3_state_bucket)
-    filename = config_value!(:persistent_state_dir) |> Path.join(state_filename)
+    bucket = Application.get_env(:rtr, :s3_state_bucket)
+    filename = :rtr |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
 
-    s3_downloader = config_value!(:s3_downloader)
-    aws_operation = config_value!(:aws_operation)
+    s3_downloader = Application.get_env(:rtr, :s3_downloader)
+    aws_operation = Application.get_env(:rtr, :aws_operation)
     dl = s3_downloader.download_file(bucket, state_filename, filename)
 
     try do
@@ -170,7 +169,7 @@ defmodule Orbit.PersistentState do
 
   @spec write_to_disk(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_disk(state_filename, state, current_version) do
-    filename = config_value!(:persistent_state_dir) |> Path.join(state_filename)
+    filename = :rtr |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
     binary = :erlang.term_to_binary({current_version, state})
 
     case File.write(filename, binary) do
@@ -189,11 +188,12 @@ defmodule Orbit.PersistentState do
   @spec write_to_s3(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_s3(state_filename, state, current_version) do
     binary = :erlang.term_to_binary({current_version, state})
-    bucket = config_value!(:s3_state_bucket)
+    bucket = Application.get_env(:rtr, :s3_state_bucket)
 
+    # TODO: Replace this with Orbit.S3 calls
     case bucket
          |> ExAws.S3.put_object(state_filename, binary)
-         |> Application.config_value!(:s3_requestor).request do
+         |> Application.get_env(:rtr, :s3_requestor).request do
       {:ok, _} ->
         :ok
 
@@ -234,18 +234,5 @@ defmodule Orbit.PersistentState do
 
   def state_write(pid, time) do
     Process.send_after(pid, {:write, time}, time)
-  end
-
-  # Configuration
-  defp config_value(key) do
-    {:ok, config_value!(key)}
-  rescue
-    e -> {:error, e}
-  end
-
-  defp config_value!(key) do
-    config = Application.fetch_env!(:orbit, Orbit.PersistentState)
-    IO.puts("Fetched config: #{inspect(config)}")
-    config |> Keyword.get(key)
   end
 end

@@ -5,7 +5,11 @@ config :orbit,
   environment: "test",
   release: "test",
   force_https?: false,
-  poll_rtr?: false
+  poll_rtr?: false,
+  # PersistentState
+  persistent_state_dir: "./log/test",
+  load_state?: "true",
+  s3_requestor: Orbit.PersistentState.S3.Test
 
 config :orbit, OCS.Stream.Producer,
   kinesis_stream_name: "fake-stream",

@@ -10,7 +10,16 @@ config :orbit,
   timezone: "America/New_York",
   poll_rtr?: true,
   rtr_poll_delay: 3_000,
-  enable_ocs_stream_consumer?: false
+  enable_ocs_stream_consumer?: false,
+
+  # PersistentState
+  get_state_from_s3?: false,
+  load_state?: false,
+  s3_downloader: Fake.ExAws.S3,
+  s3_requestor: ExAws,
+  persistent_state_dir: "fake-persistent-state-dir",
+  s3_state_bucket: "fake-s3-state-bucket",
+  aws_operation: Fake.ExAws.Operation
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
@@ -26,13 +35,6 @@ config :orbit, OrbitWeb.Endpoint,
 # CSV import jobs
 config :orbit, Orbit.Import.Personnel, pathname: nil
 config :orbit, Orbit.Import.Rfid, pathname: nil
-
-# PersistentState
-config :orbit, Orbit.PersistentState,
-  get_state_from_s3?: false,
-  s3_downloader: Fake.ExAws.S3,
-  s3_requestor: Fake.ExAws,
-  aws_operation: Fake.ExAws.Operation
 
 config :orbit, Oban,
   repo: Orbit.Repo,
