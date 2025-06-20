@@ -77,7 +77,7 @@ const router = createBrowserRouter([
       },
       {
         path: paths.ladder,
-        element: <LadderPage routeId="Red" />
+        element: <LadderPage routeId="Red" />,
       },
       {
         path: paths.operators,
