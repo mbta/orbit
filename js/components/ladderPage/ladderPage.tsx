@@ -18,12 +18,14 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       >
         <Ladders routeId={routeId} setSideBarSelection={setSideBarSelection} />
       </div>
-      <SideBar
-        selection={sideBarSelection ?? null}
-        close={() => {
-          setSideBarSelection(null);
-        }}
-      />
+      {sideBarSelection ?
+        <SideBar
+          selection={sideBarSelection}
+          close={() => {
+            setSideBarSelection(null);
+          }}
+        />
+      : null}
     </div>
   );
 };
