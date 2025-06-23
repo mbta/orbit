@@ -1,5 +1,5 @@
 import { CarId, DirectionId } from "../../models/common";
-import { consistDirectionalOrder } from "../../util/consist";
+import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
@@ -18,11 +18,7 @@ export const SideBar = ({
 }): ReactElement => {
   const consist: CarId[] =
     selection ?
-      consistDirectionalOrder(
-        selection.label,
-        selection.consist,
-        selection.direction,
-      )
+      reorder(selection.label, selection.consist, selection.direction)
     : [""];
 
   const leadCarIndex =

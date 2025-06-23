@@ -1,6 +1,6 @@
 import { CarId, DirectionId } from "../models/common";
 
-export const consistDirectionalOrder = (
+export const reorder = (
   label: CarId,
   consist: CarId[],
   direction_id: DirectionId,
