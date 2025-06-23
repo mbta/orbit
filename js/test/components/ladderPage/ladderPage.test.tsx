@@ -1,5 +1,5 @@
 import { LadderPage } from "../../../components/ladderPage/ladderPage";
-import { ORBIT_RL_SIDEBAR } from "../../../groups";
+import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useTripUpdates } from "../../../hooks/useTripUpdates";
 import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
 import { getMetaContent } from "../../../util/metadata";
@@ -38,7 +38,7 @@ const mockGetMetaContent = getMetaContent as jest.MockedFunction<
 describe("LadderPage SideBar", () => {
   describe("with red line sidebar permissions", () => {
     beforeAll(() => {
-      mockGetMetaContent.mockReturnValue(ORBIT_RL_SIDEBAR);
+      mockGetMetaContent.mockReturnValue(ORBIT_RL_TRAINSTARTERS);
     });
 
     test("clicking on train pill opens sidebar", async () => {

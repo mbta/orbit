@@ -1,4 +1,4 @@
-import { ORBIT_RL_SIDEBAR } from "../../groups";
+import { ORBIT_RL_TRAINSTARTERS } from "../../groups";
 import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
 import { getMetaContent } from "../../util/metadata";
@@ -37,7 +37,7 @@ export const Train = ({
           extraClassName,
         ])}
         onClick={() => {
-          if (userGroups?.split(",").includes(ORBIT_RL_SIDEBAR)) {
+          if (userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)) {
             const sideBarSelection: SideBarSelection = {
               label: label,
               consist: consist,
