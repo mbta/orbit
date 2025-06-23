@@ -19,7 +19,7 @@ defmodule OCS.Stream.Pipeline do
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
         module: {OCS.Stream.Producer, opts},
-        transformer: {__MODULE__, :transform, []},
+        transformer: {__MODULE__, :transform, opts},
         concurrency: 1
       ],
       processors: [
@@ -89,10 +89,15 @@ defmodule OCS.Stream.Pipeline do
   defp ocs_message(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
     do: message
 
-  def transform(event, _opts) do
+  def transform(event, opts) do
     %Message{
       data: event,
-      acknowledger: {__MODULE__, :ack_id, :ack_data}
+      acknowledger:
+        if ack = opts[:ack] do
+          ack
+        else
+          {__MODULE__, :ack_id, :ack_data}
+        end
     }
   end
 
