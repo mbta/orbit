@@ -175,7 +175,7 @@ defmodule Orbit.PersistentState do
   @spec write_to_disk(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_disk(state_filename, state, current_version) do
     filename = :orbit |> Application.get_env(:persistent_state_dir) |> Path.join(state_filename)
-    binary = :erlang.term_to_binary({current_version, state})
+    binary = serialize(state, current_version)
 
     case File.write(filename, binary) do
       :ok ->
@@ -192,7 +192,7 @@ defmodule Orbit.PersistentState do
 
   @spec write_to_s3(String.t(), any, non_neg_integer) :: :ok | :error
   def write_to_s3(state_filename, state, current_version) do
-    binary = :erlang.term_to_binary({current_version, state})
+    binary = serialize(state, current_version)
     bucket = Application.get_env(:orbit, :s3_state_bucket)
 
     # TODO: Replace this with Orbit.S3 calls
@@ -211,6 +211,10 @@ defmodule Orbit.PersistentState do
     end
   end
 
+  defp serialize(state_content, version) do
+    Jason.encode!(%{version: version, state: state_content})
+  end
+
   @spec safe_parse(
           (term, non_neg_integer, non_neg_integer -> {:ok, any()} | :error),
           non_neg_integer,
@@ -218,13 +222,10 @@ defmodule Orbit.PersistentState do
         ) ::
           any() | {:error, :noparse}
   defp safe_parse(restore_fn, current_version, binary) do
-    {existing_version, state_content} =
-      case :erlang.binary_to_term(binary) do
-        {_, _} = term -> term
-        term -> {1, term}
-      end
+    {:ok, %{:version => stored_version, :state => state_content}} =
+      Jason.decode(binary, keys: :atoms)
 
-    restore_fn.(state_content, existing_version, current_version)
+    restore_fn.(state_content, stored_version, current_version)
   rescue
     err ->
       Logger.error([

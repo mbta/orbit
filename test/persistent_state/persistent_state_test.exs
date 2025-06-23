@@ -49,27 +49,9 @@ defmodule PersistentStateTest do
   end
 
   describe "init_persistent_state/5" do
-    test "returns parsed state if it is valid (without version)" do
-      restore_fn = fn x, _, _ -> {:ok, x} end
-      binary = :erlang.term_to_binary("parsed state")
-
-      :orbit
-      |> Application.get_env(:persistent_state_dir)
-      |> Path.join(@state_filename)
-      |> File.write(binary)
-
-      assert init_persistent_state(
-               @state_filename,
-               "new_state",
-               restore_fn,
-               1,
-               __MODULE__
-             ) == {:ok, "parsed state"}
-    end
-
     test "returns parsed state if it is valid (with version)" do
       restore_fn = fn x, _, _ -> {:ok, x} end
-      binary = :erlang.term_to_binary({1, "parsed state"})
+      binary = Jason.encode!(%{version: 1, state: "parsed state"})
 
       :orbit
       |> Application.get_env(:persistent_state_dir)
@@ -86,8 +68,8 @@ defmodule PersistentStateTest do
     end
 
     test "when s3 fails for some reason, logs it" do
-      restore_fn = fn x, _, _ -> {:ok, :erlang.binary_to_term(x)} end
-      binary = :erlang.term_to_binary("parsed state")
+      restore_fn = fn x, _, _ -> {:ok, Jason.decode!(x)} end
+      binary = Jason.encode!(%{version: 1, state: "parsed state"})
 
       :orbit
       |> Application.get_env(:persistent_state_dir)
@@ -112,26 +94,34 @@ defmodule PersistentStateTest do
     end
 
     test "returns new state when parser returns error" do
-      restore_fn = fn x, _, _ -> {:error, :erlang.binary_to_term(x)} end
-      binary = :erlang.term_to_binary("parsed state")
+      restore_fn = fn _x, _, _ -> raise "Exception" end
+      binary = Jason.encode!("bad state format")
 
       :orbit
       |> Application.get_env(:persistent_state_dir)
       |> Path.join(@state_filename)
       |> File.write(binary)
 
-      assert init_persistent_state(
-               @state_filename,
-               "new state",
-               restore_fn,
-               1,
-               __MODULE__
-             ) == {:ok, "new state"}
+      logs =
+        capture_log(:warning) do
+          assert init_persistent_state(
+                   @state_filename,
+                   "new state",
+                   restore_fn,
+                   1,
+                   __MODULE__
+                 ) == {:ok, "new state"}
+        end
+
+      assert logs
+             |> Enum.any?(fn log ->
+               log =~ "[error] event=persistent_state_parse_error"
+             end)
     end
 
-    test "safely parses state file" do
+    test "safely handles exception from restore function" do
       restore_fn = fn _x, _, _ -> raise "Exception" end
-      binary = :erlang.term_to_binary("parsed state")
+      binary = Jason.encode!(%{version: 1, state: "parsed state"})
 
       :orbit
       |> Application.get_env(:persistent_state_dir)
@@ -157,8 +147,8 @@ defmodule PersistentStateTest do
 
     test "Returns new state when state should not be loaded" do
       reassign_env(:orbit, :load_state?, "false")
-      restore_fn = fn x, _, _ -> {:ok, :erlang.binary_to_term(x)} end
-      binary = :erlang.term_to_binary("parsed state")
+      restore_fn = fn x, _, _ -> {:ok, Jason.decode!(x)} end
+      binary = Jason.encode!("parsed state")
 
       :orbit
       |> Application.get_env(:persistent_state_dir)
@@ -182,13 +172,13 @@ defmodule PersistentStateTest do
 
   describe "write_to_disk/3" do
     test "Returns :ok when write is successful" do
-      assert write_to_disk(@state_filename, :initial_state, 1) == :ok
+      assert write_to_disk(@state_filename, "initial_state", 1) == :ok
 
       assert :orbit
              |> Application.get_env(:persistent_state_dir)
              |> Path.join(@state_filename)
              |> File.read!()
-             |> :erlang.binary_to_term() == {1, :initial_state}
+             |> Jason.decode!(keys: :atoms) == %{version: 1, state: "initial_state"}
     end
 
     test "Returns :error and logs warning when file cannot be read" do
@@ -197,7 +187,7 @@ defmodule PersistentStateTest do
 
       logs =
         capture_log(:warning) do
-          assert write_to_disk(@state_filename, :initial_state, 1) == :error
+          assert write_to_disk(@state_filename, "initial_state", 1) == :error
         end
 
       assert logs
@@ -210,7 +200,7 @@ defmodule PersistentStateTest do
 
   describe "write_to_s3/2" do
     test "Returns :ok when write is successful" do
-      assert write_to_s3(@state_filename, :initial_state, 1) == :ok
+      assert write_to_s3(@state_filename, "initial_state", 1) == :ok
 
       assert_received :s3_request
     end
@@ -220,7 +210,7 @@ defmodule PersistentStateTest do
 
       logs =
         capture_log(:warning) do
-          assert write_to_s3(filename, :initial_state, 1) == :error
+          assert write_to_s3(filename, "initial_state", 1) == :error
         end
 
       assert logs
