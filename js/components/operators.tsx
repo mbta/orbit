@@ -15,7 +15,7 @@ export const Operators = (): ReactElement => {
   const today = useMemo<string>(() => DateTime.now().toISODate(), []);
   const [selectedDate, setSelectedDate] = useState<string>(today);
   return (
-    <main className="text-gray-500">
+    <main className="text-gray-500 relative top-14">
       <section className="max-w-lg mx-auto px-2 py-5">
         <hgroup className="mb-5">
           <h1 className="text-[28px] font-semibold">Operators</h1>

@@ -9,7 +9,7 @@ export const Menu = (): ReactElement => {
   const email = getMetaContent("userEmail");
 
   return (
-    <main className="w-5/6 mx-auto mt-4 max-w-[400px]">
+    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14">
       <h2 className="text-2xl mb-6">Hi, {name ?? email}</h2>
 
       <MenuLink icon="help" iconExtraClassName="h-7 w-7" to={paths.help}>

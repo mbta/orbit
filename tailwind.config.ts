@@ -47,6 +47,7 @@ export default {
       object: "2000",
       "modal-backdrop": "3000",
       "modal-content": "3001",
+      header: "4000",
     },
     extend: {
       animation: {

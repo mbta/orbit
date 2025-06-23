@@ -9,11 +9,11 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     useState<SideBarSelection | null>(null);
 
   return (
-    <div className="relative flex h-screen items-center justify-center overflow-y-auto">
+    <div className="relative flex h-screen items-center justify-center top-14">
       <div
         className={className([
           "flex overflow-auto mt-72 transition-all duration-300 ease-in-out",
-          sideBarSelection && "ml-80 2xl:ml-0",
+          sideBarSelection && "ml-80",
         ])}
       >
         <Ladders routeId={routeId} setSideBarSelection={setSideBarSelection} />
