@@ -7,8 +7,8 @@ import {
   vehiclesFromPositionsAndTripUpdates,
 } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
-import { SideBarSelection } from "../sideBar/sideBar";
 import { height } from "./height";
+import { SideBarSelection } from "./sidebar";
 import { Train } from "./train";
 import {
   TrainTheme,

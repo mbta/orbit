@@ -2,7 +2,7 @@ import { ORBIT_RL_SIDEBAR } from "../../groups";
 import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
 import { getMetaContent } from "../../util/metadata";
-import { SideBarSelection } from "../sideBar/sideBar";
+import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
 import { Dispatch, ReactElement, SetStateAction } from "react";
 

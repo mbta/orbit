@@ -1,7 +1,7 @@
 import { RouteId } from "../../models/common";
 import { className } from "../../util/dom";
-import { SideBar, SideBarSelection } from "../sideBar/sideBar";
 import { Ladders } from "./ladder";
+import { SideBar, SideBarSelection } from "./sidebar";
 import { ReactElement, useState } from "react";
 
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
