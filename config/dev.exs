@@ -6,7 +6,11 @@ config :orbit,
   allow_test_data?: true,
   dev_routes: true,
   release: "local",
-  force_https?: false
+  force_https?: false,
+
+  # Persistent State
+  persistent_state_dir: "log/dev",
+  s3_requestor: Orbit.PersistentState.S3.LocalDebugFile
 
 # Database config
 config :orbit, Orbit.Repo,

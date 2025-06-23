@@ -8,6 +8,7 @@ defmodule Orbit.Application do
 
     children =
       [
+        {Task.Supervisor, [name: Orbit.PersistentState.S3WriterSupervisor]},
         OrbitWeb.Telemetry,
         Orbit.Repo,
         {Ecto.Migrator, repos: Application.fetch_env!(:orbit, :ecto_repos)},

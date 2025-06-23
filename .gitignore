@@ -37,3 +37,6 @@ npm-debug.log
 
 *storybook.log
 config/dev.secret.exs
+
+# Ignore where persistent state is written in dev/test
+/log

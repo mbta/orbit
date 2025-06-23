@@ -5,7 +5,12 @@ import Config
 config :orbit,
   # loaded at compile time
   appcues_enabled?: true,
-  release: System.get_env("RELEASE")
+  release: System.get_env("RELEASE"),
+
+  # Persistent State
+  get_state_from_s3?: true,
+  s3_downloader: ExAws.S3,
+  aws_operation: ExAws.Operation
 
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs

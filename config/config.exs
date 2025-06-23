@@ -9,7 +9,20 @@ config :orbit,
   force_https?: true,
   timezone: "America/New_York",
   poll_rtr?: true,
-  rtr_poll_delay: 3_000
+  rtr_poll_delay: 3_000,
+
+  # PersistentState
+  # TODO: Consider breaking this up into sub-configs if possible
+  get_state_from_s3?: false,
+  load_state?: false,
+  aws_operation: Fake.ExAws.Operation,
+  s3_downloader: Fake.ExAws.S3,
+  s3_requestor: ExAws,
+  persistent_state_dir: "log",
+  s3_state_bucket: "fake-bucket",
+  # Used by S3.LocalDebugFile
+  include_timestamps: false,
+  s3_output_directory: "log"
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
