@@ -45,18 +45,16 @@ describe("LadderPage SideBar", () => {
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);
       await user.click(view.getByText("1877"));
-      expect(
-        view.getByRole("button", { name: "close sidebar" }),
-      ).toBeInTheDocument();
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
     });
 
     test("can close SideBar with close button", async () => {
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);
       await user.click(view.getByText("1877"));
-      await user.click(view.getByRole("button", { name: "close sidebar" }));
+      await user.click(view.getByRole("button", { name: "Close" }));
       expect(
-        view.queryByRole("button", { name: "close sidebar" }),
+        view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
     });
   });
@@ -68,7 +66,7 @@ describe("LadderPage SideBar", () => {
       const view = render(<LadderPage routeId="Red" />);
       await user.click(view.getByText("1877"));
       expect(
-        view.queryByRole("button", { name: "close sidebar" }),
+        view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
     });
   });
