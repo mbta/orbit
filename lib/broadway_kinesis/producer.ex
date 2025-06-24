@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 defmodule BroadwayKinesis.Producer do
   require BroadwayKinesis.SubscribeToShard
   require ExAws
