@@ -1,4 +1,3 @@
-import { useClickOutside } from "../../hooks/useClickOutside";
 import { CarId, DirectionId } from "../../models/common";
 import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
@@ -26,9 +25,6 @@ export const SideBar = ({
     selection && (selection.direction === 0 ? 0 : selection.consist.length - 1);
 
   const ref = useRef(null);
-  useClickOutside([ref], () => {
-    close();
-  });
   return (
     <aside
       ref={ref}

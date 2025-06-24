@@ -36,7 +36,8 @@ export const Train = ({
           theme.borderColor,
           extraClassName,
         ])}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           if (userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)) {
             const sideBarSelection: SideBarSelection = {
               label: label,

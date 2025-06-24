@@ -57,6 +57,16 @@ describe("LadderPage SideBar", () => {
         view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
     });
+
+    test("can close SideBar with escape key", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByText("1877"));
+      await userEvent.keyboard("{Escape}");
+      expect(
+        view.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe("without red line sidebar permissions", () => {
