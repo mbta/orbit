@@ -56,7 +56,7 @@ export const Ladders = ({
   );
 
   return (
-    <div className="relative flex flex-grow min-[1200px]:justify-center overflow-x-auto snap-x snap-mandatory">
+    <div className="relative flex w-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
       {Array.from(vehiclesByBranch.entries()).map(
         ([stationList, vehicles], index) => (
           <TrainsAndStations
