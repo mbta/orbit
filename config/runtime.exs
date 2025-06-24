@@ -45,7 +45,7 @@ if config_env() == :prod do
     ]
 
   config :orbit, OCS.Stream.Producer,
-    kinesis_stream_name: System.fetch_env!("OCS_KINSESIS_STREAM_NAME"),
+    kinesis_stream_name: System.fetch_env!("OCS_KINESIS_STREAM_NAME"),
     kinesis_consumer_arn: System.fetch_env!("OCS_KINESIS_CONSUMER_ARN")
 
   # CSV import jobs
