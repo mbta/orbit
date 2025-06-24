@@ -22,7 +22,7 @@ defmodule Orbit.Repo.Migrations.OCSTables do
     end
 
     create unique_index(:ocs_trips, [:service_date, :uid, :rail_line])
-    create index(:ocs_trips, [:service_date, :train_uid])
+    create index(:ocs_trips, [:service_date, :rail_line, :train_uid])
 
     create table(:ocs_trains) do
       add(:service_date, :date, null: false)
