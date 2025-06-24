@@ -15,6 +15,7 @@ defmodule Orbit.Ocs.Trip do
           trip_type: String.t() | nil,
           scheduled_departure: DateTime.t() | nil,
           scheduled_arrival: DateTime.t() | nil,
+          offset: integer() | nil,
           origin_station: String.t() | nil,
           destination_station: String.t() | nil,
           deleted: boolean() | nil
@@ -34,6 +35,7 @@ defmodule Orbit.Ocs.Trip do
 
     field(:scheduled_departure, :utc_datetime)
     field(:scheduled_arrival, :utc_datetime)
+    field(:offset, :integer)
     field(:origin_station, :string)
     field(:destination_station, :string)
     field(:deleted, :boolean)
@@ -56,6 +58,7 @@ defmodule Orbit.Ocs.Trip do
         :trip_type,
         :scheduled_departure,
         :scheduled_arrival,
+        :offset,
         :origin_station,
         :destination_station,
         :deleted

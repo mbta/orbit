@@ -13,6 +13,7 @@ defmodule Orbit.Repo.Migrations.OCSTables do
       add(:trip_type, :string)
       add(:scheduled_departure, :utc_datetime)
       add(:scheduled_arrival, :utc_datetime)
+      add(:offset, :integer)
       add(:origin_station, :string)
       add(:destination_station, :string)
       add(:deleted, :boolean)
