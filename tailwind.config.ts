@@ -45,9 +45,9 @@ export default {
     zIndex: {
       layout: "1000",
       object: "2000",
+      header: "2500",
       "modal-backdrop": "3000",
       "modal-content": "3001",
-      header: "4000",
     },
     extend: {
       animation: {
