@@ -47,7 +47,7 @@ defmodule Orbit.MixProject do
       {:dialyxir, "== 1.4.5", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
-      {:ecto_sql, "== 3.12.1"},
+      {:ecto_sql, "== 3.13.2"},
       {:ex_aws, "== 2.5.9"},
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.7"},
