@@ -45,6 +45,7 @@ export default {
     zIndex: {
       layout: "1000",
       object: "2000",
+      header: "2500",
       "modal-backdrop": "3000",
       "modal-content": "3001",
     },
@@ -52,11 +53,16 @@ export default {
       animation: {
         "dash-spin-ccw": "dashoffset-spin 2s linear infinite",
         "dash-spin-cw": "dashoffset-spin 3s linear infinite reverse",
+        "slide-in-from-left": "slide-in-from-left 0.25s",
       },
       keyframes: {
         "dashoffset-spin": {
           "0%": { "stroke-dashoffset": "0" },
           "100%": { "stroke-dashoffset": "1" },
+        },
+        "slide-in-from-left": {
+          "0%": { transform: "translateX(-100vh)" },
+          "100%": { transform: "translateX(0)" },
         },
       },
     },

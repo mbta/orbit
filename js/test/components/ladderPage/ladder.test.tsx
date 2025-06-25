@@ -37,7 +37,9 @@ describe("Ladder", () => {
   test("shows station names", () => {
     mockUseVehiclePositions.mockReturnValue([]);
     mockUseTripUpdates.mockReturnValue([]);
-    const view = render(<Ladders routeId={"Red"} />);
+    const view = render(
+      <Ladders routeId={"Red"} setSideBarSelection={jest.fn()} />,
+    );
     expect(view.getByText("Alewife")).toBeInTheDocument();
     expect(view.getByText("Ashmont")).toBeInTheDocument();
     expect(view.getByText("Braintree")).toBeInTheDocument();
@@ -71,7 +73,9 @@ describe("Ladder", () => {
     ]);
     mockUseTripUpdates.mockReturnValue([]);
 
-    const view = render(<Ladders routeId="Red" />);
+    const view = render(
+      <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+    );
     expect(view.getByText("1877")).toBeInTheDocument();
     expect(view.getByText("1888")).toBeInTheDocument();
     expect(view.getByText("1889")).toBeInTheDocument();
@@ -111,7 +115,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        const view = render(<Ladders routeId="Red" />);
+        const view = render(
+          <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+        );
         expect(view.getByText("1888")).toBeInTheDocument();
         expect(view.getByText("1888")).toHaveClass("border-tangerine");
         expect(view.getByText("1889")).toBeInTheDocument();
@@ -169,7 +175,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        const view = render(<Ladders routeId="Red" />);
+        const view = render(
+          <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+        );
 
         // Ashmont defaults to orange
         expect(view.getByText("1888")).toBeInTheDocument();

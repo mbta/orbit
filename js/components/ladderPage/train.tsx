@@ -1,31 +1,52 @@
+import { ORBIT_RL_TRAINSTARTERS } from "../../groups";
+import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
+import { getMetaContent } from "../../util/metadata";
+import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
-import { ReactElement } from "react";
+import { Dispatch, ReactElement, SetStateAction } from "react";
 
 export const Train = ({
   theme,
   label,
+  consist,
   highlight,
   direction,
   className: extraClassName,
+  setSideBarSelection,
 }: {
   theme: TrainTheme;
   label: string;
+  consist: CarId[];
   highlight?: boolean;
-  direction: number;
+  direction: DirectionId;
   className?: string;
+  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
+  const userGroups = getMetaContent("userGroups");
+
   const orientation = direction == 0 ? "right-0" : "left-0";
   return (
     <div className="relative">
       {/* train label */}
-      <div
+      <button
         className={className([
           "m-1 relative flex items-center justify-center rounded-3xl w-24 h-10 font-semibold",
           highlight ? "border-[3px] animate-pulse" : "border",
           theme.borderColor,
           extraClassName,
         ])}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)) {
+            const sideBarSelection: SideBarSelection = {
+              label: label,
+              consist: consist,
+              direction: direction,
+            };
+            setSideBarSelection(sideBarSelection);
+          }
+        }}
       >
         {label}
 
@@ -61,7 +82,7 @@ export const Train = ({
             ])}
           />
         </div>
-      </div>
+      </button>
     </div>
   );
 };

@@ -8,15 +8,22 @@ import {
 } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { height } from "./height";
+import { SideBarSelection } from "./sidebar";
 import { Train } from "./train";
 import {
   TrainTheme,
   TrainThemes,
   trainThemesByRoutePattern,
 } from "./trainTheme";
-import { ReactElement } from "react";
+import { Dispatch, ReactElement, SetStateAction } from "react";
 
-export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
+export const Ladders = ({
+  routeId,
+  setSideBarSelection,
+}: {
+  routeId: RouteId;
+  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
+}): ReactElement => {
   const tripUpdates = useTripUpdates();
   const vehiclePositions = useVehiclePositions();
   const stationLists = Stations[routeId];
@@ -49,43 +56,29 @@ export const Ladders = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   return (
-    <>
-      <span>
-        Status:{" "}
-        {vehiclePositions !== null && tripUpdates !== null ?
-          <>
-            Connected ({vehiclePositions.length} vehicles, {tripUpdates.length}{" "}
-            tripUpdates)
-          </>
-        : <>Loading...</>}
-      </span>
-
-      {/* outer <div> prevents horizontal overflow from affecting the overall page layout
-      inner <div> enables horizontal overflow (scrolling) for the 3 StationLists
-      ^ this should potentially be handled in a future <LadderPage />. */}
-      <div className="overflow-x-hidden">
-        <div className="relative flex xl:justify-center overflow-x-auto snap-x snap-mandatory">
-          {Array.from(vehiclesByBranch.entries()).map(
-            ([stationList, vehicles], index) => (
-              <TrainsAndStations
-                key={index}
-                ladderConfig={stationList}
-                vehicles={vehicles}
-              />
-            ),
-          )}
-        </div>
-      </div>
-    </>
+    <div className="relative flex w-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
+      {Array.from(vehiclesByBranch.entries()).map(
+        ([stationList, vehicles], index) => (
+          <TrainsAndStations
+            key={index}
+            ladderConfig={stationList}
+            vehicles={vehicles}
+            setSideBarSelection={setSideBarSelection}
+          />
+        ),
+      )}
+    </div>
   );
 };
 
 const TrainsAndStations = ({
   ladderConfig,
   vehicles,
+  setSideBarSelection,
 }: {
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
+  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   return (
     <div className="relative flex snap-center snap-always">
@@ -130,7 +123,13 @@ const TrainsAndStations = ({
             style={{ position: "absolute", top: `${px}px` }}
             className={direction === 0 ? "left-[24px]" : "right-[24px]"}
           >
-            <Train theme={trainTheme} label={vp.label} direction={direction} />
+            <Train
+              theme={trainTheme}
+              label={vp.label}
+              consist={vp.cars}
+              direction={direction}
+              setSideBarSelection={setSideBarSelection}
+            />
           </div>
         );
       })}
