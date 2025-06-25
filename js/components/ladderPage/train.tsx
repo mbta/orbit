@@ -1,7 +1,10 @@
-import { ORBIT_RL_TRAINSTARTERS } from "../../groups";
+import {
+  ORBIT_RL_TRAINSTARTERS,
+  ORBIT_TID_STAFF,
+  userHasOneOf,
+} from "../../groups";
 import { CarId, DirectionId } from "../../models/common";
 import { className } from "../../util/dom";
-import { getMetaContent } from "../../util/metadata";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
 import { Dispatch, ReactElement, SetStateAction } from "react";
@@ -23,8 +26,6 @@ export const Train = ({
   className?: string;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
-  const userGroups = getMetaContent("userGroups");
-
   const orientation = direction == 0 ? "right-0" : "left-0";
   return (
     <div className="relative">
@@ -45,7 +46,7 @@ export const Train = ({
           };
           setSideBarSelection(sideBarSelection);
         }}
-        disabled={!userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)}
+        disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
       >
         {label}
 

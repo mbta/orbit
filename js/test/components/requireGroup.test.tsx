@@ -1,6 +1,6 @@
 import { Operators } from "../../components/operators";
 import { RequireGroup } from "../../components/requireGroup";
-import { ORBIT_BL_FFD } from "../../groups";
+import { ORBIT_BL_FFD, ORBIT_RL_TRAINSTARTERS } from "../../groups";
 import { MetaDataKey } from "../../util/metadata";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
@@ -20,7 +20,19 @@ describe("RequireGroup", () => {
   test("displays child (Operators) if user has required permission group", () => {
     const view = render(
       <MemoryRouter>
-        <RequireGroup group={ORBIT_BL_FFD}>
+        <RequireGroup oneOf={[ORBIT_BL_FFD]}>
+          <Operators />
+        </RequireGroup>
+      </MemoryRouter>,
+    );
+
+    expect(view.getByText("Search and sign in operators")).toBeInTheDocument();
+  });
+
+  test("displays child (Operators) with multiple possible groups", () => {
+    const view = render(
+      <MemoryRouter>
+        <RequireGroup oneOf={[ORBIT_BL_FFD, ORBIT_RL_TRAINSTARTERS]}>
           <Operators />
         </RequireGroup>
       </MemoryRouter>,
@@ -32,7 +44,7 @@ describe("RequireGroup", () => {
   test("displays NoPermissions if user doesn't have required permission group", () => {
     const view = render(
       <MemoryRouter>
-        <RequireGroup group="nonexistent-group">
+        <RequireGroup oneOf={["nonexistent-group"]}>
           <Operators />
         </RequireGroup>
       </MemoryRouter>,
