@@ -8,8 +8,9 @@ defmodule Orbit.Ocs.Train do
           service_date: Date.t(),
           uid: String.t(),
           rail_line: RailLine.t(),
-          cars: [String.t()] | nil,
           tags: [String.t()] | nil,
+          cars: [String.t()] | nil,
+          car_tags: [String.t()] | nil,
           deleted: boolean() | nil
         }
   schema "ocs_trains" do
@@ -17,8 +18,9 @@ defmodule Orbit.Ocs.Train do
     field(:uid, :string)
     field(:rail_line, RailLine)
 
-    field(:cars, {:array, :string})
     field(:tags, {:array, :string})
+    field(:cars, {:array, :string})
+    field(:car_tags, {:array, :string})
     field(:deleted, :boolean)
 
     timestamps()
@@ -32,8 +34,9 @@ defmodule Orbit.Ocs.Train do
         :service_date,
         :uid,
         :rail_line,
-        :cars,
         :tags,
+        :cars,
+        :car_tags,
         :deleted
       ]
     )

@@ -8,8 +8,9 @@ defmodule Orbit.Ocs.TrainTest do
       service_date: Util.Time.current_service_date(),
       rail_line: :red,
       uid: "TRAIN_UID",
+      tags: ["F"],
       cars: ["1877", "1876", "1811", "1812", "1808", "1809"],
-      tags: ["K", "K", "K", "", "", ""]
+      car_tags: ["K", "K", "K", "", "", ""]
     }
   end
 
@@ -18,8 +19,9 @@ defmodule Orbit.Ocs.TrainTest do
       service_date: Util.Time.current_service_date(),
       rail_line: :red,
       uid: "TRAIN_UID",
+      tags: ["F"],
       cars: ["1877", "1876", "1811", "1812", "1808", "1809"],
-      tags: ["K", "K", "K", "", "", ""]
+      car_tags: ["K", "K", "K", "", "", ""]
     }
     |> Train.changeset()
     |> Repo.insert!()
@@ -39,8 +41,9 @@ defmodule Orbit.Ocs.TrainTest do
       service_date: Util.Time.current_service_date(),
       rail_line: :red,
       uid: "TRAIN_UID",
+      tags: ["F"],
       cars: ["1877", "1876", "1811", "1812", "1808", "1810"],
-      tags: ["K", "K", "K", "", "", ""]
+      car_tags: ["K", "K", "K", "", "", ""]
     }
     |> Train.changeset()
     |> Repo.insert!(on_conflict: :replace_all, conflict_target: [:service_date, :uid, :rail_line])

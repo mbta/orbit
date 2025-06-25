@@ -28,8 +28,9 @@ defmodule Orbit.Repo.Migrations.OCSTables do
       add(:service_date, :date, null: false)
       add(:uid, :string, null: false)
       add(:rail_line, :rail_line, null: false)
-      add(:cars, :jsonb)
       add(:tags, :jsonb)
+      add(:cars, :jsonb)
+      add(:car_tags, :jsonb)
       add(:deleted, :boolean)
 
       timestamps()
