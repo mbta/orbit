@@ -38,15 +38,14 @@ export const Train = ({
         ])}
         onClick={(e) => {
           e.stopPropagation();
-          if (userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)) {
-            const sideBarSelection: SideBarSelection = {
-              label: label,
-              consist: consist,
-              direction: direction,
-            };
-            setSideBarSelection(sideBarSelection);
-          }
+          const sideBarSelection: SideBarSelection = {
+            label: label,
+            consist: consist,
+            direction: direction,
+          };
+          setSideBarSelection(sideBarSelection);
         }}
+        disabled={!userGroups?.split(",").includes(ORBIT_RL_TRAINSTARTERS)}
       >
         {label}
 
