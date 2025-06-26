@@ -28,5 +28,7 @@ services:
       - S3_RTR_PUBLIC=s3-anonymous://mbta-gtfs-s3/
       - GLIDES_PERSONNEL_PATHNAME=personnel/demo.csv
       - GLIDES_RFID_PATHNAME=rfid/demo.csv
+      - OCS_KINESIS_STREAM_NAME=ctd-ocs-raw-messages
+      - OCS_KINESIS_CONSUMER_ARN=ARN
     ports:
       - 4001

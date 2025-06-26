@@ -44,6 +44,10 @@ if config_env() == :prod do
       rtr_public: System.fetch_env!("S3_RTR_PUBLIC")
     ]
 
+  config :orbit, OCS.Stream.Producer,
+    kinesis_stream_name: System.fetch_env!("OCS_KINESIS_STREAM_NAME"),
+    kinesis_consumer_arn: System.fetch_env!("OCS_KINESIS_CONSUMER_ARN")
+
   # CSV import jobs
   config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")
   config :orbit, Orbit.Import.Rfid, pathname: System.fetch_env!("GLIDES_RFID_PATHNAME")
