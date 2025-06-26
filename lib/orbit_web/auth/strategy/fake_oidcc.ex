@@ -1,10 +1,11 @@
 defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
   use Ueberauth.Strategy, ignores_csrf_attack: true
   use OrbitWeb, :controller
+  import OrbitWeb.Auth.Groups
 
   @impl Ueberauth.Strategy
   def handle_request!(conn) do
-    groups = ["orbit-admin", "orbit-bl-ffd", "orbit-rl-trainstarters"]
+    groups = [orbit_admin(), orbit_bl_ffd(), orbit_rl_trainstarters(), orbit_tid_staff()]
 
     conn
     |> put_resp_content_type("text/html")

@@ -10,7 +10,7 @@ defmodule OrbitWeb.Plugs.RequireGroup do
   def call(conn, groups) do
     user = Auth.logged_in_user(conn)
 
-    if user != nil and Enum.all?(groups, fn group -> group in user.groups end) do
+    if user != nil and Enum.any?(groups, fn group -> group in user.groups end) do
       conn
     else
       conn

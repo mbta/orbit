@@ -11,7 +11,7 @@ defmodule OrbitWeb.EmployeesControllerTest do
   end
 
   describe "index with required permission group" do
-    @tag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd()]
+    @tag groups: [OrbitWeb.Auth.Groups.orbit_bl_ffd(), OrbitWeb.Auth.Groups.orbit_tid_staff()]
     test "fetches all employees", %{conn: conn} do
       conn = get(conn, ~p"/api/employees")
 
