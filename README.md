@@ -17,6 +17,11 @@
     - `brew install asdf`
     - You may need to run `asdf plugin add` some of `erlang`, `elixir`, or `nodejs`.
     - `asdf install`
+- Configure AWS credentials for running locally:
+  - Recommended way:
+    - Follow the [setup instructions](https://www.notion.so/mbta-downtown-crossing/Loading-Secrets-from-1Password-into-Applications-101aa4debcb24372bdc3835918404c93) to configure AWS CLI with credentials stored in 1Password
+    - Inside this project's `config`, create a `dev.secret.exs` file by copying `dev.secret.example.exs`.
+    - Uncomment the "AWS Access Keys" config. Now local dev builds will load your credentials via AWS CLI.
 
 ## Set up
 
