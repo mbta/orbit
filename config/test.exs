@@ -11,6 +11,9 @@ config :orbit, OCS.Stream.Producer,
   kinesis_stream_name: "fake-stream",
   kinesis_consumer_arn: "fake-arn"
 
+# Needed for BroadwayKinesis tests
+config :ex_aws, access_key_id: "test_key", secret_access_key: "test_secret"
+
 # Database config
 config :orbit, Orbit.Repo,
   username: System.get_env("DATABASE_USERNAME") || "postgres",
