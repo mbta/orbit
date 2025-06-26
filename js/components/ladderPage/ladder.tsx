@@ -19,9 +19,11 @@ import { Dispatch, ReactElement, SetStateAction } from "react";
 
 export const Ladders = ({
   routeId,
+  sideBarSelection,
   setSideBarSelection,
 }: {
   routeId: RouteId;
+  sideBarSelection: SideBarSelection | null;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   const tripUpdates = useTripUpdates();
@@ -63,6 +65,7 @@ export const Ladders = ({
             key={index}
             ladderConfig={stationList}
             vehicles={vehicles}
+            sideBarSelection={sideBarSelection}
             setSideBarSelection={setSideBarSelection}
           />
         ),
@@ -74,10 +77,12 @@ export const Ladders = ({
 const TrainsAndStations = ({
   ladderConfig,
   vehicles,
+  sideBarSelection,
   setSideBarSelection,
 }: {
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
+  sideBarSelection: SideBarSelection | null;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   return (
@@ -128,6 +133,7 @@ const TrainsAndStations = ({
               label={vp.label}
               consist={vp.cars}
               direction={direction}
+              highlight={vp.label === sideBarSelection?.label}
               setSideBarSelection={setSideBarSelection}
             />
           </div>
