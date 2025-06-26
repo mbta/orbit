@@ -5,10 +5,7 @@ config :orbit,
   environment: "test",
   release: "test",
   force_https?: false,
-  poll_rtr?: false,
-
-  # OCS Stream
-  handle_ocs_message: {OCS.MessageHandler, :receive, []}
+  poll_rtr?: false
 
 config :orbit, OCS.Stream.Producer,
   kinesis_stream_name: "fake-stream",

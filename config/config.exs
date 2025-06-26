@@ -12,8 +12,7 @@ config :orbit,
   rtr_poll_delay: 3_000,
 
   # OCS Stream
-  enable_ocs_stream_consumer?: false,
-  handle_ocs_message: {OCS.MessageHandler, :receive, []}
+  enable_ocs_stream_consumer?: false
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

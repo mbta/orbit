@@ -38,14 +38,12 @@ defmodule OCS.Stream.Pipeline do
       "Records" => records
     } = message.data
 
-    {ocs_mod, ocs_func, ocs_args} = Application.fetch_env!(:orbit, :handle_ocs_message)
-
     event_records_count =
       records
       |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
       |> Enum.map(&ocs_message/1)
-      |> Enum.map(&apply(ocs_mod, ocs_func, [&1, now] ++ ocs_args))
+      |> Enum.map(&OCS.MessageHandler.receive(&1, now))
       |> Enum.count()
 
     log_handled_events(sequence_number, ms_behind, event_records_count)
