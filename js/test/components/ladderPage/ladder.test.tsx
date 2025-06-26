@@ -38,7 +38,11 @@ describe("Ladder", () => {
     mockUseVehiclePositions.mockReturnValue([]);
     mockUseTripUpdates.mockReturnValue([]);
     const view = render(
-      <Ladders routeId={"Red"} setSideBarSelection={jest.fn()} />,
+      <Ladders
+        routeId={"Red"}
+        setSideBarSelection={jest.fn()}
+        sideBarSelection={null}
+      />,
     );
     expect(view.getByText("Alewife")).toBeInTheDocument();
     expect(view.getByText("Ashmont")).toBeInTheDocument();
@@ -74,7 +78,11 @@ describe("Ladder", () => {
     mockUseTripUpdates.mockReturnValue([]);
 
     const view = render(
-      <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+      <Ladders
+        routeId="Red"
+        setSideBarSelection={jest.fn()}
+        sideBarSelection={null}
+      />,
     );
     expect(view.getByText("1877")).toBeInTheDocument();
     expect(view.getByText("1888")).toBeInTheDocument();
@@ -116,7 +124,11 @@ describe("Ladder", () => {
         ]);
 
         const view = render(
-          <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+          <Ladders
+            routeId="Red"
+            setSideBarSelection={jest.fn()}
+            sideBarSelection={null}
+          />,
         );
         expect(view.getByText("1888")).toBeInTheDocument();
         expect(view.getByText("1888")).toHaveClass("border-tangerine");
@@ -176,7 +188,11 @@ describe("Ladder", () => {
         ]);
 
         const view = render(
-          <Ladders routeId="Red" setSideBarSelection={jest.fn()} />,
+          <Ladders
+            routeId="Red"
+            setSideBarSelection={jest.fn()}
+            sideBarSelection={null}
+          />,
         );
 
         // Ashmont defaults to orange
@@ -195,6 +211,56 @@ describe("Ladder", () => {
         expect(view.getByText("1893")).toBeInTheDocument();
         expect(view.getByText("1893")).toHaveClass("border-crimson");
       });
+    });
+  });
+
+  describe("pill highlight", () => {
+    test("when the sidebar is open", () => {
+      mockUseVehiclePositions.mockReturnValue([
+        vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          label: "1888",
+          stationId: "place-davis",
+          stopId: "70064",
+          tripId: "11111",
+        }),
+      ]);
+
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          sideBarSelection={{
+            consist: ["1888", "1889", "1890", "1891"],
+            direction: 0,
+            label: "1888",
+          }}
+        />,
+      );
+      expect(view.getByText("1888")).toBeInTheDocument();
+      expect(view.getByText("1888")).toHaveClass("border-[3px]");
+    });
+
+    test("when the sidebar is not open", () => {
+      mockUseVehiclePositions.mockReturnValue([
+        vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          label: "1888",
+          stationId: "place-davis",
+          stopId: "70064",
+          tripId: "11111",
+        }),
+      ]);
+
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          sideBarSelection={null}
+        />,
+      );
+      expect(view.getByText("1888")).toBeInTheDocument();
+      expect(view.getByText("1888")).not.toHaveClass("border-[3px]");
     });
   });
 });

@@ -42,7 +42,11 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         // Close sidebar when clicking anywhere in the background
         onClick={close}
       >
-        <Ladders routeId={routeId} setSideBarSelection={setSideBarSelection} />
+        <Ladders
+          routeId={routeId}
+          setSideBarSelection={setSideBarSelection}
+          sideBarSelection={sideBarSelection}
+        />
       </div>
       {sideBarSelection ?
         <SideBar selection={sideBarSelection} close={close} />
