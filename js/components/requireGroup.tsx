@@ -1,15 +1,15 @@
-import { getMetaContent } from "../util/metadata";
+import { userHasOneOf } from "../groups";
 import { NoPermissions } from "./noPermissions";
 import { ReactNode } from "react";
 
 export const RequireGroup = ({
-  group,
+  oneOf,
   children,
 }: {
-  group: string;
+  oneOf: string[];
   children?: ReactNode;
 }) => {
-  if (getMetaContent("userGroups")?.split(",").includes(group)) {
+  if (userHasOneOf(oneOf)) {
     return children;
   } else {
     return <NoPermissions />;

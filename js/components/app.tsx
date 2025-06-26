@@ -1,6 +1,6 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
-import { ORBIT_BL_FFD } from "../groups";
+import { ORBIT_BL_FFD, ORBIT_TID_STAFF } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -82,7 +82,7 @@ const router = createBrowserRouter([
       {
         path: paths.operators,
         element: (
-          <RequireGroup group={ORBIT_BL_FFD}>
+          <RequireGroup oneOf={[ORBIT_BL_FFD, ORBIT_TID_STAFF]}>
             <Operators />
           </RequireGroup>
         ),
