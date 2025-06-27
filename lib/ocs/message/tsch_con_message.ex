@@ -8,6 +8,7 @@ defmodule OCS.Message.TschConMessage do
     :transitline,
     :trip_uid,
     :consist,
+    :consist_internal,
     :train_uid
   ]
 
@@ -17,6 +18,7 @@ defmodule OCS.Message.TschConMessage do
           transitline: String.t(),
           trip_uid: String.t(),
           consist: [String.t()],
+          consist_internal: [String.t()],
           train_uid: String.t()
         }
 end

@@ -41,9 +41,12 @@ defmodule OCS.Parser.TschMessage do
         {count, :tsch, time, [transitline, "CON", trip_uid, train_consist, train_uid]},
         _current_time
       ) do
-    con =
+    con_internal =
       train_consist
       |> String.split(" ")
+
+    con =
+      con_internal
       |> Enum.map(&OCS.Parser.convert_ocs_car_number(transitline, &1))
 
     %OCS.Message.TschConMessage{
@@ -52,6 +55,7 @@ defmodule OCS.Parser.TschMessage do
       transitline: check_transitline(transitline),
       trip_uid: trip_uid,
       consist: con,
+      consist_internal: con_internal,
       train_uid: train_uid
     }
   end
@@ -203,6 +207,7 @@ defmodule OCS.Parser.TschMessage do
         |> Enum.map(fn {tag, car_id} ->
           %OCS.Message.TschTagMessage.CarTag{
             car_number: OCS.Parser.convert_ocs_car_number(transitline, car_id),
+            car_number_internal: car_id,
             tag: tag
           }
         end)
