@@ -24,6 +24,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   transitline: "R",
                   trip_uid: "983AC23D",
                   consist: ["1737", "1736", "1725", "1724", "1731", "1730"],
+                  consist_internal: ["1737", "1736", "1725", "1724", "1731", "1730"],
                   train_uid: "54466E3A"
                 }}
     end
@@ -41,6 +42,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   transitline: "R",
                   trip_uid: "983AC23D",
                   consist: ["1537", "1536", "1725", "1724", "1731", "1730"],
+                  consist_internal: ["2537", "2536", "1725", "1724", "1731", "1730"],
                   train_uid: "54466E3A"
                 }}
     end
@@ -253,11 +255,11 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   train_uid: "543C4CE2",
                   consist_tags: ["B", "D", "K", "E", "T"],
                   car_tags: [
-                    %CarTag{tag: "D", car_number: "1707"},
-                    %CarTag{tag: "K", car_number: "1623"},
-                    %CarTag{tag: "E", car_number: "1622"},
-                    %CarTag{tag: "E", car_number: "1511"},
-                    %CarTag{tag: "E", car_number: "1510"}
+                    %CarTag{tag: "D", car_number: "1707", car_number_internal: "1707"},
+                    %CarTag{tag: "K", car_number: "1623", car_number_internal: "1623"},
+                    %CarTag{tag: "E", car_number: "1622", car_number_internal: "1622"},
+                    %CarTag{tag: "E", car_number: "1511", car_number_internal: "1511"},
+                    %CarTag{tag: "E", car_number: "1510", car_number_internal: "1510"}
                   ]
                 }}
     end
@@ -289,11 +291,11 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   train_uid: "543C4CE2",
                   consist_tags: ["B", "D", "K", "E", "T"],
                   car_tags: [
-                    %CarTag{tag: "D", car_number: "1707"},
-                    %CarTag{tag: "K", car_number: "1623"},
-                    %CarTag{tag: "E", car_number: "1622"},
-                    %CarTag{tag: "E", car_number: "1511"},
-                    %CarTag{tag: "E", car_number: "1510"}
+                    %CarTag{tag: "D", car_number: "1707", car_number_internal: "1707"},
+                    %CarTag{tag: "K", car_number: "1623", car_number_internal: "1623"},
+                    %CarTag{tag: "E", car_number: "1622", car_number_internal: "1622"},
+                    %CarTag{tag: "E", car_number: "1511", car_number_internal: "2511"},
+                    %CarTag{tag: "E", car_number: "1510", car_number_internal: "2510"}
                   ]
                 }}
     end

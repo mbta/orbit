@@ -42,9 +42,12 @@ defmodule Orbit.Ocs.Parser.TschMessage do
         {count, :tsch, time, [transitline, "CON", trip_uid, train_consist, train_uid]},
         _current_time
       ) do
-    con =
+    con_internal =
       train_consist
       |> String.split(" ")
+
+    con =
+      con_internal
       |> Enum.map(&Orbit.Ocs.Parser.convert_ocs_car_number(transitline, &1))
 
     %Orbit.Ocs.Message.TschConMessage{
@@ -53,6 +56,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
       transitline: check_transitline(transitline),
       trip_uid: trip_uid,
       consist: con,
+      consist_internal: con_internal,
       train_uid: train_uid
     }
   end
@@ -204,6 +208,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
         |> Enum.map(fn {tag, car_id} ->
           %Orbit.Ocs.Message.TschTagMessage.CarTag{
             car_number: Orbit.Ocs.Parser.convert_ocs_car_number(transitline, car_id),
+            car_number_internal: car_id,
             tag: tag
           }
         end)
