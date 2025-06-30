@@ -64,21 +64,21 @@ const CurrentTrip = () => {
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>Alewife</span>
+          <span>---</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>Alewife</span>
+          <span>---</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
-          <span className="font-bold">4:12pm (+3)</span>
+          <span className="font-bold">--- (N/A)</span>
           <span className="text-gray-300 mt-5">Scheduled</span>
-          <span className="font-bold">4:12pm</span>
+          <span className="font-bold">---</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Actual</span>
-          <span className="font-bold">4:12pm</span>
+          <span className="font-bold">---</span>
           <span className="text-gray-300 mt-5">Estimated</span>
-          <span className="font-bold">4:12pm</span>
+          <span className="font-bold">---</span>
         </div>
       </div>
     </section>
