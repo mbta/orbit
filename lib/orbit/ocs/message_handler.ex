@@ -10,11 +10,11 @@ defmodule Orbit.Ocs.MessageHandler do
     Logger.info("raw_ocs_message #{line}")
 
     case Orbit.Ocs.Parser.parse(line, current_time) do
-      {:ok, :ignored} ->
-        {:ok, :ignored}
-
-      {:ok, message} ->
+      {:ok, %{transitline: transitline} = message} when transitline in ["R", "O", "B"] ->
         receive_parsed(message, current_time)
+
+      {:ok, _other} ->
+        {:ok, :ignored}
 
       {:error, e} ->
         Logger.warning(
@@ -64,9 +64,22 @@ defmodule Orbit.Ocs.MessageHandler do
 
   def log_slow_message_handling(_time, _max_time, _message), do: :ok
 
-  @spec handle_message(Orbit.Ocs.Message.t(), DateTime.t()) :: {:ok, %{} | :ignored}
-  defp handle_message(_message, _current_time) do
-    # TODO: Update DB based on message type
-    {:ok, %{}}
+  @spec handle_message(Orbit.Ocs.Message.t(), DateTime.t()) :: :ok | :error
+  defp handle_message(message, _current_time) do
+    results = Orbit.Ocs.ChangeSet.apply_changes(message)
+
+    errors =
+      Enum.filter(results, fn result ->
+        case result do
+          {:error, _} -> true
+          _ -> false
+        end
+      end)
+
+    Enum.each(errors, fn {:error, e} ->
+      Logger.warning("database error: #{inspect(e)}")
+    end)
+
+    if errors == [], do: :ok, else: :error
   end
 end
