@@ -8,14 +8,14 @@ defmodule Orbit.Ocs.Parser do
   rest -> a list of the remaining values from the message
   """
 
-  @spec parse(String.t(), DateTime.t()) :: {:ok, Orbit.Ocs.Message.t()} | {:error, any}
+  @spec parse(String.t(), DateTime.t()) :: {:ok, Orbit.Ocs.Message.t() | :ignored} | {:error, any}
   def parse(line, current_time) do
     {:ok, parse!(line, current_time)}
   rescue
     e -> {:error, e}
   end
 
-  @spec parse!(String.t(), DateTime.t()) :: Orbit.Ocs.Message.t()
+  @spec parse!(String.t(), DateTime.t()) :: Orbit.Ocs.Message.t() | :ignored
   def parse!(line, current_time) do
     line
     |> parse_initial(current_time)
