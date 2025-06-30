@@ -25,6 +25,7 @@ defmodule Orbit.Ocs.MessageHandler do
     end
   end
 
+  @spec receive(Orbit.Ocs.Message.t(), DateTime.t()) :: {:ok | :error, any}
   defp receive_parsed(message, current_time) do
     # TODO: Log to splunk
     if expired?(message, current_time) do
