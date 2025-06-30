@@ -6,6 +6,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   use Broadway
 
+  alias Hex.API.Key
   alias Broadway.Message
   # alias Orbit.Ocs.Stream.SequenceMonitor
 
@@ -14,17 +15,11 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   @ms_behind_warn_threshold 1_000
 
-  defmodule State do
-    @type t :: %__MODULE__{
-            stream_name: String.t(),
-            consumer_arn: String.t(),
-            resume_position: BroadwayKinesis.SubscribeToShard.starting_position(),
-            sequence_count_by_ip: %{String.t() => String.t()}
-          }
-    defstruct [:stream_name, :consumer_arn, :resume_position, :sequence_count_by_ip]
-  end
-
   def start_link(opts) do
+    # Get and override resume_position for producer
+    stream_name =
+      Application.fetch_env!(:orbit, OCS.Stream.Producer) |> Keyword.get(:kinesis_stream_name)
+
     Broadway.start_link(__MODULE__,
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
