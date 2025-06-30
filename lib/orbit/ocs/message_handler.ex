@@ -14,17 +14,7 @@ defmodule Orbit.Ocs.MessageHandler do
         {:ok, :ignored}
 
       {:ok, message} ->
-        # TODO: Log to splunk
-
-        if expired?(message, current_time) do
-          log_expired_message(message)
-
-          {:error, "expired message"}
-        else
-          {time, val} = :timer.tc(fn -> handle_message(message, current_time) end)
-          log_slow_message_handling(time, @max_process_time, message)
-          val
-        end
+        receive_parsed(message, current_time)
 
       {:error, e} ->
         Logger.warning(
@@ -32,6 +22,19 @@ defmodule Orbit.Ocs.MessageHandler do
         )
 
         {:error, e}
+    end
+  end
+
+  defp receive_parsed(message, current_time) do
+    # TODO: Log to splunk
+    if expired?(message, current_time) do
+      log_expired_message(message)
+
+      {:error, "expired message"}
+    else
+      {time, val} = :timer.tc(fn -> handle_message(message, current_time) end)
+      log_slow_message_handling(time, @max_process_time, message)
+      val
     end
   end
 
