@@ -7,7 +7,7 @@ defmodule Orbit.Ocs.KinesisStreamState do
           stream_name: String.t(),
           resume_position: String.t()
         }
-  schema "ocs_kinesis_streams" do
+  schema "kinesis_streams" do
     field(:stream_name, :string)
     field(:resume_position, :string)
 
