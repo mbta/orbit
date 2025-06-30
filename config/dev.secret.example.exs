@@ -9,7 +9,7 @@ import Config
 #   appcues_id: "SOME_ID"
 
 # Kinesis
-# config :orbit, OCS.Stream.Producer,
+# config :orbit, Orbit.Ocs.Stream.Producer,
 #   kinesis_stream_name: "ctd-ocs-raw-messages",
 #   kinesis_consumer_arn: "ARN"
 

@@ -7,7 +7,7 @@ config :orbit,
   force_https?: false,
   poll_rtr?: false
 
-config :orbit, OCS.Stream.Producer,
+config :orbit, Orbit.Ocs.Stream.Producer,
   kinesis_stream_name: "fake-stream",
   kinesis_consumer_arn: "fake-arn"
 

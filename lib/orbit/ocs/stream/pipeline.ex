@@ -1,4 +1,4 @@
-defmodule OCS.Stream.Pipeline do
+defmodule Orbit.Ocs.Stream.Pipeline do
   @moduledoc """
   Maintains a connection to the Kinesis stream Producer where OCS messages are published, and passes them
   to the message handler.
@@ -7,10 +7,10 @@ defmodule OCS.Stream.Pipeline do
   use Broadway
 
   alias Broadway.Message
-  # alias OCS.Stream.SequenceMonitor
+  # alias Orbit.Ocs.Stream.SequenceMonitor
 
   require Logger
-  # require OCS.MessageHandler
+  # require Orbit.Ocs.MessageHandler
 
   @ms_behind_warn_threshold 1_000
 
@@ -18,7 +18,7 @@ defmodule OCS.Stream.Pipeline do
     Broadway.start_link(__MODULE__,
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
-        module: {OCS.Stream.Producer, opts},
+        module: {Orbit.Ocs.Stream.Producer, opts},
         transformer: {__MODULE__, :transform, opts},
         concurrency: 1
       ],
@@ -43,7 +43,7 @@ defmodule OCS.Stream.Pipeline do
       |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
       |> Enum.map(&ocs_message/1)
-      |> Enum.map(&OCS.MessageHandler.receive(&1, now))
+      |> Enum.map(&Orbit.Ocs.MessageHandler.receive(&1, now))
       |> Enum.count()
 
     log_handled_events(sequence_number, ms_behind, event_records_count)
@@ -104,6 +104,6 @@ defmodule OCS.Stream.Pipeline do
     # to track which messages actually make it all the way into state.
   end
 
-  defp log(message), do: Logger.info(["OCS.Stream.Pipeline " | message])
-  defp warn(message), do: Logger.warning(["OCS.Stream.Pipeline " | message])
+  defp log(message), do: Logger.info(["Orbit.Ocs.Stream.Pipeline " | message])
+  defp warn(message), do: Logger.warning(["Orbit.Ocs.Stream.Pipeline " | message])
 end
