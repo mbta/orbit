@@ -39,7 +39,6 @@ export const SideBar = ({
       >
         <img src="/images/close.svg" alt="Close" />
       </button>
-
       <div className="mt-14 px-4 flex">
         {consist.map((label, index) => (
           <div
@@ -53,6 +52,35 @@ export const SideBar = ({
           </div>
         ))}
       </div>
+      <CurrentTrip />
     </aside>
+  );
+};
+
+const CurrentTrip = () => {
+  return (
+    <section className="m-5 pt-5 border-t border-gray-300">
+      <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
+      <div className="flex justify-between mt-3">
+        <div className="flex flex-col justify-between">
+          <span className="text-gray-300">Departure</span>
+          <span>---</span>
+          <span className="text-gray-300 mt-5">Arrival</span>
+          <span>---</span>
+        </div>
+        <div className="flex flex-col justify-between">
+          <span className="text-gray-300">Scheduled</span>
+          <span className="font-bold">--- (N/A)</span>
+          <span className="text-gray-300 mt-5">Scheduled</span>
+          <span className="font-bold">---</span>
+        </div>
+        <div className="flex flex-col justify-between">
+          <span className="text-gray-300">Actual</span>
+          <span className="font-bold">---</span>
+          <span className="text-gray-300 mt-5">Estimated</span>
+          <span className="font-bold">---</span>
+        </div>
+      </div>
+    </section>
   );
 };
