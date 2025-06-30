@@ -5,11 +5,17 @@ import Config
 config :orbit,
   # loaded at compile time
   appcues_enabled?: true,
+  enable_ocs_stream_consumer?: true,
   release: System.get_env("RELEASE")
 
 config :orbit, Orbit.Repo,
   # credentials are loaded in runtime.exs
   pool_size: 10
+
+config :orbit, Orbit.Ocs.Stream.Producer,
+  # loaded at compile time
+  kinesis_stream_name: System.get_env("OCS_KINESIS_STREAM_NAME"),
+  kinesis_consumer_arn: System.get_env("OCS_KINESIS_CONSUMER_ARN")
 
 config :orbit, Oban,
   plugins: [

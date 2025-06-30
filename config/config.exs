@@ -9,10 +9,13 @@ config :orbit,
   force_https?: true,
   timezone: "America/New_York",
   poll_rtr?: true,
-  rtr_poll_delay: 3_000,
+  rtr_poll_delay: 3_000
 
-  # OCS Stream
-  enable_ocs_stream_consumer?: false
+# Kinesis
+config :orbit, Orbit.Ocs.Stream.Producer,
+  enabled?: false,
+  kinesis_stream_name: "fake-stream",
+  kinesis_consumer_arn: "fake-arn"
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,

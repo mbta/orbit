@@ -20,5 +20,9 @@ defmodule Orbit.Ocs.Supervisor do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
-  defp enable_stream_consumer?, do: Application.fetch_env!(:orbit, :enable_ocs_stream_consumer?)
+  defp enable_stream_consumer?,
+    do:
+      :orbit
+      |> Application.fetch_env!(Orbit.Ocs.Stream.Producer)
+      |> Keyword.get(:enabled?)
 end

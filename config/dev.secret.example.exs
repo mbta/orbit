@@ -10,6 +10,7 @@ import Config
 
 # Kinesis
 # config :orbit, Orbit.Ocs.Stream.Producer,
+#   enabled?: true,
 #   kinesis_stream_name: "ctd-ocs-raw-messages",
 #   kinesis_consumer_arn: "ARN"
 
