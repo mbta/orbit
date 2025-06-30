@@ -1,7 +1,7 @@
 defmodule Orbit.Ocs.Message.TschMessageTest do
   use ExUnit.Case, async: true
-  alias Orbit.Ocs.Utilities.Time, as: OCSTime
   alias Orbit.Ocs.Message.TschTagMessage.CarTag
+  alias Orbit.Ocs.Utilities.Time, as: OCSTime
 
   @test_time OCSTime.in_ocs_tz(~N[2017-03-17 09:44:01])
 
@@ -112,13 +112,13 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH NEW message with incomplete data (in this case, an RAD train)" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {28329, :tsch, @test_time,
+               {28_329, :tsch, @test_time,
                 ["B", "NEW", "98AA06F7", "A", "R", "", "", "", "WONDERLAND", "", "0", "0"]},
                @test_time
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschNewMessage{
-                  counter: 28329,
+                  counter: 28_329,
                   timestamp: @test_time,
                   transitline: "B",
                   trip_uid: "98AA06F7",
@@ -168,12 +168,12 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH LNK message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19332, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "983BA710"]},
+               {19_332, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "983BA710"]},
                @test_time
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschLnkMessage{
-                  counter: 19332,
+                  counter: 19_332,
                   timestamp: @test_time,
                   transitline: "R",
                   trip_uid: "983BA716",
@@ -184,12 +184,12 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH LNK message with '0' trips as nil trips" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19223, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "0"]},
+               {19_223, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "0"]},
                @test_time
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschLnkMessage{
-                  counter: 19223,
+                  counter: 19_223,
                   timestamp: @test_time,
                   transitline: "R",
                   trip_uid: "983BA716",
@@ -200,12 +200,12 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH DEL message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {26377, :tsch, @test_time, ["B", "DEL", "98A8F1AF", "0"]},
+               {26_377, :tsch, @test_time, ["B", "DEL", "98A8F1AF", "0"]},
                @test_time
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschDelMessage{
-                  counter: 26377,
+                  counter: 26_377,
                   timestamp: @test_time,
                   transitline: "B",
                   trip_uid: "98A8F1AF",
@@ -215,22 +215,22 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH OFF message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19332, :tsch, @test_time, ["R", "OFF", "983BA716", "13579"]},
+               {19_332, :tsch, @test_time, ["R", "OFF", "983BA716", "13579"]},
                @test_time
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschOffMessage{
-                  counter: 19332,
+                  counter: 19_332,
                   timestamp: @test_time,
                   transitline: "R",
                   trip_uid: "983BA716",
-                  offset: 13579
+                  offset: 13_579
                 }}
     end
 
     test "parses TSCH TAG message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19333, :tsch, @test_time,
+               {19_333, :tsch, @test_time,
                 [
                   "R",
                   "TAG",
@@ -248,7 +248,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschTagMessage{
-                  counter: 19333,
+                  counter: 19_333,
                   timestamp: @test_time,
                   transitline: "R",
                   trip_uid: "9836C4EE",
@@ -266,7 +266,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "Red Line 25xx car numbers in TSCH TAG mapped to 15xx" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19333, :tsch, @test_time,
+               {19_333, :tsch, @test_time,
                 [
                   "R",
                   "TAG",
@@ -284,7 +284,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
              ) ==
                {:ok,
                 %Orbit.Ocs.Message.TschTagMessage{
-                  counter: 19333,
+                  counter: 19_333,
                   timestamp: @test_time,
                   transitline: "R",
                   trip_uid: "9836C4EE",
