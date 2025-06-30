@@ -6,7 +6,6 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   use Broadway
 
-  alias Hex.API.Key
   alias Broadway.Message
   # alias Orbit.Ocs.Stream.SequenceMonitor
 
@@ -16,14 +15,10 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   @ms_behind_warn_threshold 1_000
 
   def start_link(opts) do
-    # Get and override resume_position for producer
-    stream_name =
-      Application.fetch_env!(:orbit, OCS.Stream.Producer) |> Keyword.get(:kinesis_stream_name)
-
     Broadway.start_link(__MODULE__,
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
-        module: {Orbit.Ocs.Stream.Producer, opts},
+        module: {Orbit.Ocs.Stream.Producer, producer_opts(opts)},
         transformer: {__MODULE__, :transform, opts},
         concurrency: 1
       ],
@@ -31,6 +26,12 @@ defmodule Orbit.Ocs.Stream.Pipeline do
         default: [concurrency: 1, max_demand: 1]
       ]
     )
+  end
+
+  defp producer_opts(opts) do
+    # If we have a previously stored state for this stream,
+    # use it to set the producer's resume_position
+    opts ++ [state: Orbit.Ocs.Stream.Producer.load_persistent_state()]
   end
 
   @impl true

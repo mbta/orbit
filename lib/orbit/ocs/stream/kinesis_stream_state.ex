@@ -1,4 +1,4 @@
-defmodule Orbit.Ocs.KinesisStreamState do
+defmodule Orbit.KinesisStreamState do
   use Ecto.Schema
 
   import Ecto.Changeset
