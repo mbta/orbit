@@ -1,6 +1,8 @@
 defmodule Orbit.Ocs.MessageHandler do
   require Logger
 
+  alias Orbit.Ocs.SplunkFormatter
+
   @expired_seconds 86_400
   @max_process_time 66_000
 
@@ -27,7 +29,8 @@ defmodule Orbit.Ocs.MessageHandler do
 
   @spec receive(Orbit.Ocs.Message.t(), DateTime.t()) :: {:ok | :error, any}
   defp receive_parsed(message, current_time) do
-    # TODO: Log to splunk
+    Logger.info(SplunkFormatter.format(message))
+
     if expired?(message, current_time) do
       log_expired_message(message)
 
