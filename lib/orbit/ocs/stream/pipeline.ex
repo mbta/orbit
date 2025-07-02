@@ -12,7 +12,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   require Logger
   # require Orbit.Ocs.MessageHandler
 
-  @ms_behind_warn_threshold 1_000
+  @behind_warn_threshold_ms 1_000
 
   def start_link(opts) do
     Broadway.start_link(__MODULE__,
@@ -59,7 +59,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   # end
 
   defp log_handled_events(sequence_number, ms_behind, records_count)
-       when ms_behind >= @ms_behind_warn_threshold,
+       when ms_behind >= @behind_warn_threshold_ms,
        do: log_handled_events(&warn/1, sequence_number, ms_behind, records_count)
 
   defp log_handled_events(sequence_number, ms_behind, records_count),
