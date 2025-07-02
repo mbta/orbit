@@ -28,8 +28,8 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     )
   end
 
-  @impl true
-  def handle_message(_, message, _) do
+  @impl Broadway
+  def handle_message(_processor, message, _context) do
     now = Util.Time.current_datetime()
 
     %{
