@@ -60,19 +60,18 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   defp log_handled_events(sequence_number, ms_behind, records_count)
        when ms_behind >= @behind_warn_threshold_ms,
-       do: log_handled_events(&warn/1, sequence_number, ms_behind, records_count)
+       do: log_handled_events(&Logger.warning/1, sequence_number, ms_behind, records_count)
 
   defp log_handled_events(sequence_number, ms_behind, records_count),
-    do: log_handled_events(&log/1, sequence_number, ms_behind, records_count)
+    do: log_handled_events(&Logger.info/1, sequence_number, ms_behind, records_count)
 
   defp log_handled_events(log_fn, sequence_number, ms_behind, records_count) do
     log_fn.([
-      "event=handled_events records_count=",
-      Integer.to_string(records_count),
-      " ms_behind=",
-      Integer.to_string(ms_behind),
-      " sequence_number=",
-      sequence_number
+      "Orbit.Ocs.Stream.Pipeline",
+      " event=handled_events",
+      " records_count=#{records_count}",
+      " ms_behind=#{ms_behind}",
+      " sequence_number=#{sequence_number}"
     ])
   end
 
@@ -103,7 +102,4 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     # This is required per the framework, but could be useful down the line
     # to track which messages actually make it all the way into state.
   end
-
-  defp log(message), do: Logger.info(["Orbit.Ocs.Stream.Pipeline " | message])
-  defp warn(message), do: Logger.warning(["Orbit.Ocs.Stream.Pipeline " | message])
 end
