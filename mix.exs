@@ -48,7 +48,7 @@ defmodule Orbit.MixProject do
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "== 3.13.2"},
-      {:ex_aws, "== 2.5.9"},
+      {:ex_aws, "== 2.5.10"},
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.7"},
       {:ex_machina, "== 2.8.0", only: :test},
@@ -71,20 +71,20 @@ defmodule Orbit.MixProject do
       {:logster, "== 2.0.0-rc.5"},
       {:oban, "== 2.19.4"},
       {:phoenix, "== 1.7.21"},
-      {:phoenix_ecto, "== 4.6.3"},
+      {:phoenix_ecto, "== 4.6.5"},
       {:phoenix_html, "== 4.2.1"},
       {:phoenix_live_dashboard, "== 0.8.7"},
       {:phoenix_live_reload, "== 1.6.0", only: :dev},
-      {:phoenix_live_view, "== 1.0.10"},
+      {:phoenix_live_view, "== 1.0.17"},
       {:postgrex, "== 0.20.0"},
       {:sentry, "== 10.10.0"},
       {:sobelow, "== 0.14.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.1.0"},
       {:telemetry_poller, "== 1.2.0"},
-      {:timex, "== 3.7.11"},
+      {:timex, "== 3.7.13"},
       {:tz, "== 0.28.1"},
       {:ueberauth, "== 0.10.8"},
-      {:ueberauth_oidcc, "== 0.4.1"}
+      {:ueberauth_oidcc, "== 0.4.2"}
     ]
   end
 
