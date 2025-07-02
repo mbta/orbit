@@ -51,7 +51,7 @@ defmodule Orbit.Ocs.ChangeSet do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: :replace_all,
+        on_conflict: {:replace, [:cars]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -88,7 +88,16 @@ defmodule Orbit.Ocs.ChangeSet do
       scheduled_arrival: message.sched_arr
     }
     |> Trip.changeset()
-    |> Repo.insert(on_conflict: :replace_all, conflict_target: [:service_date, :rail_line, :uid])
+    |> Repo.insert(
+      on_conflict:
+        {:replace,
+         [
+           :destination_station,
+           :route,
+           :scheduled_arrival
+         ]},
+      conflict_target: [:service_date, :rail_line, :uid]
+    )
     |> List.wrap()
   end
 
@@ -100,7 +109,10 @@ defmodule Orbit.Ocs.ChangeSet do
       deleted: message.delete_status == :deleted
     }
     |> Trip.changeset()
-    |> Repo.insert(on_conflict: :replace_all, conflict_target: [:service_date, :rail_line, :uid])
+    |> Repo.insert(
+      on_conflict: {:replace, [:deleted]},
+      conflict_target: [:service_date, :rail_line, :uid]
+    )
     |> List.wrap()
   end
 
@@ -114,7 +126,10 @@ defmodule Orbit.Ocs.ChangeSet do
       next_uid: message.next_trip_uid
     }
     |> Trip.changeset()
-    |> Repo.insert(on_conflict: :replace_all, conflict_target: [:service_date, :rail_line, :uid])
+    |> Repo.insert(
+      on_conflict: {:replace, [:prev_uid, :next_uid]},
+      conflict_target: [:service_date, :rail_line, :uid]
+    )
     |> List.wrap()
   end
 
@@ -126,7 +141,10 @@ defmodule Orbit.Ocs.ChangeSet do
       offset: message.offset
     }
     |> Trip.changeset()
-    |> Repo.insert(on_conflict: :replace_all, conflict_target: [:service_date, :rail_line, :uid])
+    |> Repo.insert(
+      on_conflict: {:replace, [:offset]},
+      conflict_target: [:service_date, :rail_line, :uid]
+    )
     |> List.wrap()
   end
 
@@ -174,7 +192,7 @@ defmodule Orbit.Ocs.ChangeSet do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: :replace_all,
+        on_conflict: {:replace, [:car_tags, :tags]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -195,7 +213,7 @@ defmodule Orbit.Ocs.ChangeSet do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: :replace_all,
+      on_conflict: {:replace, [:train_uid]},
       conflict_target: [:service_date, :uid, :rail_line]
     )
   end
