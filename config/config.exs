@@ -12,10 +12,7 @@ config :orbit,
   rtr_poll_delay: 3_000
 
 # Kinesis
-config :orbit, Orbit.Ocs.Stream.Producer,
-  enabled?: false,
-  kinesis_stream_name: "fake-stream",
-  kinesis_consumer_arn: "fake-arn"
+config :orbit, Orbit.Ocs.Stream.Producer, enabled?: false
 
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
