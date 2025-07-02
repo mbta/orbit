@@ -42,11 +42,21 @@ defmodule Orbit.Ocs.TrainTest do
       rail_line: :red,
       uid: "TRAIN_UID",
       tags: ["F"],
-      cars: ["1877", "1876", "1811", "1812", "1808", "1810"],
       car_tags: ["K", "K", "K", "", "", ""]
     }
     |> Train.changeset()
     |> Repo.insert!(on_conflict: :replace_all, conflict_target: [:service_date, :uid, :rail_line])
+
+    queried =
+      Repo.get_by(Train,
+        service_date: Util.Time.current_service_date(),
+        rail_line: :red,
+        uid: "TRAIN_UID"
+      )
+
+    dbg(inspect(queried))
+
+    assert ["1877", "1876", "1811", "1812", "1808", "1809"] = queried.cars
   end
 
   test "unique constraint on service_date, uid, rail_line" do
