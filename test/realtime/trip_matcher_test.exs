@@ -43,6 +43,7 @@ defmodule Realtime.TripMatcherTest do
     test "finds other OCS trips by vehicle_id (train_uid)" do
       assert [
                %Vehicle{
+                 position: %VehiclePosition{},
                  ocs_trips: %{
                    current: %Trip{
                      train_uid: "5483E6C7",
