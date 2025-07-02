@@ -34,7 +34,8 @@ defmodule Realtime.Data.TripUpdate do
     @type t :: %__MODULE__{
             station_id: String.t(),
             predicted_arrival_time: Util.Time.timestamp() | nil,
-            predicted_departure_time: Util.Time.timestamp() | nil
+            predicted_departure_time: Util.Time.timestamp() | nil,
+            passthrough_time: Util.Time.timestamp() | nil
           }
 
     @derive Jason.Encoder
@@ -44,7 +45,8 @@ defmodule Realtime.Data.TripUpdate do
     defstruct [
       :station_id,
       :predicted_arrival_time,
-      :predicted_departure_time
+      :predicted_departure_time,
+      :passthrough_time
     ]
   end
 end

@@ -84,7 +84,11 @@ const CurrentTrip = ({ selection }: { selection: SideBarSelection | null }) => {
           <span className="font-bold">
             {selection?.stopTimeUpdate?.predictedArrivalTime?.toLocaleString(
               DateTime.TIME_SIMPLE,
-            ) ?? "---"}
+            ) ??
+              selection?.stopTimeUpdate?.passthroughTime?.toLocaleString(
+                DateTime.TIME_SIMPLE,
+              ) ??
+              "---"}
           </span>
         </div>
       </div>

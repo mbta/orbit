@@ -4,6 +4,7 @@ import {
   TrainThemes,
 } from "../../../components/ladderPage/trainTheme";
 import { CarId } from "../../../models/common";
+import { stopTimeUpdateFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 
 describe("Train", () => {
@@ -16,6 +17,7 @@ describe("Train", () => {
         label="1851"
         direction={0}
         consist={consist}
+        stopTimeUpdate={stopTimeUpdateFactory.build()}
         setSideBarSelection={jest.fn()}
       />,
     );
@@ -30,6 +32,7 @@ describe("Train", () => {
         highlight={true}
         direction={0}
         consist={consist}
+        stopTimeUpdate={stopTimeUpdateFactory.build()}
         setSideBarSelection={jest.fn()}
         className={""} // Empty, but still worth making sure it doesn't error :-)
       />,
@@ -49,6 +52,7 @@ describe("Train", () => {
         highlight={true}
         direction={1}
         consist={consist}
+        stopTimeUpdate={stopTimeUpdateFactory.build()}
         setSideBarSelection={jest.fn()}
         className={""} // Empty, but still worth making sure it doesn't error :-)
       />,

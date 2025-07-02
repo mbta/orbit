@@ -234,6 +234,7 @@ describe("Ladder", () => {
             consist: ["1888", "1889", "1890", "1891"],
             direction: 0,
             label: "1888",
+            stopTimeUpdate: undefined,
           }}
         />,
       );

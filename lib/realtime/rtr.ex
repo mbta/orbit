@@ -79,12 +79,21 @@ defmodule Realtime.RTR do
 
   @spec parse_stop_time_update(map()) :: Realtime.Data.TripUpdate.StopTimeUpdate.t()
   defp parse_stop_time_update(stu_json) do
-    # TODO: update to handle non-rev trips
-    %Realtime.Data.TripUpdate.StopTimeUpdate{
-      station_id: Realtime.Data.Stations.platforms_to_stations()[stu_json["stop_id"]],
-      predicted_arrival_time: stu_json["arrival"] && stu_json["arrival"]["time"],
-      predicted_departure_time: stu_json["departure"] && stu_json["departure"]["time"]
+    nonrev = stu_json["schedule_relationship"] == "SKIPPED"
+
+    stu = %Realtime.Data.TripUpdate.StopTimeUpdate{
+      station_id: Realtime.Data.Stations.platforms_to_stations()[stu_json["stop_id"]]
     }
+
+    if nonrev do
+      stu = %{stu | passthrough_time: stu_json["passthrough_time"]}
+    else
+      stu = %{
+        stu
+        | predicted_arrival_time: stu_json["arrival"] && stu_json["arrival"]["time"],
+          predicted_departure_time: stu_json["departure"] && stu_json["departure"]["time"]
+      }
+    end
   end
 
   @spec parse_cars([map()]) :: [String.t()]

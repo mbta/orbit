@@ -12,5 +12,7 @@ describe("sidebar", () => {
       const view = render(<SideBar selection={null} close={() => {}} />);
       expect(view.getAllByText("---")).toHaveLength(5);
     });
+
+    // TODO: add test for sidebar test with estimated arrival times
   });
 });
