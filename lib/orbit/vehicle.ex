@@ -5,7 +5,7 @@ defmodule Orbit.Vehicle do
 
   @type t :: %__MODULE__{
           position: VehiclePosition.t(),
-          trip_update: TripUpdate.t(),
+          trip_update: TripUpdate.t() | nil,
           ocs_trips: %{current: Trip.t(), next: [Trip.t()]}
         }
 
