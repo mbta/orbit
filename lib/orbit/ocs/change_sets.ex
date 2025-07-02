@@ -9,6 +9,15 @@ defmodule Orbit.Ocs.ChangeSet do
   alias Orbit.Ocs.Train
   alias Orbit.Ocs.Trip
 
+  @spec to_utc(DateTime.t() | nil) :: DateTime.t() | nil
+  defp to_utc(datetime) do
+    if datetime == nil do
+      nil
+    else
+      DateTime.shift_zone!(datetime, "Etc/UTC")
+    end
+  end
+
   @spec apply_changes(Orbit.Ocs.Message.t()) :: [{:ok, any} | {:error, any()}]
   def apply_changes(%Orbit.Ocs.Message.TschNewMessage{} = message) do
     %Trip{
@@ -19,8 +28,8 @@ defmodule Orbit.Ocs.ChangeSet do
       route: message.ocs_route_id,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       trip_type: message.trip_type,
-      scheduled_departure: message.sched_dep,
-      scheduled_arrival: message.sched_arr,
+      scheduled_departure: to_utc(message.sched_dep),
+      scheduled_arrival: to_utc(message.sched_arr),
       origin_station: message.origin_sta,
       destination_station: message.dest_sta
     }
