@@ -25,4 +25,16 @@ defmodule Orbit.Repo do
       password: token
     )
   end
+
+  # WIP
+  def upsert_from_map!(entity_module, map) do
+    entity = entity_module |> struct!(map)
+
+    entity
+    |> entity_module.changeset()
+    |> insert(
+      on_conflict: {:replace, Map.keys(map)},
+      conflict_target: entity_module.unique_constraint_keys()
+    )
+  end
 end
