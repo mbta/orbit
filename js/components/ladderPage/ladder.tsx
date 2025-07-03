@@ -121,10 +121,11 @@ const TrainsAndStations = ({
           >
             <Train
               theme={trainTheme}
-              label={vp.label}
-              consist={vp.cars}
-              direction={direction}
-              highlight={vp.label === sideBarSelection?.label}
+              vehicle={vehicle}
+              forceDirection={direction}
+              highlight={
+                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
+              }
               setSideBarSelection={setSideBarSelection}
             />
           </div>
