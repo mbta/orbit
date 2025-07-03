@@ -1,12 +1,11 @@
-import { CarId, DirectionId } from "../../models/common";
+import { CarId } from "../../models/common";
+import { Vehicle } from "../../models/vehicle";
 import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement, useRef } from "react";
 
 export type SideBarSelection = {
-  label: CarId;
-  consist: CarId[];
-  direction: DirectionId;
+  vehicle: Vehicle;
 };
 
 export const SideBar = ({
@@ -18,11 +17,18 @@ export const SideBar = ({
 }): ReactElement => {
   const consist: CarId[] =
     selection ?
-      reorder(selection.label, selection.consist, selection.direction)
+      reorder(
+        selection.vehicle.vehiclePosition.label,
+        selection.vehicle.vehiclePosition.cars,
+        selection.vehicle.vehiclePosition.directionId,
+      )
     : [""];
 
   const leadCarIndex =
-    selection && (selection.direction === 0 ? 0 : selection.consist.length - 1);
+    selection &&
+    (selection.vehicle.vehiclePosition.directionId === 0 ?
+      0
+    : selection.vehicle.vehiclePosition.cars.length - 1);
 
   const ref = useRef(null);
   return (
