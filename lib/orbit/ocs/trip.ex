@@ -21,6 +21,7 @@ defmodule Orbit.Ocs.Trip do
           deleted: boolean() | nil
         }
 
+  @derive {Jason.Encoder, except: [:__meta__]}
   schema "ocs_trips" do
     field(:service_date, :date)
     field(:uid, :string)

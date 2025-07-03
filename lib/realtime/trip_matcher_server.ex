@@ -2,6 +2,7 @@ defmodule Realtime.TripMatcherServer do
   use GenServer
   require Logger
 
+  alias Orbit.Repo
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
@@ -91,6 +92,12 @@ defmodule Realtime.TripMatcherServer do
     state = put_in(state, [:in, type], data)
 
     now = DateTime.to_unix(DateTime.utc_now())
+
+    state =
+      put_in(state, [:in, :ocs_trips], %{
+        timestamp: DateTime.utc_now() |> DateTime.to_unix(),
+        entities: Repo.all(Trip)
+      })
 
     Logger.info(
       "TripMatcherServer data_age " <>
