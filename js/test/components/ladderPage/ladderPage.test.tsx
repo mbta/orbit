@@ -1,32 +1,17 @@
 import { LadderPage } from "../../../components/ladderPage/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
-import { useTripUpdates } from "../../../hooks/useTripUpdates";
-import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
+import { useVehicles } from "../../../hooks/useVehicles";
 import { getMetaContent } from "../../../util/metadata";
-import {
-  tripUpdateFactory,
-  vehiclePositionFactory,
-} from "../../helpers/factory";
+import { vehicleFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("../../../hooks/useVehiclePositions", () => ({
+jest.mock("../../../hooks/useVehicles", () => ({
   __esModule: true,
-  useVehiclePositions: jest.fn(),
+  useVehicles: jest.fn(),
 }));
-const mockUseVehiclePositions = useVehiclePositions as jest.MockedFunction<
-  typeof useVehiclePositions
->;
-mockUseVehiclePositions.mockReturnValue([vehiclePositionFactory.build()]);
-
-jest.mock("../../../hooks/useTripUpdates", () => ({
-  __esModule: true,
-  useTripUpdates: jest.fn(),
-}));
-const mockUseTripUpdates = useTripUpdates as jest.MockedFunction<
-  typeof useTripUpdates
->;
-mockUseTripUpdates.mockReturnValue([tripUpdateFactory.build()]);
+const mockUseVehicles = useVehicles as jest.MockedFunction<typeof useVehicles>;
+mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
 
 jest.mock("../../../util/metadata", () => ({
   getMetaContent: jest.fn(),

@@ -19,8 +19,7 @@ defmodule OrbitWeb.UserSocket do
   require Logger
 
   channel "metadata", OrbitWeb.MetadataChannel
-  channel "train_locations", OrbitWeb.TrainLocationsChannel
-  channel "trip_updates", OrbitWeb.TrainLocationsChannel
+  channel "vehicles", OrbitWeb.TrainLocationsChannel
 
   @doc """
   fields that are added to socket.assigns
