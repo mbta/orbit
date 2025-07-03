@@ -2,7 +2,7 @@ import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
-import { ReactElement, useRef } from "react";
+import { ReactElement } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
@@ -12,33 +12,14 @@ export const SideBar = ({
   selection,
   close,
 }: {
-  selection: SideBarSelection | null;
+  selection: SideBarSelection;
   close: () => void;
 }): ReactElement => {
-  const consist: CarId[] =
-    selection ?
-      reorder(
-        selection.vehicle.vehiclePosition.label,
-        selection.vehicle.vehiclePosition.cars,
-        selection.vehicle.vehiclePosition.directionId,
-      )
-    : [""];
-
-  const leadCarIndex =
-    selection &&
-    (selection.vehicle.vehiclePosition.directionId === 0 ?
-      0
-    : selection.vehicle.vehiclePosition.cars.length - 1);
-
-  const ref = useRef(null);
+  const vp = selection.vehicle.vehiclePosition;
+  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
+  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <aside
-      ref={ref}
-      className={className([
-        "fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
-        selection ? "animate-slide-in-from-left" : null,
-      ])}
-    >
+    <aside className="fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
