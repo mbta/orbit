@@ -38,15 +38,16 @@ defmodule Orbit.Ocs.Stream.Pipeline do
       "Records" => records
     } = message.data
 
-    event_records_count =
+    event_records =
       records
       |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
       |> Enum.map(&ocs_message/1)
-      |> Enum.map(&Orbit.Ocs.MessageHandler.receive(&1, now))
-      |> Enum.count()
 
-    log_handled_events(sequence_number, ms_behind, event_records_count)
+    Orbit.Ocs.StateServer.new_messages(event_records, now)
+
+    log_handled_events(sequence_number, ms_behind, Enum.count(event_records))
+
     producer_name = List.first(Broadway.producer_names(:ocs_pipeline))
     Kernel.send(producer_name, {:resume_position_update, sequence_number})
     message
