@@ -11,6 +11,9 @@ config :orbit,
   poll_rtr?: true,
   rtr_poll_delay: 3_000
 
+# Kinesis
+config :orbit, Orbit.Ocs.Stream.Producer, enabled?: false
+
 # Endpoint config
 config :orbit, OrbitWeb.Endpoint,
   url: [host: "localhost"],
