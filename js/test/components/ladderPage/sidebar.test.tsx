@@ -33,7 +33,7 @@ describe("sidebar", () => {
           close={() => {}}
         />,
       );
-      expect(view.getByText("5:51p")).toBeInTheDocument();
+      expect(view.getByText("9:51p")).toBeInTheDocument();
     });
 
     // nonrev trips
@@ -41,7 +41,7 @@ describe("sidebar", () => {
       const stu = stopTimeUpdateFactory.build({
         predictedArrivalTime: null,
         predictedDepartureTime: null,
-        passthroughTime: DateTime.fromISO("2025-05-15T12:51:38.626Z"),
+        passthroughTime: DateTime.fromISO("2025-07-03T08:30:38"),
       });
       const view = render(
         <SideBar
@@ -51,7 +51,7 @@ describe("sidebar", () => {
           close={() => {}}
         />,
       );
-      expect(view.getByText("8:51a")).toBeInTheDocument();
+      expect(view.getByText("8:30a")).toBeInTheDocument();
     });
   });
 });
