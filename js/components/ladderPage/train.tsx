@@ -4,6 +4,7 @@ import {
   userHasOneOf,
 } from "../../groups";
 import { CarId, DirectionId } from "../../models/common";
+import { StopTimeUpdate } from "../../models/tripUpdate";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
@@ -13,6 +14,7 @@ export const Train = ({
   theme,
   label,
   consist,
+  stopTimeUpdate,
   highlight,
   direction,
   className: extraClassName,
@@ -21,6 +23,7 @@ export const Train = ({
   theme: TrainTheme;
   label: string;
   consist: CarId[];
+  stopTimeUpdate: StopTimeUpdate | undefined;
   highlight?: boolean;
   direction: DirectionId;
   className?: string;
@@ -43,6 +46,7 @@ export const Train = ({
             label: label,
             consist: consist,
             direction: direction,
+            stopTimeUpdate: stopTimeUpdate,
           };
           setSideBarSelection(sideBarSelection);
         }}

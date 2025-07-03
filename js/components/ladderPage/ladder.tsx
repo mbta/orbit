@@ -80,7 +80,7 @@ const TrainsAndStations = ({
     <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
       {vehicles.map((vehicle) => {
-        const { vehiclePosition: vp } = vehicle;
+        const { vehiclePosition: vp, tripUpdate: tu } = vehicle;
         // should still be able to render trains that ARE StoppedAt a station,
         // even if they have a null position
         if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
@@ -123,6 +123,9 @@ const TrainsAndStations = ({
               theme={trainTheme}
               label={vp.label}
               consist={vp.cars}
+              stopTimeUpdate={
+                tu?.stopTimeUpdates[tu.stopTimeUpdates.length - 1]
+              }
               direction={direction}
               highlight={vp.label === sideBarSelection?.label}
               setSideBarSelection={setSideBarSelection}

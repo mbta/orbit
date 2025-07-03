@@ -1,4 +1,6 @@
+import { dateTimeFormat } from "../../dateTime";
 import { CarId, DirectionId } from "../../models/common";
+import { StopTimeUpdate } from "../../models/tripUpdate";
 import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement, useRef } from "react";
@@ -7,6 +9,7 @@ export type SideBarSelection = {
   label: CarId;
   consist: CarId[];
   direction: DirectionId;
+  stopTimeUpdate: StopTimeUpdate | undefined;
 };
 
 export const SideBar = ({
@@ -52,12 +55,15 @@ export const SideBar = ({
           </div>
         ))}
       </div>
-      <CurrentTrip />
+      <CurrentTrip selection={selection} />
     </aside>
   );
 };
 
-const CurrentTrip = () => {
+const CurrentTrip = ({ selection }: { selection: SideBarSelection | null }) => {
+  const estArrival =
+    selection?.stopTimeUpdate?.predictedArrivalTime ??
+    selection?.stopTimeUpdate?.passthroughTime;
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
@@ -78,7 +84,9 @@ const CurrentTrip = () => {
           <span className="text-gray-300">Actual</span>
           <span className="font-bold">---</span>
           <span className="text-gray-300 mt-5">Estimated</span>
-          <span className="font-bold">---</span>
+          <span className="font-bold">
+            {estArrival ? dateTimeFormat(estArrival, "service") : "---"}
+          </span>
         </div>
       </div>
     </section>

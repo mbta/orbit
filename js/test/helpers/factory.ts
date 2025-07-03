@@ -1,3 +1,4 @@
+import { SideBarSelection } from "../../components/ladderPage/sidebar";
 import { dateTimeFromISO } from "../../dateTime";
 import { Certification, CertificationData } from "../../models/certification";
 import { Employee } from "../../models/employee";
@@ -42,9 +43,10 @@ export const vehiclePositionFactory = Factory.define<VehiclePosition>(() => ({
 }));
 
 export const stopTimeUpdateFactory = Factory.define<StopTimeUpdate>(() => ({
-  predictedArrivalTime: DateTime.fromISO("2025-05-15T21:51:38.626Z"),
-  predictedDepartureTime: DateTime.fromISO("2025-05-15T21:53:38.626Z"),
+  predictedArrivalTime: DateTime.fromISO("2025-07-03T21:51:38"),
+  predictedDepartureTime: DateTime.fromISO("2025-07-03T21:53:38"),
   stationId: "place-brdwy",
+  passthroughTime: null,
 }));
 
 export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
@@ -61,4 +63,11 @@ export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
 export const vehicleFactory = Factory.define<Vehicle>(() => ({
   vehiclePosition: vehiclePositionFactory.build(),
   tripUpdate: tripUpdateFactory.build(),
+}));
+
+export const sideBarSelectionFactory = Factory.define<SideBarSelection>(() => ({
+  label: "1888",
+  consist: ["1888", "1889", "1776", "1777", "1720"],
+  direction: 0,
+  stopTimeUpdate: stopTimeUpdateFactory.build(),
 }));

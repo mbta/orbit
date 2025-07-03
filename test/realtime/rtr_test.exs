@@ -56,10 +56,10 @@ defmodule Realtime.RTRTest do
       tu = Enum.at(context[:trip_updates][:entities], 0)
 
       assert %Realtime.Data.TripUpdate{
-               label: nil,
-               vehicle_id: "R-5483204E",
+               label: "1829",
+               vehicle_id: "R-5483F718",
                route_id: :Red,
-               direction: 1
+               direction: 0
              } = tu
 
       assert tu.stop_time_updates != nil
@@ -70,6 +70,16 @@ defmodule Realtime.RTRTest do
                timestamp: _time,
                entities: [_ | _]
              } = context[:trip_updates]
+    end
+
+    test "parses passthrough_time for nonrev trips", context do
+      nonrev_tu =
+        Enum.find(context[:trip_updates][:entities], fn tu ->
+          tu.trip_id == "NONREV-1580674622"
+        end)
+
+      assert Enum.at(nonrev_tu.stop_time_updates, 1).passthrough_time ==
+               1_751_553_175
     end
 
     test "returns nil on empty file" do
