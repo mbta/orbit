@@ -1,3 +1,5 @@
+import { getNameForId } from "../../data/stations";
+import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { reorder } from "../../util/consist";
@@ -39,27 +41,38 @@ export const SideBar = ({
           </div>
         ))}
       </div>
-      <CurrentTrip />
+      <CurrentTrip vehicle={selection.vehicle} />
     </aside>
   );
 };
 
-const CurrentTrip = () => {
+const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
+  const current = vehicle.ocsTrips.current;
+
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>---</span>
+          <span>{getNameForId(current?.originStation) ?? "---"}</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>---</span>
+          <span>{getNameForId(current?.destinationStation) ?? "---"}</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
-          <span className="font-bold">--- (N/A)</span>
+          <span className="font-bold">
+            {current?.scheduledDeparture ?
+              dateTimeFormat(current.scheduledDeparture, "service")
+            : "---"}{" "}
+            <Offset value={current?.offset} />
+          </span>
           <span className="text-gray-300 mt-5">Scheduled</span>
-          <span className="font-bold">---</span>
+          <span className="font-bold">
+            {current?.scheduledArrival ?
+              dateTimeFormat(current.scheduledArrival, "service")
+            : "---"}{" "}
+          </span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Actual</span>
@@ -70,4 +83,12 @@ const CurrentTrip = () => {
       </div>
     </section>
   );
+};
+
+const Offset = ({ value }: { value: number | null | undefined }) => {
+  if (value === null || value == undefined || value === 0) {
+    return null;
+  }
+
+  return "(" + (value > 0 ? `+${value}` : value.toString()) + ")";
 };
