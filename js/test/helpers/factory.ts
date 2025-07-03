@@ -1,3 +1,4 @@
+import { SideBarSelection } from "../../components/ladderPage/sidebar";
 import { dateTimeFromISO } from "../../dateTime";
 import { Certification, CertificationData } from "../../models/certification";
 import { Employee } from "../../models/employee";
@@ -62,4 +63,11 @@ export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
 export const vehicleFactory = Factory.define<Vehicle>(() => ({
   vehiclePosition: vehiclePositionFactory.build(),
   tripUpdate: tripUpdateFactory.build(),
+}));
+
+export const sideBarSelectionFactory = Factory.define<SideBarSelection>(() => ({
+  label: "1888",
+  consist: ["1888", "1889", "1776", "1777", "1720"],
+  direction: 0,
+  stopTimeUpdate: stopTimeUpdateFactory.build(),
 }));

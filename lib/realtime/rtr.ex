@@ -86,9 +86,9 @@ defmodule Realtime.RTR do
     }
 
     if nonrev do
-      stu = %{stu | passthrough_time: stu_json["passthrough_time"]}
+      %{stu | passthrough_time: stu_json["passthrough_time"]}
     else
-      stu = %{
+      %{
         stu
         | predicted_arrival_time: stu_json["arrival"] && stu_json["arrival"]["time"],
           predicted_departure_time: stu_json["departure"] && stu_json["departure"]["time"]
