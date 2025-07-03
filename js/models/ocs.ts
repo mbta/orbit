@@ -8,7 +8,7 @@ export const OCSTripData = z.object({
   offset: z.number().nullable(),
   origin_station: z.string().nullable(),
   destination_station: z.string().nullable(),
-  deleted: z.boolean(),
+  deleted: z.boolean().nullable(),
 });
 export type OCSTripData = z.infer<typeof OCSTripData>;
 
@@ -18,7 +18,7 @@ export type OCSTrip = {
   offset: number | null;
   originStation: string | null;
   destinationStation: string | null;
-  deleted: boolean;
+  deleted: boolean | null;
 };
 
 export const ocsTripFromData = (data: OCSTripData): OCSTrip => ({
