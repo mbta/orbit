@@ -51,6 +51,12 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     producer_name = List.first(Broadway.producer_names(:ocs_pipeline))
     Kernel.send(producer_name, {:resume_position_update, sequence_number})
     message
+
+    # TODO:
+    # - How to best emit events to the trip matching server?
+    # - Is the pipeline module already behaving as a GenServer? Could it be stateful?
+    # - How best to implement throttling for the DB reads?
+    # - If we need a GenServer for caching/throttling, could Ocs.ChangeSet become one?
   end
 
   # TODO
