@@ -54,15 +54,18 @@ To enable streaming for local builds, there are two required steps, as follows. 
 BroadwayKinesis uses ExAws configuration that requires AWS access keys. These keys are automatically provided in production, but must be configured locally.
 To configure your keys via AWS CLI and 1Password (recommended), do the following:
 
-- Follow the [setup instructions](https://www.notion.so/mbta-downtown-crossing/Loading-Secrets-from-1Password-into-Applications-101aa4debcb24372bdc3835918404c93) to configure AWS CLI with credentials stored in 1Password
-- Add "AWS Access Keys" config to your `dev.secret.exs` for this project (Can be copied/uncommented from `dev.secret.example.exs`). Now local dev builds will load your credentials via AWS CLI.
-- Note: AWS keys should never be checked into source control.
+1. Follow the [setup instructions](https://www.notion.so/mbta-downtown-crossing/Loading-Secrets-from-1Password-into-Applications-101aa4debcb24372bdc3835918404c93) to configure AWS CLI with credentials stored in 1Password
+2. Add "AWS Access Keys" config to your `dev.secret.exs` for this project (Can be copied/uncommented from `dev.secret.example.exs`).
+
+Now local dev builds will load your credentials via AWS CLI.
+
+**Note:** AWS keys should never be checked into source control.
 
 ## (2) Specify kinesis stream config
 
-- In `dev.secret.exs` include `Orbit.Ocs.Stream.Producer` config settings. (Can be copied/uncommented from `dev.secret.example.exs`).
-- Set `enabled?` to true
-- Provide real values for the `kinesis_stream` and `kinesis_consumer_arn` fields.
-  - For local development, you want the `ctd-ocs-raw-messages` stream and its attached "orbit-local" consumer. (You view these via AWS console/CLI. Request help from the team if you cannot find them.)
-  - Note: The real value of `kinesis_consumer_arn` is considered sensitive, and should not be included in any file tracked by source control.
-  - Note: While there is also a `ctd-ocs-raw-messages-dev` stream, it is used for specific debugging scenarios and may not be active. Generally you want the non-dev stream, which provides actual live OCS data.
+1. In `dev.secret.exs` include `Orbit.Ocs.Stream.Producer` config settings. (Can be copied/uncommented from `dev.secret.example.exs`).
+2. Set `enabled?` to true
+3. Provide real values for the `kinesis_stream` and `kinesis_consumer_arn` fields.
+   - For local development, you want the `ctd-ocs-raw-messages` stream and its attached "orbit-local" consumer. (You view these via AWS console/CLI. Request help from the team if you cannot find them.)
+   - **Note:** The real value of `kinesis_consumer_arn` is considered sensitive, and should not be included in any file tracked by source control.
+   - **Note:** While there is also a `ctd-ocs-raw-messages-dev` stream, it is used for specific debugging scenarios and may not be active. Generally you want the non-dev stream, which provides actual live OCS data.
