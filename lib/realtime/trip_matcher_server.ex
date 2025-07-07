@@ -37,6 +37,7 @@ defmodule Realtime.TripMatcherServer do
 
     Realtime.PollingServer.subscribe(self(), :vehicle_positions)
     Realtime.PollingServer.subscribe(self(), :trip_updates)
+    Orbit.Ocs.EntitiesServer.subscribe(self())
 
     schedule()
 
