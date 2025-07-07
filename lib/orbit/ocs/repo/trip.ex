@@ -65,11 +65,15 @@ defmodule Orbit.Ocs.Trip do
         :deleted
       ]
     )
-    |> unique_constraint([:service_date, :uid, :rail_line])
+    |> unique_constraint(unique_constraint_keys())
     |> validate_required([
       :service_date,
       :uid,
       :rail_line
     ])
+  end
+
+  def unique_constraint_keys do
+    [:service_date, :uid, :rail_line]
   end
 end
