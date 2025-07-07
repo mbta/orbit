@@ -1,5 +1,5 @@
 import { SideBar } from "../../../components/ladderPage/sidebar";
-import { vehicleFactory } from "../../helpers/factory";
+import { tripUpdateFactory, vehicleFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 
 describe("sidebar", () => {
@@ -25,14 +25,32 @@ describe("sidebar", () => {
       expect(view.getByText("Current Trip")).toBeInTheDocument();
     });
 
-    test("shows estimated arrival time if available", () => {
-      const view = render(
-        <SideBar
-          selection={{ vehicle: vehicleFactory.build() }}
-          close={() => {}}
-        />,
-      );
-      expect(view.getByText("9:51p")).toBeInTheDocument();
+    describe("estimated arrival time", () => {
+      test("is displayed if available", () => {
+        const view = render(
+          <SideBar
+            selection={{ vehicle: vehicleFactory.build() }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText("5:51p")).toBeInTheDocument();
+      });
+
+      // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
+      // for "---" placeholders into one test mocking missing data for all fields
+      test("displays '---' when unavailable", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getAllByText("---")).toHaveLength(5);
+      });
     });
   });
 });
