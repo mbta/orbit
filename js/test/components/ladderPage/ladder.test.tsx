@@ -259,9 +259,12 @@ describe("Ladder", () => {
           routeId="Red"
           setSideBarSelection={jest.fn()}
           sideBarSelection={{
-            consist: ["1888", "1889", "1890", "1891"],
-            direction: 0,
-            label: "1888",
+            vehicle: vehicleFactory.build({
+              vehiclePosition: vehiclePositionFactory.build({
+                label: "1888",
+                cars: ["1888", "1889", "1890", "1891"],
+              }),
+            }),
           }}
         />,
       );

@@ -5,6 +5,17 @@ describe("vehicleFromVehicleData", () => {
   test("parses a VehicleData into a Vehicle", () => {
     expect(
       vehicleFromVehicleData({
+        ocs_trips: {
+          current: {
+            origin_station: "place-asmnl",
+            destination_station: "place-alfcl",
+            offset: 0,
+            scheduled_departure: "2025-04-29T19:39:49Z",
+            scheduled_arrival: "2025-04-29T20:39:49Z",
+            deleted: false,
+          },
+          next: [],
+        },
         position: {
           route_id: "Red",
           direction: 0,
@@ -55,12 +66,34 @@ describe("vehicleFromVehicleData", () => {
         tripId: "68077971",
         vehicleId: "R-5482AC4E",
       },
+      ocsTrips: {
+        current: {
+          originStation: "place-asmnl",
+          destinationStation: "place-alfcl",
+          offset: 0,
+          scheduledDeparture: dateTimeFromISO("2025-04-29T19:39:49Z"),
+          scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
+          deleted: false,
+        },
+        next: [],
+      },
     });
   });
 
   test("null trip_update becomes undefined", () => {
     expect(
       vehicleFromVehicleData({
+        ocs_trips: {
+          current: {
+            origin_station: "place-asmnl",
+            destination_station: "place-alfcl",
+            offset: 0,
+            scheduled_departure: "2025-04-29T19:39:49Z",
+            scheduled_arrival: "2025-04-29T20:39:49Z",
+            deleted: false,
+          },
+          next: [],
+        },
         position: {
           route_id: "Red",
           direction: 0,
@@ -78,6 +111,17 @@ describe("vehicleFromVehicleData", () => {
         trip_update: null,
       }),
     ).toEqual({
+      ocsTrips: {
+        current: {
+          originStation: "place-asmnl",
+          destinationStation: "place-alfcl",
+          offset: 0,
+          scheduledDeparture: dateTimeFromISO("2025-04-29T19:39:49Z"),
+          scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
+          deleted: false,
+        },
+        next: [],
+      },
       vehiclePosition: {
         cars: ["1866", "1867", "1877", "1876"],
         directionId: 0,
