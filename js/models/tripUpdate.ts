@@ -69,11 +69,3 @@ export const TripUpdateData = z.object({
   stop_time_updates: z.array(StopTimeUpdateData),
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
-
-export const TripUpdatesMessage = z.object({
-  data: z.object({
-    timestamp: z.number(),
-    entities: z.array(TripUpdateData),
-  }),
-});
-export type TripUpdatesMessage = z.infer<typeof TripUpdatesMessage>;

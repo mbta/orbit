@@ -1,11 +1,7 @@
 import { LadderConfig, Stations } from "../../data/stations";
-import { useTripUpdates } from "../../hooks/useTripUpdates";
-import { useVehiclePositions } from "../../hooks/useVehiclePositions";
+import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
-import {
-  Vehicle,
-  vehiclesFromPositionsAndTripUpdates,
-} from "../../models/vehicle";
+import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
@@ -26,14 +22,9 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
-  const tripUpdates = useTripUpdates();
-  const vehiclePositions = useVehiclePositions();
-  const stationLists = Stations[routeId];
-  const vehicles = vehiclesFromPositionsAndTripUpdates(
-    vehiclePositions ?? [],
-    tripUpdates ?? [],
-  );
+  const vehicles = useVehicles() ?? [];
 
+  const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       // find which StationList contains a Station whose id matches the VehiclePosition's station
@@ -89,7 +80,7 @@ const TrainsAndStations = ({
     <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
       {vehicles.map((vehicle) => {
-        const { vehiclePosition: vp, tripUpdate: tu } = vehicle;
+        const { vehiclePosition: vp } = vehicle;
         // should still be able to render trains that ARE StoppedAt a station,
         // even if they have a null position
         if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
@@ -130,13 +121,11 @@ const TrainsAndStations = ({
           >
             <Train
               theme={trainTheme}
-              label={vp.label}
-              consist={vp.cars}
-              stopTimeUpdate={
-                tu?.stopTimeUpdates[tu.stopTimeUpdates.length - 1]
+              vehicle={vehicle}
+              forceDirection={direction}
+              highlight={
+                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
               }
-              direction={direction}
-              highlight={vp.label === sideBarSelection?.label}
               setSideBarSelection={setSideBarSelection}
             />
           </div>

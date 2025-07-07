@@ -1,7 +1,8 @@
 import { SideBar } from "../../../components/ladderPage/sidebar";
 import {
-  sideBarSelectionFactory,
   stopTimeUpdateFactory,
+  tripUpdateFactory,
+  vehicleFactory,
 } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import { DateTime } from "luxon";
@@ -9,27 +10,30 @@ import { DateTime } from "luxon";
 describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
     const view = render(
-      <SideBar selection={sideBarSelectionFactory.build()} close={() => {}} />,
+      <SideBar
+        selection={{ vehicle: vehicleFactory.build() }}
+        close={() => {}}
+      />,
     );
-    expect(view.getByText("1888")).toHaveClass("font-bold text-2xl");
-    expect(view.getByText("1720")).toBeInTheDocument();
+    expect(view.getByText("1877")).toHaveClass("font-bold text-2xl");
+    expect(view.getByText("1814")).toBeInTheDocument();
   });
 
   describe("Current Trip section", () => {
     test("header present", () => {
-      const view = render(<SideBar selection={null} close={() => {}} />);
+      const view = render(
+        <SideBar
+          selection={{ vehicle: vehicleFactory.build() }}
+          close={() => {}}
+        />,
+      );
       expect(view.getByText("Current Trip")).toBeInTheDocument();
-    });
-
-    test("shows empty data fields (for now)", () => {
-      const view = render(<SideBar selection={null} close={() => {}} />);
-      expect(view.getAllByText("---")).toHaveLength(5);
     });
 
     test("shows estimated arrival time if available", () => {
       const view = render(
         <SideBar
-          selection={sideBarSelectionFactory.build()}
+          selection={{ vehicle: vehicleFactory.build() }}
           close={() => {}}
         />,
       );
@@ -45,9 +49,11 @@ describe("sidebar", () => {
       });
       const view = render(
         <SideBar
-          selection={sideBarSelectionFactory.build({
-            stopTimeUpdate: stu,
-          })}
+          selection={{
+            vehicle: vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [stu] }),
+            }),
+          }}
           close={() => {}}
         />,
       );

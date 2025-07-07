@@ -1,41 +1,26 @@
 import { dateTimeFormat } from "../../dateTime";
-import { CarId, DirectionId } from "../../models/common";
-import { StopTimeUpdate } from "../../models/tripUpdate";
+import { CarId } from "../../models/common";
+import { Vehicle } from "../../models/vehicle";
 import { reorder } from "../../util/consist";
 import { className } from "../../util/dom";
-import { ReactElement, useRef } from "react";
+import { ReactElement } from "react";
 
 export type SideBarSelection = {
-  label: CarId;
-  consist: CarId[];
-  direction: DirectionId;
-  stopTimeUpdate: StopTimeUpdate | undefined;
+  vehicle: Vehicle;
 };
 
 export const SideBar = ({
   selection,
   close,
 }: {
-  selection: SideBarSelection | null;
+  selection: SideBarSelection;
   close: () => void;
 }): ReactElement => {
-  const consist: CarId[] =
-    selection ?
-      reorder(selection.label, selection.consist, selection.direction)
-    : [""];
-
-  const leadCarIndex =
-    selection && (selection.direction === 0 ? 0 : selection.consist.length - 1);
-
-  const ref = useRef(null);
+  const vp = selection.vehicle.vehiclePosition;
+  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
+  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <aside
-      ref={ref}
-      className={className([
-        "fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out",
-        selection ? "animate-slide-in-from-left" : null,
-      ])}
-    >
+    <aside className="fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
@@ -60,10 +45,12 @@ export const SideBar = ({
   );
 };
 
-const CurrentTrip = ({ selection }: { selection: SideBarSelection | null }) => {
-  const estArrival =
-    selection?.stopTimeUpdate?.predictedArrivalTime ??
-    selection?.stopTimeUpdate?.passthroughTime;
+const CurrentTrip = ({ selection }: { selection: SideBarSelection }) => {
+  const stu =
+    selection.vehicle.tripUpdate?.stopTimeUpdates[
+      selection.vehicle.tripUpdate.stopTimeUpdates.length - 1
+    ];
+  const estArrival = stu?.predictedArrivalTime ?? stu?.passthroughTime;
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>

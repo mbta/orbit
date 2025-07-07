@@ -40,14 +40,6 @@ export const VehiclePositionData = z.object({
 });
 export type VehiclePositionData = z.infer<typeof VehiclePositionData>;
 
-export const VehiclePositionMessage = z.object({
-  data: z.object({
-    timestamp: z.number(),
-    entities: z.array(VehiclePositionData),
-  }),
-});
-export type VehiclePositionMessage = z.infer<typeof VehiclePositionMessage>;
-
 export type VehiclePosition = {
   routeId: RouteId;
   directionId: DirectionId;

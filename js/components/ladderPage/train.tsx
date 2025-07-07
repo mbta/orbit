@@ -3,8 +3,8 @@ import {
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
-import { CarId, DirectionId } from "../../models/common";
-import { StopTimeUpdate } from "../../models/tripUpdate";
+import { DirectionId } from "../../models/common";
+import { Vehicle } from "../../models/vehicle";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
@@ -12,24 +12,20 @@ import { Dispatch, ReactElement, SetStateAction } from "react";
 
 export const Train = ({
   theme,
-  label,
-  consist,
-  stopTimeUpdate,
+  vehicle,
+  forceDirection,
   highlight,
-  direction,
   className: extraClassName,
   setSideBarSelection,
 }: {
   theme: TrainTheme;
-  label: string;
-  consist: CarId[];
-  stopTimeUpdate: StopTimeUpdate | undefined;
+  vehicle: Vehicle;
+  forceDirection: DirectionId;
   highlight?: boolean;
-  direction: DirectionId;
   className?: string;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
-  const orientation = direction == 0 ? "right-0" : "left-0";
+  const orientation = forceDirection == 0 ? "right-0" : "left-0";
   return (
     <div className="relative">
       {/* train label */}
@@ -43,22 +39,19 @@ export const Train = ({
         onClick={(e) => {
           e.stopPropagation();
           const sideBarSelection: SideBarSelection = {
-            label: label,
-            consist: consist,
-            direction: direction,
-            stopTimeUpdate: stopTimeUpdate,
+            vehicle,
           };
           setSideBarSelection(sideBarSelection);
         }}
         disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
       >
-        {label}
+        {vehicle.vehiclePosition.label}
 
         {/* line that connects to dot */}
         <div
           className={className([
             "absolute top-1/2 w-5 h-1.5 transform -translate-y-1/2",
-            direction == 0 ? "translate-x-full" : "-translate-x-full",
+            forceDirection == 0 ? "translate-x-full" : "-translate-x-full",
             theme.backgroundColor,
             orientation,
           ])}
@@ -70,7 +63,7 @@ export const Train = ({
           className={className([
             "absolute rounded-full h-[32px] w-[32px] border-8 border-opacity-35",
             theme.borderColor,
-            direction == 0 ?
+            forceDirection == 0 ?
               highlight ? "translate-x-[calc(100%+10px)]"
               : "translate-x-[calc(100%+8px)]"
             : highlight ? "-translate-x-[calc(100%+10px)]"
