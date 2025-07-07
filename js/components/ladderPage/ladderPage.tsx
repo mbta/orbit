@@ -48,7 +48,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           sideBarSelection={sideBarSelection}
         />
       </div>
-      {sideBarSelection ?
+      {sideBarSelection !== null ?
         <SideBar selection={sideBarSelection} close={close} />
       : null}
     </main>

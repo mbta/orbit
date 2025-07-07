@@ -51,7 +51,8 @@ defmodule Orbit.Application do
                      decode_fn: &Realtime.RTR.parse_trip_updates/1
                    }
                  ]}
-            }
+            },
+            Realtime.TripMatcherServer
           ]
         else
           []

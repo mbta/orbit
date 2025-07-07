@@ -1,11 +1,7 @@
 import { LadderConfig, Stations } from "../../data/stations";
-import { useTripUpdates } from "../../hooks/useTripUpdates";
-import { useVehiclePositions } from "../../hooks/useVehiclePositions";
+import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
-import {
-  Vehicle,
-  vehiclesFromPositionsAndTripUpdates,
-} from "../../models/vehicle";
+import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
@@ -26,14 +22,9 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
-  const tripUpdates = useTripUpdates();
-  const vehiclePositions = useVehiclePositions();
-  const stationLists = Stations[routeId];
-  const vehicles = vehiclesFromPositionsAndTripUpdates(
-    vehiclePositions ?? [],
-    tripUpdates ?? [],
-  );
+  const vehicles = useVehicles() ?? [];
 
+  const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       // find which StationList contains a Station whose id matches the VehiclePosition's station
@@ -130,10 +121,11 @@ const TrainsAndStations = ({
           >
             <Train
               theme={trainTheme}
-              label={vp.label}
-              consist={vp.cars}
-              direction={direction}
-              highlight={vp.label === sideBarSelection?.label}
+              vehicle={vehicle}
+              forceDirection={direction}
+              highlight={
+                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
+              }
               setSideBarSelection={setSideBarSelection}
             />
           </div>

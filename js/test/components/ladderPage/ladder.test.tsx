@@ -1,28 +1,18 @@
 import { Ladders } from "../../../components/ladderPage/ladder";
-import { useTripUpdates } from "../../../hooks/useTripUpdates";
-import { useVehiclePositions } from "../../../hooks/useVehiclePositions";
+import { useVehicles } from "../../../hooks/useVehicles";
 import { StopStatus } from "../../../models/vehiclePosition";
 import {
   tripUpdateFactory,
+  vehicleFactory,
   vehiclePositionFactory,
 } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 
-jest.mock("../../../hooks/useVehiclePositions", () => ({
+jest.mock("../../../hooks/useVehicles", () => ({
   __esModule: true,
-  useVehiclePositions: jest.fn(),
+  useVehicles: jest.fn(),
 }));
-const mockUseVehiclePositions = useVehiclePositions as jest.MockedFunction<
-  typeof useVehiclePositions
->;
-
-jest.mock("../../../hooks/useTripUpdates", () => ({
-  __esModule: true,
-  useTripUpdates: jest.fn(),
-}));
-const mockUseTripUpdates = useTripUpdates as jest.MockedFunction<
-  typeof useTripUpdates
->;
+const mockUseVehicles = useVehicles as jest.MockedFunction<typeof useVehicles>;
 
 // Vehicle IDs get used as React component keys, so make sure we
 // use a different ID for each mock vehicle, or render will complain
@@ -35,8 +25,7 @@ const nextVehicleId = (() => {
 
 describe("Ladder", () => {
   test("shows station names", () => {
-    mockUseVehiclePositions.mockReturnValue([]);
-    mockUseTripUpdates.mockReturnValue([]);
+    mockUseVehicles.mockReturnValue([]);
     const view = render(
       <Ladders
         routeId={"Red"}
@@ -50,32 +39,37 @@ describe("Ladder", () => {
   });
 
   test("shows valid vehicles on the ladder", () => {
-    mockUseVehiclePositions.mockReturnValue([
-      vehiclePositionFactory.build(),
-      vehiclePositionFactory.build({
-        vehicleId: nextVehicleId(),
-        directionId: 0,
-        label: "1888",
-        position: { latitude: 42.32272, longitude: -71.052925 },
-        stopId: "70085",
+    mockUseVehicles.mockReturnValue([
+      vehicleFactory.build({ vehiclePosition: vehiclePositionFactory.build() }),
+      vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          directionId: 0,
+          label: "1888",
+          position: { latitude: 42.32272, longitude: -71.052925 },
+          stopId: "70085",
+        }),
       }),
-      vehiclePositionFactory.build({
-        vehicleId: nextVehicleId(),
-        label: "1889",
-        stationId: "place-davis",
-        stopId: "70064",
-        position: { latitude: 42.39674, longitude: -71.121815 },
-        stopStatus: StopStatus.StoppedAt,
+      vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          label: "1889",
+          stationId: "place-davis",
+          stopId: "70064",
+          position: { latitude: 42.39674, longitude: -71.121815 },
+          stopStatus: StopStatus.StoppedAt,
+        }),
       }),
-      vehiclePositionFactory.build({
-        vehicleId: nextVehicleId(),
-        label: "1999",
-        position: null,
-        stationId: null,
-        stopId: null,
+      vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          label: "1999",
+          position: null,
+          stationId: null,
+          stopId: null,
+        }),
       }),
     ]);
-    mockUseTripUpdates.mockReturnValue([]);
 
     const view = render(
       <Ladders
@@ -92,34 +86,48 @@ describe("Ladder", () => {
 
   describe("pill colors", () => {
     beforeEach(() => {
-      mockUseTripUpdates.mockReturnValue([
-        tripUpdateFactory.build({
-          tripId: "11111",
-          routePatternId: "Red-1-0",
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          tripUpdate: tripUpdateFactory.build({
+            tripId: "11111",
+            routePatternId: "Red-1-0",
+          }),
         }),
-        tripUpdateFactory.build({
-          tripId: "22222",
-          routePatternId: "Red-3-0",
+        vehicleFactory.build({
+          tripUpdate: tripUpdateFactory.build({
+            tripId: "22222",
+            routePatternId: "Red-3-0",
+          }),
         }),
       ]);
     });
 
     describe("when route pattern is provided", () => {
       test("renders pill color based on route pattern", () => {
-        mockUseVehiclePositions.mockReturnValue([
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1888",
-            stationId: "place-davis",
-            stopId: "70064",
-            tripId: "11111",
+        mockUseVehicles.mockReturnValue([
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1888",
+              stationId: "place-davis",
+              stopId: "70064",
+              tripId: "11111",
+            }),
+            tripUpdate: tripUpdateFactory.build({
+              routePatternId: "Red-1-0",
+            }),
           }),
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1889",
-            stationId: "place-davis",
-            stopId: "70064",
-            tripId: "22222",
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1889",
+              stationId: "place-davis",
+              stopId: "70064",
+              tripId: "22222",
+            }),
+            tripUpdate: tripUpdateFactory.build({
+              routePatternId: "Red-3-0",
+            }),
           }),
         ]);
 
@@ -139,51 +147,69 @@ describe("Ladder", () => {
 
     describe("when route pattern is not provided", () => {
       test("renders pill color based on portion of ladder", () => {
-        mockUseVehiclePositions.mockReturnValue([
-          // Ashmont portion of ladder
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1888",
-            stationId: "place-jfk",
-            stopId: "70085",
-            tripId: null,
+        mockUseVehicles.mockReturnValue([
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1888",
+              stationId: "place-jfk",
+              stopId: "70085",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1889",
-            stationId: "place-jfk",
-            stopId: "70086",
-            tripId: null,
+          // Ashmont portion of ladder
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1889",
+              stationId: "place-jfk",
+              stopId: "70086",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
           // Braintree portion of ladder
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1890",
-            stationId: "place-jfk",
-            stopId: "70095",
-            tripId: null,
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1890",
+              stationId: "place-jfk",
+              stopId: "70095",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1891",
-            stationId: "place-jfk",
-            stopId: "70096",
-            tripId: null,
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1891",
+              stationId: "place-jfk",
+              stopId: "70096",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
           // Alewife portion of ladder
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1892",
-            stationId: "place-davis",
-            stopId: "70063",
-            tripId: null,
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1892",
+              stationId: "place-davis",
+              stopId: "70063",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
-          vehiclePositionFactory.build({
-            vehicleId: nextVehicleId(),
-            label: "1893",
-            stationId: "place-davis",
-            stopId: "70064",
-            tripId: null,
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1893",
+              stationId: "place-davis",
+              stopId: "70064",
+              tripId: null,
+            }),
+            tripUpdate: undefined,
           }),
         ]);
 
@@ -216,13 +242,15 @@ describe("Ladder", () => {
 
   describe("pill highlight", () => {
     test("when the sidebar is open", () => {
-      mockUseVehiclePositions.mockReturnValue([
-        vehiclePositionFactory.build({
-          vehicleId: nextVehicleId(),
-          label: "1888",
-          stationId: "place-davis",
-          stopId: "70064",
-          tripId: "11111",
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1888",
+            stationId: "place-davis",
+            stopId: "70064",
+            tripId: "11111",
+          }),
         }),
       ]);
 
@@ -231,9 +259,12 @@ describe("Ladder", () => {
           routeId="Red"
           setSideBarSelection={jest.fn()}
           sideBarSelection={{
-            consist: ["1888", "1889", "1890", "1891"],
-            direction: 0,
-            label: "1888",
+            vehicle: vehicleFactory.build({
+              vehiclePosition: vehiclePositionFactory.build({
+                label: "1888",
+                cars: ["1888", "1889", "1890", "1891"],
+              }),
+            }),
           }}
         />,
       );
@@ -242,13 +273,15 @@ describe("Ladder", () => {
     });
 
     test("when the sidebar is not open", () => {
-      mockUseVehiclePositions.mockReturnValue([
-        vehiclePositionFactory.build({
-          vehicleId: nextVehicleId(),
-          label: "1888",
-          stationId: "place-davis",
-          stopId: "70064",
-          tripId: "11111",
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1888",
+            stationId: "place-davis",
+            stopId: "70064",
+            tripId: "11111",
+          }),
         }),
       ]);
 

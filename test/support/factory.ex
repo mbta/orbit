@@ -70,6 +70,14 @@ defmodule Orbit.Factory do
     }
   end
 
+  def vehicle_factory do
+    %Orbit.Vehicle{
+      position: build(:vehicle_position),
+      trip_update: build(:trip_update),
+      ocs_trips: []
+    }
+  end
+
   def badge_serial_factory do
     %Orbit.BadgeSerial{
       badge_serial: sequence("employee_badge_serial")

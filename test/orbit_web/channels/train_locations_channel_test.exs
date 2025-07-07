@@ -5,6 +5,7 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
   alias Orbit.Authentication.User
   alias OrbitWeb.TrainLocationsChannel
   alias Realtime.PollingServer
+  alias Realtime.TripMatcherServer
 
   setup do
     s3_dir = Application.app_dir(:orbit, "priv/s3/polling-server-test")
@@ -62,40 +63,28 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
         id: :trip_updates
       )
 
+    {:ok, _} = start_supervised(TripMatcherServer)
+
     :ok
   end
 
   describe "TrainLocationsChannel" do
     @tag :authenticated
     test "channel sends data object to client on join", %{socket: socket} do
-      {:ok, data, _socket} = subscribe_and_join(socket, TrainLocationsChannel, "train_locations")
-      assert %{data: %{timestamp: _, entities: _}} = data
+      {:ok, data, _socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
+      assert %{data: %{timestamp: _, entities: []}} = data
     end
 
     @tag :authenticated
-    test "channel forwards train locations to client", %{socket: socket} do
-      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "train_locations")
+    test "channel forwards vehicles to client", %{socket: socket} do
+      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
 
-      vehicle_positions = %{
-        timestamp: 0,
-        entities: [build(:vehicle_position)]
-      }
+      vehicles = [
+        build(:vehicle)
+      ]
 
-      send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
-      assert_push("vehicle_positions", %{data: ^vehicle_positions})
-    end
-
-    @tag :authenticated
-    test "channel forwards trip updates to client", %{socket: socket} do
-      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "trip_updates")
-
-      trip_updates = %{
-        timestamp: 0,
-        entities: [build(:trip_update)]
-      }
-
-      send(socket.channel_pid, {:new_data, :trip_updates, trip_updates})
-      assert_push("trip_updates", %{data: ^trip_updates})
+      send(socket.channel_pid, {:new_data, :vehicles, vehicles})
+      assert_push("vehicles", %{data: ^vehicles})
     end
 
     test "channel sends auth_expired after token expires" do
@@ -105,14 +94,14 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
         )
 
       {:ok, socket} = connect(OrbitWeb.UserSocket, %{"token" => token})
-      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "train_locations")
+      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
 
       # wait for token to expire
       # (must ensure token has been expired for an entire second since Guardian's timestamps are in seconds)
       Process.sleep(1000)
 
-      vehicle_positions = %{timestamp: 0, entities: [build(:vehicle_position)]}
-      send(socket.channel_pid, {:new_data, :vehicle_positions, vehicle_positions})
+      vehicles = %{data: [build(:vehicle)]}
+      send(socket.channel_pid, {:new_data, :vehicles, vehicles})
       assert_push("auth_expired", %{})
     end
   end

@@ -3,15 +3,9 @@ defmodule OrbitWeb.TrainLocationsChannel do
   alias OrbitWeb.Auth.Auth
 
   @impl true
-  def join("train_locations", _payload, socket) do
-    current_positions = Realtime.PollingServer.subscribe(self(), :vehicle_positions)
-    {:ok, %{data: current_positions}, socket}
-  end
-
-  @impl true
-  def join("trip_updates", _payload, socket) do
-    trip_updates = Realtime.PollingServer.subscribe(self(), :trip_updates)
-    {:ok, %{data: trip_updates}, socket}
+  def join("vehicles", _payload, socket) do
+    current_vehicles = Realtime.TripMatcherServer.subscribe(self())
+    {:ok, %{data: current_vehicles}, socket}
   end
 
   @impl true
