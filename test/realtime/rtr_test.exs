@@ -72,13 +72,13 @@ defmodule Realtime.RTRTest do
              } = context[:trip_updates]
     end
 
-    test "parses passthrough_time for nonrev trips", context do
+    test "parses passthrough_time as predicted_arrival_time for nonrev trips", context do
       nonrev_tu =
         Enum.find(context[:trip_updates][:entities], fn tu ->
           tu.trip_id == "NONREV-1580674622"
         end)
 
-      assert Enum.at(nonrev_tu.stop_time_updates, 1).passthrough_time ==
+      assert Enum.at(nonrev_tu.stop_time_updates, 1).predicted_arrival_time ==
                1_751_553_175
     end
 

@@ -7,7 +7,6 @@ export const StopTimeUpdateData = z.object({
   station_id: z.string(),
   predicted_arrival_time: z.number().nullable(),
   predicted_departure_time: z.number().nullable(),
-  passthrough_time: z.number().nullable(),
 });
 export type StopTimeUpdateData = z.infer<typeof StopTimeUpdateData>;
 
@@ -26,7 +25,6 @@ export type StopTimeUpdate = {
   stationId: string;
   predictedArrivalTime: DateTime | null;
   predictedDepartureTime: DateTime | null;
-  passthroughTime: DateTime | null;
 };
 
 export const stopTimeUpdateFromData = (
@@ -40,10 +38,6 @@ export const stopTimeUpdateFromData = (
   predictedDepartureTime:
     data.predicted_departure_time !== null ?
       dateTimeFromUnix(data.predicted_departure_time)
-    : null,
-  passthroughTime:
-    data.passthrough_time !== null ?
-      dateTimeFromUnix(data.passthrough_time)
     : null,
 });
 

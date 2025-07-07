@@ -46,11 +46,10 @@ export const SideBar = ({
 };
 
 const CurrentTrip = ({ selection }: { selection: SideBarSelection }) => {
+  const tripUpdate = selection.vehicle.tripUpdate;
   const stu =
-    selection.vehicle.tripUpdate?.stopTimeUpdates[
-      selection.vehicle.tripUpdate.stopTimeUpdates.length - 1
-    ];
-  const estArrival = stu?.predictedArrivalTime ?? stu?.passthroughTime;
+    tripUpdate?.stopTimeUpdates[tripUpdate.stopTimeUpdates.length - 1];
+  const estArrival = stu?.predictedArrivalTime;
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>

@@ -46,7 +46,6 @@ export const stopTimeUpdateFactory = Factory.define<StopTimeUpdate>(() => ({
   predictedArrivalTime: DateTime.fromISO("2025-07-03T21:51:38"),
   predictedDepartureTime: DateTime.fromISO("2025-07-03T21:53:38"),
   stationId: "place-brdwy",
-  passthroughTime: null,
 }));
 
 export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
