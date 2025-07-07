@@ -2,6 +2,7 @@ defmodule Orbit.Ocs.MessageHandler do
   require Logger
 
   alias Orbit.Ocs.Message
+  alias Orbit.Ocs.SplunkFormatter
 
   @expired_seconds 86_400
 
@@ -34,6 +35,7 @@ defmodule Orbit.Ocs.MessageHandler do
   defp parse(raw_message, current_time) do
     case Orbit.Ocs.Parser.parse(raw_message, current_time) do
       {:ok, %{transitline: transitline} = message} when transitline in ["R", "O", "B"] ->
+        Logger.info(SplunkFormatter.format(message))
         {:ok, message}
 
       {:ok, _other} ->
