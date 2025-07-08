@@ -6,7 +6,7 @@ defmodule Orbit.Ocs.Message.TschTagMessage do
   defstruct [:counter, :timestamp, :transitline, :trip_uid, :train_uid, :consist_tags, :car_tags]
 
   @type t :: %__MODULE__{
-          counter: integer,
+          counter: integer(),
           timestamp: DateTime.t(),
           transitline: String.t(),
           trip_uid: String.t(),

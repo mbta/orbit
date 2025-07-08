@@ -12,7 +12,7 @@ defmodule Orbit.Ocs.Message.TschConMessage do
   ]
 
   @type t :: %__MODULE__{
-          counter: integer,
+          counter: integer(),
           timestamp: DateTime.t(),
           transitline: String.t(),
           trip_uid: String.t(),

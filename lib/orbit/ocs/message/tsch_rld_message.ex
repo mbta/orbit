@@ -5,7 +5,7 @@ defmodule Orbit.Ocs.Message.TschRldMessage do
   defstruct [:counter, :timestamp, :transitline]
 
   @type t :: %__MODULE__{
-          counter: integer,
+          counter: integer(),
           timestamp: DateTime.t(),
           transitline: String.t()
         }
