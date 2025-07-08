@@ -44,7 +44,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
       message = build(:tsch_new, trip_uid: "22222")
       EntitiesServer.new_messages([message])
 
-      refute_receive {:new_data, :ocs_entities, _}
+      refute_receive {:new_data, :ocs_trips, _}
     end
 
     with_mocks([
@@ -56,7 +56,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
       message = build(:tsch_new, trip_uid: "33333")
       EntitiesServer.new_messages([message])
 
-      assert_receive {:new_data, :ocs_entities, trips}
+      assert_receive {:new_data, :ocs_trips, %{entities: trips, timestamp: _}}
 
       assert Enum.any?(trips, fn trip -> trip.uid == "11111" end)
       assert Enum.any?(trips, fn trip -> trip.uid == "22222" end)
@@ -70,7 +70,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
     message = build(:tsch_new, trip_uid: "22222")
     EntitiesServer.new_messages([message])
 
-    refute_receive {:new_data, :ocs_entities, _}
+    refute_receive {:new_data, :ocs_trips, _}
 
     with_mocks([
       {DateTime, [:passthrough],
@@ -79,7 +79,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
        ]}
     ]) do
       send(EntitiesServer, :ensure_push)
-      refute_receive {:new_data, :ocs_entities, _}
+      refute_receive {:new_data, :ocs_trips, _}
     end
 
     with_mocks([
@@ -89,7 +89,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
        ]}
     ]) do
       send(EntitiesServer, :ensure_push)
-      assert_receive {:new_data, :ocs_entities, trips}
+      assert_receive {:new_data, :ocs_trips, %{entities: trips, timestamp: _}}
       assert Enum.any?(trips, fn trip -> trip.uid == "11111" end)
       assert Enum.any?(trips, fn trip -> trip.uid == "22222" end)
     end
