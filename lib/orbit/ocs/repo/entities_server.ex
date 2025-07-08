@@ -7,7 +7,7 @@ defmodule Orbit.Ocs.EntitiesServer do
 
   @throttle_seconds 5
 
-  @typep output :: %{entities: Orbit.Ocs.Entities.entities()}
+  @typep output :: %{timestamp: integer(), entities: Orbit.Ocs.Entities.entities()}
   @typep state :: %{
            out: output(),
            subscriptions: MapSet.t(pid()),
@@ -30,7 +30,7 @@ defmodule Orbit.Ocs.EntitiesServer do
 
     {:ok,
      %{
-       out: %{entities: Orbit.Ocs.Entities.query_latest()},
+       out: %{timestamp: Util.Time.current_time(), entities: Orbit.Ocs.Entities.query_latest()},
        subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
      }}
@@ -104,12 +104,18 @@ defmodule Orbit.Ocs.EntitiesServer do
   defp push(state) do
     entities = Orbit.Ocs.Entities.query_latest()
 
-    state = put_in(state, [:out, :entities], entities)
+    state = %{
+      state
+      | out: %{
+          timestamp: Util.Time.current_time(),
+          entities: entities
+        }
+    }
 
     Logger.info("#{__MODULE__} : Pushing to all subscribers")
 
     Enum.each(state.subscriptions, fn pid ->
-      send(pid, {:new_data, :ocs_entities, entities})
+      send(pid, {:new_data, :ocs_trips, state.out})
     end)
 
     %{state | last_push_to_subscriptions: DateTime.utc_now()}
