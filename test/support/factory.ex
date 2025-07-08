@@ -86,6 +86,29 @@ defmodule Orbit.Factory do
     }
   end
 
+  def tsch_tag_factory do
+    alias Orbit.Ocs.Message.TschTagMessage.CarTag
+
+    %Orbit.Ocs.Message.TschTagMessage{
+      counter: 123,
+      timestamp: DateTime.from_iso8601("2025-07-07T13:00:00.000-04:00") |> elem(1),
+      transitline: "R",
+      trip_uid: "11111",
+      train_uid: "22222",
+      consist_tags: ["K", "N"],
+      car_tags: [
+        %CarTag{
+          car_number: "1234",
+          tag: "K"
+        },
+        %CarTag{
+          car_number: "1235",
+          tag: "K"
+        }
+      ]
+    }
+  end
+
   def trip_factory do
     %Orbit.Ocs.Trip{
       service_date: Date.from_iso8601!("2025-07-07"),
