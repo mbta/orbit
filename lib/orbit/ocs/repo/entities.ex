@@ -29,10 +29,10 @@ defmodule Orbit.Ocs.Entities do
 
   @type entities() :: [Trip.t()]
 
-  @spec query_latest() :: entities()
-  def query_latest do
+  @spec query_latest(DateTime.t()) :: entities()
+  def query_latest(current_datetime \\ DateTime.utc_now()) do
     # TODO: What filtering/sorting makes sense for this query?
-    service_date = Util.Time.current_service_date()
+    service_date = Util.Time.service_date_for_utc_datetime(current_datetime)
     Repo.all(from(trip in Trip, where: trip.service_date == ^service_date))
   end
 
@@ -235,6 +235,7 @@ defmodule Orbit.Ocs.Entities do
   @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t()) ::
           {:ok, any} | {:error, any()}
   defp assign_train_to_trip(service_date, rail_line, trip_uid, train_uid) do
+    # Do we need to unassign other trips?
     %Trip{
       service_date: service_date,
       uid: trip_uid,
