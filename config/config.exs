@@ -9,7 +9,8 @@ config :orbit,
   force_https?: true,
   timezone: "America/New_York",
   poll_rtr?: true,
-  rtr_poll_delay: 3_000
+  rtr_poll_delay: 3_000,
+  subscribe_to_ocs?: true
 
 # Kinesis
 config :orbit, Orbit.Ocs.Stream.Producer, enabled?: false

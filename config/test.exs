@@ -5,7 +5,8 @@ config :orbit,
   environment: "test",
   release: "test",
   force_https?: false,
-  poll_rtr?: false
+  poll_rtr?: false,
+  subscribe_to_ocs?: false
 
 # Database config
 config :orbit, Orbit.Repo,
