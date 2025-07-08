@@ -23,6 +23,11 @@ defmodule Util.Time do
   @spec service_date_for_timestamp(timestamp) :: Date.t()
   def service_date_for_timestamp(timestamp) do
     utc_datetime = DateTime.from_unix!(timestamp, :second)
+    service_date_for_utc_datetime(utc_datetime)
+  end
+
+  @spec service_date_for_utc_datetime(DateTime.t()) :: Date.t()
+  def service_date_for_utc_datetime(utc_datetime) do
     eastern_datetime = Timex.Timezone.convert(utc_datetime, @timezone)
     real_date = DateTime.to_date(eastern_datetime)
 
