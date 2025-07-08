@@ -70,6 +70,37 @@ defmodule Orbit.Factory do
     }
   end
 
+  def tsch_new_factory do
+    %Orbit.Ocs.Message.TschNewMessage{
+      counter: 123,
+      timestamp: DateTime.from_iso8601("2025-07-07T13:00:00.000-04:00") |> elem(1),
+      transitline: "R",
+      trip_uid: "11111",
+      add_type: "S",
+      trip_type: "G",
+      ocs_route_id: "route-id",
+      origin_sta: "origin-station",
+      dest_sta: "destination-station",
+      prev_trip_uid: "00000",
+      next_trip_uid: "22222"
+    }
+  end
+
+  def trip_factory do
+    %Orbit.Ocs.Trip{
+      service_date: Date.from_iso8601!("2025-07-07"),
+      uid: "11111",
+      train_uid: "99999",
+      prev_uid: "00000",
+      next_uid: "22222",
+      route: "route-id",
+      rail_line: :red,
+      trip_type: "G",
+      origin_station: "origin-station",
+      destination_station: "destination-station"
+    }
+  end
+
   def vehicle_factory do
     %Orbit.Vehicle{
       position: build(:vehicle_position),
