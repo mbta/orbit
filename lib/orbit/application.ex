@@ -8,18 +8,24 @@ defmodule Orbit.Application do
 
     children =
       [
-        BroadwayKinesis.ProducerRegistry,
         OrbitWeb.Telemetry,
         Orbit.Repo,
         {Ecto.Migrator, repos: Application.fetch_env!(:orbit, :ecto_repos)},
         {Oban, Application.fetch_env!(:orbit, Oban)},
         {Phoenix.PubSub, name: Orbit.PubSub},
-        Orbit.Ocs.Supervisor,
         # Start a worker by calling: Orbit.Worker.start_link(arg)
         # {Orbit.Worker, arg},
         # Start to serve requests, typically the last entry
         OrbitWeb.Endpoint
       ] ++
+        if Application.get_env(:orbit, :subscribe_to_ocs?) do
+          [
+            BroadwayKinesis.ProducerRegistry,
+            Orbit.Ocs.Supervisor
+          ]
+        else
+          []
+        end ++
         if Application.get_env(:orbit, :poll_rtr?) do
           [
             %{
