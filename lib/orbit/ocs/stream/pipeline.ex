@@ -51,7 +51,11 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     log_handled_events(sequence_number, ms_behind, Enum.count(event_records))
 
     producer_name = List.first(Broadway.producer_names(:ocs_pipeline))
-    Kernel.send(producer_name, {:resume_position_update, sequence_number})
+
+    Orbit.Ocs.Stream.Producer.update_resume_position(producer_name, {
+      :after_sequence_number,
+      sequence_number
+    })
 
     persist_resume_position(sequence_number, now)
 
@@ -144,12 +148,12 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     :ok
   end
 
-  @spec load_resume_position() :: String.t() | nil
+  @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position() | nil
   defp load_resume_position do
     with stream_name when not is_nil(stream_name) <- get_stream_name(),
          stream_state when not is_nil(stream_state) <-
            Repo.get_by(KinesisStreamState, stream_name: stream_name) do
-      stream_state.resume_position
+      {:after_sequence_number, stream_state.resume_position}
     else
       _ ->
         nil

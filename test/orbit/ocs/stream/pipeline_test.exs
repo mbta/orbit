@@ -45,7 +45,7 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
             assert opts[:name] == :ocs_pipeline
             {Producer, producer_opts} = opts[:producer][:module]
             %{resume_position: resume_position} = producer_opts[:state]
-            assert resume_position == "12345"
+            assert resume_position == {:after_sequence_number, "12345"}
           end)
         )
       )
@@ -107,7 +107,7 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
       Pipeline.handle_message(:fake, @test_message, :fake)
 
       # Test module sets itself as the producer pid
-      assert_receive {:resume_position_update, "67890"}
+      assert_receive {:resume_position_update, {:after_sequence_number, "67890"}}
     end
 
     test "writes kinesis resume position to DB" do
