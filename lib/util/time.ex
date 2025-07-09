@@ -5,6 +5,11 @@ defmodule Util.Time do
   @type timestamp :: integer()
   @timezone Application.compile_env!(:orbit, :timezone)
 
+  @spec current_timezone :: Calendar.time_zone()
+  def current_timezone do
+    @timezone
+  end
+
   @spec current_time :: timestamp
   def current_time do
     System.system_time(:second)

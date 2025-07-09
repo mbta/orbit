@@ -119,12 +119,55 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   defp get_producer_opts(opts) do
     resume_position = load_resume_position()
+    opts ++ [state: %{resume_position: resume_position}]
+  end
 
-    if resume_position != nil do
-      opts ++ [state: %{resume_position: resume_position}]
+  @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position()
+  defp load_resume_position do
+    cutoff = start_of_service_date()
+
+    with stream_name when not is_nil(stream_name) <- get_stream_name(),
+         stream_state when not is_nil(stream_state) <- load_stream_state(stream_name),
+         false <- expired?(stream_state, cutoff) do
+      Logger.info("Will resume OCS Kinesis stream from #{stream_state.resume_position}")
+
+      {:after_sequence_number, stream_state.resume_position}
     else
-      opts
+      _ ->
+        Logger.info("Will begin OCS Kinesis stream from timestamp #{cutoff}")
+        {:at_timestamp, cutoff}
     end
+  end
+
+  @spec load_stream_state(String.t()) :: KinesisStreamState.t() | nil
+  defp load_stream_state(stream_name) do
+    stream_state = Repo.get_by(KinesisStreamState, stream_name: stream_name)
+
+    if stream_state == nil do
+      Logger.warning("No prior state saved for OCS Kinesis stream #{stream_name}")
+    end
+
+    stream_state
+  end
+
+  @spec expired?(KinesisStreamState.t(), DateTime.t()) :: boolean()
+  defp expired?(%KinesisStreamState{last_message_timestamp: timestamp}, cutoff) do
+    expired = :gt == DateTime.compare(start_of_service_date(), timestamp)
+
+    if expired do
+      Logger.warning("Last OCS Kinesis timestamp #{timestamp} is older than cutoff #{cutoff}.")
+    end
+
+    expired
+  end
+
+  defp start_of_service_date do
+    Util.Time.current_service_date()
+    |> DateTime.new!(
+      ~T[00:00:00.000],
+      Util.Time.current_timezone()
+    )
+    |> DateTime.shift_zone!("Etc/UTC")
   end
 
   @spec persist_resume_position(String.t(), DateTime.t()) :: :ok
@@ -146,18 +189,6 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     end
 
     :ok
-  end
-
-  @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position() | nil
-  defp load_resume_position do
-    with stream_name when not is_nil(stream_name) <- get_stream_name(),
-         stream_state when not is_nil(stream_state) <-
-           Repo.get_by(KinesisStreamState, stream_name: stream_name) do
-      {:after_sequence_number, stream_state.resume_position}
-    else
-      _ ->
-        nil
-    end
   end
 
   @spec get_stream_name() :: String.t() | nil
