@@ -125,13 +125,22 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   # Kinesis Stream Persistence
 
   defp get_producer_opts(opts) do
-    resume_position = load_resume_position()
+    resume_position = load_resume_position() || default_resume_position()
+    opts ++ [state: %{resume_position: resume_position}]
+  end
 
-    if resume_position != nil do
-      opts ++ [state: %{resume_position: resume_position}]
-    else
-      opts
-    end
+  defp default_resume_position do
+    service_date = Util.Time.current_service_date()
+
+    timestamp =
+      DateTime.new!(
+        service_date,
+        ~T[00:00:00.000],
+        Util.Time.current_timezone()
+      )
+      |> DateTime.shift_zone!("Etc/UTC")
+
+    {:at_timestamp, timestamp}
   end
 
   @spec persist_resume_position(String.t(), DateTime.t()) :: :ok
