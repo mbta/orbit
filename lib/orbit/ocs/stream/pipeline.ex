@@ -125,7 +125,8 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   # Kinesis Stream Persistence
 
   defp get_producer_opts(opts) do
-    resume_position = load_resume_position() || default_resume_position()
+    resume_position = load_resume_position() || :trim_horizon
+    # || default_resume_position()
     opts ++ [state: %{resume_position: resume_position}]
   end
 
