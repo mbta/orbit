@@ -128,16 +128,11 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     stream_name = get_stream_name()
 
     if stream_name != nil do
-      utc_timestamp =
-        last_message_timestamp
-        |> DateTime.shift_zone!("Etc/UTC")
-        |> DateTime.truncate(:second)
-
       {:ok, _} =
         %KinesisStreamState{
           stream_name: stream_name,
           resume_position: resume_position,
-          last_message_timestamp: utc_timestamp
+          last_message_timestamp: Util.Time.to_ecto_utc(last_message_timestamp)
         }
         |> KinesisStreamState.changeset()
         |> Repo.insert(

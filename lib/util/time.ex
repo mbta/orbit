@@ -43,4 +43,16 @@ defmodule Util.Time do
     {DateTime.new!(service_date, ~T[03:00:00], @timezone),
      DateTime.new!(Date.add(service_date, 1), ~T[03:00:00], @timezone)}
   end
+
+  @doc """
+  Sanitize the given DateTime for compatibility with Ecto's :utc_datetime
+  field type. This converts the DateTime to UTC and truncates down to an
+  even number of seconds.
+  """
+  @spec to_ecto_utc(DateTime.t()) :: DateTime.t()
+  def to_ecto_utc(datetime) do
+    datetime
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> DateTime.truncate(:second)
+  end
 end
