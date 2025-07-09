@@ -185,3 +185,14 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
     ],
   ],
 };
+
+export const getNameForId = (id: string | null | undefined) => {
+  if (id === undefined || id === null) {
+    return undefined;
+  }
+
+  return Object.values(Stations)
+    .flat()
+    .flat()
+    .find((station) => station.id === id)?.name;
+};
