@@ -1,0 +1,44 @@
+<p>Today's OCS trips</p>
+{length(@trips)} record{(length(@trips) != 1 && "s") || ""}
+<table class="mt-3">
+  <tr>
+    <th>id</th>
+    <th>service_date</th>
+    <th>rail_line</th>
+    <th>uid</th>
+    <th>train_uid</th>
+    <th>prev_uid</th>
+    <th>next_uid</th>
+    <th>route</th>
+    <th>trip_type</th>
+    <th>scheduled_departure</th>
+    <th>scheduled_arrival</th>
+    <th>offset</th>
+    <th>origin_station</th>
+    <th>destination_station</th>
+    <th>deleted</th>
+    <th>inserted_at</th>
+    <th>updated_at</th>
+  </tr>
+  <%= for trip <- @trips do %>
+    <tr>
+      <td>{trip.id}</td>
+      <td>{trip.service_date}</td>
+      <td>{trip.rail_line}</td>
+      <td>{trip.uid}</td>
+      <td>{trip.train_uid}</td>
+      <td>{trip.prev_uid}</td>
+      <td>{trip.next_uid}</td>
+      <td>{trip.route}</td>
+      <td>{trip.trip_type}</td>
+      <td>{trip.scheduled_departure}</td>
+      <td>{trip.scheduled_arrival}</td>
+      <td>{trip.offset}</td>
+      <td>{trip.origin_station}</td>
+      <td>{trip.destination_station}</td>
+      <td>{trip.deleted}</td>
+      <td>{trip.inserted_at}</td>
+      <td>{trip.updated_at}</td>
+    </tr>
+  <% end %>
+</table>

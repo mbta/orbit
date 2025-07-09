@@ -92,4 +92,21 @@ defmodule Orbit.Factory do
       expires: "2023-12-11"
     }
   end
+
+  def ocs_trip_factory do
+    %Orbit.Ocs.Trip{
+      service_date: ~D[2025-07-08],
+      rail_line: :red,
+      uid: "12345678"
+    }
+  end
+
+  def ocs_train_factory do
+    %Orbit.Ocs.Train{
+      service_date: ~D[2025-07-08],
+      rail_line: :red,
+      uid: "5484208E",
+      cars: ["1736", "1737", "1724", "1725", "1741", "1740"]
+    }
+  end
 end
