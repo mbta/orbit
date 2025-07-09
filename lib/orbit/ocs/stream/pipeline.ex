@@ -7,17 +7,20 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   use Broadway
 
   alias Broadway.Message
-  # alias Orbit.Ocs.Stream.SequenceMonitor
+  alias Orbit.KinesisStreamState
+  alias Orbit.Repo
 
   require Logger
 
   @behind_warn_threshold_ms 1_000
 
   def start_link(opts) do
+    producer_opts = get_producer_opts(opts)
+
     Broadway.start_link(__MODULE__,
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
-        module: {Orbit.Ocs.Stream.Producer, opts},
+        module: {Orbit.Ocs.Stream.Producer, producer_opts},
         transformer: {__MODULE__, :transform, opts},
         concurrency: 1
       ],
@@ -49,6 +52,9 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
     producer_name = List.first(Broadway.producer_names(:ocs_pipeline))
     Kernel.send(producer_name, {:resume_position_update, sequence_number})
+
+    persist_resume_position(sequence_number, now)
+
     message
   end
 
@@ -95,5 +101,62 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   def ack(:ack_id, _successful, _failed) do
     # This is required per the framework, but could be useful down the line
     # to track which messages actually make it all the way into state.
+  end
+
+  # Kinesis Stream Persistence
+
+  defp get_producer_opts(opts) do
+    resume_position = load_resume_position()
+
+    if resume_position != nil do
+      opts ++ [state: %{resume_position: resume_position}]
+    else
+      opts
+    end
+  end
+
+  @spec persist_resume_position(String.t(), DateTime.t()) :: :ok
+  defp persist_resume_position(resume_position, last_message_timestamp) do
+    stream_name = get_stream_name()
+
+    if stream_name != nil do
+      utc_timestamp =
+        last_message_timestamp
+        |> DateTime.shift_zone!("Etc/UTC")
+        |> DateTime.truncate(:second)
+
+      {:ok, _} =
+        %KinesisStreamState{
+          stream_name: stream_name,
+          resume_position: resume_position,
+          last_message_timestamp: utc_timestamp
+        }
+        |> KinesisStreamState.changeset()
+        |> Repo.insert(
+          on_conflict: :replace_all,
+          conflict_target: :stream_name
+        )
+    end
+
+    :ok
+  end
+
+  @spec load_resume_position() :: String.t() | nil
+  defp load_resume_position do
+    with stream_name when not is_nil(stream_name) <- get_stream_name(),
+         stream_state when not is_nil(stream_state) <-
+           Repo.get_by(KinesisStreamState, stream_name: stream_name) do
+      stream_state.resume_position
+    else
+      _ ->
+        nil
+    end
+  end
+
+  @spec get_stream_name() :: String.t() | nil
+  defp get_stream_name do
+    :orbit
+    |> Application.fetch_env!(Orbit.Ocs.Stream.Producer)
+    |> Keyword.get(:kinesis_stream_name)
   end
 end
