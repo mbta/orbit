@@ -9,24 +9,24 @@ defmodule Orbit.Ocs.Parser do
   """
 
   @spec parse(String.t(), DateTime.t()) :: {:ok, Orbit.Ocs.Message.t() | :ignored} | {:error, any}
-  def parse(line, current_time) do
-    {:ok, parse!(line, current_time)}
+  def parse(line, message_time) do
+    {:ok, parse!(line, message_time)}
   rescue
     e -> {:error, e}
   end
 
   @spec parse!(String.t(), DateTime.t()) :: Orbit.Ocs.Message.t() | :ignored
-  def parse!(line, current_time) do
+  def parse!(line, message_time) do
     line
-    |> parse_initial(current_time)
-    |> parse_by_msg_type(current_time)
+    |> parse_initial(message_time)
+    |> parse_by_msg_type(message_time)
     |> case do
       {:ok, msg} -> msg
       {:error, e} -> raise e
     end
   end
 
-  defp parse_initial(line, current_time) do
+  defp parse_initial(line, message_time) do
     [counter, msg_type, msg_time | rest] = String.split(line, ",")
     {count, ""} = Integer.parse(counter)
 
@@ -37,14 +37,14 @@ defmodule Orbit.Ocs.Parser do
         ArgumentError -> msg_type
       end
 
-    time = get_time(msg_time, current_time)
+    time = get_time(msg_time, message_time)
     {count, type, time, rest}
   end
 
-  defp parse_by_msg_type(msg, current_time) do
+  defp parse_by_msg_type(msg, message_time) do
     case msg do
       {_count, :tsch, _timestamp, _args} ->
-        Orbit.Ocs.Parser.TschMessage.parse(msg, current_time)
+        Orbit.Ocs.Parser.TschMessage.parse(msg, message_time)
 
       # Ignore remaining valid message types that are unimplemented for now
       {_count, msg_type, _timestamp, _args} when msg_type in [:tmov, :devi, :diag, :rgps] ->
@@ -56,12 +56,12 @@ defmodule Orbit.Ocs.Parser do
   end
 
   @spec get_time(String.t(), DateTime.t()) :: DateTime.t()
-  defp get_time(msg_time, current_time) do
+  defp get_time(msg_time, message_time) do
     # allow msg_time to be up to one hour in the future; otherwise assume it is from yesterday
     time = Timex.parse!(msg_time, "{h24}:{m}:{s}")
-    dt = Timex.set(current_time, hour: time.hour, minute: time.minute, second: time.second)
+    dt = Timex.set(message_time, hour: time.hour, minute: time.minute, second: time.second)
 
-    if Timex.before?(dt, Timex.shift(current_time, hours: 1)) do
+    if Timex.before?(dt, Timex.shift(message_time, hours: 1)) do
       dt
     else
       Timex.shift(dt, days: -1)

@@ -75,10 +75,12 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
       "MillisBehindLatest" => 0,
       "Records" => [
         %{
-          "Data" => ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_1"}})
+          "Data" =>
+            ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_1"}, "time": "2025-07-02T20:48:00Z"})
         },
         %{
-          "Data" => ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_2"}})
+          "Data" =>
+            ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_2"}, "time": "2025-07-02T20:48:00Z"})
         },
         %{
           "Data" => ~S({"type": "some.other.event_type"})
@@ -94,8 +96,8 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
       assert_called(
         MessageHandler.handle_messages(
           [
-            "raw_content_1",
-            "raw_content_2"
+            %{raw_message: "raw_content_1", datetime: @test_datetime_utc},
+            %{raw_message: "raw_content_2", datetime: @test_datetime_utc}
           ],
           # ignore datetime param
           :_

@@ -14,10 +14,10 @@ defmodule Orbit.Ocs.MessageHandler do
   def handle_messages(raw_messages, current_time) do
     parsed_messages =
       raw_messages
-      |> Enum.flat_map(fn raw_message ->
+      |> Enum.flat_map(fn %{raw_message: raw_message, datetime: datetime} ->
         Logger.info("raw_ocs_message #{raw_message}")
 
-        with {:ok, parsed} <- parse(raw_message, current_time),
+        with {:ok, parsed} <- parse(raw_message, datetime),
              {:ok, message} <- check_expired(parsed, current_time) do
           [message]
         else

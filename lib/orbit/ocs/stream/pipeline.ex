@@ -86,9 +86,16 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     |> List.wrap()
   end
 
-  @spec ocs_message(map) :: [String.t()]
-  defp ocs_message(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
-    do: [message]
+  @type raw_message :: %{datetime: DateTime.t(), raw_message: String.t()}
+  @spec ocs_message(map) :: [raw_message()]
+  defp ocs_message(%{
+         "type" => "com.mbta.ocs.raw_message",
+         "time" => datetime_string,
+         "data" => %{"raw" => message}
+       }) do
+    {:ok, datetime, _} = DateTime.from_iso8601(datetime_string)
+    [%{datetime: datetime, raw_message: message}]
+  end
 
   defp ocs_message(other) do
     Logger.warning(
