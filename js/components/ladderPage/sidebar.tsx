@@ -1,3 +1,4 @@
+import { getNameForId } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
@@ -40,13 +41,14 @@ export const SideBar = ({
           </div>
         ))}
       </div>
-      <CurrentTrip selection={selection} />
+      <CurrentTrip vehicle={selection.vehicle} />
     </aside>
   );
 };
 
-const CurrentTrip = ({ selection }: { selection: SideBarSelection }) => {
-  const tripUpdate = selection.vehicle.tripUpdate;
+const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
+  const current = vehicle.ocsTrips.current;
+  const tripUpdate = vehicle.tripUpdate;
   const stu =
     tripUpdate?.stopTimeUpdates[tripUpdate.stopTimeUpdates.length - 1];
   const estArrival = stu?.predictedArrivalTime;
@@ -56,15 +58,24 @@ const CurrentTrip = ({ selection }: { selection: SideBarSelection }) => {
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>---</span>
+          <span>{getNameForId(current?.originStation) ?? "---"}</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>---</span>
+          <span>{getNameForId(current?.destinationStation) ?? "---"}</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
-          <span className="font-bold">--- (N/A)</span>
+          <span className="font-bold">
+            {current?.scheduledDeparture ?
+              dateTimeFormat(current.scheduledDeparture, "service")
+            : "---"}{" "}
+            <Offset value={current?.offset} />
+          </span>
           <span className="text-gray-300 mt-5">Scheduled</span>
-          <span className="font-bold">---</span>
+          <span className="font-bold">
+            {current?.scheduledArrival ?
+              dateTimeFormat(current.scheduledArrival, "service")
+            : "---"}{" "}
+          </span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Actual</span>
@@ -77,4 +88,12 @@ const CurrentTrip = ({ selection }: { selection: SideBarSelection }) => {
       </div>
     </section>
   );
+};
+
+const Offset = ({ value }: { value: number | null | undefined }) => {
+  if (value === null || value == undefined || value === 0) {
+    return null;
+  }
+
+  return "(" + (value > 0 ? `+${value}` : value.toString()) + ")";
 };
