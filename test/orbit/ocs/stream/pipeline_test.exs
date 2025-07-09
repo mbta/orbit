@@ -79,6 +79,9 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
         },
         %{
           "Data" => ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_2"}})
+        },
+        %{
+          "Data" => ~S({"type": "some.other.event_type"})
         }
       ]
     }
