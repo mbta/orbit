@@ -22,6 +22,19 @@ export const stopStatusFromData = (data: StopStatusData): StopStatus => {
   }
 };
 
+// remap 15xx trains to 25xx
+export const remapCarLabels = (cars: CarId[]) => {
+  const newCars = [];
+  for (const car of cars) {
+    if (car.startsWith("15")) {
+      newCars.push("2" + car.slice(1));
+    } else {
+      newCars.push(car);
+    }
+  }
+  return newCars;
+};
+
 export const VehiclePositionData = z.object({
   route_id: z.string(),
   direction: z.number(),
@@ -60,8 +73,8 @@ export const vehiclePositionFromData = (
 ): VehiclePosition => ({
   routeId: data.route_id,
   directionId: data.direction,
-  label: data.label,
-  cars: data.cars,
+  label: data.label.startsWith("15") ? "2" + data.label.slice(1) : data.label,
+  cars: remapCarLabels(data.cars),
   stationId: data.station_id,
   stopId: data.stop_id,
   stopStatus: stopStatusFromData(data.current_status),
