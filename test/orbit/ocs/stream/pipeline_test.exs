@@ -9,7 +9,9 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
   alias Orbit.Ocs.Stream.Producer
   alias Orbit.Repo
 
+  @test_service_date Date.new!(2025, 7, 2)
   @test_datetime_utc DateTime.from_iso8601("2025-07-02T20:48:00Z") |> elem(1)
+  @test_old_datetime_utc DateTime.from_iso8601("2025-07-01T20:48:00Z") |> elem(1)
   @test_stream_name "test-stream-name"
 
   setup_with_mocks([
@@ -21,13 +23,32 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
     {MessageHandler, [],
      [
        handle_messages: fn _records, _datetime -> :ok end
-     ]}
+     ]},
+    {Util.Time, [:passthrough], [current_service_date: fn -> @test_service_date end]}
   ]) do
     :ok
   end
 
   describe "start_link" do
-    test "initializes producer with persisted resume position" do
+    test "initializes producer to resume from current service date, if no sequence is stored" do
+      Pipeline.start_link(name: :ocs_pipeline, enable?: false)
+
+      assert_called(
+        Elixir.Broadway.start_link(
+          Pipeline,
+          :meck.is(fn opts ->
+            assert opts[:name] == :ocs_pipeline
+            {Producer, producer_opts} = opts[:producer][:module]
+            %{resume_position: resume_position} = producer_opts[:state]
+            assert resume_position == {:at_timestamp, ~U[2025-07-02 04:00:00.000Z]}
+
+            true
+          end)
+        )
+      )
+    end
+
+    test "initializes producer with persisted resume position, if still relevant" do
       %KinesisStreamState{
         stream_name: @test_stream_name,
         resume_position: "12345",
@@ -51,7 +72,15 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
       )
     end
 
-    test "does not override producer state if no resume positon is stored" do
+    test "initializes producer to resume from current service date, if stored sequence is stale" do
+      %KinesisStreamState{
+        stream_name: @test_stream_name,
+        resume_position: "12345",
+        last_message_timestamp: @test_old_datetime_utc
+      }
+      |> KinesisStreamState.changeset()
+      |> Repo.insert()
+
       Pipeline.start_link(name: :ocs_pipeline, enable?: false)
 
       assert_called(
@@ -60,7 +89,8 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
           :meck.is(fn opts ->
             assert opts[:name] == :ocs_pipeline
             {Producer, producer_opts} = opts[:producer][:module]
-            refute producer_opts |> Keyword.has_key?(:state)
+            %{resume_position: resume_position} = producer_opts[:state]
+            assert resume_position == {:at_timestamp, ~U[2025-07-02 04:00:00.000Z]}
 
             true
           end)
