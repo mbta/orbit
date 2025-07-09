@@ -8,6 +8,11 @@ config :orbit,
   poll_rtr?: false,
   subscribe_to_ocs?: false
 
+config :orbit, Orbit.Ocs.Stream.Producer,
+  enabled?: true,
+  kinesis_stream_name: "test-stream-name",
+  kinesis_consumer_arn: "test-stream-arn"
+
 # Database config
 config :orbit, Orbit.Repo,
   username: System.get_env("DATABASE_USERNAME") || "postgres",
