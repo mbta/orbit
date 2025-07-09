@@ -44,7 +44,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
       records
       |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
-      |> Enum.map(&ocs_message/1)
+      |> Enum.flat_map(&ocs_message/1)
 
     Orbit.Ocs.MessageHandler.handle_messages(event_records, now)
 
@@ -82,9 +82,17 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     |> List.wrap()
   end
 
-  @spec ocs_message(map) :: String.t()
+  @spec ocs_message(map) :: [String.t()]
   defp ocs_message(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
-    do: message
+    do: [message]
+
+  defp ocs_message(other) do
+    Logger.warning(
+      "OCS stream received message with unexpected CloudEvent format: #{inspect(other)}"
+    )
+
+    []
+  end
 
   def transform(event, opts) do
     %Message{
