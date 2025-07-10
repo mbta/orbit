@@ -42,10 +42,8 @@ defmodule Orbit.Ocs.ParserTest do
       line =
         "3089,TSCH,02:00:08,X,NEW,98A880B8,S,P,05:12,05:32,W946_,ORIENT HEIGHTS YARD,WONDERLAND,0,98A880B9"
 
-      assert {:error, message} =
+      assert {:error, _} =
                Orbit.Ocs.Parser.parse(line, OcsTime.in_ocs_tz(~N[2017-03-17 02:00:08]))
-
-      message |> dbg()
     end
 
     test "ignores train movement (TMOV) message" do
