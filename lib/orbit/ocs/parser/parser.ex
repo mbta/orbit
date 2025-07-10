@@ -8,6 +8,8 @@ defmodule Orbit.Ocs.Parser do
   rest -> a list of the remaining values from the message
   """
 
+  alias Orbit.Ocs.TransitLine
+
   @spec parse(String.t(), DateTime.t()) :: {:ok, Orbit.Ocs.Message.t() | :ignored} | {:error, any}
   def parse(line, current_time) do
     {:ok, parse!(line, current_time)}
@@ -73,8 +75,8 @@ defmodule Orbit.Ocs.Parser do
   # the 1500 Red Line cars are retired.
   # So in January 2024 the OCC started inputting the Red Line 15xx cars as 25xx.
   # Map them back to 15xx.
-  @spec convert_ocs_car_number(String.t(), String.t()) :: String.t()
-  def convert_ocs_car_number("R", "25" <> car_number_rest) do
+  @spec convert_ocs_car_number(TransitLine.t(), String.t()) :: String.t()
+  def convert_ocs_car_number(:red, "25" <> car_number_rest) do
     "15" <> car_number_rest
   end
 

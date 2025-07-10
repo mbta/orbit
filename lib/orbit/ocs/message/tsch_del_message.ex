@@ -7,7 +7,7 @@ defmodule Orbit.Ocs.Message.TschDelMessage do
   @type t :: %__MODULE__{
           counter: integer(),
           timestamp: DateTime.t(),
-          transitline: String.t(),
+          transitline: Orbit.Ocs.TransitLine.t(),
           trip_uid: String.t(),
           delete_status: :deleted | :undeleted
         }

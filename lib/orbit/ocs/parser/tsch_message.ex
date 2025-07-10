@@ -3,6 +3,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   TSCH message type from OCS system, includes functions to parse all sub-types
   """
 
+  alias Orbit.Ocs.TransitLine
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
   @spec parse({integer, :tsch, DateTime.t(), [String.t()]}, DateTime.t()) ::
@@ -12,11 +13,6 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   rescue
     e ->
       {:error, e}
-  end
-
-  @spec check_transitline(String.t()) :: String.t()
-  defp check_transitline(transitline) when transitline in ["R", "O", "B", "G"] do
-    transitline
   end
 
   @spec get_delete_status(String.t()) :: :deleted | :undeleted
@@ -42,12 +38,28 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   @spec parse!({integer, :tsch, DateTime.t(), [String.t()]}, DateTime.t()) ::
           Orbit.Ocs.Message.t()
-  def parse!(raw_message, current_time)
+  def parse!(message, current_time) do
+    {count, :tsch, message_time, [raw_transitline | rest]} = message
 
-  def parse!(
-        {count, :tsch, time, [transitline, "CON", trip_uid, train_consist, train_uid]},
-        _current_time
-      ) do
+    parse_sub_type(
+      {
+        count,
+        message_time,
+        TransitLine.from_ocs_raw(raw_transitline),
+        rest
+      },
+      current_time
+    )
+  end
+
+  @spec parse_sub_type({integer, DateTime.t(), TransitLine.t(), [String.t()]}, DateTime.t()) ::
+          Orbit.Ocs.Message.t()
+  defp parse_sub_type(message, current_time)
+
+  defp parse_sub_type(
+         {count, time, transitline, ["CON", trip_uid, train_consist, train_uid]},
+         _current_time
+       ) do
     con =
       train_consist
       |> String.split(" ")
@@ -56,31 +68,30 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     %Orbit.Ocs.Message.TschConMessage{
       counter: count,
       timestamp: time,
-      transitline: check_transitline(transitline),
+      transitline: transitline,
       trip_uid: trip_uid,
       consist: con,
       train_uid: train_uid
     }
   end
 
-  def parse!(
-        {count, :tsch, time,
-         [
-           transitline,
-           "NEW",
-           trip_uid,
-           add_type,
-           trip_type,
-           sched_dep_str,
-           sched_arr_str,
-           ocs_route_id,
-           origin_sta,
-           dest_sta,
-           prev_trip_uid,
-           next_trip_uid
-         ]},
-        current_time
-      ) do
+  defp parse_sub_type(
+         {count, time, transitline,
+          [
+            "NEW",
+            trip_uid,
+            add_type,
+            trip_type,
+            sched_dep_str,
+            sched_arr_str,
+            ocs_route_id,
+            origin_sta,
+            dest_sta,
+            prev_trip_uid,
+            next_trip_uid
+          ]},
+         current_time
+       ) do
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
 
@@ -97,7 +108,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     %Orbit.Ocs.Message.TschNewMessage{
       counter: count,
       timestamp: time,
-      transitline: check_transitline(transitline),
+      transitline: transitline,
       trip_uid: trip_uid,
       add_type: add_type,
       trip_type: trip_type,
@@ -111,7 +122,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!({count, :tsch, time, [transitline, "ASN", train_uid, trip_uid]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["ASN", train_uid, trip_uid]}, _current_time) do
     %Orbit.Ocs.Message.TschAsnMessage{
       counter: count,
       timestamp: time,
@@ -121,15 +132,15 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!({count, :tsch, time, [transitline, "RLD" | _]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["RLD" | _]}, _current_time) do
     %Orbit.Ocs.Message.TschRldMessage{
       counter: count,
       timestamp: time,
-      transitline: check_transitline(transitline)
+      transitline: transitline
     }
   end
 
-  def parse!({count, :tsch, time, [transitline, "DEL", trip_uid, delete_status]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["DEL", trip_uid, delete_status]}, _current_time) do
     %Orbit.Ocs.Message.TschDelMessage{
       counter: count,
       timestamp: time,
@@ -139,10 +150,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!(
-        {count, :tsch, time, [transitline, "LNK", trip_uid, prev_trip_uid, next_trip_uid]},
-        _current_time
-      ) do
+  defp parse_sub_type(
+         {count, time, transitline, ["LNK", trip_uid, prev_trip_uid, next_trip_uid]},
+         _current_time
+       ) do
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
 
@@ -156,7 +167,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!({count, :tsch, time, [transitline, "OFF", trip_uid, offset]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["OFF", trip_uid, offset]}, _current_time) do
     %Orbit.Ocs.Message.TschOffMessage{
       counter: count,
       timestamp: time,
@@ -166,11 +177,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!(
-        {count, :tsch, time,
-         [transitline, "DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str]},
-        current_time
-      ) do
+  defp parse_sub_type(
+         {count, time, transitline, ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str]},
+         current_time
+       ) do
     ocs_route_id =
       if ocs_route_id_str == "",
         do: nil,
@@ -185,7 +195,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     %Orbit.Ocs.Message.TschDstMessage{
       counter: count,
       timestamp: time,
-      transitline: check_transitline(transitline),
+      transitline: transitline,
       trip_uid: trip_uid,
       dest_sta: dest_sta,
       ocs_route_id: ocs_route_id,
@@ -193,10 +203,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  def parse!(
-        {count, :tsch, time, [transitline, "TAG", trip_uid, train_uid, consist_tags | car_tags]},
-        _current_time
-      ) do
+  defp parse_sub_type(
+         {count, time, transitline, ["TAG", trip_uid, train_uid, consist_tags | car_tags]},
+         _current_time
+       ) do
     %Orbit.Ocs.Message.TschTagMessage{
       counter: count,
       timestamp: time,

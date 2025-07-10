@@ -32,10 +32,20 @@ defmodule Orbit.Ocs.ParserTest do
                   sched_arr: OcsTime.in_ocs_tz(~N[2017-03-17 05:32:00]),
                   sched_dep: OcsTime.in_ocs_tz(~N[2017-03-17 05:12:00]),
                   timestamp: OcsTime.in_ocs_tz(~N[2017-03-17 02:00:08]),
-                  transitline: "B",
+                  transitline: :blue,
                   trip_type: "P",
                   trip_uid: "98A880B8"
                 }}
+    end
+
+    test "returns error on unexpected transit line" do
+      line =
+        "3089,TSCH,02:00:08,X,NEW,98A880B8,S,P,05:12,05:32,W946_,ORIENT HEIGHTS YARD,WONDERLAND,0,98A880B9"
+
+      assert {:error, message} =
+               Orbit.Ocs.Parser.parse(line, OcsTime.in_ocs_tz(~N[2017-03-17 02:00:08]))
+
+      message |> dbg()
     end
 
     test "ignores train movement (TMOV) message" do
@@ -105,11 +115,11 @@ defmodule Orbit.Ocs.ParserTest do
 
   describe "convert_ocs_car_number/2" do
     test "converts Red Line 25xx car number to 15xx" do
-      assert Orbit.Ocs.Parser.convert_ocs_car_number("R", "2501") == "1501"
+      assert Orbit.Ocs.Parser.convert_ocs_car_number(:red, "2501") == "1501"
     end
 
     test "doesn't convert other line 25xx car number to 15xx" do
-      assert Orbit.Ocs.Parser.convert_ocs_car_number("O", "2501") == "2501"
+      assert Orbit.Ocs.Parser.convert_ocs_car_number(:orange, "2501") == "2501"
     end
   end
 end

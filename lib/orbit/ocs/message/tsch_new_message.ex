@@ -21,7 +21,7 @@ defmodule Orbit.Ocs.Message.TschNewMessage do
   @type t :: %__MODULE__{
           counter: integer(),
           timestamp: DateTime.t(),
-          transitline: String.t(),
+          transitline: Orbit.Ocs.TransitLine.t(),
           trip_uid: String.t(),
           add_type: String.t(),
           trip_type: String.t(),

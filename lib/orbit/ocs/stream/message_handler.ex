@@ -33,7 +33,7 @@ defmodule Orbit.Ocs.MessageHandler do
           {:ok, Message.t()} | :ignored | {:error, any}
   defp parse(raw_message, current_time) do
     case Orbit.Ocs.Parser.parse(raw_message, current_time) do
-      {:ok, %{transitline: transitline} = message} when transitline in ["R", "O", "B"] ->
+      {:ok, %{transitline: transitline} = message} when transitline in [:red, :orange, :blue] ->
         {:ok, message}
 
       {:ok, _other} ->

@@ -7,7 +7,7 @@ defmodule Orbit.Ocs.Message.TschDstMessage do
   @type t :: %__MODULE__{
           counter: integer(),
           timestamp: DateTime.t(),
-          transitline: String.t(),
+          transitline: Orbit.Ocs.TransitLine.t(),
           trip_uid: String.t(),
           dest_sta: String.t(),
           ocs_route_id: String.t() | nil,

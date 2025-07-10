@@ -8,7 +8,7 @@ defmodule Orbit.Ocs.Message.TschTagMessage do
   @type t :: %__MODULE__{
           counter: integer(),
           timestamp: DateTime.t(),
-          transitline: String.t(),
+          transitline: Orbit.Ocs.TransitLine.t(),
           trip_uid: String.t(),
           train_uid: String.t(),
           consist_tags: list(String.t()),

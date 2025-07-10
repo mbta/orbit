@@ -21,7 +21,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschConMessage{
                   counter: 4331,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983AC23D",
                   consist: ["1737", "1736", "1725", "1724", "1731", "1730"],
                   train_uid: "54466E3A"
@@ -38,7 +38,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschConMessage{
                   counter: 4331,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983AC23D",
                   consist: ["1537", "1536", "1725", "1724", "1731", "1730"],
                   train_uid: "54466E3A"
@@ -54,7 +54,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschRldMessage{
                   counter: 3081,
                   timestamp: @test_time,
-                  transitline: "O"
+                  transitline: :orange
                 }}
     end
 
@@ -67,7 +67,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschRldMessage{
                   counter: 3081,
                   timestamp: @test_time,
-                  transitline: "O"
+                  transitline: :orange
                 }}
     end
 
@@ -94,7 +94,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschNewMessage{
                   counter: 3083,
                   timestamp: @test_time,
-                  transitline: "O",
+                  transitline: :orange,
                   trip_uid: "9866D295",
                   add_type: "S",
                   trip_type: "R",
@@ -118,7 +118,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschNewMessage{
                   counter: 28_329,
                   timestamp: @test_time,
-                  transitline: "B",
+                  transitline: :blue,
                   trip_uid: "98AA06F7",
                   add_type: "A",
                   trip_type: "R",
@@ -141,7 +141,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschDstMessage{
                   counter: 4520,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983BA807",
                   dest_sta: "CADDIGAN YARD",
                   ocs_route_id: nil,
@@ -158,7 +158,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschAsnMessage{
                   counter: 4520,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   train_uid: "54466E3A",
                   trip_uid: "983BA807"
                 }}
@@ -173,7 +173,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschLnkMessage{
                   counter: 19_332,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983BA716",
                   prev_trip_uid: "983BA715",
                   next_trip_uid: "983BA710"
@@ -189,7 +189,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschLnkMessage{
                   counter: 19_223,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983BA716",
                   prev_trip_uid: "983BA715",
                   next_trip_uid: nil
@@ -205,7 +205,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschDelMessage{
                   counter: 26_377,
                   timestamp: @test_time,
-                  transitline: "B",
+                  transitline: :blue,
                   trip_uid: "98A8F1AF",
                   delete_status: :undeleted
                 }}
@@ -220,7 +220,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschOffMessage{
                   counter: 19_332,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "983BA716",
                   offset: 13_579
                 }}
@@ -248,7 +248,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschTagMessage{
                   counter: 19_333,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "9836C4EE",
                   train_uid: "543C4CE2",
                   consist_tags: ["B", "D", "K", "E", "T"],
@@ -284,7 +284,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                 %Orbit.Ocs.Message.TschTagMessage{
                   counter: 19_333,
                   timestamp: @test_time,
-                  transitline: "R",
+                  transitline: :red,
                   trip_uid: "9836C4EE",
                   train_uid: "543C4CE2",
                   consist_tags: ["B", "D", "K", "E", "T"],
