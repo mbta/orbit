@@ -41,7 +41,7 @@ defmodule Orbit.Ocs.MessageHandler do
 
       {:error, e} ->
         Logger.warning(
-          "event=ocs_message_parse_issue Issue with line #{raw_message} : #{Exception.format(:error, e)}"
+          "event=ocs_message_parse_issue line=#{raw_message} error=#{Exception.format(:error, e)}"
         )
 
         {:error, e}
