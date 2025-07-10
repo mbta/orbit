@@ -341,8 +341,16 @@ defmodule Orbit.Ocs.EntitiesTest do
         consist_tags: ["D", "N"],
         car_tags: [
           %Message.TschTagMessage.CarTag{
-            car_number: "1235",
+            car_number: "1237",
             tag: "D"
+          },
+          %Message.TschTagMessage.CarTag{
+            car_number: "1238",
+            tag: "D"
+          },
+          %Message.TschTagMessage.CarTag{
+            car_number: "1239",
+            tag: nil
           }
         ]
       }
@@ -356,8 +364,8 @@ defmodule Orbit.Ocs.EntitiesTest do
           service_date: @test_service_date,
           rail_line: :red,
           tags: ["D", "N"],
-          cars: ["1234", "1235", "1236"],
-          car_tags: ["", "D", ""]
+          cars: ["1237", "1238", "1239"],
+          car_tags: ["D", "D", ""]
         )
 
       assert %Train{
