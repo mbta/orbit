@@ -93,7 +93,7 @@ defmodule Orbit.Ocs.EntitiesServer do
       DateTime.diff(DateTime.utc_now(), state.last_push_to_subscriptions, :second)
 
     if time_since_last_push < @throttle_seconds do
-      Logger.debug("#{__MODULE__} : Push throttled : (#{time_since_last_push}s since last push)")
+      Logger.debug("#{__MODULE__} push_throttled time_since_last_push_s=#{time_since_last_push}")
       state
     else
       push(state)
@@ -112,7 +112,7 @@ defmodule Orbit.Ocs.EntitiesServer do
         }
     }
 
-    Logger.info("#{__MODULE__} : Pushing to all subscribers")
+    Logger.info("#{__MODULE__} : push_to_all_subscribers")
 
     Enum.each(state.subscriptions, fn pid ->
       send(pid, {:new_data, :ocs_trips, state.out})
