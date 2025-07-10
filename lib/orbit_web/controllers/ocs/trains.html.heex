@@ -1,0 +1,30 @@
+<p>Today's OCS trains</p>
+{length(@trains)} record{(length(@trains) != 1 && "s") || ""}
+<table class="mt-3">
+  <tr>
+    <th>id</th>
+    <th>service_date</th>
+    <th>rail_line</th>
+    <th>uid</th>
+    <th>tags</th>
+    <th>cars</th>
+    <th>car_tags</th>
+    <th>deleted</th>
+    <th>inserted_at</th>
+    <th>updated_at</th>
+  </tr>
+  <%= for train <- @trains do %>
+    <tr>
+      <td>{train.id}</td>
+      <td>{train.service_date}</td>
+      <td>{train.rail_line}</td>
+      <td>{train.uid}</td>
+      <td>{train.tags}</td>
+      <td>{(train.cars != nil && Enum.join(train.cars, ",")) || ""}</td>
+      <td>{train.car_tags}</td>
+      <td>{train.deleted}</td>
+      <td>{train.inserted_at}</td>
+      <td>{train.updated_at}</td>
+    </tr>
+  <% end %>
+</table>

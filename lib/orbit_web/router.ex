@@ -53,6 +53,12 @@ defmodule OrbitWeb.Router do
     ])
   end
 
+  pipeline :require_group_orbit_tid_staff do
+    plug(OrbitWeb.Plugs.RequireGroup, [
+      OrbitWeb.Auth.Groups.orbit_tid_staff()
+    ])
+  end
+
   scope "/", OrbitWeb do
     pipe_through :accepts_html
 
@@ -103,6 +109,15 @@ defmodule OrbitWeb.Router do
     get "/admin/rfid", Admin.AdminController, :get_rfid
     post "/admin/rfid", Admin.AdminController, :post_rfid
     delete "/admin/rfid", Admin.AdminController, :delete_rfid
+  end
+
+  scope "/", OrbitWeb do
+    pipe_through :accepts_html
+    pipe_through :authenticated
+    pipe_through :require_group_orbit_tid_staff
+
+    get "/ocs/trips", OcsController, :trips
+    get "/ocs/trains", OcsController, :trains
   end
 
   scope "/", OrbitWeb do
