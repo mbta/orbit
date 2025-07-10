@@ -11,8 +11,8 @@ defmodule Orbit.Ocs.Message.TschTagMessage do
           transitline: Orbit.Ocs.TransitLine.t(),
           trip_uid: String.t(),
           train_uid: String.t(),
-          consist_tags: list(String.t()),
-          car_tags: list(CarTag.t())
+          consist_tags: [String.t()],
+          car_tags: [CarTag.t()]
         }
 end
 

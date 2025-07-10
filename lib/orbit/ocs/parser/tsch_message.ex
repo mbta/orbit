@@ -226,7 +226,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  @spec parse_tags(binary()) :: list(String.t())
+  @spec parse_tags(binary()) :: [String.t()]
   def parse_tags(str) do
     str
     |> String.graphemes()
