@@ -33,30 +33,6 @@ defmodule Realtime.RTRTest do
              ]
     end
 
-    test "correctly parses 15xx trains as 25xx", context do
-      vp =
-        Enum.filter(context[:vehicle_positions][:entities], fn vp ->
-          vp.timestamp == ~U[2025-04-23 16:03:10Z]
-        end)
-
-      assert vp == [
-               %Realtime.Data.VehiclePosition{
-                 route_id: :Red,
-                 direction: 1,
-                 label: "2503",
-                 cars: ["1756", "1757", "1705", "1704", "2502", "2503"],
-                 position: %Util.Position{latitude: 42.20749, longitude: -71.00156},
-                 heading: 10.0,
-                 station_id: "place-brntn",
-                 stop_id: "Braintree-01",
-                 current_status: :STOPPED_AT,
-                 timestamp: ~U[2025-04-23 16:03:10Z],
-                 vehicle_id: "R-5482AB81",
-                 trip_id: "ADDED-1582322141"
-               }
-             ]
-    end
-
     test "parses multiple vehicle_position entities into individual structs", context do
       assert %{
                timestamp: _time,

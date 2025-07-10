@@ -27,26 +27,12 @@ defmodule Realtime.RTR do
   @spec parse_vehicle_position(map()) :: VehiclePosition.t()
   def parse_vehicle_position(entity_json) do
     vehicle = entity_json["vehicle"]
-    route_id = Realtime.Data.route_id_from_string(vehicle["trip"]["route_id"])
-    cars = parse_cars(vehicle["multi_carriage_details"])
 
     %VehiclePosition{
-      route_id: route_id,
+      route_id: Realtime.Data.route_id_from_string(vehicle["trip"]["route_id"]),
       direction: vehicle["trip"]["direction_id"],
-      label:
-        if route_id == :Red do
-          String.replace_prefix(vehicle["vehicle"]["label"], "15", "25")
-        else
-          vehicle["vehicle"]["label"]
-        end,
-      cars:
-        if route_id == :Red do
-          Enum.map(cars, fn car ->
-            String.replace_prefix(car, "15", "25")
-          end)
-        else
-          cars
-        end,
+      label: vehicle["vehicle"]["label"],
+      cars: parse_cars(vehicle["multi_carriage_details"]),
       position: parse_position(vehicle["position"]),
       heading: vehicle["position"]["bearing"],
       station_id: Realtime.Data.Stations.platforms_to_stations()[vehicle["stop_id"]],

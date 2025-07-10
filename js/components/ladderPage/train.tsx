@@ -26,6 +26,11 @@ export const Train = ({
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   const orientation = forceDirection == 0 ? "right-0" : "left-0";
+  const label = vehicle.vehiclePosition.label;
+  const displayLabel =
+    vehicle.vehiclePosition.routeId === "Red" && label.startsWith("15") ?
+      "2" + label.slice(1)
+    : label;
   return (
     <div className="relative">
       {/* train label */}
@@ -45,7 +50,7 @@ export const Train = ({
         }}
         disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
       >
-        {vehicle.vehiclePosition.label}
+        {displayLabel}
 
         {/* line that connects to dot */}
         <div
