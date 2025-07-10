@@ -5,7 +5,6 @@ import {
 } from "../../groups";
 import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
-import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
