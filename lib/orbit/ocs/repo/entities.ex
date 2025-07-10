@@ -179,27 +179,10 @@ defmodule Orbit.Ocs.Entities do
     service_date = service_date(message.timestamp)
     rail_line = RailLine.from_ocs_transitline(message.transitline)
 
-    cars =
-      if consist =
-           query_consist(
-             service_date: service_date,
-             uid: message.train_uid,
-             rail_line: rail_line
-           ) do
-        consist
-      else
-        Logger.warning(
-          "TSCH TAG received for train #{message.train_uid} with no prior stored consist"
-        )
-
-        # Just assume the consist that came with the tags is correct
-        Enum.map(message.car_tags, & &1.car_number)
-      end
-
-    # Get list of tags sorted in order of car number, using empty strings for cases
-    # where cars do not have tags
-    ordered_tags =
-      Enum.map(cars, &tag_for_car(&1, message.car_tags))
+    # We assume that a TSCH_TAG message contains the canonical ordering of car numbers,
+    # ie we can safely overwrite any existing consist
+    cars = Enum.map(message.car_tags, fn %{car_number: car_number} -> car_number end)
+    car_tags = Enum.map(message.car_tags, fn %{tag: tag} -> tag || "" end)
 
     # Apply tags to train
     train_result =
@@ -207,12 +190,13 @@ defmodule Orbit.Ocs.Entities do
         service_date: service_date,
         uid: message.train_uid,
         rail_line: rail_line,
-        car_tags: ordered_tags,
+        cars: cars,
+        car_tags: car_tags,
         tags: message.consist_tags
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: {:replace, [:car_tags, :tags]},
+        on_conflict: {:replace, [:cars, :car_tags, :tags]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -220,16 +204,6 @@ defmodule Orbit.Ocs.Entities do
       assign_train_to_trip(service_date, rail_line, message.trip_uid, message.train_uid)
 
     [train_result, trip_result]
-  end
-
-  @spec tag_for_car(String.t(), [TschTagMessage.CarTag.t()]) :: String.t()
-  defp tag_for_car(car_number, car_tags) do
-    case Enum.find(car_tags, fn car_tag ->
-           car_tag.car_number == car_number
-         end) do
-      %{tag: tag} -> tag
-      nil -> ""
-    end
   end
 
   @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t()) ::
@@ -252,16 +226,5 @@ defmodule Orbit.Ocs.Entities do
   @spec service_date(DateTime.t()) :: Date.t()
   defp service_date(date_time) do
     DateTime.to_date(date_time)
-  end
-
-  @spec query_consist(Keyword.t()) :: [String.t()] | nil
-  defp query_consist(train_query_params) do
-    with train <- Repo.get_by(Train, train_query_params),
-         false <- is_nil(train) do
-      train.cars
-    else
-      _ ->
-        nil
-    end
   end
 end

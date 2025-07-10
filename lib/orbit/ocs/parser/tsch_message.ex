@@ -216,11 +216,15 @@ defmodule Orbit.Ocs.Parser.TschMessage do
       consist_tags: parse_tags(consist_tags),
       car_tags:
         Stream.map(car_tags, &String.split_at(&1, 1))
-        |> Stream.reject(fn {tag, _} -> tag == " " end)
         |> Enum.map(fn {tag, car_id} ->
           %Orbit.Ocs.Message.TschTagMessage.CarTag{
             car_number: Orbit.Ocs.Parser.convert_ocs_car_number(transitline, car_id),
-            tag: tag
+            tag:
+              if tag == " " do
+                nil
+              else
+                tag
+              end
           }
         end)
     }
