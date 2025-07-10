@@ -22,6 +22,10 @@ export const stopStatusFromData = (data: StopStatusData): StopStatus => {
   }
 };
 
+export const processLabel = (label: CarId): CarId => {
+  return label.startsWith("15") ? "2" + label.slice(1) : label;
+};
+
 export const VehiclePositionData = z.object({
   route_id: z.string(),
   direction: z.number(),
@@ -60,8 +64,8 @@ export const vehiclePositionFromData = (
 ): VehiclePosition => ({
   routeId: data.route_id,
   directionId: data.direction,
-  label: data.label,
-  cars: data.cars,
+  label: processLabel(data.label),
+  cars: data.cars.map((label) => processLabel(label)),
   stationId: data.station_id,
   stopId: data.stop_id,
   stopStatus: stopStatusFromData(data.current_status),
