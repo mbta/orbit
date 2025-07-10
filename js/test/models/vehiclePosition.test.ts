@@ -76,36 +76,4 @@ describe("vehiclePositionFromData", () => {
       tripId: "68077971",
     });
   });
-
-  test("parses 15xx trains as 25xx from raw data", () => {
-    expect(
-      vehiclePositionFromData({
-        route_id: "Red",
-        direction: 0,
-        label: "1566",
-        cars: ["1566", "1567", "1877", "1876", "1839", "1838"],
-        position: { latitude: 42.37469, longitude: -71.11877 },
-        heading: 350,
-        station_id: "place-portr",
-        stop_id: "70065",
-        current_status: "INCOMING_AT",
-        timestamp: "2025-04-29T20:39:49Z",
-        vehicle_id: "R-5482AC4E",
-        trip_id: "68077971",
-      }),
-    ).toEqual({
-      routeId: "Red",
-      directionId: Direction.Southbound,
-      label: "2566",
-      cars: ["2566", "2567", "1877", "1876", "1839", "1838"],
-      position: { latitude: 42.37469, longitude: -71.11877 },
-      heading: 350,
-      stationId: "place-portr",
-      stopId: "70065",
-      stopStatus: StopStatus.InTransitTo,
-      timestamp: dateTimeFromISO("2025-04-29T20:39:49Z"),
-      vehicleId: "R-5482AC4E",
-      tripId: "68077971",
-    });
-  });
 });
