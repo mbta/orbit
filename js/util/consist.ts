@@ -1,25 +1,25 @@
 import { CarId, DirectionId, RouteId } from "../models/common";
 
-export const remapTrainLabels = (cars: CarId[]) => {
-  return cars.map((car) => {
-    return car.startsWith("15") ? "2" + car.slice(1) : car;
-  });
+export const remapLabel = (car: CarId, routeId: RouteId) => {
+  return routeId === "Red" && car.startsWith("15") ? "2" + car.slice(1) : car;
 };
 
-export const reorderAndRemap = (
+export const remapLabels = (cars: CarId[], routeId: RouteId) => {
+  return cars.map((car) => remapLabel(car, routeId));
+};
+
+export const reorder = (
   label: CarId,
   consist: CarId[],
   direction_id: DirectionId,
-  route_id?: RouteId | null,
 ) => {
   const expectedLeadIndex = direction_id === 0 ? 0 : consist.length - 1;
   const expectedLastIndex = direction_id === 0 ? consist.length - 1 : 0;
 
-  let processedConsist = [];
   if (label === consist[expectedLeadIndex]) {
-    processedConsist = consist;
+    return consist;
   } else if (label === consist[expectedLastIndex]) {
-    processedConsist = [...consist].reverse();
+    return [...consist].reverse();
   } else {
     console.error(
       `vehicle label ${label} is not the lead car in consist`,
@@ -27,7 +27,4 @@ export const reorderAndRemap = (
     );
     return consist;
   }
-  return route_id === "Red" ?
-      remapTrainLabels(processedConsist)
-    : processedConsist;
 };

@@ -5,6 +5,7 @@ import {
 } from "../../groups";
 import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
+import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
@@ -27,10 +28,7 @@ export const Train = ({
 }): ReactElement => {
   const orientation = forceDirection == 0 ? "right-0" : "left-0";
   const label = vehicle.vehiclePosition.label;
-  const displayLabel =
-    vehicle.vehiclePosition.routeId === "Red" && label.startsWith("15") ?
-      "2" + label.slice(1)
-    : label;
+  const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
   return (
     <div className="relative">
       {/* train label */}
