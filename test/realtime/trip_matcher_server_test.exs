@@ -1,5 +1,5 @@
 defmodule Realtime.TripMatcherServerTest do
-  use ExUnit.Case
+  use Orbit.DataCase
 
   alias Orbit.Vehicle
   alias Realtime.PollingServer

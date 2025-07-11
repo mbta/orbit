@@ -254,6 +254,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   consist_tags: ["B", "D", "K", "E", "T"],
                   car_tags: [
                     %CarTag{tag: "D", car_number: "1707"},
+                    %CarTag{tag: nil, car_number: "1706"},
                     %CarTag{tag: "K", car_number: "1623"},
                     %CarTag{tag: "E", car_number: "1622"},
                     %CarTag{tag: "E", car_number: "1511"},
@@ -290,6 +291,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
                   consist_tags: ["B", "D", "K", "E", "T"],
                   car_tags: [
                     %CarTag{tag: "D", car_number: "1707"},
+                    %CarTag{tag: nil, car_number: "1706"},
                     %CarTag{tag: "K", car_number: "1623"},
                     %CarTag{tag: "E", car_number: "1622"},
                     %CarTag{tag: "E", car_number: "1511"},

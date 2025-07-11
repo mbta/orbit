@@ -1,7 +1,9 @@
 defmodule Orbit.Ocs.MessageHandler do
   require Logger
 
+  alias Orbit.Ocs.EntitiesServer
   alias Orbit.Ocs.Message
+  alias Orbit.Ocs.SplunkFormatter
 
   @expired_seconds 86_400
 
@@ -10,7 +12,7 @@ defmodule Orbit.Ocs.MessageHandler do
           current_time :: DateTime.t()
         ) :: :ok
   def handle_messages(raw_messages, current_time) do
-    _parsed_messages =
+    parsed_messages =
       raw_messages
       |> Enum.flat_map(fn raw_message ->
         Logger.info("raw_ocs_message #{raw_message}")
@@ -24,7 +26,7 @@ defmodule Orbit.Ocs.MessageHandler do
         end
       end)
 
-    # TODO: Write trip changes to database
+    EntitiesServer.new_messages(parsed_messages)
 
     :ok
   end
@@ -34,6 +36,7 @@ defmodule Orbit.Ocs.MessageHandler do
   defp parse(raw_message, current_time) do
     case Orbit.Ocs.Parser.parse(raw_message, current_time) do
       {:ok, %{transitline: transitline} = message} when transitline in [:red, :orange, :blue] ->
+        Logger.info(SplunkFormatter.format(message))
         {:ok, message}
 
       {:ok, _other} ->

@@ -21,6 +21,6 @@ defmodule Orbit.Ocs.Message.TschTagMessage.CarTag do
 
   @type t :: %__MODULE__{
           car_number: String.t(),
-          tag: String.t()
+          tag: String.t() | nil
         }
 end
