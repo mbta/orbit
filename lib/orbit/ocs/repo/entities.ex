@@ -36,13 +36,6 @@ defmodule Orbit.Ocs.Entities do
     Repo.all(from(trip in Trip, where: trip.service_date == ^service_date))
   end
 
-  @spec ecto_safe(DateTime.t()) :: DateTime.t()
-  defp ecto_safe(datetime) do
-    datetime
-    |> DateTime.shift_zone!("Etc/UTC")
-    |> DateTime.truncate(:second)
-  end
-
   @spec apply_changes(Message.t()) :: [{:ok, any} | {:error, any()}]
   def apply_changes(%TschNewMessage{} = message) do
     %Trip{
@@ -53,8 +46,8 @@ defmodule Orbit.Ocs.Entities do
       route: message.ocs_route_id,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       trip_type: message.trip_type,
-      scheduled_departure: message.sched_dep && ecto_safe(message.sched_dep),
-      scheduled_arrival: message.sched_arr && ecto_safe(message.sched_arr),
+      scheduled_departure: message.sched_dep && Util.Time.to_ecto_utc(message.sched_dep),
+      scheduled_arrival: message.sched_arr && Util.Time.to_ecto_utc(message.sched_arr),
       origin_station: message.origin_sta,
       destination_station: message.dest_sta
     }
