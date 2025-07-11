@@ -110,6 +110,10 @@ defmodule Realtime.TripMatcherServer do
         state.in.ocs_trips.entities
       )
 
+    TripMatcher.statistics(new_vehicles)
+    |> TripMatcher.statistics_log_line()
+    |> Logger.info()
+
     # We use the vehicle position timestamp as the overall timestamp, as that's
     # the most clear indicator of data age
     new_timestamp = state.in.vehicle_positions.timestamp

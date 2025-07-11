@@ -128,7 +128,10 @@ defmodule Orbit.Factory do
     %Orbit.Vehicle{
       position: build(:vehicle_position),
       trip_update: build(:trip_update),
-      ocs_trips: []
+      ocs_trips: %{
+        current: nil,
+        next: []
+      }
     }
   end
 
@@ -151,7 +154,14 @@ defmodule Orbit.Factory do
     %Orbit.Ocs.Trip{
       service_date: ~D[2025-07-08],
       rail_line: :red,
-      uid: "12345678"
+      uid: "12345678",
+      scheduled_departure: ~U[2025-07-10 16:00:00Z],
+      scheduled_arrival: ~U[2025-07-10 17:00:00Z],
+      origin_station: "place-asmnl",
+      destination_station: "place-alfcl",
+      route: "Red",
+      offset: 4,
+      train_uid: "TRAIN_UID"
     }
   end
 
