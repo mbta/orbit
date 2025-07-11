@@ -44,7 +44,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
       records
       |> Stream.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
-      |> Stream.filter(&is_ocs_message?/1)
+      |> Stream.filter(&ocs_message?/1)
       |> Enum.map(&unwrap_ocs_data/1)
 
     Orbit.Ocs.MessageHandler.handle_messages(event_records, now)
@@ -87,14 +87,14 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     |> List.wrap()
   end
 
-  @spec is_ocs_message?(map) :: boolean()
-  defp is_ocs_message?(message)
+  @spec ocs_message?(map) :: boolean()
+  defp ocs_message?(message)
 
-  defp is_ocs_message?(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => _}}) do
+  defp ocs_message?(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => _}}) do
     true
   end
 
-  defp is_ocs_message?(other) do
+  defp ocs_message?(other) do
     Logger.warning("Orbit.Ocs.Stream.Pipeline unexpected_cloud_event=#{inspect(other)}")
     false
   end
