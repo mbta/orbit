@@ -38,6 +38,15 @@ defmodule Orbit.Ocs.Entities do
 
   @spec apply_changes(Message.t()) :: [{:ok, any} | {:error, any()}]
   def apply_changes(%TschNewMessage{} = message) do
+    # A note about upserts:
+    #
+    # We generally don't expect to receive multiple TSCH_NEW messages for the same
+    # Trip UID within a service date and rail line. However, under some scenarios, such as
+    # after application downtime, or while testing locally, it is possible for Orbit to
+    # receive repeat messages from Kinesis that were already processed in the DB.
+    #
+    # Since OCS messages are generally considered idempotent, we assume there is no harm
+    # in allowing TSCH_NEW messages to replay and replace prior rows.
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -52,7 +61,10 @@ defmodule Orbit.Ocs.Entities do
       destination_station: message.dest_sta
     }
     |> Trip.changeset()
-    |> Repo.insert()
+    |> Repo.insert(
+      on_conflict: :replace_all,
+      conflict_target: [:service_date, :uid, :rail_line]
+    )
     |> List.wrap()
   end
 

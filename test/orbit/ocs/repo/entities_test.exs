@@ -48,12 +48,12 @@ defmodule Orbit.Ocs.EntitiesTest do
   end
 
   describe("apply_changes") do
-    test "inserts trip for TSCH_NEW" do
+    test "upserts trip for TSCH_NEW" do
       message = %Message.TschNewMessage{
         counter: 111,
         timestamp: @test_datetime,
         transitline: :red,
-        trip_uid: "TRIP_UID_2",
+        trip_uid: "TRIP_UID",
         add_type: "ADD_TYPE",
         trip_type: "TRIP_TYPE",
         sched_dep: @test_datetime,
@@ -70,14 +70,14 @@ defmodule Orbit.Ocs.EntitiesTest do
       queried =
         Repo.get_by!(
           Trip,
-          uid: "TRIP_UID_2",
+          uid: "TRIP_UID",
           service_date: @test_service_date,
           rail_line: :red
         )
 
       assert %Trip{
                service_date: @test_service_date,
-               uid: "TRIP_UID_2",
+               uid: "TRIP_UID",
                train_uid: nil,
                prev_uid: "PREV_TRIP_UID",
                next_uid: "NEXT_TRIP_UID",
