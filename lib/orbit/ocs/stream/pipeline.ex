@@ -136,12 +136,12 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     with stream_name when not is_nil(stream_name) <- get_stream_name(),
          stream_state when not is_nil(stream_state) <- load_stream_state(stream_name),
          false <- expired?(stream_state, midnight) do
-      Logger.info("Will resume OCS Kinesis stream from #{stream_state.resume_position}")
+      Logger.info("ocs_kinesis_start sequence=#{stream_state.resume_position}")
 
       {:after_sequence_number, stream_state.resume_position}
     else
       _ ->
-        Logger.info("Will begin OCS Kinesis stream from timestamp #{midnight}")
+        Logger.info("ocs_kinesis_start timestamp=#{midnight}")
         {:at_timestamp, midnight}
     end
   end
@@ -151,7 +151,7 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     stream_state = Repo.get_by(KinesisStreamState, stream_name: stream_name)
 
     if stream_state == nil do
-      Logger.warning("No prior state saved for OCS Kinesis stream #{stream_name}")
+      Logger.warning("ocs_kinesis_start stream_name=#{stream_name} : No prior sequence stored")
     end
 
     stream_state
@@ -162,7 +162,9 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     expired = :gt == DateTime.compare(cutoff, timestamp)
 
     if expired do
-      Logger.warning("Last OCS Kinesis timestamp #{timestamp} is older than cutoff #{cutoff}.")
+      Logger.warning(
+        "ocs_kinesis_start last_timestamp=#{timestamp} cutoff=#{cutoff} : Last timestamp is older than cutoff"
+      )
     end
 
     expired
