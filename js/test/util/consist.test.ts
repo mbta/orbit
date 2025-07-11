@@ -1,4 +1,4 @@
-import { reorder } from "../../util/consist";
+import { remapLabels, reorder } from "../../util/consist";
 
 describe("reorder", () => {
   test("correctly orders southbound consists", () => {
@@ -72,5 +72,14 @@ describe("reorder", () => {
       "vehicle label 1806 is not the lead car in consist",
       consist,
     );
+  });
+});
+
+describe("remapLabels", () => {
+  test("correctly remaps RL 15xx to 25xx", () => {
+    const consist = ["1742", "1743", "1518", "1519"];
+    const remappedConsist = remapLabels(consist, "Red");
+
+    expect(remappedConsist).toStrictEqual(["1742", "1743", "2518", "2519"]);
   });
 });

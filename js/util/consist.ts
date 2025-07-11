@@ -1,4 +1,12 @@
-import { CarId, DirectionId } from "../models/common";
+import { CarId, DirectionId, RouteId } from "../models/common";
+
+export const remapLabel = (car: CarId, routeId: RouteId) => {
+  return routeId === "Red" && car.startsWith("15") ? "2" + car.slice(1) : car;
+};
+
+export const remapLabels = (cars: CarId[], routeId: RouteId) => {
+  return cars.map((car) => remapLabel(car, routeId));
+};
 
 export const reorder = (
   label: CarId,
