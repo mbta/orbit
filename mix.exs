@@ -53,7 +53,7 @@ defmodule Orbit.MixProject do
       {:ex_aws_rds, "== 2.0.2"},
       {:ex_aws_s3, "== 2.5.7"},
       {:ex_machina, "== 2.8.0", only: :test},
-      {:fast_local_datetime, "~> 1.0.0"},
+      {:fast_local_datetime, "== 1.0.1"},
       {:floki, "== 0.38.0", only: :test},
       {:geocalc, "== 0.8.5"},
       {:guardian, "== 2.3.2"},
