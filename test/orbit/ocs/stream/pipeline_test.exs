@@ -9,8 +9,15 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
   alias Orbit.Ocs.Stream.Producer
   alias Orbit.Repo
 
+  @test_timezone Application.compile_env(:orbit, :timezone)
   @test_service_date Date.new!(2025, 7, 2)
+  @test_service_date_midnight DateTime.new!(
+                                @test_service_date,
+                                ~T[00:00:00],
+                                @test_timezone
+                              )
   @test_datetime_utc DateTime.from_iso8601("2025-07-02T20:48:00Z") |> elem(1)
+
   @test_old_datetime_utc DateTime.from_iso8601("2025-07-01T20:48:00Z") |> elem(1)
   @test_stream_name "test-stream-name"
 
@@ -40,7 +47,7 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
             assert opts[:name] == :ocs_pipeline
             {Producer, producer_opts} = opts[:producer][:module]
             %{resume_position: resume_position} = producer_opts[:state]
-            assert resume_position == {:at_timestamp, ~U[2025-07-02 04:00:00.000Z]}
+            assert resume_position == {:at_timestamp, @test_service_date_midnight}
 
             true
           end)
@@ -90,7 +97,7 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
             assert opts[:name] == :ocs_pipeline
             {Producer, producer_opts} = opts[:producer][:module]
             %{resume_position: resume_position} = producer_opts[:state]
-            assert resume_position == {:at_timestamp, ~U[2025-07-02 04:00:00.000Z]}
+            assert resume_position == {:at_timestamp, @test_service_date_midnight}
 
             true
           end)

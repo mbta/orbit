@@ -124,18 +124,25 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position()
   defp load_resume_position do
-    cutoff = start_of_service_date()
+    # Use midnight of current service date as cutoff for determining if the
+    # prior Kinesis resume position is relevant
+    midnight =
+      DateTime.new!(
+        Util.Time.current_service_date(),
+        ~T[00:00:00],
+        Util.Time.current_timezone()
+      )
 
     with stream_name when not is_nil(stream_name) <- get_stream_name(),
          stream_state when not is_nil(stream_state) <- load_stream_state(stream_name),
-         false <- expired?(stream_state, cutoff) do
+         false <- expired?(stream_state, midnight) do
       Logger.info("Will resume OCS Kinesis stream from #{stream_state.resume_position}")
 
       {:after_sequence_number, stream_state.resume_position}
     else
       _ ->
-        Logger.info("Will begin OCS Kinesis stream from timestamp #{cutoff}")
-        {:at_timestamp, cutoff}
+        Logger.info("Will begin OCS Kinesis stream from timestamp #{midnight}")
+        {:at_timestamp, midnight}
     end
   end
 
@@ -152,22 +159,13 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   @spec expired?(KinesisStreamState.t(), DateTime.t()) :: boolean()
   defp expired?(%KinesisStreamState{last_message_timestamp: timestamp}, cutoff) do
-    expired = :gt == DateTime.compare(start_of_service_date(), timestamp)
+    expired = :gt == DateTime.compare(cutoff, timestamp)
 
     if expired do
       Logger.warning("Last OCS Kinesis timestamp #{timestamp} is older than cutoff #{cutoff}.")
     end
 
     expired
-  end
-
-  defp start_of_service_date do
-    Util.Time.current_service_date()
-    |> DateTime.new!(
-      ~T[00:00:00.000],
-      Util.Time.current_timezone()
-    )
-    |> DateTime.shift_zone!("Etc/UTC")
   end
 
   @spec persist_resume_position(String.t(), DateTime.t()) :: :ok
