@@ -5,6 +5,7 @@ import {
 } from "../../groups";
 import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
+import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
@@ -26,6 +27,8 @@ export const Train = ({
   setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
 }): ReactElement => {
   const orientation = forceDirection == 0 ? "right-0" : "left-0";
+  const label = vehicle.vehiclePosition.label;
+  const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
   return (
     <div className="relative">
       {/* train label */}
@@ -45,7 +48,7 @@ export const Train = ({
         }}
         disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
       >
-        {vehicle.vehiclePosition.label}
+        {displayLabel}
 
         {/* line that connects to dot */}
         <div

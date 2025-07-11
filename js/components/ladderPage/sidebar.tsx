@@ -2,7 +2,7 @@ import { getNameForId } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
-import { reorder } from "../../util/consist";
+import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
 
@@ -19,6 +19,7 @@ export const SideBar = ({
 }): ReactElement => {
   const vp = selection.vehicle.vehiclePosition;
   const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
+  const processedConsist = remapLabels(consist, vp.routeId);
   const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
     <aside className="fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
@@ -29,7 +30,7 @@ export const SideBar = ({
         <img src="/images/close.svg" alt="Close" />
       </button>
       <div className="mt-14 px-4 flex">
-        {consist.map((label, index) => (
+        {processedConsist.map((label, index) => (
           <div
             key={index}
             className={className([
