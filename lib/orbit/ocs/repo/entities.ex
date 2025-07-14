@@ -81,7 +81,7 @@ defmodule Orbit.Ocs.Entities do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: {:replace, [:cars]},
+        on_conflict: {:replace, [:cars, :updated_at]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -124,7 +124,8 @@ defmodule Orbit.Ocs.Entities do
          [
            :destination_station,
            :route,
-           :scheduled_arrival
+           :scheduled_arrival,
+           :updated_at
          ]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
@@ -140,7 +141,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:deleted]},
+      on_conflict: {:replace, [:deleted, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -157,7 +158,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:prev_uid, :next_uid]},
+      on_conflict: {:replace, [:prev_uid, :next_uid, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -172,7 +173,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:offset]},
+      on_conflict: {:replace, [:offset, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -199,7 +200,7 @@ defmodule Orbit.Ocs.Entities do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: {:replace, [:cars, :car_tags, :tags]},
+        on_conflict: {:replace, [:cars, :car_tags, :tags, :updated_at]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -221,7 +222,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:train_uid]},
+      on_conflict: {:replace, [:train_uid, :updated_at]},
       conflict_target: [:service_date, :uid, :rail_line]
     )
   end
