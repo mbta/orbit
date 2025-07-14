@@ -7,6 +7,11 @@ defmodule Realtime.TripMatcher do
 
   @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()]) :: [Vehicle.t()]
   def match_trips(vehicle_positions, trip_updates, ocs_trips) do
+    ocs_trips_by_uid =
+      Enum.reduce(ocs_trips, %{}, fn trip, map ->
+        Map.put(map, trip.uid, trip)
+      end)
+
     Enum.map(vehicle_positions, fn vp ->
       vehicle_id =
         case vp.vehicle_id do
@@ -20,18 +25,22 @@ defmodule Realtime.TripMatcher do
           trip_update.trip_id == vp.trip_id
         end)
 
-      ocs_current_and_next =
-        Enum.reduce(ocs_trips, %{current: nil, next: []}, fn trip, acc ->
-          if trip.train_uid == vehicle_id do
-            # credo:disable-for-next-line
-            case acc.current do
-              nil -> %{current: trip, next: acc.next}
-              _ -> %{current: acc.current, next: [trip | acc.next]}
-            end
-          else
-            acc
-          end
+      # Find the most recently assigned trip for this train
+      current_trip =
+        Enum.filter(ocs_trips, fn trip ->
+          trip.train_uid == vehicle_id && trip.assigned_at != nil
         end)
+        |> Enum.max_by(
+          fn trip -> trip.assigned_at end,
+          # Use default compare function provided by DateTime
+          DateTime,
+          # If there are no assigned trips (empty list), current trip should be nil
+          fn -> nil end
+        )
+
+      next = trip_chain(ocs_trips_by_uid, vehicle_id, current_trip && current_trip.next_uid)
+
+      ocs_current_and_next = %{current: current_trip, next: next}
 
       %Vehicle{
         position: vp,
@@ -39,6 +48,26 @@ defmodule Realtime.TripMatcher do
         ocs_trips: ocs_current_and_next
       }
     end)
+  end
+
+  # Look up the trip with the given start trip UID, and return the possible chain of
+  # next trips from that trip onward for the given train UID.
+  @spec trip_chain(%{String.t() => Trip.t()}, String.t(), String.t() | nil) :: [Trip.t()]
+  defp trip_chain(trips_by_uid, train_uid, start_trip_uid)
+
+  defp trip_chain(_trips_by_uid, _train_uid, nil) do
+    []
+  end
+
+  defp trip_chain(trips_by_uid, train_uid, next_trip_uid) do
+    with trip when not is_nil(trip) <- Map.get(trips_by_uid, next_trip_uid),
+         # Check that trip isn't assigned to other train
+         true <- trip.train_uid == nil || trip.train_uid == train_uid do
+      [trip | trip_chain(trips_by_uid, train_uid, trip.next_uid)]
+    else
+      _ ->
+        []
+    end
   end
 
   @spec statistics([Vehicle.t()]) :: map()

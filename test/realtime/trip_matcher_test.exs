@@ -10,7 +10,10 @@ defmodule Realtime.TripMatcherTest do
   alias Realtime.TripMatcher
 
   describe "OCS" do
-    test "matches a VehiclePosition to an OCS trip on vehicle_id (train_uid)" do
+    @test_datetime DateTime.from_iso8601("2025-07-02T20:48:00Z") |> elem(1)
+    @test_datetime_plus_1m DateTime.from_iso8601("2025-07-02T20:49:00Z") |> elem(1)
+
+    test "matches a VehiclePosition to an OCS trip on vehicle_id (train_uid) with latest assigned_at" do
       assert [
                %Vehicle{
                  ocs_trips: %{
@@ -37,13 +40,23 @@ defmodule Realtime.TripMatcherTest do
                  [
                    %Trip{
                      train_uid: "5483E6C7",
+                     assigned_at: @test_datetime,
+                     uid: "1234FFAB"
+                   },
+                   %Trip{
+                     train_uid: "5483E6C7",
+                     assigned_at: @test_datetime_plus_1m,
                      uid: "1234FFAC"
+                   },
+                   %Trip{
+                     train_uid: "OTHER_TRAIN_UID",
+                     uid: "1234FFAE"
                    }
                  ]
                )
     end
 
-    test "finds other OCS trips by vehicle_id (train_uid)" do
+    test "finds chain of next OCS trips by following current trip's next_uid" do
       assert [
                %Vehicle{
                  position: %VehiclePosition{},
@@ -54,11 +67,52 @@ defmodule Realtime.TripMatcherTest do
                    },
                    next: [
                      %Trip{
-                       train_uid: "5483E6C7",
-                       uid: "1234FFAE"
+                       uid: "1234FFAD"
                      },
                      %Trip{
-                       train_uid: "5483E6C7",
+                       uid: "1234FFAE"
+                     }
+                   ]
+                 }
+               }
+             ] =
+               Realtime.TripMatcher.match_trips(
+                 [
+                   %VehiclePosition{
+                     vehicle_id: "R-5483E6C7",
+                     trip_id: "69349212"
+                   }
+                 ],
+                 [],
+                 [
+                   %Trip{
+                     train_uid: "5483E6C7",
+                     assigned_at: @test_datetime,
+                     uid: "1234FFAC",
+                     next_uid: "1234FFAD"
+                   },
+                   %Trip{
+                     uid: "1234FFAE"
+                   },
+                   %Trip{
+                     uid: "1234FFAD",
+                     next_uid: "1234FFAE"
+                   }
+                 ]
+               )
+    end
+
+    test "ends next trip chain if other vehicle is assigned" do
+      assert [
+               %Vehicle{
+                 position: %VehiclePosition{},
+                 ocs_trips: %{
+                   current: %Trip{
+                     train_uid: "5483E6C7",
+                     uid: "1234FFAC"
+                   },
+                   next: [
+                     %Trip{
                        uid: "1234FFAD"
                      }
                    ]
@@ -76,15 +130,57 @@ defmodule Realtime.TripMatcherTest do
                  [
                    %Trip{
                      train_uid: "5483E6C7",
+                     assigned_at: @test_datetime,
+                     uid: "1234FFAC",
+                     next_uid: "1234FFAD"
+                   },
+                   %Trip{
+                     train_uid: "OTHER_VEHICLE_ID",
+                     uid: "1234FFAE"
+                   },
+                   %Trip{
+                     uid: "1234FFAD",
+                     next_uid: "1234FFAE"
+                   }
+                 ]
+               )
+    end
+
+    test "ends next trip chain if a trip is missing" do
+      assert [
+               %Vehicle{
+                 position: %VehiclePosition{},
+                 ocs_trips: %{
+                   current: %Trip{
+                     train_uid: "5483E6C7",
                      uid: "1234FFAC"
                    },
+                   next: [
+                     %Trip{
+                       uid: "1234FFAD"
+                     }
+                   ]
+                 }
+               }
+             ] =
+               Realtime.TripMatcher.match_trips(
+                 [
+                   %VehiclePosition{
+                     vehicle_id: "R-5483E6C7",
+                     trip_id: "69349212"
+                   }
+                 ],
+                 [],
+                 [
                    %Trip{
                      train_uid: "5483E6C7",
-                     uid: "1234FFAD"
+                     assigned_at: @test_datetime,
+                     uid: "1234FFAC",
+                     next_uid: "1234FFAD"
                    },
                    %Trip{
-                     train_uid: "5483E6C7",
-                     uid: "1234FFAE"
+                     uid: "1234FFAD",
+                     next_uid: "1234FFAE"
                    }
                  ]
                )
