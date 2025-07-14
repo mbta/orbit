@@ -41,6 +41,9 @@ describe("sidebar", () => {
                     originStation: "place-alfcl",
                     destinationStation: "place-brntn",
                   }),
+                  next: [ocsTripFactory.build({
+                    originStation: ""
+                  })]
                 },
               }),
             }}

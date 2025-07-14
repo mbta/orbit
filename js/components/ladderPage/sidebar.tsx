@@ -1,4 +1,4 @@
-import { getNameForId } from "../../data/stations";
+import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
@@ -43,6 +43,7 @@ export const SideBar = ({
         ))}
       </div>
       <CurrentTrip vehicle={selection.vehicle} />
+      <NextTrip vehicle={selection.vehicle} />
     </aside>
   );
 };
@@ -59,9 +60,9 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>{getNameForId(current?.originStation) ?? "---"}</span>
+          <span>{formatStationName(current?.originStation) ?? "---"}</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>{getNameForId(current?.destinationStation) ?? "---"}</span>
+          <span>{formatStationName(current?.destinationStation) ?? "---"}</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
@@ -84,6 +85,39 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           <span className="text-gray-300 mt-5">Estimated</span>
           <span className="font-bold">
             {estArrival ? dateTimeFormat(estArrival, "service") : "---"}
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
+  const next =
+    vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
+  return (
+    <section className="m-5 pt-5 border-t border-gray-300">
+      <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
+      <div className="flex mt-3">
+        <div className="flex flex-col justify-between">
+          <span className="text-gray-300">Departure</span>
+          <span>{formatStationName(next?.originStation) ?? "---"}</span>
+          <span className="text-gray-300 mt-5">Arrival</span>
+          <span>{formatStationName(next?.destinationStation) ?? "---"}</span>
+        </div>
+        <div className="flex flex-col ml-7">
+          <span className="text-gray-300">Scheduled</span>
+          <span className="font-bold">
+            {next?.scheduledDeparture ?
+              dateTimeFormat(next.scheduledDeparture, "service")
+            : "---"}{" "}
+            <Offset value={next?.offset} />
+          </span>
+          <span className="text-gray-300 mt-5">Scheduled</span>
+          <span className="font-bold">
+            {next?.scheduledArrival ?
+              dateTimeFormat(next.scheduledArrival, "service")
+            : "---"}{" "}
           </span>
         </div>
       </div>
