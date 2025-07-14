@@ -86,6 +86,6 @@ defmodule Realtime.TripMatcher do
 
   @spec statistics_log_line(map()) :: String.t()
   def statistics_log_line(statistics) do
-    "statistics #{Enum.map_join(statistics, " ", fn {name, count} -> "#{name}=#{count}" end)}"
+    "trip_matcher_statistics #{Enum.map_join(statistics, " ", fn {name, count} -> "#{name}=#{count}" end)}"
   end
 end
