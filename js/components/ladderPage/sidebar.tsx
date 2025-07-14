@@ -61,9 +61,7 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           <span className="text-gray-300">Departure</span>
           <span>{formatStationName(current?.originStation) ?? "---"}</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>
-            {formatStationName(current?.destinationStation) ?? "---"}
-          </span>
+          <span>{formatStationName(current?.destinationStation) ?? "---"}</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
