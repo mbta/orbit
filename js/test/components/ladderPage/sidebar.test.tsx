@@ -38,8 +38,8 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
-                    originStation: "place-alfcl",
-                    destinationStation: "place-brntn",
+                    originStation: "ALEWIFE",
+                    destinationStation: "BRAINTREE",
                   }),
                 },
               }),
