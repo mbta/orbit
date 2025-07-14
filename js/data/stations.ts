@@ -1,5 +1,6 @@
 import { RouteId } from "../models/common";
 import { Station } from "../models/station";
+import { capitalizeFirstLetter } from "../util/string";
 
 export type LadderConfig = Station[];
 
@@ -186,13 +187,18 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
   ],
 };
 
-export const getNameForId = (id: string | null | undefined) => {
-  if (id === undefined || id === null) {
+export const formatStationName = (station: string | null | undefined) => {
+  if (station === undefined || station === null) {
     return undefined;
   }
-
-  return Object.values(Stations)
-    .flat()
-    .flat()
-    .find((station) => station.id === id)?.name;
+  if (station.startsWith("JFK")) {
+    return "JFK";
+  }
+  if (station.startsWith("KENDALL")) {
+    return "Kendall";
+  }
+  return station
+    .split(" ")
+    .map((substr) => capitalizeFirstLetter(substr))
+    .join(" ");
 };
