@@ -58,7 +58,15 @@ defmodule Orbit.Ocs.Stream.Pipeline do
       sequence_number
     })
 
-    persist_resume_position(sequence_number, now)
+    case persist_resume_position(sequence_number, now) do
+      {:ok, _} ->
+        :ok
+
+      {:error, error} ->
+        Logger.error(
+          "Orbit.Ocs.Stream.Pipeline event=kinesis_persistence_error error=#{inspect(error)}"
+        )
+    end
 
     message
   end
@@ -175,25 +183,28 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     expired
   end
 
-  @spec persist_resume_position(String.t(), DateTime.t()) :: :ok
+  @spec persist_resume_position(String.t(), DateTime.t()) :: {:ok, any()} | {:error, any()}
   defp persist_resume_position(resume_position, last_message_timestamp) do
     stream_name = get_stream_name()
 
     if stream_name != nil do
-      {:ok, _} =
-        %KinesisStreamState{
-          stream_name: stream_name,
-          resume_position: resume_position,
-          last_message_timestamp: Util.Time.to_ecto_utc(last_message_timestamp)
-        }
-        |> KinesisStreamState.changeset()
-        |> Repo.insert(
-          on_conflict: :replace_all,
-          conflict_target: :stream_name
-        )
+      %KinesisStreamState{
+        stream_name: stream_name,
+        resume_position: resume_position,
+        last_message_timestamp: Util.Time.to_ecto_utc(last_message_timestamp)
+      }
+      |> KinesisStreamState.changeset()
+      |> Repo.insert(
+        on_conflict: :replace_all,
+        conflict_target: :stream_name
+      )
+    else
+      {:ok, :ignored}
     end
-
-    :ok
+  rescue
+    # Ecto insert raises errors in some cases, rather than returning an {:error, _} tuple
+    error ->
+      {:error, error}
   end
 
   @spec get_stream_name() :: String.t() | nil
