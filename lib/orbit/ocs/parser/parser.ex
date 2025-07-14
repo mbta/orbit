@@ -6,29 +6,36 @@ defmodule Orbit.Ocs.Parser do
   type -> an atom for the message type (:tmov, :tsch, :devi)
   time -> a Time sigil for the timestamp of the message
   rest -> a list of the remaining values from the message
+
+  Note that the term "emitted_time" refers to the time at which an event was emitted, ie the timestamp
+  of the CloudEvent propagated through TID systems. This is not necessarily the same as:
+  - the current timestamp at the time of parsing, as events may be received late, and old events may be
+  replayed from a buffered source (such as a Kinesis stream).
+  - the exact timestamp that the message was created within OCS, as we cannot guarantee said messages
+  were passed immediately to our systems.
   """
 
   alias Orbit.Ocs.TransitLine
 
   @spec parse(String.t(), DateTime.t()) :: {:ok, Orbit.Ocs.Message.t() | :ignored} | {:error, any}
-  def parse(line, current_time) do
-    {:ok, parse!(line, current_time)}
+  def parse(line, emitted_time) do
+    {:ok, parse!(line, emitted_time)}
   rescue
     e -> {:error, e}
   end
 
   @spec parse!(String.t(), DateTime.t()) :: Orbit.Ocs.Message.t() | :ignored
-  def parse!(line, current_time) do
+  def parse!(line, emitted_time) do
     line
-    |> parse_initial(current_time)
-    |> parse_by_msg_type(current_time)
+    |> parse_initial(emitted_time)
+    |> parse_by_msg_type(emitted_time)
     |> case do
       {:ok, msg} -> msg
       {:error, e} -> raise e
     end
   end
 
-  defp parse_initial(line, current_time) do
+  defp parse_initial(line, emitted_time) do
     [counter, msg_type, msg_time | rest] = String.split(line, ",")
     {count, ""} = Integer.parse(counter)
 
@@ -39,14 +46,14 @@ defmodule Orbit.Ocs.Parser do
         ArgumentError -> msg_type
       end
 
-    time = get_time(msg_time, current_time)
+    time = get_time(msg_time, emitted_time)
     {count, type, time, rest}
   end
 
-  defp parse_by_msg_type(msg, current_time) do
+  defp parse_by_msg_type(msg, emitted_time) do
     case msg do
       {_count, :tsch, _timestamp, _args} ->
-        Orbit.Ocs.Parser.TschMessage.parse(msg, current_time)
+        Orbit.Ocs.Parser.TschMessage.parse(msg, emitted_time)
 
       # Ignore remaining valid message types that are unimplemented for now
       {_count, msg_type, _timestamp, _args} when msg_type in [:tmov, :devi, :diag, :rgps] ->
@@ -57,13 +64,18 @@ defmodule Orbit.Ocs.Parser do
     end
   end
 
+  # The message time contained within an OCS message does not specify the full date, but only
+  # the hour, minute, and second relative to the date that the message was emitted. Therefore
+  # we need to infer the full timestamp by considering the service date on which the message
+  # was originally emitted.
   @spec get_time(String.t(), DateTime.t()) :: DateTime.t()
-  defp get_time(msg_time, current_time) do
-    # allow msg_time to be up to one hour in the future; otherwise assume it is from yesterday
+  defp get_time(msg_time, emitted_datetime) do
+    # allow msg_time to be up to one hour in the future from the time it was emitted;
+    # otherwise assume it is from the day before
     time = Timex.parse!(msg_time, "{h24}:{m}:{s}")
-    dt = Timex.set(current_time, hour: time.hour, minute: time.minute, second: time.second)
+    dt = Timex.set(emitted_datetime, hour: time.hour, minute: time.minute, second: time.second)
 
-    if Timex.before?(dt, Timex.shift(current_time, hours: 1)) do
+    if Timex.before?(dt, Timex.shift(emitted_datetime, hours: 1)) do
       dt
     else
       Timex.shift(dt, days: -1)
