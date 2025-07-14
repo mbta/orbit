@@ -96,7 +96,9 @@ defmodule Orbit.Ocs.Entities do
       service_date(message.timestamp),
       RailLine.from_ocs_transitline(message.transitline),
       message.trip_uid,
-      message.train_uid
+      message.train_uid,
+      # For now, only the ASN message actually sets the assigned_at timestamp
+      assigned_at: message.timestamp
     )
     |> List.wrap()
   end
@@ -210,19 +212,32 @@ defmodule Orbit.Ocs.Entities do
     [train_result, trip_result]
   end
 
-  @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t()) ::
+  @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t(),
+          assigned_at: DateTime.t()
+        ) ::
           {:ok, any} | {:error, any()}
-  defp assign_train_to_trip(service_date, rail_line, trip_uid, train_uid) do
-    # Do we need to unassign other trips?
-    %Trip{
+  defp assign_train_to_trip(service_date, rail_line, trip_uid, train_uid, opts \\ []) do
+    base_trip = %Trip{
       service_date: service_date,
       uid: trip_uid,
       rail_line: rail_line,
       train_uid: train_uid
     }
+
+    base_keys = [:train_uid, :updated_at]
+
+    {trip, keys} =
+      if assigned_at = Keyword.get(opts, :assigned_at) do
+        {%{base_trip | assigned_at: Util.Time.to_ecto_utc(assigned_at)},
+         base_keys ++ [:assigned_at]}
+      else
+        {base_trip, base_keys}
+      end
+
+    trip
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:train_uid, :updated_at]},
+      on_conflict: {:replace, keys},
       conflict_target: [:service_date, :uid, :rail_line]
     )
   end

@@ -162,6 +162,7 @@ defmodule Orbit.Ocs.EntitiesTest do
                service_date: @test_service_date,
                uid: "TRIP_UID",
                train_uid: "TRAIN_UID_2",
+               assigned_at: @test_datetime_utc,
                rail_line: :red,
                # Check that other fields still exist
                route: "ROUTE"
