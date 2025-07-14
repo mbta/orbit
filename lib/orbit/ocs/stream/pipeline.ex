@@ -42,9 +42,9 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
     event_records =
       records
-      |> Stream.flat_map(&parse_records/1)
+      |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
-      |> Stream.filter(&ocs_message?/1)
+      |> Enum.filter(&ocs_message?/1)
       |> Enum.map(&unwrap_ocs_data/1)
 
     Orbit.Ocs.MessageHandler.handle_messages(event_records, now)
