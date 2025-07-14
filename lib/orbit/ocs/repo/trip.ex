@@ -8,6 +8,7 @@ defmodule Orbit.Ocs.Trip do
           service_date: Date.t(),
           uid: String.t(),
           train_uid: String.t() | nil,
+          assigned_at: DateTime.t() | nil,
           prev_uid: String.t() | nil,
           next_uid: String.t() | nil,
           route: String.t() | nil,
@@ -26,6 +27,7 @@ defmodule Orbit.Ocs.Trip do
     field(:service_date, :date)
     field(:uid, :string)
     field(:train_uid, :string)
+    field(:assigned_at, :utc_datetime)
 
     field(:prev_uid, :string)
     field(:next_uid, :string)
