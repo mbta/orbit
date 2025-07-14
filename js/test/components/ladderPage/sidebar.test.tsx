@@ -51,6 +51,27 @@ describe("sidebar", () => {
         expect(view.getByText("Braintree")).toBeInTheDocument();
       });
 
+      // not realistic for a trip, but using known station names we want to reformat for the sidebar
+      test("formats origin and destination stations when specified", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    originStation: "JFK/ UMASS ASH",
+                    destinationStation: "KENDALL/MIT",
+                  }),
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText("JFK")).toBeInTheDocument();
+        expect(view.getByText("Kendall")).toBeInTheDocument();
+      });
+
       test("shows scheduled departure and arrival times if present", () => {
         const view = render(
           <SideBar

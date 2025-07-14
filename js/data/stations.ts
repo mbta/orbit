@@ -187,15 +187,20 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
   ],
 };
 
-export const formatStationName = (station: string | null | undefined) => {
+export const stationSidebarNames = new Map([
+  ["JFK/ UMASS ASH", "JFK"],
+  ["JFK/ UMASS BRT", "JFK"],
+  ["KENDALL/MIT", "Kendall"],
+]);
+
+export const formatStationName = (
+  station: string | null | undefined,
+): string | undefined => {
   if (station === undefined || station === null) {
     return undefined;
   }
-  if (station.startsWith("JFK")) {
-    return "JFK";
-  }
-  if (station.startsWith("KENDALL")) {
-    return "Kendall";
+  if (stationSidebarNames.has(station)) {
+    return stationSidebarNames.get(station);
   }
   return station
     .split(" ")
