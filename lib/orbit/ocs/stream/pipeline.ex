@@ -137,8 +137,15 @@ defmodule Orbit.Ocs.Stream.Pipeline do
 
   @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position()
   defp load_resume_position do
-    # Use midnight of current service date as cutoff for determining if the
-    # prior Kinesis resume position is relevant
+    # If the prior kinesis position is very stale (ie, is from before the current service
+    # date), then we do not care to receive the full backlog of messages for prior service
+    # dates, which are no longer relevant. Instead, we will ask kinesis to resume from
+    # midnight, ie a few hours before the start of the current service date.
+    #
+    # Note: Messages for the current sevice date are generally expected to begin with the
+    # TSCH_RLD message at 2 am local time, so starting from midnight is arguably overkill,
+    # but gives us some extra buffer to ensure that we don't miss any of today's messages,
+    # even in the event of changes for daylight savings time.
     midnight =
       DateTime.new!(
         Util.Time.current_service_date(),
