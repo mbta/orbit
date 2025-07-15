@@ -8,8 +8,8 @@ defmodule Realtime.TripMatcher do
   @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()]) :: [Vehicle.t()]
   def match_trips(vehicle_positions, trip_updates, ocs_trips) do
     ocs_trips_by_uid =
-      Enum.reduce(ocs_trips, %{}, fn trip, map ->
-        Map.put(map, trip.uid, trip)
+      Enum.into(ocs_trips, %{}, fn trip ->
+        {trip.uid, trip}
       end)
 
     Enum.map(vehicle_positions, fn vp ->
