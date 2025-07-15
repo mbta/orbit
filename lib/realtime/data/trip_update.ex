@@ -47,4 +47,18 @@ defmodule Realtime.Data.TripUpdate do
       :predicted_departure_time
     ]
   end
+
+  @spec last_arrival_time(__MODULE__.t() | nil) :: DateTime.t() | nil
+
+  def last_arrival_time(nil), do: nil
+
+  def last_arrival_time(trip_update) do
+    case List.last(trip_update.stop_time_updates) do
+      %StopTimeUpdate{predicted_arrival_time: time} ->
+        time
+
+      _ ->
+        nil
+    end
+  end
 end
