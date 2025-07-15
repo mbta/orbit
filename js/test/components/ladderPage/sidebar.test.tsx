@@ -19,17 +19,18 @@ describe("sidebar", () => {
     expect(view.getByText("1814")).toBeInTheDocument();
   });
 
-  describe("Current Trip section", () => {
-    test("header present", () => {
-      const view = render(
-        <SideBar
-          selection={{ vehicle: vehicleFactory.build() }}
-          close={() => {}}
-        />,
-      );
-      expect(view.getByText("Current Trip")).toBeInTheDocument();
-    });
+  test("headers present", () => {
+    const view = render(
+      <SideBar
+        selection={{ vehicle: vehicleFactory.build() }}
+        close={() => {}}
+      />,
+    );
+    expect(view.getByText("Current Trip")).toBeInTheDocument();
+    expect(view.getByText("Next Trip")).toBeInTheDocument();
+  });
 
+  describe("Trips", () => {
     describe("scheduled", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
@@ -42,9 +43,10 @@ describe("sidebar", () => {
                     destinationStation: "BRAINTREE",
                   }),
                   next: [
+                    // not realistic for a trip, but using known station names we want to reformat for the sidebar
                     ocsTripFactory.build({
-                      originStation: "",
-                      destinationStation: "",
+                      originStation: "JFK/ UMASS ASH",
+                      destinationStation: "KENDALL/MIT",
                     }),
                   ],
                 },
@@ -53,27 +55,11 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        // current trip
         expect(view.getByText("Alewife")).toBeInTheDocument();
         expect(view.getByText("Braintree")).toBeInTheDocument();
-      });
 
-      // not realistic for a trip, but using known station names we want to reformat for the sidebar
-      test("formats origin and destination stations when specified", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    originStation: "JFK/ UMASS ASH",
-                    destinationStation: "KENDALL/MIT",
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
+        // next trip
         expect(view.getByText("JFK")).toBeInTheDocument();
         expect(view.getByText("Kendall")).toBeInTheDocument();
       });
@@ -92,17 +78,34 @@ describe("sidebar", () => {
                       "2025-07-07T18:05:00.000Z",
                     ),
                   }),
+                  next: [
+                    ocsTripFactory.build({
+                      scheduledDeparture: dateTimeFromISO(
+                        "2025-07-07T18:10:00.000Z",
+                      ),
+                      scheduledArrival: dateTimeFromISO(
+                        "2025-07-07T19:10:00.000Z",
+                      ),
+                    }),
+                  ],
                 },
               }),
             }}
             close={() => {}}
           />,
         );
+        // current trip
         expect(view.getByText(/1:05p/)).toBeInTheDocument();
         expect(view.getByText(/2:05p/)).toBeInTheDocument();
+
+        //next trip
+        expect(view.getByText(/2:10p/)).toBeInTheDocument();
+        expect(view.getByText(/3:10p/)).toBeInTheDocument();
       });
     });
+  });
 
+  describe("Current Trip section", () => {
     describe("estimated arrival time", () => {
       test("is displayed if available", () => {
         const view = render(
