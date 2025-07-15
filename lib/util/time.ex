@@ -5,6 +5,11 @@ defmodule Util.Time do
   @type timestamp :: integer()
   @timezone Application.compile_env!(:orbit, :timezone)
 
+  @spec current_timezone :: Calendar.time_zone()
+  def current_timezone do
+    @timezone
+  end
+
   @spec current_time :: timestamp
   def current_time do
     System.system_time(:second)
@@ -42,5 +47,17 @@ defmodule Util.Time do
   def service_date_boundaries(service_date) do
     {DateTime.new!(service_date, ~T[03:00:00], @timezone),
      DateTime.new!(Date.add(service_date, 1), ~T[03:00:00], @timezone)}
+  end
+
+  @doc """
+  Sanitize the given DateTime for compatibility with Ecto's :utc_datetime
+  field type. This converts the DateTime to UTC and truncates down to an
+  even number of seconds.
+  """
+  @spec to_ecto_utc(DateTime.t()) :: DateTime.t()
+  def to_ecto_utc(datetime) do
+    datetime
+    |> DateTime.shift_zone!("Etc/UTC")
+    |> DateTime.truncate(:second)
   end
 end

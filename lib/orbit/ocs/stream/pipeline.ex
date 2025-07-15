@@ -7,17 +7,20 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   use Broadway
 
   alias Broadway.Message
-  # alias Orbit.Ocs.Stream.SequenceMonitor
+  alias Orbit.KinesisStreamState
+  alias Orbit.Repo
 
   require Logger
 
   @behind_warn_threshold_ms 1_000
 
   def start_link(opts) do
+    producer_opts = get_producer_opts(opts)
+
     Broadway.start_link(__MODULE__,
       name: Keyword.get(opts, :name, __MODULE__),
       producer: [
-        module: {Orbit.Ocs.Stream.Producer, opts},
+        module: {Orbit.Ocs.Stream.Producer, producer_opts},
         transformer: {__MODULE__, :transform, opts},
         concurrency: 1
       ],
@@ -41,14 +44,30 @@ defmodule Orbit.Ocs.Stream.Pipeline do
       records
       |> Enum.flat_map(&parse_records/1)
       # |> update_ocs_sequence_monitor
-      |> Enum.map(&ocs_message/1)
+      |> Enum.filter(&ocs_message?/1)
+      |> Enum.map(&unwrap_ocs_data/1)
 
     Orbit.Ocs.MessageHandler.handle_messages(event_records, now)
 
     log_handled_events(sequence_number, ms_behind, Enum.count(event_records))
 
     producer_name = List.first(Broadway.producer_names(:ocs_pipeline))
-    Kernel.send(producer_name, {:resume_position_update, sequence_number})
+
+    Orbit.Ocs.Stream.Producer.update_resume_position(producer_name, {
+      :after_sequence_number,
+      sequence_number
+    })
+
+    case persist_resume_position(sequence_number, now) do
+      {:ok, _} ->
+        :ok
+
+      {:error, error} ->
+        Logger.error(
+          "Orbit.Ocs.Stream.Pipeline event=kinesis_persistence_error error=#{inspect(error)}"
+        )
+    end
+
     message
   end
 
@@ -76,8 +95,20 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     |> List.wrap()
   end
 
-  @spec ocs_message(map) :: String.t()
-  defp ocs_message(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
+  @spec ocs_message?(map) :: boolean()
+  defp ocs_message?(message)
+
+  defp ocs_message?(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => _}}) do
+    true
+  end
+
+  defp ocs_message?(other) do
+    Logger.warning("Orbit.Ocs.Stream.Pipeline unexpected_cloud_event=#{inspect(other)}")
+    false
+  end
+
+  @spec unwrap_ocs_data(map) :: String.t()
+  defp unwrap_ocs_data(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
     do: message
 
   def transform(event, opts) do
@@ -95,5 +126,98 @@ defmodule Orbit.Ocs.Stream.Pipeline do
   def ack(:ack_id, _successful, _failed) do
     # This is required per the framework, but could be useful down the line
     # to track which messages actually make it all the way into state.
+  end
+
+  # Kinesis Stream Persistence
+
+  defp get_producer_opts(opts) do
+    resume_position = load_resume_position()
+    opts ++ [state: %{resume_position: resume_position}]
+  end
+
+  @spec load_resume_position() :: BroadwayKinesis.SubscribeToShard.starting_position()
+  defp load_resume_position do
+    # If the prior kinesis position is very stale (ie, is from before the current service
+    # date), then we do not care to receive the full backlog of messages for prior service
+    # dates, which are no longer relevant. Instead, we will ask kinesis to resume from
+    # midnight, ie a few hours before the start of the current service date.
+    #
+    # Note: Messages for the current sevice date are generally expected to begin with the
+    # TSCH_RLD message at 2 am local time, so starting from midnight is arguably overkill,
+    # but gives us some extra buffer to ensure that we don't miss any of today's messages,
+    # even in the event of changes for daylight savings time.
+    midnight =
+      DateTime.new!(
+        Util.Time.current_service_date(),
+        ~T[00:00:00],
+        Util.Time.current_timezone()
+      )
+
+    with stream_name when not is_nil(stream_name) <- get_stream_name(),
+         stream_state when not is_nil(stream_state) <- load_stream_state(stream_name),
+         false <- expired?(stream_state, midnight) do
+      Logger.info("ocs_kinesis_start sequence=#{stream_state.resume_position}")
+
+      {:after_sequence_number, stream_state.resume_position}
+    else
+      _ ->
+        Logger.info("ocs_kinesis_start timestamp=#{midnight}")
+        {:at_timestamp, midnight}
+    end
+  end
+
+  @spec load_stream_state(String.t()) :: KinesisStreamState.t() | nil
+  defp load_stream_state(stream_name) do
+    stream_state = Repo.get_by(KinesisStreamState, stream_name: stream_name)
+
+    if stream_state == nil do
+      Logger.warning("ocs_kinesis_start stream_name=#{stream_name} : No prior sequence stored")
+    end
+
+    stream_state
+  end
+
+  @spec expired?(KinesisStreamState.t(), DateTime.t()) :: boolean()
+  defp expired?(%KinesisStreamState{last_message_timestamp: timestamp}, cutoff) do
+    expired = :gt == DateTime.compare(cutoff, timestamp)
+
+    if expired do
+      Logger.warning(
+        "ocs_kinesis_start last_timestamp=#{timestamp} cutoff=#{cutoff} : Last timestamp is older than cutoff"
+      )
+    end
+
+    expired
+  end
+
+  @spec persist_resume_position(String.t(), DateTime.t()) :: {:ok, any()} | {:error, any()}
+  defp persist_resume_position(resume_position, last_message_timestamp) do
+    stream_name = get_stream_name()
+
+    if stream_name != nil do
+      %KinesisStreamState{
+        stream_name: stream_name,
+        resume_position: resume_position,
+        last_message_timestamp: Util.Time.to_ecto_utc(last_message_timestamp)
+      }
+      |> KinesisStreamState.changeset()
+      |> Repo.insert(
+        on_conflict: :replace_all,
+        conflict_target: :stream_name
+      )
+    else
+      {:ok, :ignored}
+    end
+  rescue
+    # Ecto insert raises errors in some cases, rather than returning an {:error, _} tuple
+    error ->
+      {:error, error}
+  end
+
+  @spec get_stream_name() :: String.t() | nil
+  defp get_stream_name do
+    :orbit
+    |> Application.fetch_env!(Orbit.Ocs.Stream.Producer)
+    |> Keyword.get(:kinesis_stream_name)
   end
 end

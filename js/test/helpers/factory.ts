@@ -62,8 +62,8 @@ export const tripUpdateFactory = Factory.define<TripUpdate>(() => ({
 export const ocsTripFactory = Factory.define<OCSTrip>(() => ({
   scheduledDeparture: dateTimeFromISO("2025-04-29T21:41:00.000Z"),
   scheduledArrival: dateTimeFromISO("2025-04-29T22:24:00.000Z"),
-  originStation: "place-asmnl",
-  destinationStation: "place-alfcl",
+  originStation: "ASHMONT",
+  destinationStation: "ALEWIFE",
   offset: 0,
   deleted: false,
 }));
