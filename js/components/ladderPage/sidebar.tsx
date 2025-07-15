@@ -1,4 +1,4 @@
-import { getNameForId } from "../../data/stations";
+import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
@@ -59,9 +59,9 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>{getNameForId(current?.originStation) ?? "---"}</span>
+          <span>{formatStationName(current?.originStation) ?? "---"}</span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>{getNameForId(current?.destinationStation) ?? "---"}</span>
+          <span>{formatStationName(current?.destinationStation) ?? "---"}</span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
