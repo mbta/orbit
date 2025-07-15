@@ -41,9 +41,12 @@ describe("sidebar", () => {
                     originStation: "ALEWIFE",
                     destinationStation: "BRAINTREE",
                   }),
-                  next: [ocsTripFactory.build({
-                    originStation: ""
-                  })]
+                  next: [
+                    ocsTripFactory.build({
+                      originStation: "",
+                      destinationStation: "",
+                    }),
+                  ],
                 },
               }),
             }}
@@ -119,6 +122,10 @@ describe("sidebar", () => {
             selection={{
               vehicle: vehicleFactory.build({
                 tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+                ocsTrips: {
+                  current: ocsTripFactory.build(),
+                  next: [ocsTripFactory.build()],
+                },
               }),
             }}
             close={() => {}}
