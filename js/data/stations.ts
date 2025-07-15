@@ -193,17 +193,16 @@ export const stationSidebarNames = new Map([
   ["KENDALL/MIT", "Kendall"],
 ]);
 
-export const formatStationName = (
-  station: string | null | undefined,
-): string | undefined => {
+export const formatStationName = (station: string | null | undefined) => {
   if (station === undefined || station === null) {
     return undefined;
   }
-  if (stationSidebarNames.has(station)) {
-    return stationSidebarNames.get(station);
-  }
-  return station
-    .split(" ")
-    .map((substr) => capitalizeFirstLetter(substr))
-    .join(" ");
+
+  return (
+    stationSidebarNames.get(station) ??
+    station
+      .split(" ")
+      .map((substr) => capitalizeFirstLetter(substr))
+      .join(" ")
+  );
 };
