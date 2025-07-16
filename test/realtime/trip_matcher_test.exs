@@ -124,23 +124,25 @@ defmodule Realtime.TripMatcherTest do
   describe "statistics" do
     test "everything missing" do
       assert %{
-               missing_current_actual_departure_time: 1,
-               missing_current_arrival_station: 1,
-               missing_current_departure_station: 1,
-               missing_current_estimated_arrival_time: 1,
-               missing_current_scheduled_arrival_time: 1,
-               missing_current_scheduled_departure_time: 1,
-               missing_next_arrival_station: 1,
-               missing_next_departure_station: 1,
-               missing_next_scheduled_arrival_time: 1,
-               missing_next_scheduled_departure_time: 1,
-               total: 1
+               missing_current_actual_departure_time: ["VEHICLE_ID"],
+               missing_current_arrival_station: ["VEHICLE_ID"],
+               missing_current_departure_station: ["VEHICLE_ID"],
+               missing_current_estimated_arrival_time: ["VEHICLE_ID"],
+               missing_current_scheduled_arrival_time: ["VEHICLE_ID"],
+               missing_current_scheduled_departure_time: ["VEHICLE_ID"],
+               missing_next_arrival_station: ["VEHICLE_ID"],
+               missing_next_departure_station: ["VEHICLE_ID"],
+               missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
+               missing_next_scheduled_departure_time: ["VEHICLE_ID"]
              } ==
                TripMatcher.statistics([
                  %Vehicle{
                    ocs_trips: %{
                      current: nil,
                      next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_ID"
                    }
                  }
                ])
@@ -148,11 +150,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_departure_station" do
       assert %{
-               missing_current_departure_station: 0
+               missing_current_departure_station: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current:
                        build(
@@ -167,11 +170,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_scheduled_departure_time" do
       assert %{
-               missing_current_scheduled_departure_time: 0
+               missing_current_scheduled_departure_time: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current:
                        build(
@@ -186,11 +190,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_actual_departure_time" do
       assert %{
-               missing_current_actual_departure_time: 1
+               missing_current_actual_departure_time: ["R-547210A7"]
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current:
                        build(
@@ -205,11 +210,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_arrival_station" do
       assert %{
-               missing_current_arrival_station: 0
+               missing_current_arrival_station: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current:
                        build(
@@ -224,11 +230,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_scheduled_arrival_time" do
       assert %{
-               missing_current_scheduled_arrival_time: 0
+               missing_current_scheduled_arrival_time: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current:
                        build(
@@ -243,11 +250,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_current_estimated_arrival_time" do
       assert %{
-               missing_current_estimated_arrival_time: 0
+               missing_current_estimated_arrival_time: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
                      next: []
@@ -258,11 +266,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_next_departure_station" do
       assert %{
-               missing_next_departure_station: 0
+               missing_next_departure_station: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: nil,
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
                      next: [build(:ocs_trip, origin_station: "place-alfcl")]
@@ -273,11 +282,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_next_scheduled_departure_time" do
       assert %{
-               missing_next_scheduled_departure_time: 0
+               missing_next_scheduled_departure_time: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: nil,
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
                      next: [build(:ocs_trip, scheduled_departure: ~U[2025-06-06 12:00:00Z])]
@@ -288,11 +298,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_next_arrival_station" do
       assert %{
-               missing_next_arrival_station: 0
+               missing_next_arrival_station: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: nil,
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
                      next: [build(:ocs_trip, destination_station: "place-asmnl")]
@@ -303,11 +314,12 @@ defmodule Realtime.TripMatcherTest do
 
     test "missing_next_scheduled_arrival_time" do
       assert %{
-               missing_next_scheduled_arrival_time: 0
+               missing_next_scheduled_arrival_time: []
              } =
                TripMatcher.statistics([
                  %Vehicle{
                    trip_update: nil,
+                   position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
                      next: [build(:ocs_trip, scheduled_arrival: ~U[2025-06-06 13:00:00Z])]
