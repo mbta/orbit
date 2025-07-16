@@ -19,17 +19,18 @@ describe("sidebar", () => {
     expect(view.getByText("1814")).toBeInTheDocument();
   });
 
-  describe("Current Trip section", () => {
-    test("header present", () => {
-      const view = render(
-        <SideBar
-          selection={{ vehicle: vehicleFactory.build() }}
-          close={() => {}}
-        />,
-      );
-      expect(view.getByText("Current Trip")).toBeInTheDocument();
-    });
+  test("headers present", () => {
+    const view = render(
+      <SideBar
+        selection={{ vehicle: vehicleFactory.build() }}
+        close={() => {}}
+      />,
+    );
+    expect(view.getByText("Current Trip")).toBeInTheDocument();
+    expect(view.getByText("Next Trip")).toBeInTheDocument();
+  });
 
+  describe("Trips", () => {
     describe("scheduled", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
@@ -41,33 +42,24 @@ describe("sidebar", () => {
                     originStation: "ALEWIFE",
                     destinationStation: "BRAINTREE",
                   }),
+                  next: [
+                    // not realistic for a trip, but using known station names we want to reformat for the sidebar
+                    ocsTripFactory.build({
+                      originStation: "JFK/ UMASS ASH",
+                      destinationStation: "KENDALL/MIT",
+                    }),
+                  ],
                 },
               }),
             }}
             close={() => {}}
           />,
         );
+        // current trip
         expect(view.getByText("Alewife")).toBeInTheDocument();
         expect(view.getByText("Braintree")).toBeInTheDocument();
-      });
 
-      // not realistic for a trip, but using known station names we want to reformat for the sidebar
-      test("formats origin and destination stations when specified", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    originStation: "JFK/ UMASS ASH",
-                    destinationStation: "KENDALL/MIT",
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
+        // next trip
         expect(view.getByText("JFK")).toBeInTheDocument();
         expect(view.getByText("Kendall")).toBeInTheDocument();
       });
@@ -86,42 +78,29 @@ describe("sidebar", () => {
                       "2025-07-07T18:05:00.000Z",
                     ),
                   }),
+                  next: [
+                    ocsTripFactory.build({
+                      scheduledDeparture: dateTimeFromISO(
+                        "2025-07-07T18:10:00.000Z",
+                      ),
+                      scheduledArrival: dateTimeFromISO(
+                        "2025-07-07T19:10:00.000Z",
+                      ),
+                    }),
+                  ],
                 },
               }),
             }}
             close={() => {}}
           />,
         );
+        // current trip
         expect(view.getByText(/1:05p/)).toBeInTheDocument();
         expect(view.getByText(/2:05p/)).toBeInTheDocument();
-      });
-    });
 
-    describe("estimated arrival time", () => {
-      test("is displayed if available", () => {
-        const view = render(
-          <SideBar
-            selection={{ vehicle: vehicleFactory.build() }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText("5:51p")).toBeInTheDocument();
-      });
-
-      // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
-      // for "---" placeholders into one test mocking missing data for all fields
-      test("displays '---' when unavailable", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getAllByText("---")).toHaveLength(2);
+        //next trip
+        expect(view.getByText(/2:10p/)).toBeInTheDocument();
+        expect(view.getByText(/3:10p/)).toBeInTheDocument();
       });
     });
 
@@ -135,6 +114,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     offset: 2,
                   }),
+                  next: [ocsTripFactory.build({ offset: 3 })],
                 },
               }),
             }}
@@ -142,6 +122,7 @@ describe("sidebar", () => {
           />,
         );
         expect(view.getByText(/\(\+2\)/)).toBeInTheDocument();
+        expect(view.getByText(/\(\+3\)/)).toBeInTheDocument();
       });
 
       test("negative nonzero", () => {
@@ -153,6 +134,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     offset: -2,
                   }),
+                  next: [ocsTripFactory.build({ offset: -3 })],
                 },
               }),
             }}
@@ -160,6 +142,7 @@ describe("sidebar", () => {
           />,
         );
         expect(view.getByText(/\(-2\)/)).toBeInTheDocument();
+        expect(view.getByText(/\(-3\)/)).toBeInTheDocument();
       });
 
       test("zero", () => {
@@ -171,6 +154,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     offset: 0,
                   }),
+                  next: [ocsTripFactory.build({ offset: 0 })],
                 },
               }),
             }}
@@ -190,6 +174,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     offset: null,
                   }),
+                  next: [ocsTripFactory.build({ offset: null })],
                 },
               }),
             }}
@@ -198,6 +183,40 @@ describe("sidebar", () => {
         );
         expect(view.queryByText(/\(0\)/)).not.toBeInTheDocument();
         expect(view.queryByText(/\(-0\)/)).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Current Trip section", () => {
+    describe("estimated arrival time", () => {
+      test("is displayed if available", () => {
+        const view = render(
+          <SideBar
+            selection={{ vehicle: vehicleFactory.build() }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText("5:51p")).toBeInTheDocument();
+      });
+
+      // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
+      // for "---" placeholders into one test mocking missing data for all fields
+      test("displays '---' when unavailable", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+                ocsTrips: {
+                  current: ocsTripFactory.build(),
+                  next: [ocsTripFactory.build()],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getAllByText("---")).toHaveLength(2);
       });
     });
   });
