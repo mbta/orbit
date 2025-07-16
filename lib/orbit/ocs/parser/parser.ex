@@ -46,7 +46,7 @@ defmodule Orbit.Ocs.Parser do
         ArgumentError -> msg_type
       end
 
-    time = get_time(msg_time, emitted_time)
+    time = Orbit.Ocs.Utilities.Time.interpret_ocs_message_timestamp(msg_time, emitted_time)
     {count, type, time, rest}
   end
 
@@ -61,24 +61,6 @@ defmodule Orbit.Ocs.Parser do
 
       {_count, msg_type, _timestamp, _args} ->
         {:error, "Message type #{msg_type} did not match any expected message"}
-    end
-  end
-
-  # The message time contained within an OCS message does not specify the full date, but only
-  # the hour, minute, and second relative to the date that the message was emitted. Therefore
-  # we need to infer the full timestamp by considering the service date on which the message
-  # was originally emitted.
-  @spec get_time(String.t(), DateTime.t()) :: DateTime.t()
-  defp get_time(msg_time, emitted_datetime) do
-    # allow msg_time to be up to one hour in the future from the time it was emitted;
-    # otherwise assume it is from the day before
-    time = Timex.parse!(msg_time, "{h24}:{m}:{s}")
-    dt = Timex.set(emitted_datetime, hour: time.hour, minute: time.minute, second: time.second)
-
-    if Timex.before?(dt, Timex.shift(emitted_datetime, hours: 1)) do
-      dt
-    else
-      Timex.shift(dt, days: -1)
     end
   end
 
