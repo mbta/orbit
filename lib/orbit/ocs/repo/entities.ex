@@ -117,7 +117,7 @@ defmodule Orbit.Ocs.Entities do
       destination_station: message.dest_sta,
       # TODO: Should we update these if they are nil, or leave the old values?
       route: message.ocs_route_id,
-      scheduled_arrival: message.sched_arr
+      scheduled_arrival: message.sched_arr && Util.Time.to_ecto_utc(message.sched_arr)
     }
     |> Trip.changeset()
     |> Repo.insert(
