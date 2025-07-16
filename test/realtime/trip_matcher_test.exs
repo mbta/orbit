@@ -133,7 +133,8 @@ defmodule Realtime.TripMatcherTest do
                missing_next_arrival_station: ["VEHICLE_ID"],
                missing_next_departure_station: ["VEHICLE_ID"],
                missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
-               missing_next_scheduled_departure_time: ["VEHICLE_ID"]
+               missing_next_scheduled_departure_time: ["VEHICLE_ID"],
+               total: 1
              } ==
                TripMatcher.statistics([
                  %Vehicle{
