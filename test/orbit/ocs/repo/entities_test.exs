@@ -7,12 +7,13 @@ defmodule Orbit.Ocs.EntitiesTest do
   alias Orbit.Ocs.Trip
   alias Orbit.Repo
 
+  @test_timezone Application.compile_env!(:orbit, :timezone)
   @test_service_date Date.new!(2025, 7, 2)
   @test_time Time.new!(16, 48, 0)
   @test_datetime DateTime.new!(
                    @test_service_date,
                    @test_time,
-                   Application.compile_env!(:orbit, :timezone)
+                   @test_timezone
                  )
   @test_datetime_utc DateTime.from_iso8601("2025-07-02T20:48:00Z") |> elem(1)
 
@@ -179,7 +180,8 @@ defmodule Orbit.Ocs.EntitiesTest do
     end
 
     test "upserts trip for TSCH_DST" do
-      timestamp = DateTime.from_iso8601("2025-07-02T21:48:00Z") |> elem(1)
+      timestamp_utc = DateTime.from_iso8601("2025-07-02T21:48:00Z") |> elem(1)
+      timestamp_local = DateTime.shift_zone!(timestamp_utc, @test_timezone)
 
       message = %Message.TschDstMessage{
         counter: 111,
@@ -188,7 +190,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         trip_uid: "TRIP_UID",
         dest_sta: "DESTINATION_STATION_2",
         ocs_route_id: "ROUTE_2",
-        sched_arr: timestamp
+        sched_arr: timestamp_local
       }
 
       Entities.apply_changes(message)
@@ -207,7 +209,7 @@ defmodule Orbit.Ocs.EntitiesTest do
                rail_line: :red,
                destination_station: "DESTINATION_STATION_2",
                route: "ROUTE_2",
-               scheduled_arrival: ^timestamp,
+               scheduled_arrival: ^timestamp_utc,
                # Check that other fields still exist
                offset: 0
              } = queried_trip
