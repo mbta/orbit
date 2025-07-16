@@ -103,6 +103,88 @@ describe("sidebar", () => {
         expect(view.getByText(/3:10p/)).toBeInTheDocument();
       });
     });
+
+    describe("Offset", () => {
+      test("positive nonzero", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    offset: 2,
+                  }),
+                  next: [ocsTripFactory.build({ offset: 3 })],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText(/\(\+2\)/)).toBeInTheDocument();
+        expect(view.getByText(/\(\+3\)/)).toBeInTheDocument();
+      });
+
+      test("negative nonzero", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    offset: -2,
+                  }),
+                  next: [ocsTripFactory.build({ offset: -3 })],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText(/\(-2\)/)).toBeInTheDocument();
+        expect(view.getByText(/\(-3\)/)).toBeInTheDocument();
+      });
+
+      test("zero", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    offset: 0,
+                  }),
+                  next: [ocsTripFactory.build({ offset: 0 })],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/\(0\)/)).not.toBeInTheDocument();
+        expect(view.queryByText(/\(-0\)/)).not.toBeInTheDocument();
+      });
+
+      test("null", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    offset: null,
+                  }),
+                  next: [ocsTripFactory.build({ offset: null })],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/\(0\)/)).not.toBeInTheDocument();
+        expect(view.queryByText(/\(-0\)/)).not.toBeInTheDocument();
+      });
+    });
   });
 
   describe("Current Trip section", () => {
@@ -135,82 +217,6 @@ describe("sidebar", () => {
           />,
         );
         expect(view.getAllByText("---")).toHaveLength(2);
-      });
-    });
-
-    describe("Offset", () => {
-      test("positive nonzero", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 2,
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/\(\+2\)/)).toBeInTheDocument();
-      });
-
-      test("negative nonzero", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: -2,
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/\(-2\)/)).toBeInTheDocument();
-      });
-
-      test("zero", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 0,
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/\(0\)/)).not.toBeInTheDocument();
-        expect(view.queryByText(/\(-0\)/)).not.toBeInTheDocument();
-      });
-
-      test("null", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: null,
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/\(0\)/)).not.toBeInTheDocument();
-        expect(view.queryByText(/\(-0\)/)).not.toBeInTheDocument();
       });
     });
   });
