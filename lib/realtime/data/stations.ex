@@ -56,4 +56,58 @@ defmodule Realtime.Data.Stations do
       "Braintree-02" => "place-brntn"
     }
   end
+
+  @spec next_stations(String.t() | nil, integer()) :: [String.t()]
+  def next_stations(station_id, direction) do
+    case {station_id, direction} do
+      # Southbound
+
+      {"place-alfcl", 0} -> ["place-davis"]
+      {"place-davis", 0} -> ["place-portr"]
+      {"place-portr", 0} -> ["place-harsq"]
+      {"place-harsq", 0} -> ["place-cntsq"]
+      {"place-cntsq", 0} -> ["place-knncl"]
+      {"place-knncl", 0} -> ["place-chmnl"]
+      {"place-chmnl", 0} -> ["place-pktrm"]
+      {"place-pktrm", 0} -> ["place-dwnxg"]
+      {"place-dwnxg", 0} -> ["place-sstat"]
+      {"place-sstat", 0} -> ["place-brdwy"]
+      {"place-brdwy", 0} -> ["place-andrw"]
+      {"place-andrw", 0} -> ["place-jfk"]
+      {"place-jfk", 0} -> ["place-shmnl", "place-nqncy"]
+      {"place-shmnl", 0} -> ["place-fldcr"]
+      {"place-fldcr", 0} -> ["place-smmnl"]
+      {"place-smmnl", 0} -> ["place-asmnl"]
+      {"place-asmnl", 0} -> []
+      {"place-nqncy", 0} -> ["place-wlsta"]
+      {"place-wlsta", 0} -> ["place-qnctr"]
+      {"place-qnctr", 0} -> ["place-qamnl"]
+      {"place-qamnl", 0} -> ["place-brntn"]
+      {"place-brntn", 0} -> []
+      # Northbound
+      {"place-alfcl", 1} -> []
+      {"place-davis", 1} -> ["place-alfcl"]
+      {"place-portr", 1} -> ["place-davis"]
+      {"place-harsq", 1} -> ["place-portr"]
+      {"place-cntsq", 1} -> ["place-harsq"]
+      {"place-knncl", 1} -> ["place-cntsq"]
+      {"place-chmnl", 1} -> ["place-knncl"]
+      {"place-pktrm", 1} -> ["place-chmnl"]
+      {"place-dwnxg", 1} -> ["place-pktrm"]
+      {"place-sstat", 1} -> ["place-dwnxg"]
+      {"place-brdwy", 1} -> ["place-sstat"]
+      {"place-andrw", 1} -> ["place-brdwy"]
+      {"place-jfk", 1} -> ["place-andrw"]
+      {"place-shmnl", 1} -> ["place-jfk"]
+      {"place-fldcr", 1} -> ["place-shmnl"]
+      {"place-smmnl", 1} -> ["place-fldcr"]
+      {"place-asmnl", 1} -> ["place-smmnl"]
+      {"place-nqncy", 1} -> ["place-jfk"]
+      {"place-wlsta", 1} -> ["place-qnctr"]
+      {"place-qnctr", 1} -> ["place-qamnl"]
+      {"place-qamnl", 1} -> ["place-brntn"]
+      {"place-brntn", 1} -> ["place-qamnl"]
+      _ -> []
+    end
+  end
 end

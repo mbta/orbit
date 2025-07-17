@@ -58,7 +58,8 @@ defmodule Orbit.Application do
                    }
                  ]}
             },
-            Realtime.TripMatcherServer
+            Realtime.TripMatcherServer,
+            Realtime.VehicleEventDetector
           ]
         else
           []
