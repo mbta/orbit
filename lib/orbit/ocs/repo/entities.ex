@@ -38,6 +38,15 @@ defmodule Orbit.Ocs.Entities do
 
   @spec apply_changes(Message.t()) :: [{:ok, any} | {:error, any()}]
   def apply_changes(%TschNewMessage{} = message) do
+    # A note about upserts:
+    #
+    # We generally don't expect to receive multiple TSCH_NEW messages for the same
+    # Trip UID within a service date and rail line. However, under some scenarios, such as
+    # after application downtime, or while testing locally, it is possible for Orbit to
+    # receive repeat messages from Kinesis that were already processed in the DB.
+    #
+    # Since OCS messages are generally considered idempotent, we assume there is no harm
+    # in allowing TSCH_NEW messages to replay and replace prior rows.
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -52,7 +61,10 @@ defmodule Orbit.Ocs.Entities do
       destination_station: message.dest_sta
     }
     |> Trip.changeset()
-    |> Repo.insert()
+    |> Repo.insert(
+      on_conflict: :replace_all,
+      conflict_target: [:service_date, :uid, :rail_line]
+    )
     |> List.wrap()
   end
 
@@ -69,7 +81,7 @@ defmodule Orbit.Ocs.Entities do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: {:replace, [:cars]},
+        on_conflict: {:replace, [:cars, :updated_at]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -84,7 +96,9 @@ defmodule Orbit.Ocs.Entities do
       service_date(message.timestamp),
       RailLine.from_ocs_transitline(message.transitline),
       message.trip_uid,
-      message.train_uid
+      message.train_uid,
+      # For now, only the ASN message actually sets the assigned_at timestamp
+      assigned_at: message.timestamp
     )
     |> List.wrap()
   end
@@ -112,7 +126,8 @@ defmodule Orbit.Ocs.Entities do
          [
            :destination_station,
            :route,
-           :scheduled_arrival
+           :scheduled_arrival,
+           :updated_at
          ]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
@@ -128,7 +143,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:deleted]},
+      on_conflict: {:replace, [:deleted, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -145,7 +160,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:prev_uid, :next_uid]},
+      on_conflict: {:replace, [:prev_uid, :next_uid, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -160,7 +175,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:offset]},
+      on_conflict: {:replace, [:offset, :updated_at]},
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -187,7 +202,7 @@ defmodule Orbit.Ocs.Entities do
       }
       |> Train.changeset()
       |> Repo.insert(
-        on_conflict: {:replace, [:cars, :car_tags, :tags]},
+        on_conflict: {:replace, [:cars, :car_tags, :tags, :updated_at]},
         conflict_target: [:service_date, :uid, :rail_line]
       )
 
@@ -197,19 +212,32 @@ defmodule Orbit.Ocs.Entities do
     [train_result, trip_result]
   end
 
-  @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t()) ::
+  @spec assign_train_to_trip(Date.t(), RailLine.t(), String.t(), String.t(),
+          assigned_at: DateTime.t()
+        ) ::
           {:ok, any} | {:error, any()}
-  defp assign_train_to_trip(service_date, rail_line, trip_uid, train_uid) do
-    # Do we need to unassign other trips?
-    %Trip{
+  defp assign_train_to_trip(service_date, rail_line, trip_uid, train_uid, opts \\ []) do
+    base_trip = %Trip{
       service_date: service_date,
       uid: trip_uid,
       rail_line: rail_line,
       train_uid: train_uid
     }
+
+    base_keys = [:train_uid, :updated_at]
+
+    {trip, keys} =
+      if assigned_at = Keyword.get(opts, :assigned_at) do
+        {%{base_trip | assigned_at: Util.Time.to_ecto_utc(assigned_at)},
+         base_keys ++ [:assigned_at]}
+      else
+        {base_trip, base_keys}
+      end
+
+    trip
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: {:replace, [:train_uid]},
+      on_conflict: {:replace, keys},
       conflict_target: [:service_date, :uid, :rail_line]
     )
   end
