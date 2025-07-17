@@ -106,19 +106,21 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
     end
   end
 
-  @test_message %{
+  @test_kinesis_event %{
     data: %{
       "ContinuationSequenceNumber" => "67890",
       "MillisBehindLatest" => 0,
       "Records" => [
         %{
-          "Data" => ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_1"}})
+          "Data" =>
+            ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_1"}, "time": "2025-07-02T20:48:00Z"})
         },
         %{
-          "Data" => ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_2"}})
+          "Data" =>
+            ~S({"type": "com.mbta.ocs.raw_message", "data": {"raw": "raw_content_2"}, "time": "2025-07-02T20:48:00Z"})
         },
         %{
-          "Data" => ~S({"type": "some.other.event_type"})
+          "Data" => ~S({"type": "some.other.event_type", "time": "2025-07-02T20:48:00Z"})
         }
       ]
     }
@@ -126,13 +128,13 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
 
   describe "handle_message" do
     test "sends records to message handler" do
-      Pipeline.handle_message(:fake, @test_message, :fake)
+      Pipeline.handle_message(:fake, @test_kinesis_event, :fake)
 
       assert_called(
         MessageHandler.handle_messages(
           [
-            "raw_content_1",
-            "raw_content_2"
+            %{raw_message: "raw_content_1", event_time: @test_datetime_utc},
+            %{raw_message: "raw_content_2", event_time: @test_datetime_utc}
           ],
           # ignore datetime param
           :_
@@ -141,14 +143,14 @@ defmodule Orbit.Ocs.Stream.PipelineTest do
     end
 
     test "notifies producer of updated kinesis resume position" do
-      Pipeline.handle_message(:fake, @test_message, :fake)
+      Pipeline.handle_message(:fake, @test_kinesis_event, :fake)
 
       # Test module sets itself as the producer pid
       assert_receive {:resume_position_update, {:after_sequence_number, "67890"}}
     end
 
     test "writes kinesis resume position to DB" do
-      Pipeline.handle_message(:fake, @test_message, :fake)
+      Pipeline.handle_message(:fake, @test_kinesis_event, :fake)
 
       stream_state = KinesisStreamState |> Repo.get_by(stream_name: @test_stream_name)
       assert %KinesisStreamState{resume_position: "67890"} = stream_state

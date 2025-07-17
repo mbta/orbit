@@ -5,6 +5,89 @@ defmodule Orbit.Ocs.Utilities.Time do
   require FastLocalDatetime
   require Logger
 
+  @doc """
+  Parse the internal timestamp of an OCS message, and interpret it into a full DateTime,
+  based on the DateTime when the OCS message was emitted.
+
+  msg_time: An (HH:mm:ss)-formatted string used internally by OCS to indicate when the
+            message change occurred.
+  emitted_datetime: The DateTime that TID systems received the event from OCS. Trike
+                    currently emits these in UTC.
+  timezone: The preferred timezone for the output.
+  """
+  @spec interpret_ocs_message_timestamp(String.t(), DateTime.t(), String.t()) :: DateTime.t()
+  def interpret_ocs_message_timestamp(
+        msg_time,
+        emitted_datetime,
+        timezone \\ Application.get_env(:orbit, :timezone)
+      ) do
+    # Interpret message time as local time for the same date that the message was emitted.
+    [hours, minutes, seconds] = msg_time |> String.split(":") |> Enum.map(&String.to_integer/1)
+
+    emitted_date = DateTime.to_date(emitted_datetime)
+
+    {dt, same_day?} =
+      case DateTime.new(
+             emitted_date,
+             Time.new!(hours, minutes, seconds),
+             timezone
+           ) do
+        {:ok, dt} ->
+          {dt, true}
+
+        {:ambiguous, earlier_dt, later_dt} ->
+          # Ambiguous datetimes occur during daylight savings fallback, for example
+          # when interpreting 1:00 am, which occurs twice, 1 hour apart. We choose
+          # whichever timestamp is closer to the emitted datetime.
+          {closer_datetime(earlier_dt, later_dt, emitted_datetime), true}
+
+        {:gap, _before_gap, _after_gap} ->
+          # Gap datetimes could occur during daylight savings time spring-ahead,
+          # when local time jumps from 1:59:59am to 3:00:00am. We generally do not
+          # expect OCS timestamps to occur within a gap, as OCS seemingly already
+          # handles the jump. Therefore it is more reasonable to assume that a gap
+          # datetime is stale and corresponds to the previuous day.
+          {nil, false}
+      end
+
+    # If this message time is assumed to be the same day, then allow it to be up to
+    # one hour in the future from the time it was emitted. (This is a convention from
+    # RTR). Otherwise assume it is from the day before.
+    if same_day? and DateTime.before?(dt, DateTime.shift(emitted_datetime, hour: 1)) do
+      dt
+    else
+      # This date time did not make sense when contextualized in the same date as the
+      # the emission time, so the best we can do is assume that it is stale (ie, from)
+      # the previous day.
+      adjusted_date = Date.shift(emitted_date, day: -1)
+
+      case DateTime.new(
+             adjusted_date,
+             Time.new!(hours, minutes, seconds),
+             timezone
+           ) do
+        {:ok, dt} -> dt
+        # If timestamps are stale enough to be interpreted as yesterday, then we lack
+        # the information to discern between ambiguous or gap timestamps. Just assume
+        # the later time.
+        {:ambiguous, _earlier, later} -> later
+        {:gap, _before_gap, after_gap} -> after_gap
+      end
+    end
+  end
+
+  @spec closer_datetime(DateTime.t(), DateTime.t(), DateTime.t()) :: DateTime.t()
+  defp closer_datetime(earlier, later, datetime) do
+    diff = DateTime.diff(later, earlier, :second)
+    cutoff = DateTime.shift(earlier, second: trunc(diff / 2))
+
+    if DateTime.before?(datetime, cutoff) do
+      earlier
+    else
+      later
+    end
+  end
+
   @service_date_hour_cutoff 2
 
   @doc """

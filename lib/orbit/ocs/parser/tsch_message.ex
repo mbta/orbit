@@ -8,8 +8,8 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   @spec parse({integer, :tsch, DateTime.t(), [String.t()]}, DateTime.t()) ::
           {:ok, Orbit.Ocs.Message.t()} | {:error, any()}
-  def parse(msg, current_time) do
-    {:ok, parse!(msg, current_time)}
+  def parse(msg, emitted_time) do
+    {:ok, parse!(msg, emitted_time)}
   rescue
     e ->
       {:error, e}
@@ -27,18 +27,22 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   @spec schedule_time_to_datetime(String.t(), DateTime.t()) :: DateTime.t()
-  defp schedule_time_to_datetime(sch_str, current_time) do
+  defp schedule_time_to_datetime(
+         sch_str,
+         emitted_time,
+         timezone \\ Application.get_env(:orbit, :timezone)
+       ) do
     sch_str
     |> OcsTime.parse_tsch_msg_time()
     |> OcsTime.seconds_since_midnight_to_date_time(
-      OcsTime.get_service_date(current_time),
-      current_time.time_zone
+      OcsTime.get_service_date(emitted_time),
+      timezone
     )
   end
 
   @spec parse!({integer, :tsch, DateTime.t(), [String.t()]}, DateTime.t()) ::
           Orbit.Ocs.Message.t()
-  def parse!(message, current_time) do
+  def parse!(message, emitted_time) do
     {count, :tsch, message_time, [raw_transitline | rest]} = message
 
     parse_sub_type(
@@ -48,17 +52,17 @@ defmodule Orbit.Ocs.Parser.TschMessage do
         TransitLine.from_ocs_raw(raw_transitline),
         rest
       },
-      current_time
+      emitted_time
     )
   end
 
   @spec parse_sub_type({integer, DateTime.t(), TransitLine.t(), [String.t()]}, DateTime.t()) ::
           Orbit.Ocs.Message.t()
-  defp parse_sub_type(message, current_time)
+  defp parse_sub_type(message, emitted_time)
 
   defp parse_sub_type(
          {count, time, transitline, ["CON", trip_uid, train_consist, train_uid]},
-         _current_time
+         _emitted_time
        ) do
     con =
       train_consist
@@ -90,7 +94,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
             prev_trip_uid,
             next_trip_uid
           ]},
-         current_time
+         emitted_time
        ) do
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
@@ -98,12 +102,12 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     sched_dep =
       if sched_dep_str == "",
         do: nil,
-        else: schedule_time_to_datetime(sched_dep_str, current_time)
+        else: schedule_time_to_datetime(sched_dep_str, emitted_time)
 
     sched_arr =
       if sched_arr_str == "",
         do: nil,
-        else: schedule_time_to_datetime(sched_arr_str, current_time)
+        else: schedule_time_to_datetime(sched_arr_str, emitted_time)
 
     %Orbit.Ocs.Message.TschNewMessage{
       counter: count,
@@ -122,7 +126,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["ASN", train_uid, trip_uid]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["ASN", train_uid, trip_uid]}, _emitted_time) do
     %Orbit.Ocs.Message.TschAsnMessage{
       counter: count,
       timestamp: time,
@@ -132,7 +136,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["RLD" | _]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["RLD" | _]}, _emitted_time) do
     %Orbit.Ocs.Message.TschRldMessage{
       counter: count,
       timestamp: time,
@@ -140,7 +144,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["DEL", trip_uid, delete_status]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["DEL", trip_uid, delete_status]}, _emitted_time) do
     %Orbit.Ocs.Message.TschDelMessage{
       counter: count,
       timestamp: time,
@@ -152,7 +156,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   defp parse_sub_type(
          {count, time, transitline, ["LNK", trip_uid, prev_trip_uid, next_trip_uid]},
-         _current_time
+         _emitted_time
        ) do
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
@@ -167,7 +171,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["OFF", trip_uid, offset]}, _current_time) do
+  defp parse_sub_type({count, time, transitline, ["OFF", trip_uid, offset]}, _emitted_time) do
     %Orbit.Ocs.Message.TschOffMessage{
       counter: count,
       timestamp: time,
@@ -179,7 +183,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   defp parse_sub_type(
          {count, time, transitline, ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str]},
-         current_time
+         emitted_time
        ) do
     ocs_route_id =
       if ocs_route_id_str == "",
@@ -190,7 +194,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     sched_arr =
       if sched_arr_str == "",
         do: nil,
-        else: schedule_time_to_datetime(sched_arr_str, current_time)
+        else: schedule_time_to_datetime(sched_arr_str, emitted_time)
 
     %Orbit.Ocs.Message.TschDstMessage{
       counter: count,
@@ -205,7 +209,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   defp parse_sub_type(
          {count, time, transitline, ["TAG", trip_uid, train_uid, consist_tags | car_tags]},
-         _current_time
+         _emitted_time
        ) do
     %Orbit.Ocs.Message.TschTagMessage{
       counter: count,

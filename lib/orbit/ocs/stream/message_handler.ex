@@ -8,16 +8,16 @@ defmodule Orbit.Ocs.MessageHandler do
   @expired_seconds 86_400
 
   @spec handle_messages(
-          messages :: [String.t()],
+          messages :: [%{raw_message: String.t(), event_time: DateTime.t()}],
           current_time :: DateTime.t()
         ) :: :ok
-  def handle_messages(raw_messages, current_time) do
+  def handle_messages(messages, current_time) do
     parsed_messages =
-      raw_messages
-      |> Enum.flat_map(fn raw_message ->
-        Logger.info("raw_ocs_message #{raw_message}")
+      messages
+      |> Enum.flat_map(fn %{raw_message: raw_message, event_time: event_time} ->
+        Logger.info("raw_ocs_message data=#{raw_message} cloud_event_time=#{event_time}")
 
-        with {:ok, parsed} <- parse(raw_message, current_time),
+        with {:ok, parsed} <- parse(raw_message, event_time),
              {:ok, message} <- check_expired(parsed, current_time) do
           [message]
         else
@@ -31,10 +31,13 @@ defmodule Orbit.Ocs.MessageHandler do
     :ok
   end
 
-  @spec parse(String.t(), DateTime.t()) ::
+  @spec parse(
+          raw_message :: String.t(),
+          event_time :: DateTime.t()
+        ) ::
           {:ok, Message.t()} | :ignored | {:error, any}
-  defp parse(raw_message, current_time) do
-    case Orbit.Ocs.Parser.parse(raw_message, current_time) do
+  defp parse(raw_message, event_time) do
+    case Orbit.Ocs.Parser.parse(raw_message, event_time) do
       {:ok, %{transitline: transitline} = message} when transitline in [:red, :orange, :blue] ->
         Logger.info(SplunkFormatter.format(message))
         {:ok, message}

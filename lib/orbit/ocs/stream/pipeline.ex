@@ -107,9 +107,27 @@ defmodule Orbit.Ocs.Stream.Pipeline do
     false
   end
 
-  @spec unwrap_ocs_data(map) :: String.t()
-  defp unwrap_ocs_data(%{"type" => "com.mbta.ocs.raw_message", "data" => %{"raw" => message}}),
-    do: message
+  @spec unwrap_ocs_data(map) :: %{raw_message: String.t(), event_time: DateTime.t()}
+  defp unwrap_ocs_data(%{
+         "type" => "com.mbta.ocs.raw_message",
+         "data" => %{"raw" => message},
+         "time" => datetime_string
+       }) do
+    datetime =
+      case DateTime.from_iso8601(datetime_string) do
+        {:ok, datetime, _} ->
+          datetime
+
+        {:error, error} ->
+          Logger.error(
+            "Orbit.Ocs.Stream.Pipeline unexpected_cloud_event_time=#{inspect(datetime_string)} error=#{inspect(error)}"
+          )
+
+          Util.Time.current_datetime()
+      end
+
+    %{raw_message: message, event_time: datetime}
+  end
 
   def transform(event, opts) do
     %Message{
