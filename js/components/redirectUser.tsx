@@ -7,7 +7,7 @@ import {
 } from "../groups";
 import { Navigate } from "react-router";
 
-/* responsible for rerouting users from root "/" to different
+/* responsible for redirecting users from root "/" to different
 Orbit endpoints based off the usergroups */
 export const RedirectUser = () => {
   if (
