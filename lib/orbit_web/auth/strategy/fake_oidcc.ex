@@ -5,7 +5,14 @@ defmodule OrbitWeb.Auth.Strategy.FakeOidcc do
 
   @impl Ueberauth.Strategy
   def handle_request!(conn) do
-    groups = [orbit_admin(), orbit_bl_ffd(), orbit_rl_trainstarters(), orbit_tid_staff()]
+    groups = [
+      orbit_admin(),
+      orbit_bl_ffd(),
+      orbit_rl_trainstarters(),
+      orbit_tid_staff(),
+      orbit_bl_stakeholders(),
+      orbit_hr_stakeholders()
+    ]
 
     conn
     |> put_resp_content_type("text/html")

@@ -1,6 +1,11 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
-import { ORBIT_BL_FFD, ORBIT_TID_STAFF } from "../groups";
+import {
+  ORBIT_BL_FFD,
+  ORBIT_BL_STAKEHOLDERS,
+  ORBIT_HR_STAKEHOLDERS,
+  ORBIT_TID_STAFF,
+} from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -8,12 +13,12 @@ import { LadderPage } from "./ladderPage/ladderPage";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
+import { RedirectUser } from "./redirectUser";
 import { RequireGroup } from "./requireGroup";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
   createBrowserRouter,
-  Navigate,
   Outlet,
   RouterProvider,
   useRouteError,
@@ -64,8 +69,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.root,
-        // "/" will redirect to "/operators" for now since blue line ffd was previously located there.
-        element: <Navigate to="/operators" />,
+        element: <RedirectUser />,
       },
       {
         path: paths.menu,
@@ -82,7 +86,14 @@ const router = createBrowserRouter([
       {
         path: paths.operators,
         element: (
-          <RequireGroup oneOf={[ORBIT_BL_FFD, ORBIT_TID_STAFF]}>
+          <RequireGroup
+            oneOf={[
+              ORBIT_BL_FFD,
+              ORBIT_BL_STAKEHOLDERS,
+              ORBIT_HR_STAKEHOLDERS,
+              ORBIT_TID_STAFF,
+            ]}
+          >
             <Operators />
           </RequireGroup>
         ),
