@@ -106,7 +106,7 @@ defmodule Realtime.VehicleEventDetectorTest do
       new_vehicle_positions = %{
         timestamp: 200,
         entities: [
-          # Train didn't move, should not make a new departure event at Riverside
+          # Train didn't move, should not make a new departure event at Shawmut
           build(:vehicle_position, %{
             route_id: :Red,
             direction: 1,

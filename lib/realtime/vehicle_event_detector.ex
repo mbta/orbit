@@ -138,7 +138,10 @@ defmodule Realtime.VehicleEventDetector do
     |> Enum.flat_map(&vehicle_events_for_one_train(&1, service_date))
   end
 
-  @spec vehicle_events_for_one_train({VehiclePosition.t(), VehiclePosition.t()}, Date.t()) :: [
+  @spec vehicle_events_for_one_train(
+          {VehiclePosition.t() | nil, VehiclePosition.t() | nil},
+          Date.t()
+        ) :: [
           StationEvent.t()
         ]
   defp vehicle_events_for_one_train({old_vp, new_vp}, service_date) do
