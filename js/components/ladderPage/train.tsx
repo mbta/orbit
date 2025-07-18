@@ -47,14 +47,7 @@ export const Train = ({
           };
           setSideBarSelection(sideBarSelection);
         }}
-        // TODO: confirm whether or not the sidebar should be available for HR stakeholders
-        disabled={
-          !userHasOneOf([
-            ORBIT_RL_TRAINSTARTERS,
-            ORBIT_HR_STAKEHOLDERS,
-            ORBIT_TID_STAFF,
-          ])
-        }
+        disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
       >
         {displayLabel}
 
