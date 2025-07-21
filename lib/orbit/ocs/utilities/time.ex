@@ -24,7 +24,8 @@ defmodule Orbit.Ocs.Utilities.Time do
     # Interpret message time as local time for the same date that the message was emitted.
     [hours, minutes, seconds] = msg_time |> String.split(":") |> Enum.map(&String.to_integer/1)
 
-    emitted_date = DateTime.to_date(emitted_datetime)
+    emitted_datetime_local = DateTime.shift_zone!(emitted_datetime, timezone)
+    emitted_date = DateTime.to_date(emitted_datetime_local)
 
     {dt, same_day?} =
       case DateTime.new(

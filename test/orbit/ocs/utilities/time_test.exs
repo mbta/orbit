@@ -4,11 +4,17 @@ defmodule Orbit.Ocs.Utilities.TimeTests do
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
   @timezone Application.compile_env(:orbit, :timezone)
+
+  # Local eastern timezone on this date is EDT (-04:00 UTC)
   @test_date ~D[2025-04-08]
   @test_date_before ~D[2025-04-07]
+
+  # Example dates for springing ahead to EDT (-04:00 UTC)
   @spring_ahead_date_before ~D[2025-03-08]
   @spring_ahead_date ~D[2025-03-09]
   @spring_ahead_date_after ~D[2025-03-10]
+
+  # Example dates for falling back to EST (-05:00 UTC)
   @fall_back_date_before ~D[2024-11-02]
   @fall_back_date ~D[2024-11-03]
   @fall_back_date_after ~D[2024-11-04]
@@ -22,6 +28,15 @@ defmodule Orbit.Ocs.Utilities.TimeTests do
       assert result == dt_5_00_00
     end
 
+    test "it correctly interprets emitted_date based on local timezone" do
+      # Times chosen as an example where the date differs between local and UTC timeszones.
+      dt_22_00_00 = DateTime.new!(@test_date, ~T[22:00:00], @timezone)
+      dt_21_00_00 = DateTime.new!(@test_date, ~T[21:00:00], @timezone)
+      {:ok, emitted} = dt_22_00_00 |> DateTime.shift_zone("Etc/UTC")
+      result = OcsTime.interpret_ocs_message_timestamp("21:00:00", emitted)
+      assert result == dt_21_00_00
+    end
+
     test "it interprets \"future\" timestamps within the next hour as the current date" do
       dt_6_00_00 = DateTime.new!(@test_date, ~T[06:00:00], @timezone)
       dt_6_59_59 = DateTime.new!(@test_date, ~T[06:59:59], @timezone)
@@ -31,11 +46,12 @@ defmodule Orbit.Ocs.Utilities.TimeTests do
     end
 
     test "it interprets \"future\" timestamps at/beyond the next hour as stale, ie belonging to the prior day" do
-      dt_6_00_00 = DateTime.new!(@test_date, ~T[06:00:00], @timezone)
-      dt_7_00_00_day_before = DateTime.new!(@test_date_before, ~T[07:00:00], @timezone)
-      {:ok, emitted} = dt_6_00_00 |> DateTime.shift_zone("Etc/UTC")
-      result = OcsTime.interpret_ocs_message_timestamp("07:00:00", emitted)
-      assert result == dt_7_00_00_day_before
+      # Times chosen as an example where the date differs between local and UTC timeszones.
+      dt_22_00_00 = DateTime.new!(@test_date, ~T[22:00:00], @timezone)
+      dt_23_00_00_day_before = DateTime.new!(@test_date_before, ~T[23:00:00], @timezone)
+      {:ok, emitted} = dt_22_00_00 |> DateTime.shift_zone("Etc/UTC")
+      result = OcsTime.interpret_ocs_message_timestamp("23:00:00", emitted)
+      assert result == dt_23_00_00_day_before
     end
   end
 
