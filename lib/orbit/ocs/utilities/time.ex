@@ -79,14 +79,7 @@ defmodule Orbit.Ocs.Utilities.Time do
 
   @spec closer_datetime(DateTime.t(), DateTime.t(), DateTime.t()) :: DateTime.t()
   defp closer_datetime(earlier, later, datetime) do
-    diff = DateTime.diff(later, earlier, :second)
-    cutoff = DateTime.shift(earlier, second: trunc(diff / 2))
-
-    if DateTime.before?(datetime, cutoff) do
-      earlier
-    else
-      later
-    end
+    Enum.min_by([earlier, later], &abs(DateTime.diff(&1, datetime)))
   end
 
   @service_date_hour_cutoff 2

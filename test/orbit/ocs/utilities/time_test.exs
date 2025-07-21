@@ -141,13 +141,13 @@ defmodule Orbit.Ocs.Utilities.TimeTests do
     end
 
     test "it chooses the later of ambiguous timestamps when closer to the later time" do
-      {:ambiguous, dt_1_30_00_earlier, _later} =
-        DateTime.new(@fall_back_date, ~T[01:30:00], @timezone)
+      {:ambiguous, dt_1_30_01_earlier, _later} =
+        DateTime.new(@fall_back_date, ~T[01:30:01], @timezone)
 
       {:ambiguous, _earlier, dt_1_00_00_later} =
         DateTime.new(@fall_back_date, ~T[01:00:00], @timezone)
 
-      {:ok, emitted} = dt_1_30_00_earlier |> DateTime.shift_zone("Etc/UTC")
+      {:ok, emitted} = dt_1_30_01_earlier |> DateTime.shift_zone("Etc/UTC")
       result = OcsTime.interpret_ocs_message_timestamp("01:00:00", emitted)
       assert result == dt_1_00_00_later
     end
