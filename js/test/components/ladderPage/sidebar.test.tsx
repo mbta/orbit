@@ -216,7 +216,19 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getAllByText("---")).toHaveLength(2);
+        expect(view.getAllByText("---")).toHaveLength(1);
+      });
+    });
+
+    describe("actual departure time", () => {
+      test("is displayed if available", () => {
+        const view = render(
+          <SideBar
+            selection={{ vehicle: vehicleFactory.build() }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText("5:43p")).toBeInTheDocument();
       });
     });
   });

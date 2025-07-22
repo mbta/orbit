@@ -1,9 +1,18 @@
 defmodule Realtime.TripMatcher do
   require Logger
+  import Ecto.Query
+
   alias Orbit.Ocs.Trip
+  alias Orbit.Ocs.Utilities.Stations
+  alias Orbit.Repo
   alias Orbit.Vehicle
+
   alias Realtime.Data.TripUpdate
+  alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
+  alias Realtime.VehicleEventDetector
+
+  @event_search_cutoff_m -180
 
   @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()]) :: [Vehicle.t()]
   def match_trips(vehicle_positions, trip_updates, ocs_trips) do
@@ -13,12 +22,7 @@ defmodule Realtime.TripMatcher do
       end)
 
     Enum.map(vehicle_positions, fn vp ->
-      vehicle_id =
-        case vp.vehicle_id do
-          "O-" <> vehicle_id -> vehicle_id
-          "R-" <> vehicle_id -> vehicle_id
-          "B-" <> vehicle_id -> vehicle_id
-        end
+      vehicle_id = Realtime.Data.unprefixed_vehicle_id(vp.vehicle_id)
 
       trip_update =
         Enum.find(trip_updates, fn trip_update ->
@@ -48,6 +52,7 @@ defmodule Realtime.TripMatcher do
         ocs_trips: ocs_current_and_next
       }
     end)
+    |> populate_actual_departures(DateTime.utc_now())
   end
 
   # Look up the trip with the given start trip UID, and return the possible chain of
@@ -118,5 +123,44 @@ defmodule Realtime.TripMatcher do
       {key, vehicle_ids} when is_list(vehicle_ids) -> "#{key}=#{Enum.join(vehicle_ids, ",")}"
       {key, value} -> "#{key}=#{inspect(value)}"
     end)}"
+  end
+
+  @spec populate_actual_departures([Vehicle.t()], DateTime.t()) :: [Vehicle.t()]
+  def populate_actual_departures(vehicles, now) do
+    service_date = Util.Time.service_date_for_utc_datetime(now)
+
+    search_cutoff = DateTime.add(now, @event_search_cutoff_m, :minute)
+    search_stations = Enum.map(VehicleEventDetector.terminals(), &elem(&1, 0))
+
+    # Get relevant events from the database
+    events =
+      Repo.all(
+        from(event in VehicleEvent,
+          where:
+            event.service_date == ^service_date and event.arrival_departure == :departure and
+              event.station_id in ^search_stations and event.timestamp > ^search_cutoff,
+          group_by: [event.vehicle_id, event.station_id],
+          select: %{
+            vehicle_id: event.vehicle_id,
+            station_id: event.station_id,
+            timestamp: max(event.timestamp)
+          }
+        )
+      )
+      # NB pm: Should be possible for Repo.all to return a map, I think?
+      # But I couldn't quickly figure it out, hence the group_by above followed by this
+      |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1.timestamp})
+
+    Enum.map(vehicles, fn vehicle ->
+      %{ocs_trips: %{current: current}} = vehicle
+
+      if current != nil do
+        origin_station = Stations.ocs_to_gtfs(current.origin_station)
+        actual_departure = Map.get(events, {current.train_uid, origin_station})
+        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
+      else
+        vehicle
+      end
+    end)
   end
 end

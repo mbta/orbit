@@ -21,11 +21,13 @@ defmodule Realtime.VehicleEventDetector do
           subscriptions: MapSet.t(pid())
         }
 
-  @terminals [
-    {"place-alfcl", 0},
-    {"place-asmnl", 1},
-    {"place-brntn", 1}
-  ]
+  def terminals do
+    [
+      {"place-alfcl", 0},
+      {"place-asmnl", 1},
+      {"place-brntn", 1}
+    ]
+  end
 
   defmodule StationEvent do
     @moduledoc """
@@ -147,12 +149,15 @@ defmodule Realtime.VehicleEventDetector do
   defp vehicle_events_for_one_train({old_vp, new_vp}, service_date) do
     station_events = station_events_for_one_train({old_vp, new_vp})
 
+    vehicle_id =
+      Realtime.Data.unprefixed_vehicle_id((new_vp && new_vp.vehicle_id) || old_vp.vehicle_id)
+
     Enum.map(station_events, fn station_event ->
       %VehicleEvent{
         service_date: service_date,
         cars: new_vp.cars,
         station_id: station_event.station_id,
-        vehicle_id: new_vp.vehicle_id,
+        vehicle_id: vehicle_id,
         rail_line: RailLine.from_route_id(new_vp.route_id),
         direction_id: station_event.direction,
         arrival_departure: station_event.arrival_departure,
@@ -187,7 +192,7 @@ defmodule Realtime.VehicleEventDetector do
     # In both of those cases, we don't want to record any events.
     # But sometimes trains won't appear until just after leaving their pullout location
     # In that case, we can record their recent departure from the pullout.
-    Enum.flat_map(@terminals, fn {pullout, departure_direction} ->
+    Enum.flat_map(terminals(), fn {pullout, departure_direction} ->
       if departure_direction != nil && new_vp.direction == departure_direction &&
            new_vp.station_id in Stations.next_stations(pullout, departure_direction) do
         case new_vp.current_status do
