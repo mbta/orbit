@@ -165,7 +165,7 @@ describe("RedirectUser from root /", () => {
   });
 
   describe("/ladder", () => {
-    test("Any users that are NOT BL/HR Stakeholders, Orbit TID Staff, BL trainstarters are redirected to /ladder", async () => {
+    test("RL trainstarters are redirected to /ladder", async () => {
       before(() => {
         mockGetMetaContent.mockReturnValue(ORBIT_RL_TRAINSTARTERS);
       });
@@ -184,17 +184,9 @@ describe("RedirectUser from root /", () => {
       });
     });
 
-    test("Any users that ARE BL/HR Stakeholders, Orbit TID Staff, BL trainstarters are not redirected to /ladder", async () => {
+    test("Any other users are redirected to /ladder", async () => {
       before(() => {
-        mockGetMetaContent.mockReturnValue(
-          ORBIT_BL_FFD +
-            "," +
-            ORBIT_BL_STAKEHOLDERS +
-            "," +
-            ORBIT_HR_STAKEHOLDERS +
-            "," +
-            ORBIT_TID_STAFF,
-        );
+        mockGetMetaContent.mockReturnValue("");
       });
 
       const view = render(
@@ -202,13 +194,12 @@ describe("RedirectUser from root /", () => {
           <Routes>
             <Route path="/" element={<RedirectUser />} />
             <Route path="/ladder" element={<LadderPage routeId="Red" />} />
-            <Route path="/landing" element={<LandingPage />} />
           </Routes>
         </MemoryRouter>,
       );
 
       await waitFor(() => {
-        expect(view.queryByText("Alewife")).not.toBeInTheDocument();
+        expect(view.getByText("Alewife")).toBeInTheDocument();
       });
     });
   });
