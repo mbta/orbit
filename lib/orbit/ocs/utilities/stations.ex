@@ -59,7 +59,7 @@ defmodule Orbit.Ocs.Utilities.Stations do
   # def ocs_to_gtfs("FOREST HILLS YARD"), do: ""
 
   # BL
-  # def ocs_to_gtfs("WONDERLAND YARD"), do: "place-wondl"
+  # def ocs_to_gtfs("WONDERLAND YARD"), do: ""
   def ocs_to_gtfs("WONDERLAND"), do: "place-wondl"
   def ocs_to_gtfs("REVERE BEACH"), do: "place-rbmnl"
   def ocs_to_gtfs("BEACHMONT"), do: "place-bmmnl"
