@@ -1,11 +1,6 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
-import {
-  ORBIT_BL_FFD,
-  ORBIT_BL_STAKEHOLDERS,
-  ORBIT_HR_STAKEHOLDERS,
-  ORBIT_TID_STAFF,
-} from "../groups";
+import { ORBIT_BL_FFD, ORBIT_TID_STAFF } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -86,14 +81,7 @@ const router = createBrowserRouter([
       {
         path: paths.operators,
         element: (
-          <RequireGroup
-            oneOf={[
-              ORBIT_BL_FFD,
-              ORBIT_BL_STAKEHOLDERS,
-              ORBIT_HR_STAKEHOLDERS,
-              ORBIT_TID_STAFF,
-            ]}
-          >
+          <RequireGroup oneOf={[ORBIT_BL_FFD, ORBIT_TID_STAFF]}>
             <Operators />
           </RequireGroup>
         ),
