@@ -10,7 +10,6 @@ defmodule Realtime.TripMatcher do
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
-  alias Realtime.VehicleEventDetector
 
   @event_search_cutoff_m -180
 
@@ -130,7 +129,15 @@ defmodule Realtime.TripMatcher do
     service_date = Util.Time.service_date_for_utc_datetime(now)
 
     search_cutoff = DateTime.add(now, @event_search_cutoff_m, :minute)
-    search_stations = Enum.map(VehicleEventDetector.terminals(), &elem(&1, 0))
+
+    # Get all of the `origin_station`s from all of the current matched ocs trips,
+    #  no matter what they are
+    search_stations =
+      vehicles
+      |> Enum.map(
+        &Stations.ocs_to_gtfs(&1.ocs_trips.current && &1.ocs_trips.current.origin_station)
+      )
+      |> Enum.uniq()
 
     # Get relevant events from the database
     events =
