@@ -61,7 +61,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   defp parse_sub_type(message, emitted_time)
 
   defp parse_sub_type(
-         {count, time, transitline, ["CON", trip_uid, train_consist, train_uid]},
+         {count, time, transitline, ["CON", trip_uid, train_consist, train_uid | _extra]},
          _emitted_time
        ) do
     con =
@@ -93,6 +93,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
             dest_sta,
             prev_trip_uid,
             next_trip_uid
+            | _extra
           ]},
          emitted_time
        ) do
@@ -126,7 +127,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["ASN", train_uid, trip_uid]}, _emitted_time) do
+  defp parse_sub_type(
+         {count, time, transitline, ["ASN", train_uid, trip_uid | _extra]},
+         _emitted_time
+       ) do
     %Orbit.Ocs.Message.TschAsnMessage{
       counter: count,
       timestamp: time,
@@ -144,7 +148,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["DEL", trip_uid, delete_status]}, _emitted_time) do
+  defp parse_sub_type(
+         {count, time, transitline, ["DEL", trip_uid, delete_status | _extra]},
+         _emitted_time
+       ) do
     %Orbit.Ocs.Message.TschDelMessage{
       counter: count,
       timestamp: time,
@@ -155,7 +162,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["LNK", trip_uid, prev_trip_uid, next_trip_uid]},
+         {count, time, transitline, ["LNK", trip_uid, prev_trip_uid, next_trip_uid | _extra]},
          _emitted_time
        ) do
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
@@ -171,7 +178,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["OFF", trip_uid, offset]}, _emitted_time) do
+  defp parse_sub_type(
+         {count, time, transitline, ["OFF", trip_uid, offset | _extra]},
+         _emitted_time
+       ) do
     %Orbit.Ocs.Message.TschOffMessage{
       counter: count,
       timestamp: time,
@@ -182,7 +192,8 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str]},
+         {count, time, transitline,
+          ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str | _extra]},
          emitted_time
        ) do
     ocs_route_id =
