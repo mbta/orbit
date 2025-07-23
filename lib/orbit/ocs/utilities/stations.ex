@@ -1,7 +1,6 @@
 defmodule Orbit.Ocs.Utilities.Stations do
   @spec ocs_to_gtfs(String.t() | nil) :: String.t() | nil
 
-  def ocs_to_gtfs(nil), do: nil
   # RL
   # def ocs_to_gtfs("ALEWIFE YARD"), do: ""
   def ocs_to_gtfs("ALEWIFE"), do: "place-alfcl"
@@ -74,4 +73,5 @@ defmodule Orbit.Ocs.Utilities.Stations do
   def ocs_to_gtfs("GOVERNMENT CENTER"), do: "place-gover"
   def ocs_to_gtfs("BOWDOIN"), do: "place-bomnl"
   # def ocs_to_gtfs("BOWDOIN STORAGE"), do: ""
+  def ocs_to_gtfs(_), do: nil
 end
