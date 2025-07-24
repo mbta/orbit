@@ -173,7 +173,15 @@ defmodule Realtime.TripMatcher do
 
   @spec at_scheduled_origin(Vehicle.t()) :: boolean()
   defp at_scheduled_origin(vehicle) do
-    vehicle.position.current_status == :STOPPED_AT and
+    # NB pm: Ashmont exception
+    #   Vehicles turning around south of Ashmont are IN_TRANSIT_TO Ashmont, but for the purposes of
+    #   determining whether we should show an Actual Departure, they are stopped there.
+    stopped =
+      vehicle.position.current_status == :STOPPED_AT or
+        (vehicle.position.station_id == "place-asmnl" and vehicle.position.direction == 1)
+
+    # Check if stopped at the OCS origin_station
+    stopped and
       vehicle.position.station_id ==
         Stations.ocs_to_gtfs(vehicle.ocs_trips.current.origin_station)
   end
