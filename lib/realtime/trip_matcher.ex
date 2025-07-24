@@ -161,7 +161,7 @@ defmodule Realtime.TripMatcher do
     Enum.map(vehicles, fn vehicle ->
       %{ocs_trips: %{current: current}} = vehicle
 
-      if current != nil do
+      if current != nil and !at_scheduled_origin(vehicle) do
         origin_station = Stations.ocs_to_gtfs(current.origin_station)
         actual_departure = Map.get(events, {current.train_uid, origin_station})
         put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
@@ -169,5 +169,12 @@ defmodule Realtime.TripMatcher do
         vehicle
       end
     end)
+  end
+
+  @spec at_scheduled_origin(Vehicle.t()) :: boolean()
+  defp at_scheduled_origin(vehicle) do
+    vehicle.position.current_status == :STOPPED_AT and
+      vehicle.position.station_id ==
+        Stations.ocs_to_gtfs(vehicle.ocs_trips.current.origin_station)
   end
 end

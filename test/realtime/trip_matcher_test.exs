@@ -496,5 +496,25 @@ defmodule Realtime.TripMatcherTest do
       assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 19:30:00Z])
     end
+
+    test "does not get actual departure when haven't left yet (must be an older event)" do
+      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+
+      vehicle =
+        build(:vehicle,
+          ocs_trips: %{current: ocs_trip},
+          position:
+            build(
+              :vehicle_position,
+              station_id: "place-asmnl",
+              current_status: :STOPPED_AT
+            )
+        )
+
+      insert(:vehicle_event, vehicle_id: "5484208E")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
   end
 end
