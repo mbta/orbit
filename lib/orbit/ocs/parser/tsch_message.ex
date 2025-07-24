@@ -3,6 +3,8 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   TSCH message type from OCS system, includes functions to parse all sub-types
   """
 
+  require Logger
+
   alias Orbit.Ocs.TransitLine
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
@@ -61,9 +63,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   defp parse_sub_type(message, emitted_time)
 
   defp parse_sub_type(
-         {count, time, transitline, ["CON", trip_uid, train_consist, train_uid | _extra]},
+         {count, time, transitline, ["CON", trip_uid, train_consist, train_uid | extra_values]},
          _emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_CON", extra_values)
+
     con =
       train_consist
       |> String.split(" ")
@@ -93,10 +97,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
             dest_sta,
             prev_trip_uid,
             next_trip_uid
-            | _extra
+            | extra_values
           ]},
          emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_NEW", extra_values)
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
 
@@ -128,9 +133,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["ASN", train_uid, trip_uid | _extra]},
+         {count, time, transitline, ["ASN", train_uid, trip_uid | extra_values]},
          _emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_ASN", extra_values)
+
     %Orbit.Ocs.Message.TschAsnMessage{
       counter: count,
       timestamp: time,
@@ -140,7 +147,10 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     }
   end
 
-  defp parse_sub_type({count, time, transitline, ["RLD" | _]}, _emitted_time) do
+  defp parse_sub_type({count, time, transitline, ["RLD" | rest]}, _emitted_time) do
+    # RLD may optionally contain one extra field for the schedule type
+    log_error_for_extra_fields(count, "TSCH_RLD", Enum.drop(rest, 1))
+
     %Orbit.Ocs.Message.TschRldMessage{
       counter: count,
       timestamp: time,
@@ -149,9 +159,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["DEL", trip_uid, delete_status | _extra]},
+         {count, time, transitline, ["DEL", trip_uid, delete_status | extra_values]},
          _emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_DEL", extra_values)
+
     %Orbit.Ocs.Message.TschDelMessage{
       counter: count,
       timestamp: time,
@@ -162,9 +174,12 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["LNK", trip_uid, prev_trip_uid, next_trip_uid | _extra]},
+         {count, time, transitline,
+          ["LNK", trip_uid, prev_trip_uid, next_trip_uid | extra_values]},
          _emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_LNK", extra_values)
+
     prev_trip_uid = if prev_trip_uid == "0", do: nil, else: prev_trip_uid
     next_trip_uid = if next_trip_uid == "0", do: nil, else: next_trip_uid
 
@@ -179,9 +194,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
   end
 
   defp parse_sub_type(
-         {count, time, transitline, ["OFF", trip_uid, offset | _extra]},
+         {count, time, transitline, ["OFF", trip_uid, offset | extra_values]},
          _emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_OFF", extra_values)
+
     %Orbit.Ocs.Message.TschOffMessage{
       counter: count,
       timestamp: time,
@@ -193,9 +210,11 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   defp parse_sub_type(
          {count, time, transitline,
-          ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str | _extra]},
+          ["DST", trip_uid, dest_sta, ocs_route_id_str, sched_arr_str | extra_values]},
          emitted_time
        ) do
+    log_error_for_extra_fields(count, "TSCH_DST", extra_values)
+
     ocs_route_id =
       if ocs_route_id_str == "",
         do: nil,
@@ -258,5 +277,16 @@ defmodule Orbit.Ocs.Parser.TschMessage do
     else
       str
     end
+  end
+
+  @spec log_error_for_extra_fields(integer, String.t(), list()) :: nil
+  defp log_error_for_extra_fields(message_counter, message_type, values)
+       when length(values) > 0 do
+    Logger.error(
+      "Orbit.Ocs.Parser.TschMessage: Unexpected extra values at end of message count=#{inspect(message_counter)} type=#{inspect(message_type)} extra_values=#{inspect(values)}"
+    )
+  end
+
+  defp log_error_for_extra_fields(_, _, _) do
   end
 end

@@ -1,5 +1,8 @@
 defmodule Orbit.Ocs.Message.TschMessageTest do
   use ExUnit.Case, async: true
+
+  import Test.Support.Helpers
+
   alias Orbit.Ocs.Message.TschTagMessage.CarTag
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
@@ -79,41 +82,50 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
     end
 
     test "parses TSCH NEW message" do
-      assert Orbit.Ocs.Parser.TschMessage.parse(
-               {3083, :tsch, @test_time,
-                [
-                  "O",
-                  "NEW",
-                  "9866D295",
-                  "S",
-                  "R",
-                  "05:16",
-                  "05:53",
-                  "S903_",
-                  "OAK GROVE",
-                  "FOREST HILLS",
-                  "9866D294",
-                  "9866D296",
-                  "extra_unexpected_field"
-                ]},
-               @test_time
-             ) ==
-               {:ok,
-                %Orbit.Ocs.Message.TschNewMessage{
-                  counter: 3083,
-                  timestamp: @test_time,
-                  transitline: :orange,
-                  trip_uid: "9866D295",
-                  add_type: "S",
-                  trip_type: "R",
-                  sched_dep: OcsTime.in_ocs_tz(~N[2017-03-17 05:16:00]),
-                  sched_arr: OcsTime.in_ocs_tz(~N[2017-03-17 05:53:00]),
-                  ocs_route_id: "S903_",
-                  origin_sta: "OAK GROVE",
-                  dest_sta: "FOREST HILLS",
-                  prev_trip_uid: "9866D294",
-                  next_trip_uid: "9866D296"
-                }}
+      log =
+        capture_log do
+          assert Orbit.Ocs.Parser.TschMessage.parse(
+                   {3083, :tsch, @test_time,
+                    [
+                      "O",
+                      "NEW",
+                      "9866D295",
+                      "S",
+                      "R",
+                      "05:16",
+                      "05:53",
+                      "S903_",
+                      "OAK GROVE",
+                      "FOREST HILLS",
+                      "9866D294",
+                      "9866D296",
+                      "extra_unexpected_field"
+                    ]},
+                   @test_time
+                 ) ==
+                   {:ok,
+                    %Orbit.Ocs.Message.TschNewMessage{
+                      counter: 3083,
+                      timestamp: @test_time,
+                      transitline: :orange,
+                      trip_uid: "9866D295",
+                      add_type: "S",
+                      trip_type: "R",
+                      sched_dep: OcsTime.in_ocs_tz(~N[2017-03-17 05:16:00]),
+                      sched_arr: OcsTime.in_ocs_tz(~N[2017-03-17 05:53:00]),
+                      ocs_route_id: "S903_",
+                      origin_sta: "OAK GROVE",
+                      dest_sta: "FOREST HILLS",
+                      prev_trip_uid: "9866D294",
+                      next_trip_uid: "9866D296"
+                    }}
+        end
+
+      # Check that logs complaint about extra fields
+      assert Enum.any?(log, fn line ->
+               line ==
+                 ~S([error] Orbit.Ocs.Parser.TschMessage: Unexpected extra values at end of message count=3083 type="TSCH_NEW" extra_values=["extra_unexpected_field"])
+             end)
     end
 
     test "parses TSCH NEW message with incomplete data (in this case, an RAD train)" do
