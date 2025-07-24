@@ -155,10 +155,10 @@ defmodule Orbit.Factory do
       service_date: ~D[2025-07-08],
       rail_line: :red,
       uid: "12345678",
-      scheduled_departure: ~U[2025-07-10 16:00:00Z],
-      scheduled_arrival: ~U[2025-07-10 17:00:00Z],
-      origin_station: "place-asmnl",
-      destination_station: "place-alfcl",
+      scheduled_departure: ~U[2025-07-08 16:00:00Z],
+      scheduled_arrival: ~U[2025-07-08 17:00:00Z],
+      origin_station: "ASHMONT",
+      destination_station: "ALEWIFE",
       route: "Red",
       offset: 4,
       train_uid: "TRAIN_UID"
@@ -171,6 +171,19 @@ defmodule Orbit.Factory do
       rail_line: :red,
       uid: "5484208E",
       cars: ["1736", "1737", "1724", "1725", "1741", "1740"]
+    }
+  end
+
+  def vehicle_event_factory do
+    %Realtime.Data.VehicleEvent{
+      service_date: ~D[2025-07-08],
+      rail_line: :red,
+      cars: ["1736", "1737", "1724", "1725", "1741", "1740"],
+      station_id: "place-asmnl",
+      vehicle_id: "5484208E",
+      direction_id: 1,
+      arrival_departure: :departure,
+      timestamp: ~U[2025-07-08 16:05:24Z]
     }
   end
 end

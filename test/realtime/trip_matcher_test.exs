@@ -1,5 +1,5 @@
 defmodule Realtime.TripMatcherTest do
-  use ExUnit.Case, async: true
+  use Orbit.DataCase, async: true
 
   import Orbit.Factory
 
@@ -434,6 +434,67 @@ defmodule Realtime.TripMatcherTest do
                  build(:vehicle),
                  build(:vehicle)
                ])
+    end
+  end
+
+  describe "populate_actual_departures" do
+    test "gets an actual departure from the database based on vehicle_id" do
+      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
+
+    test "uses the most recent vehicle event" do
+      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+      insert(:vehicle_event, vehicle_id: "5484208E", timestamp: ~U[2025-07-08 16:25:24Z])
+
+      assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:25:24Z]}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
+
+    test "can handle multiple" do
+      ocs_trip = insert(:ocs_trip, uid: "trip1", train_uid: "5484208E")
+      ocs_trip2 = insert(:ocs_trip, uid: "trip2", train_uid: "5484208F")
+      ocs_trip3 = insert(:ocs_trip, uid: "trip3", train_uid: "5484208G")
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      vehicle2 = build(:vehicle, ocs_trips: %{current: ocs_trip2})
+      vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+      insert(:vehicle_event, vehicle_id: "5484208F", timestamp: ~U[2025-07-08 16:25:24Z])
+
+      assert [
+               %{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}},
+               %{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:25:24Z]}}},
+               %{ocs_trips: %{current: %{actual_departure: nil}}}
+             ] =
+               TripMatcher.populate_actual_departures(
+                 [vehicle, vehicle2, vehicle3],
+                 ~U[2025-07-08 16:30:00Z]
+               )
+    end
+
+    test "departures from other stations do not apply" do
+      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      # The OCS trip starts at Ashmont
+      insert(:vehicle_event, vehicle_id: "5484208E", station_id: "place-harsq")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
+
+    test "does not get actual departure from too long ago" do
+      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 19:30:00Z])
     end
   end
 end

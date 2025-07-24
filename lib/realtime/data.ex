@@ -9,4 +9,13 @@ defmodule Realtime.Data do
   # def route_id_from_string("Orange"), do: :Orange
   def route_id_from_string("Red"), do: :Red
   def route_id_from_string(_), do: nil
+
+  @spec unprefixed_vehicle_id(String.t()) :: String.t()
+  def unprefixed_vehicle_id(vehicle_id) do
+    case vehicle_id do
+      "O-" <> vehicle_id -> vehicle_id
+      "R-" <> vehicle_id -> vehicle_id
+      "B-" <> vehicle_id -> vehicle_id
+    end
+  end
 end
