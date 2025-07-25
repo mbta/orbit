@@ -7,10 +7,13 @@ describe("vehicleFromVehicleData", () => {
       vehicleFromVehicleData({
         ocs_trips: {
           current: {
+            uid: "11111111",
+            next_uid: null,
             origin_station: "place-asmnl",
             destination_station: "place-alfcl",
             offset: 0,
             scheduled_departure: "2025-04-29T19:39:49Z",
+            departed: true,
             actual_departure: "2025-04-29T19:40:49Z",
             scheduled_arrival: "2025-04-29T20:39:49Z",
             deleted: false,
@@ -69,10 +72,13 @@ describe("vehicleFromVehicleData", () => {
       },
       ocsTrips: {
         current: {
+          uid: "11111111",
+          nextUid: null,
           originStation: "place-asmnl",
           destinationStation: "place-alfcl",
           offset: 0,
           scheduledDeparture: dateTimeFromISO("2025-04-29T19:39:49Z"),
+          departed: true,
           actualDeparture: dateTimeFromISO("2025-04-29T19:40:49Z"),
           scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
           deleted: false,
@@ -87,10 +93,13 @@ describe("vehicleFromVehicleData", () => {
       vehicleFromVehicleData({
         ocs_trips: {
           current: {
+            uid: "11111111",
+            next_uid: null,
             origin_station: "place-asmnl",
             destination_station: "place-alfcl",
             offset: 0,
             scheduled_departure: "2025-04-29T19:39:49Z",
+            departed: true,
             actual_departure: "2025-04-29T19:40:49Z",
             scheduled_arrival: "2025-04-29T20:39:49Z",
             deleted: false,
@@ -116,10 +125,13 @@ describe("vehicleFromVehicleData", () => {
     ).toEqual({
       ocsTrips: {
         current: {
+          uid: "11111111",
+          nextUid: null,
           originStation: "place-asmnl",
           destinationStation: "place-alfcl",
           offset: 0,
           scheduledDeparture: dateTimeFromISO("2025-04-29T19:39:49Z"),
+          departed: true,
           actualDeparture: dateTimeFromISO("2025-04-29T19:40:49Z"),
           scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
           deleted: false,
