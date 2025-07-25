@@ -1,6 +1,7 @@
 import { LadderPage } from "../../../components/ladderPage/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
+import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent } from "../../../util/metadata";
 import { vehicleFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
@@ -20,6 +21,13 @@ const mockGetMetaContent = getMetaContent as jest.MockedFunction<
   typeof getMetaContent
 >;
 
+jest.mock("../../../telemetry/trackingEvents", () => ({
+  trackSideBarOpened: jest.fn(),
+}));
+const mockTrackSideBarOpened = trackSideBarOpened as jest.MockedFunction<
+  typeof trackSideBarOpened
+>;
+
 describe("LadderPage SideBar", () => {
   describe("with red line sidebar permissions", () => {
     beforeAll(() => {
@@ -31,6 +39,9 @@ describe("LadderPage SideBar", () => {
       const view = render(<LadderPage routeId="Red" />);
       await user.click(view.getByText("1877"));
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      expect(mockTrackSideBarOpened).toHaveBeenCalledWith({
+        vehicle: vehicleFactory.build(),
+      });
     });
 
     test("can close SideBar with close button", async () => {

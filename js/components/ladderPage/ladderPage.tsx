@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { RouteId } from "../../models/common";
+import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
 import { Ladders } from "./ladder";
 import { SideBar, SideBarSelection } from "./sidebar";
@@ -9,6 +10,16 @@ import { ReactElement, useCallback, useEffect, useState } from "react";
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const [sideBarSelection, setSideBarSelection] =
     useState<SideBarSelection | null>(null);
+
+  const openSideBar = useCallback(
+    (selection: SideBarSelection | null) => {
+      if (selection !== null) {
+        trackSideBarOpened(selection);
+      }
+      setSideBarSelection(selection);
+    },
+    [setSideBarSelection],
+  );
 
   const close = useCallback(() => {
     setSideBarSelection(null);
@@ -44,7 +55,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       >
         <Ladders
           routeId={routeId}
-          setSideBarSelection={setSideBarSelection}
+          setSideBarSelection={openSideBar}
           sideBarSelection={sideBarSelection}
         />
       </div>
