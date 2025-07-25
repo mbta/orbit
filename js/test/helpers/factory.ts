@@ -43,8 +43,8 @@ export const vehiclePositionFactory = Factory.define<VehiclePosition>(() => ({
 }));
 
 export const stopTimeUpdateFactory = Factory.define<StopTimeUpdate>(() => ({
-  predictedArrivalTime: dateTimeFromISO("2025-07-03T21:51:38Z"),
-  predictedDepartureTime: dateTimeFromISO("2025-07-03T21:53:38Z"),
+  predictedArrivalTime: dateTimeFromISO("2025-04-29T21:51:38Z"),
+  predictedDepartureTime: dateTimeFromISO("2025-04-29T21:53:38Z"),
   stationId: "place-brdwy",
 }));
 
