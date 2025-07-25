@@ -468,9 +468,30 @@ defmodule Realtime.TripMatcherTest do
       insert(:vehicle_event, vehicle_id: "5484208F", timestamp: ~U[2025-07-08 16:25:24Z])
 
       assert [
-               %{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}},
-               %{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:25:24Z]}}},
-               %{ocs_trips: %{current: %{actual_departure: nil}}}
+               %{
+                 ocs_trips: %{
+                   current: %{
+                     departed: true,
+                     actual_departure: ~U[2025-07-08 16:05:24Z]
+                   }
+                 }
+               },
+               %{
+                 ocs_trips: %{
+                   current: %{
+                     departed: true,
+                     actual_departure: ~U[2025-07-08 16:25:24Z]
+                   }
+                 }
+               },
+               %{
+                 ocs_trips: %{
+                   current: %{
+                     departed: true,
+                     actual_departure: nil
+                   }
+                 }
+               }
              ] =
                TripMatcher.populate_actual_departures(
                  [vehicle, vehicle2, vehicle3],
@@ -484,7 +505,7 @@ defmodule Realtime.TripMatcherTest do
       # The OCS trip starts at Ashmont
       insert(:vehicle_event, vehicle_id: "5484208E", station_id: "place-harsq")
 
-      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
     end
 
@@ -493,7 +514,7 @@ defmodule Realtime.TripMatcherTest do
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
       insert(:vehicle_event, vehicle_id: "5484208E")
 
-      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 19:30:00Z])
     end
 
@@ -513,7 +534,7 @@ defmodule Realtime.TripMatcherTest do
 
       insert(:vehicle_event, vehicle_id: "5484208E")
 
-      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+      assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
     end
 
@@ -534,7 +555,7 @@ defmodule Realtime.TripMatcherTest do
 
       insert(:vehicle_event, vehicle_id: "5484208E")
 
-      assert [%{ocs_trips: %{current: %{actual_departure: nil}}}] =
+      assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
     end
   end
