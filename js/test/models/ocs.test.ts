@@ -5,6 +5,8 @@ describe("ocsTripFromData", () => {
   test("parses an OCS trip from raw data", () => {
     expect(
       ocsTripFromData({
+        uid: "11111111",
+        next_uid: null,
         scheduled_departure: "2025-04-29T21:41:00.000Z",
         actual_departure: "2025-04-29T21:43:00.000Z",
         scheduled_arrival: "2025-04-29T22:24:00.000Z",
@@ -14,6 +16,8 @@ describe("ocsTripFromData", () => {
         deleted: false,
       }),
     ).toEqual({
+      uid: "11111111",
+      nextUid: null,
       scheduledDeparture: dateTimeFromISO("2025-04-29T21:41:00.000Z"),
       actualDeparture: dateTimeFromISO("2025-04-29T21:43:00.000Z"),
       scheduledArrival: dateTimeFromISO("2025-04-29T22:24:00.000Z"),
