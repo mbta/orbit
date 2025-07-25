@@ -1,6 +1,12 @@
 import { reload } from "../browser";
 import { SocketProvider } from "../contexts/socketContext";
-import { ORBIT_BL_FFD, ORBIT_TID_STAFF } from "../groups";
+import {
+  ORBIT_BL_FFD,
+  ORBIT_BL_STAKEHOLDERS,
+  ORBIT_HR_STAKEHOLDERS,
+  ORBIT_TID_STAFF,
+  userHasOneOf,
+} from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
 import { Header } from "./header";
@@ -8,12 +14,12 @@ import { LadderPage } from "./ladderPage/ladderPage";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
-import { RedirectUser } from "./redirectUser";
 import { RequireGroup } from "./requireGroup";
 import { captureException } from "@sentry/react";
 import { ReactElement, useEffect } from "react";
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
   useRouteError,
@@ -51,6 +57,23 @@ const ErrorBoundary = (): ReactElement => {
   );
 };
 
+// redirect users from root "/" to different endpoints based off their usergroups
+export const UserGroupRedirects = () => {
+  if (
+    userHasOneOf([
+      ORBIT_TID_STAFF,
+      ORBIT_BL_STAKEHOLDERS,
+      ORBIT_HR_STAKEHOLDERS,
+    ])
+  ) {
+    return <Navigate to={"/landing"} />;
+  } else if (userHasOneOf([ORBIT_BL_FFD])) {
+    return <Navigate to={"/operators"} />;
+  } else {
+    return <Navigate to={"/ladder"} />;
+  }
+};
+
 const router = createBrowserRouter([
   {
     errorElement: <ErrorBoundary />,
@@ -64,7 +87,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: paths.root,
-        element: <RedirectUser />,
+        element: <UserGroupRedirects />,
       },
       {
         path: paths.menu,
