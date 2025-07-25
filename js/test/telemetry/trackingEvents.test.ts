@@ -1,5 +1,9 @@
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
-import { ocsTripFactory, vehicleFactory } from "../helpers/factory";
+import {
+  ocsTripFactory,
+  tripUpdateFactory,
+  vehicleFactory,
+} from "../helpers/factory";
 import { FullStory } from "@fullstory/browser";
 
 jest.mock("@fullstory/browser", () => ({
@@ -74,6 +78,24 @@ describe("trackSideBarOpened", () => {
             "current_scheduled_arrival",
             "current_scheduled_departure",
           ],
+        },
+      });
+    });
+
+    test("report when estimated arrival is missing", () => {
+      const vehicle = vehicleFactory.build({
+        tripUpdate: tripUpdateFactory.build({
+          stopTimeUpdates: [],
+        }),
+      });
+
+      trackSideBarOpened({ vehicle });
+
+      expect(FullStory).toHaveBeenCalledWith("trackEvent", {
+        name: expectedEventName,
+        properties: {
+          train_uid: "R-5482CAAA",
+          missing_data: ["current_estimated_arrival"],
         },
       });
     });

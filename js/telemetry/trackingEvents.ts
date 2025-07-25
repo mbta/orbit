@@ -1,5 +1,6 @@
 import { SideBarSelection } from "../components/ladderPage/sidebar";
 import { OCSTrip } from "../models/ocs";
+import { estimatedArrivalOfVehicle } from "../models/vehicle";
 import { FullStory } from "@fullstory/browser";
 
 export enum FullStoryEventName {
@@ -17,6 +18,8 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
     (property) => `current_${property}`,
   );
 
+  const missingEstimatedArrival = !estimatedArrivalOfVehicle(vehicle);
+
   // Only evaluate "missing" next trip properties if the current trip is assigned a
   // next trip UID by OCS.
   const hasNext = currentTrip?.nextUid;
@@ -25,7 +28,11 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
       missingOcsTripProperties(nextTrip).map((property) => `next_${property}`)
     : [];
 
-  const missing = [...missingFromCurrent, ...missingFromNext].sort();
+  const missing = [
+    ...missingFromCurrent,
+    ...(missingEstimatedArrival ? ["current_estimated_arrival"] : []),
+    ...missingFromNext,
+  ].sort();
 
   console.log("will log FS event", {
     // TODO
