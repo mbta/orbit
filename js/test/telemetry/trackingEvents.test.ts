@@ -43,6 +43,7 @@ describe("trackSideBarOpened", () => {
         properties: {
           train_uid: "R-5482CAAA",
           missing_data: [
+            "current_actual_departure",
             "current_destination_station",
             "current_origin_station",
             "current_scheduled_arrival",

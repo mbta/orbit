@@ -12,31 +12,35 @@ export enum FullStoryEventName {
 export const trackSideBarOpened = (selection: SideBarSelection) => {
   const { vehicle } = selection;
   const currentTrip = vehicle.ocsTrips.current;
-  const [nextTrip] = vehicle.ocsTrips.next;
-
-  const missingFromCurrent = missingOcsTripProperties(currentTrip).map(
-    (property) => `current_${property}`,
-  );
-
-  const missingEstimatedArrival = !estimatedArrivalOfVehicle(vehicle);
-
-  const missingActualDeparture =
-    currentTrip?.departed && !currentTrip.actualDeparture;
+  const nextTrip = vehicle.ocsTrips.next[0] as OCSTrip | undefined;
 
   // Only evaluate "missing" next trip properties if the current trip is assigned a
   // next trip UID by OCS.
-  const hasNext = currentTrip?.nextUid;
-  const missingFromNext =
-    hasNext ?
-      missingOcsTripProperties(nextTrip).map((property) => `next_${property}`)
-    : [];
+  const expectNext = !!currentTrip?.nextUid;
 
-  const missing = [
-    ...missingFromCurrent,
-    ...(missingEstimatedArrival ? ["current_estimated_arrival"] : []),
-    ...(missingActualDeparture ? ["current_actual_departure"] : []),
-    ...missingFromNext,
-  ].sort();
+  const missing = Object.entries({
+    // OCS Current Trip
+    current_trip: !currentTrip,
+    current_origin_station: !currentTrip?.originStation,
+    current_destination_station: !currentTrip?.destinationStation,
+    current_scheduled_departure: !currentTrip?.scheduledDeparture,
+    current_scheduled_arrival: !currentTrip?.scheduledArrival,
+    current_actual_departure:
+      !currentTrip || (currentTrip.departed && !currentTrip.actualDeparture),
+
+    // Other fields associated with current trip
+    current_estimated_arrival: !estimatedArrivalOfVehicle(vehicle),
+
+    // OCS Next Trip
+    next_trip: expectNext && !nextTrip,
+    next_origin_station: expectNext && !nextTrip?.originStation,
+    next_destination_station: expectNext && !nextTrip?.destinationStation,
+    next_scheduled_departure: expectNext && !nextTrip?.scheduledDeparture,
+    next_scheduled_arrival: expectNext && !nextTrip?.scheduledArrival,
+  })
+    .filter(([_, value]) => value)
+    .map(([key, _]) => key)
+    .sort();
 
   console.log("will log FS event", {
     // TODO
@@ -55,16 +59,4 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
       missing_data: missing,
     },
   });
-};
-
-const missingOcsTripProperties = (trip: OCSTrip | null) => {
-  return Object.entries({
-    trip: !trip,
-    origin_station: !trip?.originStation,
-    destination_station: !trip?.destinationStation,
-    scheduled_departure: !trip?.scheduledDeparture,
-    scheduled_arrival: !trip?.scheduledArrival,
-  })
-    .filter(([_, value]) => !!value)
-    .map(([key, _]) => key);
 };
