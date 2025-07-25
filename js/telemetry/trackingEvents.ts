@@ -20,6 +20,9 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
 
   const missingEstimatedArrival = !estimatedArrivalOfVehicle(vehicle);
 
+  const missingActualDeparture =
+    currentTrip?.departed && !currentTrip.actualDeparture;
+
   // Only evaluate "missing" next trip properties if the current trip is assigned a
   // next trip UID by OCS.
   const hasNext = currentTrip?.nextUid;
@@ -31,6 +34,7 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
   const missing = [
     ...missingFromCurrent,
     ...(missingEstimatedArrival ? ["current_estimated_arrival"] : []),
+    ...(missingActualDeparture ? ["current_actual_departure"] : []),
     ...missingFromNext,
   ].sort();
 

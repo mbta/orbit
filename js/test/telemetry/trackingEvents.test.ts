@@ -100,6 +100,48 @@ describe("trackSideBarOpened", () => {
       });
     });
 
+    test("report when actual departure is missing for departed trip", () => {
+      const vehicle = vehicleFactory.build({
+        ocsTrips: {
+          current: ocsTripFactory.build({
+            departed: true,
+            actualDeparture: null,
+          }),
+        },
+      });
+
+      trackSideBarOpened({ vehicle });
+
+      expect(FullStory).toHaveBeenCalledWith("trackEvent", {
+        name: expectedEventName,
+        properties: {
+          train_uid: "R-5482CAAA",
+          missing_data: ["current_actual_departure"],
+        },
+      });
+    });
+
+    test("do not report actual departure as missing if trip has not departed", () => {
+      const vehicle = vehicleFactory.build({
+        ocsTrips: {
+          current: ocsTripFactory.build({
+            departed: null,
+            actualDeparture: null,
+          }),
+        },
+      });
+
+      trackSideBarOpened({ vehicle });
+
+      expect(FullStory).toHaveBeenCalledWith("trackEvent", {
+        name: expectedEventName,
+        properties: {
+          train_uid: "R-5482CAAA",
+          missing_data: [],
+        },
+      });
+    });
+
     test("report when next trip is missing", () => {
       const vehicle = vehicleFactory.build({
         ocsTrips: {
