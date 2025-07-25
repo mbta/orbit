@@ -27,6 +27,15 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
 
   const missing = [...missingFromCurrent, ...missingFromNext].sort();
 
+  console.log("will log FS event", {
+    // TODO
+    name: FullStoryEventName.SideBarOpened,
+    properties: {
+      train_uid: vehicle.vehiclePosition.vehicleId,
+      missing_data: missing,
+    },
+  });
+
   FullStory("trackEvent", {
     // TODO
     name: FullStoryEventName.SideBarOpened,

@@ -15,7 +15,17 @@ const sentryDsn = getMetaContent("sentryDsn");
 
 // FullStory
 if (fullStoryOrgId !== null && userEmail !== null) {
-  initFullStory({ orgId: fullStoryOrgId });
+  console.log("WILL ENABLE FOR ORG ID", fullStoryOrgId);
+  initFullStory(
+    {
+      orgId: fullStoryOrgId,
+      debug: true,
+      // devMode: true
+    },
+    ({ sessionUrl }) => {
+      console.log(`Started FS : ${sessionUrl}`);
+    },
+  );
   FullStory("setIdentity", {
     uid: userEmail,
     properties: {
