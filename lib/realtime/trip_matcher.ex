@@ -164,6 +164,8 @@ defmodule Realtime.TripMatcher do
       if current != nil and !at_scheduled_origin(vehicle) do
         origin_station = Stations.ocs_to_gtfs(current.origin_station)
         actual_departure = Map.get(events, {current.train_uid, origin_station})
+
+        vehicle = put_in(vehicle.ocs_trips.current.departed, true)
         put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
       else
         vehicle
