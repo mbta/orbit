@@ -13,7 +13,7 @@ defmodule Orbit.BadgeSerial do
     belongs_to(:employee, Employee)
     field(:badge_serial, :string)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(badge_serial, attrs \\ %{}) do

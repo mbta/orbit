@@ -48,7 +48,7 @@ defmodule Orbit.Ocs.Trip do
     field(:destination_station, :string)
     field(:deleted, :boolean)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, attrs \\ %{}) do

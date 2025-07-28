@@ -48,6 +48,6 @@ defmodule Realtime.Data.VehiclePosition do
     field(:timestamp, :utc_datetime)
     field(:vehicle_id, :string, virtual: true, default: nil)
     field(:trip_id, :string, virtual: true, default: nil)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 end

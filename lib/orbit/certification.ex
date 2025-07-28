@@ -19,7 +19,7 @@ defmodule Orbit.Certification do
     field(:type, Ecto.Enum, values: [right_of_way: 0, rail: 1])
     field(:rail_line, RailLine)
     field(:expires, :date)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, attrs \\ %{}) do
