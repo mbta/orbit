@@ -1,7 +1,7 @@
 import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import { Vehicle } from "../../models/vehicle";
+import { estimatedArrivalOfVehicle, Vehicle } from "../../models/vehicle";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
@@ -50,10 +50,7 @@ export const SideBar = ({
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
-  const tripUpdate = vehicle.tripUpdate;
-  const stu =
-    tripUpdate?.stopTimeUpdates[tripUpdate.stopTimeUpdates.length - 1];
-  const estArrival = stu?.predictedArrivalTime;
+  const estArrival = estimatedArrivalOfVehicle(vehicle);
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
