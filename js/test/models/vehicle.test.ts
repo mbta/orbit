@@ -7,6 +7,8 @@ describe("vehicleFromVehicleData", () => {
       vehicleFromVehicleData({
         ocs_trips: {
           current: {
+            uid: "11111111",
+            next_uid: null,
             origin_station: "place-asmnl",
             destination_station: "place-alfcl",
             offset: 0,
@@ -69,6 +71,8 @@ describe("vehicleFromVehicleData", () => {
       },
       ocsTrips: {
         current: {
+          uid: "11111111",
+          nextUid: null,
           originStation: "place-asmnl",
           destinationStation: "place-alfcl",
           offset: 0,
@@ -87,6 +91,8 @@ describe("vehicleFromVehicleData", () => {
       vehicleFromVehicleData({
         ocs_trips: {
           current: {
+            uid: "11111111",
+            next_uid: null,
             origin_station: "place-asmnl",
             destination_station: "place-alfcl",
             offset: 0,
@@ -116,6 +122,8 @@ describe("vehicleFromVehicleData", () => {
     ).toEqual({
       ocsTrips: {
         current: {
+          uid: "11111111",
+          nextUid: null,
           originStation: "place-asmnl",
           destinationStation: "place-alfcl",
           offset: 0,
