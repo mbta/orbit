@@ -114,7 +114,7 @@ export const lateArrival = (vehicle: Vehicle): number | null => {
 /**
  * lateForNext
  * @param vehicle
- * @returns Next departure - estimated time in minutes. + = cannot make the next on time.
+ * @returns Estimated time - next departure in minutes. + = cannot make the next on time.
  */
 export const lateForNext = (vehicle: Vehicle): number | null => {
   const nextTrip =
