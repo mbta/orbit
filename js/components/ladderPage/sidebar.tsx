@@ -126,7 +126,7 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       {showLateBox && (
         <Late
           departedLate={null}
-          arrivingLate={Math.round(nextDepMin)}
+          arrivingLate={nextDepMin}
           arrivingLateText={"next trip's departure time."}
         />
       )}
@@ -193,7 +193,7 @@ const Late = ({
             <p>
               Departed{" "}
               <span className="font-bold">
-                {Math.floor(departedLate)} min{" "}
+                {formatDelta(departedLate)} min{" "}
                 {departedLate >= 0 ? "late" : "early"}
               </span>
               .
@@ -203,7 +203,7 @@ const Late = ({
             <p>
               Arriving{" "}
               <span className="font-bold">
-                {Math.floor(arrivingLate)} min{" "}
+                {formatDelta(arrivingLate)} min{" "}
                 {arrivingLate >= 0 ? "later" : "earlier"}
               </span>{" "}
               than {arrivingLateText}
@@ -213,4 +213,8 @@ const Late = ({
       </div>
     </div>
   );
+};
+
+const formatDelta = (min: number) => {
+  return Math.abs(Math.floor(min));
 };
