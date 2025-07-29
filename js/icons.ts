@@ -1,12 +1,13 @@
 export type IconName =
   | "back"
+  | "blue-line"
   | "clipboard"
+  | "clock"
   | "feedback"
   | "help"
-  | "blue-line"
-  | "red-line"
   | "info"
   | "logo"
   | "menu"
+  | "red-line"
   | "shield"
   | "sign-out";

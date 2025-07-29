@@ -1,10 +1,16 @@
 import { OCSTrip, OCSTripData, ocsTripFromData } from "./ocs";
-import { TripUpdate, TripUpdateData, tripUpdateFromData } from "./tripUpdate";
+import {
+  estimatedArrival,
+  TripUpdate,
+  TripUpdateData,
+  tripUpdateFromData,
+} from "./tripUpdate";
 import {
   VehiclePosition,
   VehiclePositionData,
   vehiclePositionFromData,
 } from "./vehiclePosition";
+import { DateTime } from "luxon";
 import z from "zod";
 
 export type Vehicle = {
@@ -49,4 +55,80 @@ export const vehicleFromVehicleData = (vehicleData: VehicleData): Vehicle => {
       next: vehicleData.ocs_trips.next.map(ocsTripFromData),
     },
   };
+};
+
+const minutesAfter = (event: DateTime, base: DateTime) => {
+  // + = event later than base
+  return event.diff(base, "minutes").minutes;
+};
+
+const getEffectiveTime = (
+  scheduled: DateTime | null,
+  offset: number | null,
+) => {
+  if (scheduled === null) {
+    return null;
+  }
+
+  if (offset === null) {
+    return scheduled;
+  }
+
+  return scheduled.plus({ minutes: offset });
+};
+
+/**
+ * late
+ * @param vehicle
+ * @returns Actual departure - scheduled departure in minutes. + = left late.
+ */
+export const lateDeparture = (vehicle: Vehicle): number | null => {
+  const offset = vehicle.ocsTrips.current?.offset ?? null;
+  const originalScheduled =
+    vehicle.ocsTrips.current?.scheduledDeparture ?? null;
+
+  const scheduled = getEffectiveTime(originalScheduled, offset);
+  const actual = vehicle.ocsTrips.current?.actualDeparture ?? null;
+
+  if (scheduled === null || actual === null) {
+    return null;
+  }
+  return minutesAfter(actual, scheduled);
+};
+
+/**
+ * late
+ * @param vehicle
+ * @returns Estimated time - scheduled time in minutes. + = arriving late.
+ */
+export const lateArrival = (vehicle: Vehicle): number | null => {
+  const scheduled = vehicle.ocsTrips.current?.scheduledArrival;
+  const estimated = estimatedArrival(vehicle.tripUpdate);
+
+  if (scheduled === null || scheduled === undefined || estimated === null) {
+    return null;
+  }
+  return minutesAfter(estimated, scheduled);
+};
+
+/**
+ * lateForNext
+ * @param vehicle
+ * @returns Estimated time - next departure in minutes. + = cannot make the next on time.
+ */
+export const lateForNext = (vehicle: Vehicle): number | null => {
+  const nextTrip =
+    vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
+  if (nextTrip === null) {
+    return null;
+  }
+
+  const estimated = estimatedArrival(vehicle.tripUpdate);
+  const nextDeparture = nextTrip.scheduledDeparture;
+
+  if (estimated === null || nextDeparture === null) {
+    return null;
+  }
+
+  return minutesAfter(estimated, nextDeparture);
 };

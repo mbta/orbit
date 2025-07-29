@@ -63,3 +63,12 @@ export const TripUpdateData = z.object({
   stop_time_updates: z.array(StopTimeUpdateData),
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
+
+export const estimatedArrival = (tu?: TripUpdate): DateTime | null => {
+  if (tu == undefined || tu.stopTimeUpdates.length === 0) {
+    return null;
+  }
+
+  const stu = tu.stopTimeUpdates[tu.stopTimeUpdates.length - 1];
+  return stu.predictedArrivalTime;
+};
