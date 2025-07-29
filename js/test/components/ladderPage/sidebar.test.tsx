@@ -205,7 +205,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min early/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
       });
 
       test("shows if departed 5 minutes late", () => {
@@ -225,7 +225,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min late/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
       });
 
       test("shows if departed 6 minutes late (but really 5 because of the offset)", () => {
@@ -246,7 +246,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min late/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
       });
 
       test("does not show if departed 4 minutes late", () => {
@@ -266,7 +266,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/4 min late/)).not.toBeInTheDocument();
+        expect(view.queryByText(/^4 min late/)).not.toBeInTheDocument();
       });
 
       test("shows if arriving 5 minutes later than scheduled", () => {
@@ -288,7 +288,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
 
       test("shows if arriving 5 minutes earlier than scheduled (but also left late)", () => {
@@ -318,7 +318,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min earlier/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min earlier/)).toBeInTheDocument();
       });
 
       test("shows if arriving 5 minutes later than scheduled, but also left 5 min early", () => {
@@ -347,8 +347,8 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min later/)).toBeInTheDocument();
-        expect(view.getByText(/5 min early/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
       });
 
       test("does not show if arriving 4 minutes later than scheduled", () => {
@@ -370,7 +370,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/4 min later/)).not.toBeInTheDocument();
+        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
       });
 
       test("shows if arriving 5 minutes later than next trip's scheduled departure", () => {
@@ -401,7 +401,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
 
       test("does not show if arriving 4 minutes later than next trip's scheduled departure", () => {
@@ -432,7 +432,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/4 min later/)).not.toBeInTheDocument();
+        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
       });
 
       test("does not show if arriving 6 minutes earlier than next trip's scheduled departure", () => {
@@ -499,9 +499,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/7 min late/)).toBeInTheDocument();
-        expect(view.getByText(/26 min later/)).toBeInTheDocument();
-        expect(view.getByText(/5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^7 min late/)).toBeInTheDocument();
+        expect(view.getByText(/^26 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
     });
   });
