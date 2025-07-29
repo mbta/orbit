@@ -60,17 +60,17 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 
   const lateDepMin = lateDeparture(vehicle);
   const lateArrMin = lateArrival(vehicle);
-  const showLateBox =
-    (lateDepMin !== null && lateDepMin >= 5) ||
-    (lateArrMin !== null && lateArrMin >= 5);
+  const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
+  const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
+  const showLateBox = showLateDep || showLateArr;
 
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
       {showLateBox && (
         <Late
-          departedLate={lateDepMin}
-          arrivingLate={lateArrMin}
+          departedLate={showLateDep ? lateDepMin : null}
+          arrivingLate={showLateArr ? lateArrMin : null}
           arrivingLateText={"scheduled."}
         />
       )}

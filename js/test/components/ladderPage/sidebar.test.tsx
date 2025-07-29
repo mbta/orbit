@@ -188,6 +188,26 @@ describe("sidebar", () => {
     });
 
     describe("Late box", () => {
+      test("shows if departed 5 minutes early", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    actualDeparture: dateTimeFromISO(
+                      "2025-04-29T21:36:00.000Z",
+                    ),
+                  }),
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText(/5 min early/)).toBeInTheDocument();
+      });
+
       test("shows if departed 5 minutes late", () => {
         const view = render(
           <SideBar
@@ -413,6 +433,37 @@ describe("sidebar", () => {
           />,
         );
         expect(view.queryByText(/4 min later/)).not.toBeInTheDocument();
+      });
+
+      test("does not show if arriving 6 minutes earlier than next trip's scheduled departure", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  next: [
+                    ocsTripFactory.build({
+                      scheduledDeparture: dateTimeFromISO(
+                        "2025-04-29T22:45:00.000Z",
+                      ),
+                    }),
+                  ],
+                },
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T22:39:00.000Z",
+                      ),
+                    }),
+                  ],
+                }),
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/earlier/)).not.toBeInTheDocument();
       });
 
       test("everything all at once", () => {
