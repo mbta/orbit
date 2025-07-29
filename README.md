@@ -9,6 +9,7 @@
   - Brew may ask you to upgrade your database upon installation: `brew postgresql-upgrade-database`
   - Start Postgres with `brew services start postgresql`
   - If this is the first time you've used it, you may need to create a database. Run `createdb`
+  - You may also need a `postgres` role: `createuser -s postgres`
 - `mise` or `asdf`:
   - `mise`:
     - `curl https://mise.run | sh` or `brew install mise`
