@@ -24,7 +24,7 @@ defmodule Realtime.Data.VehicleEvent do
     field(:direction_id, :integer)
     field(:arrival_departure, Ecto.Enum, values: [:arrival, :departure])
     field(:timestamp, :utc_datetime)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, attrs \\ %{}) do

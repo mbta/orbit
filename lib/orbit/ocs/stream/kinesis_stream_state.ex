@@ -13,7 +13,7 @@ defmodule Orbit.KinesisStreamState do
     field(:resume_position, :string)
     field(:last_message_timestamp, :utc_datetime)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, attrs \\ %{}) do
