@@ -1,5 +1,4 @@
 import { SideBarSelection } from "../components/ladderPage/sidebar";
-import { OCSTrip } from "../models/ocs";
 import { estimatedArrival } from "../models/tripUpdate";
 import { FullStory } from "@fullstory/browser";
 
@@ -12,7 +11,8 @@ export enum FullStoryEventName {
 export const trackSideBarOpened = (selection: SideBarSelection) => {
   const { vehicle } = selection;
   const currentTrip = vehicle.ocsTrips.current;
-  const nextTrip = vehicle.ocsTrips.next[0] as OCSTrip | undefined;
+  const nextTrip =
+    vehicle.ocsTrips.next.length > 0 ? vehicle.ocsTrips.next[0] : null;
 
   // Only evaluate "missing" next trip properties if the current trip is assigned a
   // next trip UID by OCS.
