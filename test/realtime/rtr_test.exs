@@ -18,6 +18,7 @@ defmodule Realtime.RTRTest do
       assert vp == [
                %Realtime.Data.VehiclePosition{
                  route_id: :Red,
+                 revenue: true,
                  direction: 0,
                  label: "1855",
                  cars: ["1855", "1854", "1809", "1808", "1858", "1859"],

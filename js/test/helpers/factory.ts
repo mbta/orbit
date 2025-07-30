@@ -34,6 +34,7 @@ export const vehiclePositionFactory = Factory.define<VehiclePosition>(() => ({
   label: "1877",
   position: { latitude: 42.2773, longitude: -71.03159 },
   routeId: "Red",
+  revenue: true,
   stationId: "place-jfk",
   stopId: "70096",
   stopStatus: StopStatus.InTransitTo,

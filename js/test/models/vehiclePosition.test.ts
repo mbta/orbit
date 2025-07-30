@@ -17,6 +17,7 @@ describe("vehiclePositionFromData", () => {
     expect(
       vehiclePositionFromData({
         route_id: "Red",
+        revenue: true,
         direction: 0,
         label: "1866",
         cars: ["1866", "1867", "1877", "1876", "1839", "1838"],
@@ -31,6 +32,7 @@ describe("vehiclePositionFromData", () => {
       }),
     ).toEqual({
       routeId: "Red",
+      revenue: true,
       directionId: Direction.Southbound,
       label: "1866",
       cars: ["1866", "1867", "1877", "1876", "1839", "1838"],
@@ -49,6 +51,7 @@ describe("vehiclePositionFromData", () => {
     expect(
       vehiclePositionFromData({
         route_id: "Red",
+        revenue: true,
         direction: 0,
         label: "1866",
         cars: ["1866", "1867", "1877", "1876"],
@@ -63,6 +66,7 @@ describe("vehiclePositionFromData", () => {
       }),
     ).toEqual({
       routeId: "Red",
+      revenue: true,
       directionId: Direction.Southbound,
       label: "1866",
       cars: ["1866", "1867", "1877", "1876"],

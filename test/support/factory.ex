@@ -38,6 +38,7 @@ defmodule Orbit.Factory do
   def vehicle_position_factory do
     %Realtime.Data.VehiclePosition{
       route_id: :Red,
+      revenue: true,
       direction: 0,
       label: "1700",
       position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},

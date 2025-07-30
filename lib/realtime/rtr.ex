@@ -30,6 +30,7 @@ defmodule Realtime.RTR do
 
     %VehiclePosition{
       route_id: Realtime.Data.route_id_from_string(vehicle["trip"]["route_id"]),
+      revenue: vehicle["trip"]["revenue"],
       direction: vehicle["trip"]["direction_id"],
       label: vehicle["vehicle"]["label"],
       cars: parse_cars(vehicle["multi_carriage_details"]),
