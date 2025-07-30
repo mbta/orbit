@@ -1,5 +1,10 @@
 import { dateTimeFromISO } from "../../dateTime";
-import { vehicleFromVehicleData } from "../../models/vehicle";
+import {
+  lateArrival,
+  lateDeparture,
+  vehicleFromVehicleData,
+} from "../../models/vehicle";
+import { vehicleFactory } from "../helpers/factory";
 
 describe("vehicleFromVehicleData", () => {
   test("parses a VehicleData into a Vehicle", () => {
@@ -153,5 +158,18 @@ describe("vehicleFromVehicleData", () => {
         vehicleId: "R-5482AC4E",
       },
     });
+  });
+});
+
+describe("lateDeparture", () => {
+  test("calculates how many minutes late a vehicle left compared to scheduled", () => {
+    expect(lateDeparture(vehicleFactory.build())).toBe(2.0);
+  });
+});
+
+describe("lateArrival", () => {
+  test("calculates how many minutes late a vehicle is arriving compared to scheduled", () => {
+    // The factory data is actually early by ~32 minutes :-)
+    expect(lateArrival(vehicleFactory.build())).toBeCloseTo(-32.36, 1);
   });
 });

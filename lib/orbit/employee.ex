@@ -28,7 +28,7 @@ defmodule Orbit.Employee do
 
     has_many(:badge_serials, BadgeSerial, on_replace: :delete_if_exists)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(employee, params \\ %{}) do

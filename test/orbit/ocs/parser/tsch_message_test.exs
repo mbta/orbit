@@ -1,5 +1,8 @@
 defmodule Orbit.Ocs.Message.TschMessageTest do
   use ExUnit.Case, async: true
+
+  import Test.Support.Helpers
+
   alias Orbit.Ocs.Message.TschTagMessage.CarTag
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
@@ -14,7 +17,14 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
     test "parses TSCH CON message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
                {4331, :tsch, @test_time,
-                ["R", "CON", "983AC23D", "1737 1736 1725 1724 1731 1730", "54466E3A"]},
+                [
+                  "R",
+                  "CON",
+                  "983AC23D",
+                  "1737 1736 1725 1724 1731 1730",
+                  "54466E3A",
+                  "extra_unexpected_field"
+                ]},
                @test_time
              ) ==
                {:ok,
@@ -47,7 +57,7 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH RLD message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {3081, :tsch, @test_time, ["O", "RLD", "W"]},
+               {3081, :tsch, @test_time, ["O", "RLD", "W", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -72,46 +82,70 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
     end
 
     test "parses TSCH NEW message" do
-      assert Orbit.Ocs.Parser.TschMessage.parse(
-               {3083, :tsch, @test_time,
-                [
-                  "O",
-                  "NEW",
-                  "9866D295",
-                  "S",
-                  "R",
-                  "05:16",
-                  "05:53",
-                  "S903_",
-                  "OAK GROVE",
-                  "FOREST HILLS",
-                  "9866D294",
-                  "9866D296"
-                ]},
-               @test_time
-             ) ==
-               {:ok,
-                %Orbit.Ocs.Message.TschNewMessage{
-                  counter: 3083,
-                  timestamp: @test_time,
-                  transitline: :orange,
-                  trip_uid: "9866D295",
-                  add_type: "S",
-                  trip_type: "R",
-                  sched_dep: OcsTime.in_ocs_tz(~N[2017-03-17 05:16:00]),
-                  sched_arr: OcsTime.in_ocs_tz(~N[2017-03-17 05:53:00]),
-                  ocs_route_id: "S903_",
-                  origin_sta: "OAK GROVE",
-                  dest_sta: "FOREST HILLS",
-                  prev_trip_uid: "9866D294",
-                  next_trip_uid: "9866D296"
-                }}
+      log =
+        capture_log do
+          assert Orbit.Ocs.Parser.TschMessage.parse(
+                   {3083, :tsch, @test_time,
+                    [
+                      "O",
+                      "NEW",
+                      "9866D295",
+                      "S",
+                      "R",
+                      "05:16",
+                      "05:53",
+                      "S903_",
+                      "OAK GROVE",
+                      "FOREST HILLS",
+                      "9866D294",
+                      "9866D296",
+                      "extra_unexpected_field"
+                    ]},
+                   @test_time
+                 ) ==
+                   {:ok,
+                    %Orbit.Ocs.Message.TschNewMessage{
+                      counter: 3083,
+                      timestamp: @test_time,
+                      transitline: :orange,
+                      trip_uid: "9866D295",
+                      add_type: "S",
+                      trip_type: "R",
+                      sched_dep: OcsTime.in_ocs_tz(~N[2017-03-17 05:16:00]),
+                      sched_arr: OcsTime.in_ocs_tz(~N[2017-03-17 05:53:00]),
+                      ocs_route_id: "S903_",
+                      origin_sta: "OAK GROVE",
+                      dest_sta: "FOREST HILLS",
+                      prev_trip_uid: "9866D294",
+                      next_trip_uid: "9866D296"
+                    }}
+        end
+
+      # Check that logs complaint about extra fields
+      assert Enum.any?(log, fn line ->
+               line ==
+                 ~S([error] Orbit.Ocs.Parser.TschMessage: Unexpected extra values at end of message count=3083 type="TSCH_NEW" extra_values=["extra_unexpected_field"])
+             end)
     end
 
     test "parses TSCH NEW message with incomplete data (in this case, an RAD train)" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
                {28_329, :tsch, @test_time,
-                ["B", "NEW", "98AA06F7", "A", "R", "", "", "", "WONDERLAND", "", "0", "0"]},
+                [
+                  "B",
+                  "NEW",
+                  "98AA06F7",
+                  "A",
+                  "R",
+                  "",
+                  "",
+                  "",
+                  "WONDERLAND",
+                  "",
+                  "0",
+                  "0",
+                  "extra_unexpected_field"
+                ]},
                @test_time
              ) ==
                {:ok,
@@ -134,7 +168,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH DST message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {4520, :tsch, @test_time, ["R", "DST", "983BA807", "CADDIGAN YARD", "", ""]},
+               {4520, :tsch, @test_time,
+                ["R", "DST", "983BA807", "CADDIGAN YARD", "", "", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -151,7 +186,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH ASN message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {4520, :tsch, @test_time, ["R", "ASN", "54466E3A", "983BA807"]},
+               {4520, :tsch, @test_time,
+                ["R", "ASN", "54466E3A", "983BA807", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -166,7 +202,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH LNK message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19_332, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "983BA710"]},
+               {19_332, :tsch, @test_time,
+                ["R", "LNK", "983BA716", "983BA715", "983BA710", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -182,7 +219,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH LNK message with '0' trips as nil trips" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19_223, :tsch, @test_time, ["R", "LNK", "983BA716", "983BA715", "0"]},
+               {19_223, :tsch, @test_time,
+                ["R", "LNK", "983BA716", "983BA715", "0", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -198,7 +236,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH DEL message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {26_377, :tsch, @test_time, ["B", "DEL", "98A8F1AF", "0"]},
+               {26_377, :tsch, @test_time,
+                ["B", "DEL", "98A8F1AF", "0", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,
@@ -213,7 +252,8 @@ defmodule Orbit.Ocs.Message.TschMessageTest do
 
     test "parses TSCH OFF message" do
       assert Orbit.Ocs.Parser.TschMessage.parse(
-               {19_332, :tsch, @test_time, ["R", "OFF", "983BA716", "13579"]},
+               {19_332, :tsch, @test_time,
+                ["R", "OFF", "983BA716", "13579", "extra_unexpected_field"]},
                @test_time
              ) ==
                {:ok,

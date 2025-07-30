@@ -23,7 +23,7 @@ defmodule Orbit.Ocs.Train do
     field(:car_tags, {:array, :string})
     field(:deleted, :boolean)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, attrs \\ %{}) do

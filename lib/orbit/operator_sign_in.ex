@@ -37,7 +37,7 @@ defmodule Orbit.OperatorSignIn do
     field(:sign_in_method, SignInMethod)
     field(:override, {:array, :map})
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(operator_sign_in, attrs \\ %{}) do

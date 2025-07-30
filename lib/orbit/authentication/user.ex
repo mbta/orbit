@@ -20,7 +20,7 @@ defmodule Orbit.Authentication.User do
     field(:email, :string)
     field(:permissions, {:array, UserPermission})
     field(:groups, {:array, :string}, virtual: true)
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(struct, params \\ %{}) do

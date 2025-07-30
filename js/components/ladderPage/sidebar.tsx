@@ -1,7 +1,14 @@
 import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import { estimatedArrivalOfVehicle, Vehicle } from "../../models/vehicle";
+import { estimatedArrival } from "../../models/tripUpdate";
+import {
+  estimatedArrivalOfVehicle,
+  lateArrival,
+  lateDeparture,
+  lateForNext,
+  Vehicle,
+} from "../../models/vehicle";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { ReactElement } from "react";
@@ -50,10 +57,26 @@ export const SideBar = ({
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
-  const estArrival = estimatedArrivalOfVehicle(vehicle);
+  const estArrival = estimatedArrival(vehicle.tripUpdate);
+  // const estArrival = estimatedArrivalOfVehicle(vehicle);
+
+  const lateDepMin = lateDeparture(vehicle);
+  const lateArrMin = lateArrival(vehicle);
+  const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
+  const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
+  const showLateBox = showLateDep || showLateArr;
+
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
+      {showLateBox && (
+        <Late
+          departedLate={showLateDep ? lateDepMin : null}
+          arrivingLate={showLateArr ? lateArrMin : null}
+          arrivingLateText={"scheduled."}
+        />
+      )}
+
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
@@ -96,9 +119,20 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const next =
     vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
+
+  const nextDepMin = lateForNext(vehicle);
+  const showLateBox = nextDepMin !== null && nextDepMin >= 5;
   return (
     <section className="m-5 pt-5 border-t border-gray-300">
       <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
+      {showLateBox && (
+        <Late
+          departedLate={null}
+          arrivingLate={nextDepMin}
+          arrivingLateText={"next trip's departure time."}
+        />
+      )}
+
       <div className="flex mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
@@ -132,4 +166,57 @@ const Offset = ({ value }: { value: number | null | undefined }) => {
   }
 
   return "(" + (value > 0 ? `+${value}` : value.toString()) + ")";
+};
+
+const Late = ({
+  departedLate,
+  arrivingLate,
+  arrivingLateText,
+}: {
+  departedLate: number | null;
+  arrivingLate: number | null;
+  arrivingLateText: string | null;
+}) => {
+  return (
+    <div className="border-gray-300 bg-gray-200 rounded-lg text-black italic p-2 text-sm">
+      <div className="flex">
+        <div className="mt-0.5 mr-1">
+          <img
+            src={`/images/clock.svg`}
+            // Per MDN re: alt text:
+            // > If the image doesn't require a fallback (such as for an image which is decorative or an advisory icon
+            //   of minimal importance), you may specify an empty string ("")
+            alt={""}
+            className={"w-4"}
+          />
+        </div>
+        <div className="flex-1">
+          {departedLate && (
+            <p>
+              Departed{" "}
+              <span className="font-bold">
+                {formatDelta(departedLate)} min{" "}
+                {departedLate >= 0 ? "late" : "early"}
+              </span>
+              .
+            </p>
+          )}
+          {arrivingLate && (
+            <p>
+              Arriving{" "}
+              <span className="font-bold">
+                {formatDelta(arrivingLate)} min{" "}
+                {arrivingLate >= 0 ? "later" : "earlier"}
+              </span>{" "}
+              than {arrivingLateText}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const formatDelta = (min: number) => {
+  return Math.abs(Math.floor(min));
 };
