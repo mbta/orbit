@@ -28,9 +28,18 @@ defmodule Realtime.RTR do
   def parse_vehicle_position(entity_json) do
     vehicle = entity_json["vehicle"]
 
+    # According to VehiclePosition docs, if the revenue field is absent from the JSON, we
+    # should assume a value of "true".
+    revenue =
+      if vehicle["trip"]["revenue"] != nil do
+        vehicle["trip"]["revenue"]
+      else
+        true
+      end
+
     %VehiclePosition{
       route_id: Realtime.Data.route_id_from_string(vehicle["trip"]["route_id"]),
-      revenue: vehicle["trip"]["revenue"],
+      revenue: revenue,
       direction: vehicle["trip"]["direction_id"],
       label: vehicle["vehicle"]["label"],
       cars: parse_cars(vehicle["multi_carriage_details"]),

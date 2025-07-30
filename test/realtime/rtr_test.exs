@@ -34,6 +34,17 @@ defmodule Realtime.RTRTest do
              ]
     end
 
+    test "defaults revenue field to true even if absent in json", context do
+      vp =
+        Enum.find(context[:vehicle_positions][:entities], fn vp ->
+          vp.vehicle_id == "R-5482AB14"
+        end)
+
+      assert %Realtime.Data.VehiclePosition{
+               revenue: true
+             } = vp
+    end
+
     test "parses multiple vehicle_position entities into individual structs", context do
       assert %{
                timestamp: _time,
