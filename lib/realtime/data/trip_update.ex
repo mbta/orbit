@@ -61,4 +61,17 @@ defmodule Realtime.Data.TripUpdate do
         nil
     end
   end
+
+  @spec last_arrival_stop(__MODULE__.t() | nil) :: String.t() | nil
+  def last_arrival_stop(nil), do: nil
+
+  def last_arrival_stop(trip_update) do
+    case List.last(trip_update.stop_time_updates) do
+      %StopTimeUpdate{station_id: id} ->
+        id
+
+      _ ->
+        nil
+    end
+  end
 end
