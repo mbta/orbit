@@ -50,7 +50,7 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
   FullStory("trackEvent", {
     name: FullStoryEventName.SideBarOpened,
     properties: {
-      train_uid: vehicle.vehiclePosition.vehicleId,
+      vehicle_id: vehicle.vehiclePosition.vehicleId,
       gtfs_trip_id: vehicle.tripUpdate?.tripId,
       ocs_current_trip_uid: currentTrip?.uid ?? null,
       ocs_next_trip_uid: currentTrip?.nextUid ?? null,

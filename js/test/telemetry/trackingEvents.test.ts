@@ -21,7 +21,7 @@ describe("trackSideBarOpened", () => {
     expect(FullStory).toHaveBeenCalledWith("trackEvent", {
       name: expectedEventName,
       properties: {
-        train_uid: "R-5482CAAA",
+        vehicle_id: "R-5482CAAA",
         gtfs_trip_id: "68078228",
         ocs_current_trip_uid: "11111111",
         ocs_next_trip_uid: null,
@@ -44,7 +44,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: null,
           ocs_next_trip_uid: null,
@@ -83,7 +83,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: null,
@@ -109,7 +109,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: null,
@@ -133,7 +133,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: null,
@@ -157,7 +157,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: null,
@@ -181,7 +181,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: "22222222",
@@ -218,7 +218,7 @@ describe("trackSideBarOpened", () => {
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
         properties: {
-          train_uid: "R-5482CAAA",
+          vehicle_id: "R-5482CAAA",
           gtfs_trip_id: "68078228",
           ocs_current_trip_uid: "11111111",
           ocs_next_trip_uid: "22222222",
