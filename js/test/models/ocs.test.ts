@@ -12,6 +12,7 @@ describe("ocsTripFromData", () => {
         destination_station: "place-alfcl",
         offset: 0,
         deleted: false,
+        updated_at: "2025-04-29T21:44:00.000Z",
       }),
     ).toEqual({
       scheduledDeparture: dateTimeFromISO("2025-04-29T21:41:00.000Z"),
@@ -21,6 +22,7 @@ describe("ocsTripFromData", () => {
       destinationStation: "place-alfcl",
       offset: 0,
       deleted: false,
+      updatedAt: dateTimeFromISO("2025-04-29T21:44:00.000Z"),
     });
   });
 });
