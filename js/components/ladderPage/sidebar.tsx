@@ -23,10 +23,6 @@ export const SideBar = ({
   selection: SideBarSelection;
   close: () => void;
 }): ReactElement => {
-  const vp = selection.vehicle.vehiclePosition;
-  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
-  const processedConsist = remapLabels(consist, vp.routeId);
-  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
     <aside className="fixed flex-grow left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
@@ -35,22 +31,32 @@ export const SideBar = ({
       >
         <img src="/images/close.svg" alt="Close" />
       </button>
-      <div className="mt-14 px-4 flex">
-        {processedConsist.map((label, index) => (
-          <div
-            key={index}
-            className={className([
-              "mr-2",
-              index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
-            ])}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
+      <Consist vehicle={selection.vehicle} />
       <CurrentTrip vehicle={selection.vehicle} />
       <NextTrip vehicle={selection.vehicle} />
     </aside>
+  );
+};
+
+const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
+  const vp = vehicle.vehiclePosition;
+  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
+  const processedConsist = remapLabels(consist, vp.routeId);
+  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
+  return (
+    <div className="mt-14 px-4 flex">
+      {processedConsist.map((label, index) => (
+        <div
+          key={index}
+          className={className([
+            "mr-2",
+            index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
+          ])}
+        >
+          {label}
+        </div>
+      ))}
+    </div>
   );
 };
 
