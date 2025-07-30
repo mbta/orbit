@@ -6,6 +6,7 @@ import {
   lateArrival,
   lateDeparture,
   lateForNext,
+  latestOcsUpdatedAt,
   Vehicle,
 } from "../../models/vehicle";
 import { remapLabels, reorder } from "../../util/consist";
@@ -24,16 +25,19 @@ export const SideBar = ({
   close: () => void;
 }): ReactElement => {
   return (
-    <aside className="fixed flex-grow left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="fixed flex flex-col left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
       >
         <img src="/images/close.svg" alt="Close" />
       </button>
-      <Consist vehicle={selection.vehicle} />
-      <CurrentTrip vehicle={selection.vehicle} />
-      <NextTrip vehicle={selection.vehicle} />
+      <div className="h-full">
+        <Consist vehicle={selection.vehicle} />
+        <CurrentTrip vehicle={selection.vehicle} />
+        <NextTrip vehicle={selection.vehicle} />
+      </div>
+      <LastOcsUpdated vehicle={selection.vehicle} />
     </aside>
   );
 };
@@ -223,4 +227,18 @@ const Late = ({
 
 const formatDelta = (min: number) => {
   return Math.abs(Math.floor(min));
+};
+
+const LastOcsUpdated = ({ vehicle }: { vehicle: Vehicle }) => {
+  const updatedAt = latestOcsUpdatedAt(vehicle);
+  if (updatedAt !== null) {
+    return (
+      <div className="mb-6 ml-5">
+        <span className="text-gray-400 text-xs italic">
+          {`Last updated from OCS trainsheets at ${dateTimeFormat(updatedAt, "wall")}`}
+        </span>
+      </div>
+    );
+  }
+  return null;
 };

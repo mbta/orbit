@@ -103,6 +103,22 @@ describe("sidebar", () => {
         expect(view.getByText(/2:10p/)).toBeInTheDocument();
         expect(view.getByText(/3:10p/)).toBeInTheDocument();
       });
+
+      test('shows "last updated from OCS" timestamp (in local wall time) if present', () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build(),
+            }}
+            close={() => {}}
+          />,
+        );
+        const lastUpdated = view.getByText(
+          /Last updated from OCS trainsheets at 2:00a/,
+        );
+        expect(lastUpdated).toBeInTheDocument();
+        expect(lastUpdated).toHaveClass("text-gray-400 text-xs italic");
+      });
     });
 
     describe("Offset", () => {
