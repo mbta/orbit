@@ -14,12 +14,7 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
   const nextTrip =
     vehicle.ocsTrips.next.length > 0 ? vehicle.ocsTrips.next[0] : null;
 
-  // Only evaluate "missing" next trip properties if the current trip is assigned a
-  // next trip UID by OCS.
-  const expectNext = !!currentTrip?.nextUid;
-
-  const missing = Object.entries({
-    // OCS Current Trip
+  const missingCurrent = {
     current_trip: !currentTrip,
     current_origin_station: !currentTrip?.originStation,
     current_destination_station: !currentTrip?.destinationStation,
@@ -30,13 +25,25 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
 
     // Other fields associated with current trip
     current_estimated_arrival: !estimatedArrival(vehicle.tripUpdate),
+  };
 
-    // OCS Next Trip
-    next_trip: expectNext && !nextTrip,
-    next_origin_station: expectNext && !nextTrip?.originStation,
-    next_destination_station: expectNext && !nextTrip?.destinationStation,
-    next_scheduled_departure: expectNext && !nextTrip?.scheduledDeparture,
-    next_scheduled_arrival: expectNext && !nextTrip?.scheduledArrival,
+  // If we have a currentTrip, and said trip does not have an assigned nextUid, then assume
+  // the next trip is intentionally unset (ie, does not exist) and therefore not "missing".
+  const ignoreNextTrip = currentTrip && !currentTrip.nextUid;
+  const missingNext =
+    ignoreNextTrip ?
+      {}
+    : {
+        next_trip: !nextTrip,
+        next_origin_station: !nextTrip?.originStation,
+        next_destination_station: !nextTrip?.destinationStation,
+        next_scheduled_departure: !nextTrip?.scheduledDeparture,
+        next_scheduled_arrival: !nextTrip?.scheduledArrival,
+      };
+
+  const missing = Object.entries({
+    ...missingCurrent,
+    ...missingNext,
   })
     .filter(([_, value]) => value)
     .map(([key, _]) => key)

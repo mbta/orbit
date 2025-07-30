@@ -32,7 +32,7 @@ describe("trackSideBarOpened", () => {
   });
 
   describe("missing trip properties", () => {
-    test("report when current trip is missing", () => {
+    test("report when current trip (and therefore also next trip) is missing", () => {
       const vehicle = vehicleFactory.build({
         ocsTrips: {
           current: null,
@@ -56,6 +56,11 @@ describe("trackSideBarOpened", () => {
             "current_scheduled_arrival",
             "current_scheduled_departure",
             "current_trip",
+            "next_destination_station",
+            "next_origin_station",
+            "next_scheduled_arrival",
+            "next_scheduled_departure",
+            "next_trip",
           ],
         },
       });
