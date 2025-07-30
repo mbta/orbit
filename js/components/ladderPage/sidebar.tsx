@@ -115,6 +115,18 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 };
 
 const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
+  const current = vehicle.ocsTrips.current;
+  if (current && !current.nextUid) {
+    // Explicitly, no next trip is assigned, so show "none"
+    return (
+      <section className="m-5 pt-5 border-t border-gray-300">
+        <h2 className="text-lg text-gray-300 font-semibold">
+          NEXT TRIP - none
+        </h2>
+      </section>
+    );
+  }
+
   const next =
     vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
 

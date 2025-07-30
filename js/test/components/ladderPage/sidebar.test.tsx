@@ -20,15 +20,53 @@ describe("sidebar", () => {
     expect(view.getByText("1814")).toBeInTheDocument();
   });
 
-  test("headers present", () => {
+  test("renders current and next trip headers", () => {
     const view = render(
       <SideBar
-        selection={{ vehicle: vehicleFactory.build() }}
+        selection={{
+          vehicle: vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({
+                nextUid: "22222222",
+              }),
+            },
+          }),
+        }}
         close={() => {}}
       />,
     );
     expect(view.getByText("Current Trip")).toBeInTheDocument();
     expect(view.getByText("Next Trip")).toBeInTheDocument();
+  });
+
+  test("renders current and next trip sections event when current trip is missing", () => {
+    const view = render(
+      <SideBar
+        selection={{
+          vehicle: vehicleFactory.build({
+            ocsTrips: {
+              current: null,
+            },
+          }),
+        }}
+        close={() => {}}
+      />,
+    );
+    expect(view.getByText("Current Trip")).toBeInTheDocument();
+    expect(view.getByText("Next Trip")).toBeInTheDocument();
+  });
+
+  test('renders "next trip none" header if next trip is explicitly unset', () => {
+    const view = render(
+      <SideBar
+        selection={{
+          vehicle: vehicleFactory.build(),
+        }}
+        close={() => {}}
+      />,
+    );
+    expect(view.queryByText("Next Trip")).not.toBeInTheDocument();
+    expect(view.getByText("NEXT TRIP - none")).toBeInTheDocument();
   });
 
   describe("Trips", () => {
@@ -40,6 +78,7 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
+                    nextUid: "22222222",
                     originStation: "ALEWIFE",
                     destinationStation: "BRAINTREE",
                   }),
@@ -72,6 +111,7 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
+                    nextUid: "22222222",
                     scheduledDeparture: dateTimeFromISO(
                       "2025-07-07T17:05:00.000Z",
                     ),
@@ -113,6 +153,7 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
+                    nextUid: "22222222",
                     offset: 2,
                   }),
                   next: [ocsTripFactory.build({ offset: 3 })],
@@ -133,6 +174,7 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
+                    nextUid: "22222222",
                     offset: -2,
                   }),
                   next: [ocsTripFactory.build({ offset: -3 })],
@@ -379,6 +421,9 @@ describe("sidebar", () => {
             selection={{
               vehicle: vehicleFactory.build({
                 ocsTrips: {
+                  current: ocsTripFactory.build({
+                    nextUid: "22222222",
+                  }),
                   next: [
                     ocsTripFactory.build({
                       scheduledDeparture: dateTimeFromISO(
@@ -473,6 +518,7 @@ describe("sidebar", () => {
               vehicle: vehicleFactory.build({
                 ocsTrips: {
                   current: ocsTripFactory.build({
+                    nextUid: "22222222",
                     actualDeparture: dateTimeFromISO(
                       "2025-04-29T21:48:00.000Z",
                     ),
