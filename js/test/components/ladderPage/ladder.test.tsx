@@ -103,7 +103,51 @@ describe("Ladder", () => {
     });
 
     describe("when route pattern is provided", () => {
-      test("renders pill color based on route pattern", () => {
+      test("renders gray pill colors for non-revenue trains", () => {
+        mockUseVehicles.mockReturnValue([
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1888",
+              stationId: "place-davis",
+              stopId: "70064",
+              tripId: "11111",
+              revenue: false,
+            }),
+            tripUpdate: tripUpdateFactory.build({
+              routePatternId: "Red-1-0",
+            }),
+          }),
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: nextVehicleId(),
+              label: "1889",
+              stationId: "place-davis",
+              stopId: "70064",
+              tripId: "22222",
+              revenue: false,
+            }),
+            tripUpdate: tripUpdateFactory.build({
+              routePatternId: "Red-3-0",
+            }),
+          }),
+        ]);
+
+        const view = render(
+          <Ladders
+            routeId="Red"
+            setSideBarSelection={jest.fn()}
+            sideBarSelection={null}
+          />,
+        );
+
+        expect(view.getByText("1888")).toBeInTheDocument();
+        expect(view.getByText("1888")).toHaveClass("border-gray-300");
+        expect(view.getByText("1889")).toBeInTheDocument();
+        expect(view.getByText("1889")).toHaveClass("border-gray-300");
+      });
+
+      test("renders revenue trains with pill color based on route pattern", () => {
         mockUseVehicles.mockReturnValue([
           vehicleFactory.build({
             vehiclePosition: vehiclePositionFactory.build({
@@ -138,6 +182,7 @@ describe("Ladder", () => {
             sideBarSelection={null}
           />,
         );
+
         expect(view.getByText("1888")).toBeInTheDocument();
         expect(view.getByText("1888")).toHaveClass("border-tangerine");
         expect(view.getByText("1889")).toBeInTheDocument();
@@ -148,6 +193,7 @@ describe("Ladder", () => {
     describe("when route pattern is not provided", () => {
       test("renders pill color based on portion of ladder", () => {
         mockUseVehicles.mockReturnValue([
+          // Ashmont portion of ladder
           vehicleFactory.build({
             vehiclePosition: vehiclePositionFactory.build({
               vehicleId: nextVehicleId(),
@@ -158,7 +204,6 @@ describe("Ladder", () => {
             }),
             tripUpdate: undefined,
           }),
-          // Ashmont portion of ladder
           vehicleFactory.build({
             vehiclePosition: vehiclePositionFactory.build({
               vehicleId: nextVehicleId(),
