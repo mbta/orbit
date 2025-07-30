@@ -28,7 +28,7 @@ export const SideBar = ({
   const processedConsist = remapLabels(consist, vp.routeId);
   const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <aside className="fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="fixed flex-grow left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
