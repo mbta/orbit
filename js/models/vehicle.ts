@@ -132,10 +132,3 @@ export const lateForNext = (vehicle: Vehicle): number | null => {
 
   return minutesAfter(estimated, nextDeparture);
 };
-
-export const estimatedArrivalOfVehicle = (vehicle: Vehicle) => {
-  const tripUpdate = vehicle.tripUpdate;
-  const stu =
-    tripUpdate?.stopTimeUpdates[tripUpdate.stopTimeUpdates.length - 1];
-  return stu?.predictedArrivalTime;
-};

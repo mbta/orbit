@@ -3,7 +3,6 @@ import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
 import {
-  estimatedArrivalOfVehicle,
   lateArrival,
   lateDeparture,
   lateForNext,
@@ -58,7 +57,6 @@ export const SideBar = ({
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
   const estArrival = estimatedArrival(vehicle.tripUpdate);
-  // const estArrival = estimatedArrivalOfVehicle(vehicle);
 
   const lateDepMin = lateDeparture(vehicle);
   const lateArrMin = lateArrival(vehicle);

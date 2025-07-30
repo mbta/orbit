@@ -1,6 +1,6 @@
 import { SideBarSelection } from "../components/ladderPage/sidebar";
 import { OCSTrip } from "../models/ocs";
-import { estimatedArrivalOfVehicle } from "../models/vehicle";
+import { estimatedArrival } from "../models/tripUpdate";
 import { FullStory } from "@fullstory/browser";
 
 export enum FullStoryEventName {
@@ -29,7 +29,7 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
       !currentTrip || (currentTrip.departed && !currentTrip.actualDeparture),
 
     // Other fields associated with current trip
-    current_estimated_arrival: !estimatedArrivalOfVehicle(vehicle),
+    current_estimated_arrival: !estimatedArrival(vehicle.tripUpdate),
 
     // OCS Next Trip
     next_trip: expectNext && !nextTrip,
