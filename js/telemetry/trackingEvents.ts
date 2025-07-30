@@ -3,9 +3,7 @@ import { estimatedArrival } from "../models/tripUpdate";
 import { FullStory } from "@fullstory/browser";
 
 export enum FullStoryEventName {
-  SideBarOpened = "Preston test event",
-  // TODO: Change to
-  // SideBarOpened = "Orbit: Ladder Side Bar Opened"
+  SideBarOpened = "Orbit: Ladder Side Bar Opened",
 }
 
 export const trackSideBarOpened = (selection: SideBarSelection) => {

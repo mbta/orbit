@@ -11,8 +11,7 @@ jest.mock("@fullstory/browser", () => ({
 }));
 
 describe("trackSideBarOpened", () => {
-  // TODO
-  const expectedEventName = "Preston test event";
+  const expectedEventName = "Orbit: Ladder Side Bar Opened";
 
   test("track FS event with correct name", () => {
     trackSideBarOpened({
