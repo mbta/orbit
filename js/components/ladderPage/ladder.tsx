@@ -11,7 +11,7 @@ import {
   TrainThemes,
   trainThemesByRoutePattern,
 } from "./trainTheme";
-import { Dispatch, ReactElement, SetStateAction } from "react";
+import { ReactElement } from "react";
 
 export const Ladders = ({
   routeId,
@@ -20,7 +20,7 @@ export const Ladders = ({
 }: {
   routeId: RouteId;
   sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
+  setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
   const vehicles = useVehicles() ?? [];
 
@@ -74,7 +74,7 @@ const TrainsAndStations = ({
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
   sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
+  setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
   return (
     <div className="relative flex snap-center snap-always">

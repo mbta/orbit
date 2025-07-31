@@ -9,7 +9,7 @@ import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
-import { Dispatch, ReactElement, SetStateAction } from "react";
+import { ReactElement } from "react";
 
 export const Train = ({
   theme,
@@ -24,7 +24,7 @@ export const Train = ({
   forceDirection: DirectionId;
   highlight?: boolean;
   className?: string;
-  setSideBarSelection: Dispatch<SetStateAction<SideBarSelection | null>>;
+  setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
   const orientation = forceDirection == 0 ? "right-0" : "left-0";
   const label = vehicle.vehiclePosition.label;
