@@ -9,9 +9,9 @@ export const Header = () => {
     currentLocation.pathname === paths.help;
 
   return (
-    <div className="w-full bg-gray-200 p-2 flex justify-between fixed z-header">
+    <div className="w-full bg-gray-200 p-2 flex justify-between fixed h-header z-header">
       <Link to={paths.root}>
-        <img src="/images/logo.svg" alt="MBTA" className="w-44" />
+        <img src="/images/logo.svg" alt="MBTA" className="w-44 h-[32px]" />
       </Link>
       <Link to={paths.menu}>
         <button

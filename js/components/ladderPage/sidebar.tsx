@@ -6,6 +6,7 @@ import {
   lateArrival,
   lateDeparture,
   lateForNext,
+  latestOcsUpdatedAt,
   Vehicle,
 } from "../../models/vehicle";
 import { remapLabels, reorder } from "../../util/consist";
@@ -23,34 +24,43 @@ export const SideBar = ({
   selection: SideBarSelection;
   close: () => void;
 }): ReactElement => {
-  const vp = selection.vehicle.vehiclePosition;
-  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
-  const processedConsist = remapLabels(consist, vp.routeId);
-  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <aside className="fixed flex-grow left-0 top-12 w-full sm:w-80 h-dvh bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="fixed flex flex-col left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
       >
         <img src="/images/close.svg" alt="Close" />
       </button>
-      <div className="mt-14 px-4 flex">
-        {processedConsist.map((label, index) => (
-          <div
-            key={index}
-            className={className([
-              "mr-2",
-              index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
-            ])}
-          >
-            {label}
-          </div>
-        ))}
+      <div className="h-full">
+        <Consist vehicle={selection.vehicle} />
+        <CurrentTrip vehicle={selection.vehicle} />
+        <NextTrip vehicle={selection.vehicle} />
       </div>
-      <CurrentTrip vehicle={selection.vehicle} />
-      <NextTrip vehicle={selection.vehicle} />
+      <LastOcsUpdated vehicle={selection.vehicle} />
     </aside>
+  );
+};
+
+const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
+  const vp = vehicle.vehiclePosition;
+  const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
+  const processedConsist = remapLabels(consist, vp.routeId);
+  const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
+  return (
+    <div className="mt-14 px-4 flex">
+      {processedConsist.map((label, index) => (
+        <div
+          key={index}
+          className={className([
+            "mr-2",
+            index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
+          ])}
+        >
+          {label}
+        </div>
+      ))}
+    </div>
   );
 };
 
@@ -229,4 +239,18 @@ const Late = ({
 
 const formatDelta = (min: number) => {
   return Math.abs(Math.floor(min));
+};
+
+const LastOcsUpdated = ({ vehicle }: { vehicle: Vehicle }) => {
+  const updatedAt = latestOcsUpdatedAt(vehicle);
+  if (updatedAt !== null) {
+    return (
+      <div className="mb-6 ml-5">
+        <span className="text-gray-400 text-xs italic">
+          {`Last updated from OCS trainsheets at ${dateTimeFormat(updatedAt, "wall")}`}
+        </span>
+      </div>
+    );
+  }
+  return null;
 };

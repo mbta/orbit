@@ -15,6 +15,7 @@ describe("ocsTripFromData", () => {
         destination_station: "place-alfcl",
         offset: 0,
         deleted: false,
+        updated_at: "2025-04-29T21:44:00.000Z",
       }),
     ).toEqual({
       uid: "11111111",
@@ -27,6 +28,7 @@ describe("ocsTripFromData", () => {
       destinationStation: "place-alfcl",
       offset: 0,
       deleted: false,
+      updatedAt: dateTimeFromISO("2025-04-29T21:44:00.000Z"),
     });
   });
 });

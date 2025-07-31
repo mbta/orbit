@@ -132,3 +132,14 @@ export const lateForNext = (vehicle: Vehicle): number | null => {
 
   return minutesAfter(estimated, nextDeparture);
 };
+
+export const latestOcsUpdatedAt = (vehicle: Vehicle): DateTime | null => {
+  const datetimes = [vehicle.ocsTrips.current, vehicle.ocsTrips.next[0]]
+    .map((trip) => trip?.updatedAt)
+    .filter((datetime) => !!datetime);
+
+  if (datetimes.length > 0) {
+    return DateTime.max(...datetimes);
+  }
+  return null;
+};

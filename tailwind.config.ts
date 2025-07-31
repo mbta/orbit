@@ -50,6 +50,9 @@ export default {
       "modal-content": "3001",
     },
     extend: {
+      height: {
+        header: "49px",
+      },
       animation: {
         "dash-spin-ccw": "dashoffset-spin 2s linear infinite",
         "dash-spin-cw": "dashoffset-spin 3s linear infinite reverse",

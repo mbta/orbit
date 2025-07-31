@@ -2,9 +2,10 @@ import { dateTimeFromISO } from "../../dateTime";
 import {
   lateArrival,
   lateDeparture,
+  latestOcsUpdatedAt,
   vehicleFromVehicleData,
 } from "../../models/vehicle";
-import { vehicleFactory } from "../helpers/factory";
+import { ocsTripFactory, vehicleFactory } from "../helpers/factory";
 
 describe("vehicleFromVehicleData", () => {
   test("parses a VehicleData into a Vehicle", () => {
@@ -22,6 +23,7 @@ describe("vehicleFromVehicleData", () => {
             actual_departure: "2025-04-29T19:40:49Z",
             scheduled_arrival: "2025-04-29T20:39:49Z",
             deleted: false,
+            updated_at: "2025-04-29T19:41:49Z",
           },
           next: [],
         },
@@ -89,6 +91,7 @@ describe("vehicleFromVehicleData", () => {
           actualDeparture: dateTimeFromISO("2025-04-29T19:40:49Z"),
           scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
           deleted: false,
+          updatedAt: dateTimeFromISO("2025-04-29T19:41:49Z"),
         },
         next: [],
       },
@@ -110,6 +113,7 @@ describe("vehicleFromVehicleData", () => {
             actual_departure: "2025-04-29T19:40:49Z",
             scheduled_arrival: "2025-04-29T20:39:49Z",
             deleted: false,
+            updated_at: "2025-04-29T19:41:49Z",
           },
           next: [],
         },
@@ -143,6 +147,7 @@ describe("vehicleFromVehicleData", () => {
           actualDeparture: dateTimeFromISO("2025-04-29T19:40:49Z"),
           scheduledArrival: dateTimeFromISO("2025-04-29T20:39:49Z"),
           deleted: false,
+          updatedAt: dateTimeFromISO("2025-04-29T19:41:49Z"),
         },
         next: [],
       },
@@ -175,5 +180,54 @@ describe("lateArrival", () => {
   test("calculates how many minutes late a vehicle is arriving compared to scheduled", () => {
     // The factory data is actually early by ~32 minutes :-)
     expect(lateArrival(vehicleFactory.build())).toBeCloseTo(-32.36, 1);
+  });
+});
+
+describe("latestOcsUpdatedAt", () => {
+  test("returns null if there are no OCS trips", () => {
+    const vehicle = vehicleFactory.build({
+      ocsTrips: {
+        current: null,
+        next: [],
+      },
+    });
+    expect(latestOcsUpdatedAt(vehicle)).toBeNull();
+  });
+
+  test("returns current trip updated_at if there is no next trip", () => {
+    const vehicle = vehicleFactory.build();
+    expect(latestOcsUpdatedAt(vehicle)).toEqual(
+      dateTimeFromISO("2025-04-29T06:00:00.000Z"),
+    );
+  });
+
+  test("returns current trip updated_at if more recent than next trip", () => {
+    const vehicle = vehicleFactory.build({
+      ocsTrips: {
+        current: ocsTripFactory.build(),
+        next: [
+          ocsTripFactory.build({
+            updatedAt: dateTimeFromISO("2025-04-29T06:01:00.000Z"),
+          }),
+        ],
+      },
+    });
+    expect(latestOcsUpdatedAt(vehicle)).toEqual(
+      dateTimeFromISO("2025-04-29T06:01:00.000Z"),
+    );
+  });
+
+  test("returns next trip updated_at if more recent than current trip", () => {
+    const vehicle = vehicleFactory.build({
+      ocsTrips: {
+        current: ocsTripFactory.build({
+          updatedAt: dateTimeFromISO("2025-04-29T06:01:00.000Z"),
+        }),
+        next: [ocsTripFactory.build()],
+      },
+    });
+    expect(latestOcsUpdatedAt(vehicle)).toEqual(
+      dateTimeFromISO("2025-04-29T06:01:00.000Z"),
+    );
   });
 });
