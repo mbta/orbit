@@ -27,6 +27,7 @@ describe("vehicleFromVehicleData", () => {
         },
         position: {
           route_id: "Red",
+          revenue: true,
           direction: 0,
           label: "1866",
           cars: ["1866", "1867", "1877", "1876"],
@@ -68,6 +69,7 @@ describe("vehicleFromVehicleData", () => {
         label: "1866",
         position: { latitude: 42.37469, longitude: -71.11877 },
         routeId: "Red",
+        revenue: true,
         stationId: "place-alfcl",
         stopId: "Alewife-02",
         stopStatus: 1,
@@ -113,6 +115,7 @@ describe("vehicleFromVehicleData", () => {
         },
         position: {
           route_id: "Red",
+          revenue: true,
           direction: 0,
           label: "1866",
           cars: ["1866", "1867", "1877", "1876"],
@@ -150,6 +153,7 @@ describe("vehicleFromVehicleData", () => {
         label: "1866",
         position: { latitude: 42.37469, longitude: -71.11877 },
         routeId: "Red",
+        revenue: true,
         stationId: "place-alfcl",
         stopId: "Alewife-02",
         stopStatus: 1,

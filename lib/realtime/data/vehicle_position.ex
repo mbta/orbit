@@ -6,6 +6,7 @@ defmodule Realtime.Data.VehiclePosition do
 
   @type t :: %__MODULE__{
           route_id: Realtime.Data.route_id(),
+          revenue: boolean(),
           direction: integer(),
           label: String.t(),
           cars: [String.t()],
@@ -23,6 +24,7 @@ defmodule Realtime.Data.VehiclePosition do
   @derive {Jason.Encoder,
            only: [
              :route_id,
+             :revenue,
              :direction,
              :label,
              :cars,
@@ -37,6 +39,7 @@ defmodule Realtime.Data.VehiclePosition do
            ]}
   schema "vehicle_positions" do
     field(:route_id, Util.AtomType)
+    field(:revenue, :boolean, default: true)
     field(:direction, :integer)
     field(:label, :string)
     field(:cars, {:array, :string})

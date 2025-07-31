@@ -185,6 +185,10 @@ const themeForVehicleOnLadder = (
   vehicle: Vehicle,
   ladderConfig: LadderConfig,
 ): TrainTheme => {
+  if (!vehicle.vehiclePosition.revenue) {
+    return TrainThemes.gray;
+  }
+
   const routePatternId = vehicle.tripUpdate?.routePatternId;
   const themeFromRoute =
     routePatternId != null ?

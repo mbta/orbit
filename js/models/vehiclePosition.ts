@@ -24,6 +24,7 @@ export const stopStatusFromData = (data: StopStatusData): StopStatus => {
 
 export const VehiclePositionData = z.object({
   route_id: z.string(),
+  revenue: z.boolean(),
   direction: z.number(),
   label: z.string(),
   cars: z.array(z.string()),
@@ -42,6 +43,7 @@ export type VehiclePositionData = z.infer<typeof VehiclePositionData>;
 
 export type VehiclePosition = {
   routeId: RouteId;
+  revenue: boolean;
   directionId: DirectionId;
   label: CarId;
   cars: CarId[];
@@ -59,6 +61,7 @@ export const vehiclePositionFromData = (
   data: VehiclePositionData,
 ): VehiclePosition => ({
   routeId: data.route_id,
+  revenue: data.revenue,
   directionId: data.direction,
   label: data.label,
   cars: data.cars,

@@ -12,6 +12,10 @@ export const TrainThemes: Record<string, TrainTheme> = {
     backgroundColor: "bg-tangerine",
     borderColor: "border-tangerine",
   },
+  gray: {
+    backgroundColor: "bg-gray-300",
+    borderColor: "border-gray-300",
+  },
 } as const;
 
 export const trainThemesByRoutePattern: ReadonlyMap<
