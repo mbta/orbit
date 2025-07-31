@@ -16,6 +16,7 @@ defmodule Orbit.Ocs.Trip do
           trip_type: String.t() | nil,
           scheduled_departure: DateTime.t() | nil,
           scheduled_arrival: DateTime.t() | nil,
+          departed: boolean() | nil,
           actual_departure: DateTime.t() | nil,
           offset: integer() | nil,
           origin_station: String.t() | nil,
@@ -41,6 +42,7 @@ defmodule Orbit.Ocs.Trip do
     field(:scheduled_arrival, :utc_datetime)
 
     # Computed on demand
+    field(:departed, :boolean, virtual: true)
     field(:actual_departure, :utc_datetime, virtual: true)
 
     field(:offset, :integer)
