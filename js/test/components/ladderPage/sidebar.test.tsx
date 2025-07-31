@@ -114,7 +114,7 @@ describe("sidebar", () => {
           />,
         );
         const lastUpdated = view.getByText(
-          /Last updated from OCS trainsheets at 2:00a/,
+          "Last updated from OCS trainsheets at 2:00a",
         );
         expect(lastUpdated).toBeInTheDocument();
         expect(lastUpdated).toHaveClass("text-gray-400 text-xs italic");
