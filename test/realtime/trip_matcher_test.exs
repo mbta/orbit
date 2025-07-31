@@ -6,6 +6,7 @@ defmodule Realtime.TripMatcherTest do
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
+  alias Realtime.Data.TripUpdate.StopTimeUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
 
@@ -214,6 +215,46 @@ defmodule Realtime.TripMatcherTest do
                  }
                ],
                []
+             )
+  end
+
+  test "does not match a VehiclePosition to a TripUpdate if destination mismatch" do
+    assert [
+             %Vehicle{
+               trip_update: nil,
+               position: %VehiclePosition{
+                 vehicle_id: "R-5483E6C7",
+                 trip_id: "69349212"
+               }
+             }
+           ] =
+             Realtime.TripMatcher.match_trips(
+               [
+                 %VehiclePosition{
+                   vehicle_id: "R-5483E6C7",
+                   trip_id: "69349212"
+                 }
+               ],
+               [
+                 %TripUpdate{
+                   route_id: "Red",
+                   vehicle_id: "R-5483E6C7",
+                   trip_id: "69349212",
+                   stop_time_updates: [
+                     %StopTimeUpdate{
+                       station_id: "place-asmnl"
+                     }
+                   ]
+                 }
+               ],
+               [
+                 %Trip{
+                   train_uid: "5483E6C7",
+                   destination_station: "ALEWIFE",
+                   assigned_at: @test_datetime,
+                   uid: "1234FFAB"
+                 }
+               ]
              )
   end
 
