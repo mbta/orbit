@@ -18,7 +18,10 @@
     - `brew install asdf`
     - You may need to run `asdf plugin add` some of `erlang`, `elixir`, or `nodejs`.
     - `asdf install`
-- For full functionality, also follow the steps in the "Receiving messages from OCS" section below.
+- For full functionality:
+  - Also follow the steps in the "Receiving messages from OCS" section below.
+  - Look inside `dev.secret.example.exs` for additional examples that can be configured inside
+    `dev.secret.exs`, such as for tools like Fullstory and Sentry.
 
 ## Set up
 
