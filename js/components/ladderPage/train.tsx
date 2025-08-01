@@ -1,4 +1,5 @@
 import {
+  ORBIT_HR_STAKEHOLDERS,
   ORBIT_RL_TRAINSTARTERS,
   ORBIT_TID_STAFF,
   userHasOneOf,
@@ -46,7 +47,13 @@ export const Train = ({
           };
           setSideBarSelection(sideBarSelection);
         }}
-        disabled={!userHasOneOf([ORBIT_RL_TRAINSTARTERS, ORBIT_TID_STAFF])}
+        disabled={
+          !userHasOneOf([
+            ORBIT_HR_STAKEHOLDERS,
+            ORBIT_RL_TRAINSTARTERS,
+            ORBIT_TID_STAFF,
+          ])
+        }
       >
         {displayLabel}
 
