@@ -4,6 +4,7 @@ export type MetaDataKey =
   | "environment"
   | "fullStoryOrgId"
   | "guardianToken"
+  | "laboratoryFeatures"
   | "release"
   | "sentryDsn"
   | "userEmail"
