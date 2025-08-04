@@ -13,8 +13,8 @@ defmodule Orbit.MixProject do
         test_all: :test
       ],
       deps: deps(),
-      dialzyer: [
-        plt_add_apps: [:mix]
+      dialyzer: [
+        plt_add_apps: [:mix, :laboratory]
       ],
       test_coverage: [tool: LcovEx]
     ]
@@ -26,6 +26,7 @@ defmodule Orbit.MixProject do
   def application do
     [
       mod: {Orbit.Application, []},
+      included_applications: [:laboratory],
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -69,6 +70,7 @@ defmodule Orbit.MixProject do
        depth: 1},
       {:httpoison, "== 2.2.3"},
       {:jason, "== 1.4.4"},
+      {:laboratory, github: "paulswartz/laboratory", branch: "cookie_opts"},
       {:lcov_ex, "== 0.3.4", only: [:test], runtime: false},
       {:logster, "== 2.0.0-rc.5"},
       {:mock, "== 0.3.9", only: :test},
