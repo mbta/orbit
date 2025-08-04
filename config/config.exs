@@ -58,6 +58,11 @@ config :ueberauth, Ueberauth,
 config :laboratory,
   features: [
     # {:feature_name, "Feature Name", "Feature description"}
+    {
+      :ladder_side_bar_export,
+      "Ladder: Side Bar Data Export (Debugging)",
+      "Allow download of vehicle data from side bar"
+    }
   ]
 
 # Import environment specific config. This must remain at the bottom
