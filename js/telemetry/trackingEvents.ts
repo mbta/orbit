@@ -1,19 +1,24 @@
 import { SideBarSelection } from "../components/ladderPage/sidebar";
 import { estimatedArrival } from "../models/tripUpdate";
 import {
-  FullStory,
+  FullStory as FS,
   isInitialized as isFullStoryInitialized,
 } from "@fullstory/browser";
+
+// Wrap Fullstory call with an initalization check. Otherwise, in cases where FS is not
+// initialized (primarily expected only in local development), calling FS() to track
+// an event results in a crash.
+const FullStory = (...params: Parameters<typeof FS>) => {
+  if (isFullStoryInitialized()) {
+    return FS(...params);
+  }
+};
 
 export enum FullStoryEventName {
   SideBarOpened = "Orbit: Ladder Side Bar Opened",
 }
 
 export const trackSideBarOpened = (selection: SideBarSelection) => {
-  if (!isFullStoryInitialized()) {
-    return;
-  }
-
   const { vehicle } = selection;
   const currentTrip = vehicle.ocsTrips.current;
   const nextTrip =
