@@ -38,6 +38,9 @@
     <%= if @conn.assigns[:appcues_uid] do %>
       <meta name="appcuesUserId" content={@appcues_uid} />
     <% end %>
+    <%= if @conn.assigns[:laboratory_features] do %>
+      <meta name="laboratoryFeatures" content={Jason.encode!(@laboratory_features)} />
+    <% end %>
 
     <title>{assigns[:page_title] || "Orbit"}</title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />
