@@ -8,6 +8,9 @@ import { FullStory } from "@fullstory/browser";
 
 jest.mock("@fullstory/browser", () => ({
   FullStory: jest.fn(),
+  // Mock and always return that FS has been initialized. This allows our tests to run against mock
+  // FS, even if Fullstory is not really configured/initalized for the test suite.
+  isInitialized: jest.fn().mockReturnValue(true),
 }));
 
 describe("trackSideBarOpened", () => {
