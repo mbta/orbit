@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import { TextEncoder } from "util";
+import { resetMetaData } from "./helpers/metadata";
 import { neverPromise } from "./helpers/promiseWithResolvers";
 // add all jest-extended matchers
 import * as jestExtendedMatchers from "jest-extended";
@@ -42,4 +43,8 @@ jest.mock("phoenix", () => {
     __esModule: true,
     Socket: jest.fn(() => mockSocket),
   };
+});
+
+afterEach(() => {
+  resetMetaData();
 });
