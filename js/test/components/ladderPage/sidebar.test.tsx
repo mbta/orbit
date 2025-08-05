@@ -1,12 +1,22 @@
 import { SideBar } from "../../../components/ladderPage/sidebar";
 import { dateTimeFromISO } from "../../../dateTime";
+import { useVehicleDataDownload } from "../../../hooks/useVehicleDataDownload";
 import {
   ocsTripFactory,
   stopTimeUpdateFactory,
   tripUpdateFactory,
   vehicleFactory,
 } from "../../helpers/factory";
+import { putEnabledFeatures } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
+
+jest.mock("../../../hooks/useVehicleDataDownload", () => ({
+  useVehicleDataDownload: jest.fn().mockReturnValue({
+    linkTarget: "mock-link-target",
+    fileName: "mock-file-name",
+  }),
+}));
 
 describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
@@ -565,6 +575,41 @@ describe("sidebar", () => {
         expect(view.getByText(/^26 min later/)).toBeInTheDocument();
         expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Export vehicle data button (for debugging)", () => {
+    test("by default, does not render export button", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build(),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      expect(
+        view.queryByAltText("Download vehicle data (debug)"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("renders export button if feature flag is enabled", () => {
+      putEnabledFeatures(["ladder_side_bar_export"]);
+
+      const vehicle = vehicleFactory.build();
+      const view = render(
+        // Must wrap sidebar in router to allow Link elements
+        <MemoryRouter>
+          <SideBar selection={{ vehicle }} close={() => {}} />,
+        </MemoryRouter>,
+      );
+
+      expect(
+        view.getByAltText("Download vehicle data (debug)"),
+      ).toBeInTheDocument();
+
+      expect(useVehicleDataDownload).toHaveBeenCalledWith(vehicle);
     });
   });
 
