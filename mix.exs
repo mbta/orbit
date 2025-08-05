@@ -70,7 +70,7 @@ defmodule Orbit.MixProject do
        depth: 1},
       {:httpoison, "== 2.2.3"},
       {:jason, "== 1.4.4"},
-      {:laboratory, github: "paulswartz/laboratory", branch: "cookie_opts"},
+      {:laboratory, github: "andrewdolce/laboratory", branch: "cowboy-dep-fix"},
       {:lcov_ex, "== 0.3.4", only: [:test], runtime: false},
       {:logster, "== 2.0.0-rc.5"},
       {:mock, "== 0.3.9", only: :test},
