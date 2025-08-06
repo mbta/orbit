@@ -61,7 +61,7 @@ config :laboratory,
     {
       :ladder_side_bar_export,
       "Ladder: Side Bar Data Export (Debugging)",
-      "Allow download of vehicle data from side bar"
+      "Allow easy copying of vehicle data to clipboard from side bar"
     }
   ]
 
