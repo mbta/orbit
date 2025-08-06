@@ -1,6 +1,5 @@
 import { SideBar } from "../../../components/ladderPage/sidebar";
 import { dateTimeFromISO } from "../../../dateTime";
-import { useVehicleDataDownload } from "../../../hooks/useVehicleDataDownload";
 import {
   ocsTripFactory,
   stopTimeUpdateFactory,
@@ -10,13 +9,6 @@ import {
 import { putEnabledFeatures } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
-
-jest.mock("../../../hooks/useVehicleDataDownload", () => ({
-  useVehicleDataDownload: jest.fn().mockReturnValue({
-    linkTarget: "mock-link-target",
-    fileName: "mock-file-name",
-  }),
-}));
 
 describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
@@ -590,7 +582,7 @@ describe("sidebar", () => {
       );
 
       expect(
-        view.queryByAltText("Download vehicle data (debug)"),
+        view.queryByTitle("Copy vehicle data (debug)"),
       ).not.toBeInTheDocument();
     });
 
@@ -605,11 +597,7 @@ describe("sidebar", () => {
         </MemoryRouter>,
       );
 
-      expect(
-        view.getByAltText("Download vehicle data (debug)"),
-      ).toBeInTheDocument();
-
-      expect(useVehicleDataDownload).toHaveBeenCalledWith(vehicle);
+      expect(view.getByTitle("Copy vehicle data (debug)")).toBeInTheDocument();
     });
   });
 

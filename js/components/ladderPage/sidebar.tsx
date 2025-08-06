@@ -1,6 +1,5 @@
 import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
-import { useVehicleDataDownload } from "../../hooks/useVehicleDataDownload";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
 import {
@@ -13,8 +12,7 @@ import {
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
-import { ReactElement } from "react";
-import { Link } from "react-router";
+import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
@@ -40,7 +38,10 @@ export const SideBar = ({
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_side_bar_export") ?
-          <ExportVehicle vehicle={selection.vehicle} />
+          <VehicleCopyButton
+            key={selection.vehicle.vehiclePosition.vehicleId}
+            vehicle={selection.vehicle}
+          />
         : null}
       </div>
       <LastOcsUpdated vehicle={selection.vehicle} />
@@ -247,20 +248,36 @@ const formatDelta = (min: number) => {
   return Math.abs(Math.floor(min));
 };
 
-const ExportVehicle = ({ vehicle }: { vehicle: Vehicle }) => {
-  const { linkTarget, fileName } = useVehicleDataDownload(vehicle);
+const VehicleCopyButton = ({ vehicle }: { vehicle: Vehicle }) => {
+  const [copied, setCopied] = useState(false);
+  const onCopy = (vehicle: Vehicle) => {
+    const data = {
+      copiedAt: new Date().toISOString(),
+      vehicle,
+    };
+    const json = JSON.stringify(data, null, 4);
+    void window.navigator.clipboard.writeText(json);
+    setCopied(true);
+  };
+
   return (
-    <Link
-      to={linkTarget}
+    <button
       className="absolute mb-6 mr-5 bottom-0 right-0 h-6 w-6 hover:fill-slate-700"
-      download={fileName}
-      reloadDocument
+      title="Copy vehicle data (debug)"
+      onClick={() => {
+        onCopy(vehicle);
+      }}
     >
       <img
-        src="/images/download-debug.svg"
-        alt="Download vehicle data (debug)"
+        className="m-1 h-4 w-4 transition-opacity"
+        src={
+          copied ?
+            "/images/clipboard-green-check.svg"
+          : "/images/clipboard-gray.svg"
+        }
+        alt="Copy vehicle data (debug)"
       />
-    </Link>
+    </button>
   );
 };
 
