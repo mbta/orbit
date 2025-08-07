@@ -5,7 +5,7 @@ import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
-import { Train } from "./train";
+import { avoidLabelOverlaps, Train } from "./train";
 import {
   TrainTheme,
   TrainThemes,
@@ -22,7 +22,89 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
+  // TODO: swap back to useVehicles
   const vehicles = useVehicles() ?? [];
+
+  /**
+  const vehicles = [
+    // northbound
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 1,
+        label: "1888",
+        cars: ["1888", "1889"],
+        position: { latitude: 42.396207, longitude: -71.141318 },
+        stationId: "place-alfcl",
+        stopId: "Alewife-01",
+        stopStatus: StopStatus.StoppedAt,
+        // stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1888",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 1,
+        label: "1999",
+        cars: ["1999", "1998"],
+        position: { latitude: 42.397113, longitude: -71.137466 },
+        stationId: "place-alfcl",
+        stopId: "70061",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1999",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    // southbound
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 0,
+        label: "1888",
+        cars: ["1888", "1889"],
+        position: { latitude: 42.39674, longitude: -71.121815 },
+        stationId: "place-davis",
+        stopId: "70063",
+        stopStatus: StopStatus.StoppedAt,
+        // stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1888",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 0,
+        label: "1999",
+        cars: ["1999", "1998"],
+        position: { latitude: 42.397348, longitude: -71.124904 },
+        stationId: "place-davis",
+        stopId: "70063",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1999",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+  ];
+   */
 
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
@@ -65,6 +147,16 @@ export const Ladders = ({
   );
 };
 
+type TrainHeights = {
+  dotHeight: number | null;
+  labelHeight?: number | null;
+};
+
+export type VehicleWithHeight = {
+  vehicle: Vehicle;
+  heights: TrainHeights;
+};
+
 const TrainsAndStations = ({
   ladderConfig,
   vehicles,
@@ -76,10 +168,104 @@ const TrainsAndStations = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
+  const vehiclesWithHeights: VehicleWithHeight[] = vehicles.map((vehicle) => {
+    const { vehiclePosition: vp } = vehicle;
+    // should still be able to render trains that are StoppedAt a station,
+    // even if they have a null position
+    if (vp.position == null && vp.stopStatus !== StopStatus.StoppedAt) {
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    }
+
+    const trainHeight = height(vp, ladderConfig);
+    if (trainHeight === -1) {
+      console.error(
+        `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
+      );
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    } else if (trainHeight === null) {
+      console.error(
+        `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
+      );
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    }
+    // add 80 for top margin above the station list borders
+    return { vehicle: vehicle, heights: { dotHeight: trainHeight + 80 } };
+  });
+
+  // TODO: do we need a tie-breaker if somehow the vehicles are at the same height?
+  //  -> go by timestamp (i.e whichever vehicle got there first)
+  const sortedVehiclesByHeight = [
+    ...vehiclesWithHeights.filter(
+      (vehicle) => vehicle.heights.dotHeight !== null,
+    ),
+  ].sort((v1, v2) => {
+    const v1DotHeight = v1.heights.dotHeight;
+    const v2DotHeight = v2.heights.dotHeight;
+    return v1DotHeight && v2DotHeight ? v1DotHeight - v2DotHeight : 0;
+  });
+
+  const processedSortedVehicles = avoidLabelOverlaps(sortedVehiclesByHeight);
+
+  // TODO: remove
+  // just a sanity check of the sorting from above ^ -----------------------------------------------------
+  // sortedVehiclesByHeight.forEach((sortedV) => {
+  //   console.log(
+  //     `${sortedV.vehicle.vehiclePosition.label}, height: ${sortedV.heights.dotHeight}, direction: ${sortedV.vehicle.vehiclePosition.directionId}`,
+  //   );
+  // });
+
+  // processedSortedVehicles.forEach((processedV) => {
+  //   console.log(
+  //     `${processedV.vehicle.vehiclePosition.label}, height: ${processedV.heights.dotHeight}, labelHeight: ${processedV.heights.labelHeight ?? "NONE"}, direction: ${processedV.vehicle.vehiclePosition.directionId}`,
+  //   );
+  // });
+
   return (
     <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
-      {vehicles.map((vehicle) => {
+
+      {processedSortedVehicles.map((vehicleWithHeight) => {
+        const vp = vehicleWithHeight.vehicle.vehiclePosition;
+
+        const trainTheme = themeForVehicleOnLadder(
+          vehicleWithHeight.vehicle,
+          ladderConfig,
+        );
+
+        const station = ladderConfig.find((station) =>
+          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
+        );
+
+        const direction =
+          vp.stopId !== null ?
+            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
+          : vp.directionId;
+
+        return (
+          <div
+            key={vp.vehicleId}
+            style={{
+              position: "absolute",
+              top: `${vehicleWithHeight.heights.dotHeight}px`,
+            }}
+            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
+          >
+            <Train
+              theme={trainTheme}
+              vehicle={vehicleWithHeight.vehicle}
+              forceDirection={direction}
+              labelHeight={vehicleWithHeight.heights.labelHeight ?? null}
+              highlight={
+                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
+              }
+              setSideBarSelection={setSideBarSelection}
+            />
+          </div>
+        );
+      })}
+
+      {/* TODO: remove once ready for PR */}
+      {/* {vehicles.map((vehicle) => {
         const { vehiclePosition: vp } = vehicle;
         // should still be able to render trains that ARE StoppedAt a station,
         // even if they have a null position
@@ -101,6 +287,7 @@ const TrainsAndStations = ({
         }
         // add 80 for top margin above the station list borders
         const px = trainHeight + 80;
+        // console.log(`final height for ${vp.label}: ${px}`);
 
         const trainTheme = themeForVehicleOnLadder(vehicle, ladderConfig);
 
@@ -130,7 +317,7 @@ const TrainsAndStations = ({
             />
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };
