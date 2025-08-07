@@ -6,7 +6,9 @@ import {
   tripUpdateFactory,
   vehicleFactory,
 } from "../../helpers/factory";
+import { putEnabledFeatures } from "../../helpers/metadata";
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
@@ -565,6 +567,37 @@ describe("sidebar", () => {
         expect(view.getByText(/^26 min later/)).toBeInTheDocument();
         expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Export vehicle data button (for debugging)", () => {
+    test("by default, does not render export button", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build(),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      expect(
+        view.queryByTitle("Copy vehicle data (debug)"),
+      ).not.toBeInTheDocument();
+    });
+
+    test("renders export button if feature flag is enabled", () => {
+      putEnabledFeatures(["ladder_sidebar_export"]);
+
+      const vehicle = vehicleFactory.build();
+      const view = render(
+        // Must wrap sidebar in router to allow Link elements
+        <MemoryRouter>
+          <SideBar selection={{ vehicle }} close={() => {}} />,
+        </MemoryRouter>,
+      );
+
+      expect(view.getByTitle("Copy vehicle data (debug)")).toBeInTheDocument();
     });
   });
 

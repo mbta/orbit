@@ -12,6 +12,7 @@ defmodule OrbitWeb.ReactAppController do
       environment: Application.get_env(:orbit, :environment),
       full_story_org_id: Application.get_env(:orbit, :full_story_org_id),
       guardian_token: Guardian.Plug.current_token(conn),
+      laboratory_features: laboratory_features(conn),
       sentry_dsn: Application.get_env(:sentry, :dsn)
     )
   end
@@ -23,5 +24,11 @@ defmodule OrbitWeb.ReactAppController do
     :crypto.hash(:sha3_256, conn.assigns[:email])
     |> Base.encode16(case: :lower)
     |> String.slice(0..32)
+  end
+
+  defp laboratory_features(conn) do
+    :laboratory
+    |> Application.get_env(:features)
+    |> Map.new(fn {key, _, _} -> {key, Laboratory.enabled?(conn, key)} end)
   end
 end

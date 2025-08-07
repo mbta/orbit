@@ -11,7 +11,8 @@ import {
 } from "../../models/vehicle";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
-import { ReactElement } from "react";
+import { isFeatureEnabled } from "../../util/featureFlags";
+import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
@@ -36,6 +37,12 @@ export const SideBar = ({
         <Consist vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
+        {isFeatureEnabled("ladder_sidebar_export") ?
+          <VehicleCopyButton
+            key={selection.vehicle.vehiclePosition.vehicleId}
+            vehicle={selection.vehicle}
+          />
+        : null}
       </div>
       <LastOcsUpdated vehicle={selection.vehicle} />
     </aside>
@@ -239,6 +246,41 @@ const Late = ({
 
 const formatDelta = (min: number) => {
   return Math.abs(Math.floor(min));
+};
+
+const VehicleCopyButton = ({ vehicle }: { vehicle: Vehicle }) => {
+  const [copied, setCopied] = useState(false);
+  const onCopy = (vehicle: Vehicle) => {
+    const data = {
+      copiedAt: new Date().toISOString(),
+      vehicle,
+    };
+    const json = JSON.stringify(data, null, 4);
+    // We use `void` operator here to explicitly ignore the result of the
+    // writeText promise.
+    void window.navigator.clipboard.writeText(json);
+    setCopied(true);
+  };
+
+  return (
+    <button
+      className="absolute mb-6 mr-5 bottom-0 right-0 h-6 w-6 hover:fill-slate-700"
+      title="Copy vehicle data (debug)"
+      onClick={() => {
+        onCopy(vehicle);
+      }}
+    >
+      <img
+        className="m-1 h-4 w-4 transition-opacity"
+        src={
+          copied ?
+            "/images/clipboard-green-check.svg"
+          : "/images/clipboard-gray.svg"
+        }
+        alt="Copy vehicle data (debug)"
+      />
+    </button>
+  );
 };
 
 const LastOcsUpdated = ({ vehicle }: { vehicle: Vehicle }) => {

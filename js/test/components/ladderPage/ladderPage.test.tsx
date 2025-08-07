@@ -2,7 +2,7 @@ import { LadderPage } from "../../../components/ladderPage/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
-import { getMetaContent } from "../../../util/metadata";
+import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -31,7 +31,12 @@ const mockTrackSideBarOpened = trackSideBarOpened as jest.MockedFunction<
 describe("LadderPage SideBar", () => {
   describe("with red line sidebar permissions", () => {
     beforeAll(() => {
-      mockGetMetaContent.mockReturnValue(ORBIT_RL_TRAINSTARTERS);
+      mockGetMetaContent.mockImplementation((field: MetaDataKey) => {
+        if (field == "userGroups") {
+          return ORBIT_RL_TRAINSTARTERS;
+        }
+        return null;
+      });
     });
 
     test("clicking on train pill opens sidebar", async () => {

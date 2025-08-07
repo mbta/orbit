@@ -126,6 +126,16 @@ defmodule OrbitWeb.Router do
     get "/_health_db", HealthDbController, :index
   end
 
+  scope "/_flags" do
+    pipe_through([
+      :browser,
+      :accepts_html,
+      :authenticated
+    ])
+
+    forward("/", Laboratory.Router)
+  end
+
   # Enable LiveDashboard in development
   if Application.compile_env(:orbit, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put

@@ -54,6 +54,17 @@ config :ueberauth, Ueberauth,
     keycloak: nil
   ]
 
+# Feature flags
+config :laboratory,
+  features: [
+    # {:feature_name, "Feature Name", "Feature description"}
+    {
+      :ladder_sidebar_export,
+      "Ladder: Sidebar Data Export (Debugging)",
+      "Allow easy copying of vehicle data to clipboard from sidebar"
+    }
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
