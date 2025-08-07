@@ -256,6 +256,8 @@ const VehicleCopyButton = ({ vehicle }: { vehicle: Vehicle }) => {
       vehicle,
     };
     const json = JSON.stringify(data, null, 4);
+    // We use `void` operator here to explicitly ignore the result of the
+    // writeText promise.
     void window.navigator.clipboard.writeText(json);
     setCopied(true);
   };
