@@ -59,9 +59,9 @@ config :laboratory,
   features: [
     # {:feature_name, "Feature Name", "Feature description"}
     {
-      :ladder_side_bar_export,
-      "Ladder: Side Bar Data Export (Debugging)",
-      "Allow easy copying of vehicle data to clipboard from side bar"
+      :ladder_sidebar_export,
+      "Ladder: Sidebar Data Export (Debugging)",
+      "Allow easy copying of vehicle data to clipboard from sidebar"
     }
   ]
 

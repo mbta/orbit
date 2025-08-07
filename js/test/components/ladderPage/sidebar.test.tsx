@@ -587,7 +587,7 @@ describe("sidebar", () => {
     });
 
     test("renders export button if feature flag is enabled", () => {
-      putEnabledFeatures(["ladder_side_bar_export"]);
+      putEnabledFeatures(["ladder_sidebar_export"]);
 
       const vehicle = vehicleFactory.build();
       const view = render(

@@ -37,7 +37,7 @@ export const SideBar = ({
         <Consist vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
-        {isFeatureEnabled("ladder_side_bar_export") ?
+        {isFeatureEnabled("ladder_sidebar_export") ?
           <VehicleCopyButton
             key={selection.vehicle.vehiclePosition.vehicleId}
             vehicle={selection.vehicle}
