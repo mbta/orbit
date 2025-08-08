@@ -326,7 +326,7 @@ defmodule Realtime.TripMatcherTest do
                ])
     end
 
-    test "missing_current_actual_departure_time" do
+    test "missing_current_actual_departure_time (logged for departed trip)" do
       assert %{
                missing_current_actual_departure_time: ["R-547210A7"]
              } =
@@ -337,9 +337,25 @@ defmodule Realtime.TripMatcherTest do
                    ocs_trips: %{
                      current:
                        build(
-                         :ocs_trip
-                         # TODO: When we implement Actual Departure, this should be hooked up
+                         :ocs_trip,
+                         departed: true
                        ),
+                     next: []
+                   }
+                 }
+               ])
+    end
+
+    test "missing_current_actual_departure_time (not logged if trip has not departed)" do
+      assert %{
+               missing_current_actual_departure_time: []
+             } =
+               TripMatcher.statistics([
+                 %Vehicle{
+                   trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
+                   ocs_trips: %{
+                     current: build(:ocs_trip),
                      next: []
                    }
                  }
