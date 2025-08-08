@@ -21,20 +21,27 @@ export const avoidLabelOverlaps = (
   const southboundVehicles: VehicleWithHeight[] = [];
   const northboundboundVehicles: VehicleWithHeight[] = [];
 
+  /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
+  the updated directionId from RTR may not match which side of the ladder branch we expect it to be on, 
+  which breaks the pattern of comparing trains that share the same directionId */
   for (const vH of sortedVehiclesByHeight) {
-    if (vH.vehicle.vehiclePosition.directionId === 0) {
+    const vp = vH.vehicle.vehiclePosition;
+    if (vp.stopId === "Alewife-01" || vp.stopId === "Braintree-01") {
+      northboundboundVehicles.push(vH);
+    } else if (vp.stopId === "Alewife-02" || vp.stopId === "Braintree-02") {
       southboundVehicles.push(vH);
     } else {
-      northboundboundVehicles.push(vH);
+      if (vH.vehicle.vehiclePosition.directionId === 0) {
+        southboundVehicles.push(vH);
+      } else {
+        northboundboundVehicles.push(vH);
+      }
     }
   }
 
   if (northboundboundVehicles.length > 1) {
-    // let i = 1;
-    // let ahead = northboundboundVehicles[i - 1];
     let ahead = northboundboundVehicles[0];
     let behind: VehicleWithHeight;
-    // while (i < northboundboundVehicles.length) {
     for (let i = 1; i < northboundboundVehicles.length; i += 1) {
       behind = northboundboundVehicles[i];
 
@@ -53,15 +60,11 @@ export const avoidLabelOverlaps = (
         aheadHeight && behindHeight && behindHeight - aheadHeight;
 
       if (heightDiff && heightDiff < 40) {
-        console.log(
-          `heightDiff < 40, ahead: ${aheadHeight}, behind: ${behindHeight}`,
-        );
         // add +2 to provide some buffer space between the labels
         behind.heights.labelHeight = 40 - heightDiff + 2;
       }
       processedNorthbound.push(ahead);
       ahead = behind;
-      // i += 1;
     }
     processedNorthbound.push(ahead);
   } else {
@@ -69,12 +72,10 @@ export const avoidLabelOverlaps = (
   }
 
   if (southboundVehicles.length > 1) {
-    // let i = southboundVehicles.length - 1;
-    // let ahead = southboundVehicles[i];
     // start from the "back" of the array in asc order by height
     let ahead = southboundVehicles[southboundVehicles.length - 1];
     let behind: VehicleWithHeight;
-    // while (i > 0) {
+    // eslint-disable-next-line better-mutation/no-mutation
     for (let i = southboundVehicles.length - 1; i > 0; i -= 1) {
       behind = southboundVehicles[i - 1];
 
@@ -92,9 +93,6 @@ export const avoidLabelOverlaps = (
         aheadHeight && behindHeight && aheadHeight - behindHeight;
 
       if (heightDiff && heightDiff < 40) {
-        console.log(
-          `heightDiff < 40, ahead: ${aheadHeight}, behind: ${behindHeight}`,
-        );
         // add +2 to provide some buffer space between the labels
         behind.heights.labelHeight = 40 - heightDiff + 2;
       }
@@ -146,7 +144,7 @@ export const Train = ({
               forceDirection === 0 ?
                 labelHeight * -1
               : labelHeight
-            : ""
+            : 0
           }px`,
         }}
         onClick={(e) => {
