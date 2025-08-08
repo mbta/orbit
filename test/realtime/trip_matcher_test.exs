@@ -259,6 +259,73 @@ defmodule Realtime.TripMatcherTest do
   end
 
   describe "statistics" do
+    test "everything present" do
+      assert %{
+               missing_current_actual_departure_time: [],
+               missing_current_arrival_station: [],
+               missing_current_departure_station: [],
+               missing_current_estimated_arrival_time: [],
+               missing_current_scheduled_arrival_time: [],
+               missing_current_scheduled_departure_time: [],
+               missing_next_arrival_station: [],
+               missing_next_departure_station: [],
+               missing_next_scheduled_arrival_time: [],
+               missing_next_scheduled_departure_time: [],
+               total: 1
+             } ==
+               TripMatcher.statistics([
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(
+                         :ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2025-06-06 12:00:00Z]
+                       ),
+                     next: [
+                       build(:ocs_trip)
+                     ]
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_ID"
+                   }
+                 )
+               ])
+    end
+
+    test "everything present (with explicitly unset next trip)" do
+      assert %{
+               missing_current_actual_departure_time: [],
+               missing_current_arrival_station: [],
+               missing_current_departure_station: [],
+               missing_current_estimated_arrival_time: [],
+               missing_current_scheduled_arrival_time: [],
+               missing_current_scheduled_departure_time: [],
+               missing_next_arrival_station: [],
+               missing_next_departure_station: [],
+               missing_next_scheduled_arrival_time: [],
+               missing_next_scheduled_departure_time: [],
+               total: 1
+             } ==
+               TripMatcher.statistics([
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(
+                         :ocs_trip,
+                         next_uid: nil,
+                         departed: true,
+                         actual_departure: ~U[2025-06-06 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_ID"
+                   }
+                 )
+               ])
+    end
+
     test "everything missing" do
       assert %{
                missing_current_actual_departure_time: ["VEHICLE_ID"],
@@ -283,6 +350,33 @@ defmodule Realtime.TripMatcherTest do
                      vehicle_id: "VEHICLE_ID"
                    }
                  }
+               ])
+    end
+
+    test "next trip missing" do
+      assert %{
+               missing_current_actual_departure_time: [],
+               missing_current_arrival_station: [],
+               missing_current_departure_station: [],
+               missing_current_estimated_arrival_time: [],
+               missing_current_scheduled_arrival_time: [],
+               missing_current_scheduled_departure_time: [],
+               missing_next_arrival_station: ["VEHICLE_ID"],
+               missing_next_departure_station: ["VEHICLE_ID"],
+               missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
+               missing_next_scheduled_departure_time: ["VEHICLE_ID"],
+               total: 1
+             } ==
+               TripMatcher.statistics([
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current: build(:ocs_trip, next_uid: "23456789"),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_ID"
+                   }
+                 )
                ])
     end
 

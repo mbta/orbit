@@ -108,6 +108,8 @@ defmodule Realtime.TripMatcher do
             nil -> nil
           end
 
+        ignore_next_trip = vehicle.ocs_trips.current && vehicle.ocs_trips.current.next_uid == nil
+
         ignore_actual_departure? =
           vehicle.ocs_trips.current && !vehicle.ocs_trips.current.departed
 
@@ -122,10 +124,14 @@ defmodule Realtime.TripMatcher do
             get_in(vehicle.ocs_trips.current.scheduled_arrival),
           missing_current_estimated_arrival_time:
             TripUpdate.last_arrival_time(get_in(vehicle.trip_update)),
-          missing_next_departure_station: next_trip && next_trip.origin_station,
-          missing_next_scheduled_departure_time: next_trip && next_trip.scheduled_departure,
-          missing_next_arrival_station: next_trip && next_trip.destination_station,
-          missing_next_scheduled_arrival_time: next_trip && next_trip.scheduled_arrival
+          missing_next_departure_station:
+            ignore_next_trip || (next_trip && next_trip.origin_station),
+          missing_next_scheduled_departure_time:
+            ignore_next_trip || (next_trip && next_trip.scheduled_departure),
+          missing_next_arrival_station:
+            ignore_next_trip || (next_trip && next_trip.destination_station),
+          missing_next_scheduled_arrival_time:
+            ignore_next_trip || (next_trip && next_trip.scheduled_arrival)
         }
 
         checks
