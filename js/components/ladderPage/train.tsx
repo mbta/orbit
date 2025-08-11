@@ -40,67 +40,69 @@ export const avoidLabelOverlaps = (
   }
 
   if (northboundboundVehicles.length > 1) {
-    let ahead = northboundboundVehicles[0];
-    let behind: VehicleWithHeight;
+    let above = northboundboundVehicles[0];
+    let below: VehicleWithHeight;
     for (let i = 1; i < northboundboundVehicles.length; i += 1) {
-      behind = northboundboundVehicles[i];
+      below = northboundboundVehicles[i];
 
       // TODO: refactor into calculateHeightDiff()
-      const aheadHeight =
-        ahead.heights.labelHeight && ahead.heights.dotHeight ?
-          ahead.heights.labelHeight + ahead.heights.dotHeight
-        : (ahead.heights.dotHeight ?? null);
+      // "above" gets priority for northbound direction
+      const aboveHeight =
+        above.heights.labelHeight && above.heights.dotHeight ?
+          above.heights.labelHeight + above.heights.dotHeight
+        : (above.heights.dotHeight ?? null);
 
-      const behindHeight =
-        behind.heights.labelHeight && behind.heights.dotHeight ?
-          behind.heights.labelHeight + behind.heights.dotHeight
-        : (behind.heights.dotHeight ?? null);
+      const belowHeight =
+        below.heights.labelHeight && below.heights.dotHeight ?
+          below.heights.labelHeight + below.heights.dotHeight
+        : (below.heights.dotHeight ?? null);
 
+      // remember that in css styling, greater height values means "further down from the top"
       const heightDiff =
-        aheadHeight && behindHeight && behindHeight - aheadHeight;
+        aboveHeight && belowHeight && belowHeight - aboveHeight;
 
       if (heightDiff && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
-        behind.heights.labelHeight = 40 - heightDiff + 2;
+        below.heights.labelHeight = 40 - heightDiff + 2;
       }
-      processedNorthbound.push(ahead);
-      ahead = behind;
+      processedNorthbound.push(above);
+      above = below;
     }
-    processedNorthbound.push(ahead);
+    processedNorthbound.push(above);
   } else {
     processedNorthbound.concat(northboundboundVehicles);
   }
 
   if (southboundVehicles.length > 1) {
     // start from the "back" of the array in asc order by height
-    let ahead = southboundVehicles[southboundVehicles.length - 1];
-    let behind: VehicleWithHeight;
+    // "below" get's priority for southbound direction
+    let below = southboundVehicles[southboundVehicles.length - 1];
+    let above: VehicleWithHeight;
     // eslint-disable-next-line better-mutation/no-mutation
     for (let i = southboundVehicles.length - 1; i > 0; i -= 1) {
-      behind = southboundVehicles[i - 1];
+      above = southboundVehicles[i - 1];
 
-      const aheadHeight =
-        ahead.heights.labelHeight && ahead.heights.dotHeight ?
-          ahead.heights.labelHeight + ahead.heights.dotHeight
-        : (ahead.heights.dotHeight ?? null);
+      const belowHeight =
+        below.heights.labelHeight && below.heights.dotHeight ?
+          below.heights.labelHeight + below.heights.dotHeight
+        : (below.heights.dotHeight ?? null);
 
-      const behindHeight =
-        behind.heights.labelHeight && behind.heights.dotHeight ?
-          behind.heights.labelHeight + behind.heights.dotHeight
-        : (behind.heights.dotHeight ?? null);
+      const aboveHeight =
+        above.heights.labelHeight && above.heights.dotHeight ?
+          above.heights.labelHeight + above.heights.dotHeight
+        : (above.heights.dotHeight ?? null);
 
       const heightDiff =
-        aheadHeight && behindHeight && aheadHeight - behindHeight;
+        aboveHeight && belowHeight && belowHeight - aboveHeight;
 
       if (heightDiff && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
-        behind.heights.labelHeight = 40 - heightDiff + 2;
+        above.heights.labelHeight = 40 - heightDiff + 2;
       }
-      processedSouthbound.push(ahead);
-      ahead = behind;
-      // i -= 1;
+      processedSouthbound.push(below);
+      below = above;
     }
-    processedSouthbound.push(ahead);
+    processedSouthbound.push(below);
   } else {
     processedSouthbound.concat(southboundVehicles);
   }
