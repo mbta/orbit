@@ -1,6 +1,7 @@
 import { LadderConfig } from "../../data/stations";
 import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { VehicleWithHeight } from "./ladder";
 
 export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
   let height = 68;
@@ -97,4 +98,23 @@ const proportionalProgress = (
   } else {
     return proportionBetweenStartFinish * travelLength;
   }
+};
+
+export const vehicleHeightDiff = (
+  above: VehicleWithHeight,
+  below: VehicleWithHeight,
+): number | null => {
+  const aboveHeight =
+    above.heights.labelHeight && above.heights.dotHeight ?
+      above.heights.labelHeight + above.heights.dotHeight
+    : (above.heights.dotHeight ?? null);
+
+  const belowHeight =
+    below.heights.labelHeight && below.heights.dotHeight ?
+      below.heights.labelHeight + below.heights.dotHeight
+    : (below.heights.dotHeight ?? null);
+
+  // remember that in css styling, greater height values means
+  // "further down from the top", thus subtract above from below
+  return aboveHeight && belowHeight && belowHeight - aboveHeight;
 };

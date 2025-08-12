@@ -8,6 +8,7 @@ import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
+import { vehicleHeightDiff } from "./height";
 import { VehicleWithHeight } from "./ladder";
 import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
@@ -44,23 +45,9 @@ export const avoidLabelOverlaps = (
     let below: VehicleWithHeight;
     for (let i = 1; i < northboundboundVehicles.length; i += 1) {
       below = northboundboundVehicles[i];
+      const heightDiff = vehicleHeightDiff(above, below);
 
-      // TODO: refactor into calculateHeightDiff()
-      // "above" gets priority for northbound direction
-      const aboveHeight =
-        above.heights.labelHeight && above.heights.dotHeight ?
-          above.heights.labelHeight + above.heights.dotHeight
-        : (above.heights.dotHeight ?? null);
-
-      const belowHeight =
-        below.heights.labelHeight && below.heights.dotHeight ?
-          below.heights.labelHeight + below.heights.dotHeight
-        : (below.heights.dotHeight ?? null);
-
-      // remember that in css styling, greater height values means "further down from the top"
-      const heightDiff =
-        aboveHeight && belowHeight && belowHeight - aboveHeight;
-
+      // "above" gets priority for northbound direction, prefer to modify "below"
       if (heightDiff && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
         below.heights.labelHeight = 40 - heightDiff + 2;
@@ -81,20 +68,9 @@ export const avoidLabelOverlaps = (
     // eslint-disable-next-line better-mutation/no-mutation
     for (let i = southboundVehicles.length - 1; i > 0; i -= 1) {
       above = southboundVehicles[i - 1];
+      const heightDiff = vehicleHeightDiff(above, below);
 
-      const belowHeight =
-        below.heights.labelHeight && below.heights.dotHeight ?
-          below.heights.labelHeight + below.heights.dotHeight
-        : (below.heights.dotHeight ?? null);
-
-      const aboveHeight =
-        above.heights.labelHeight && above.heights.dotHeight ?
-          above.heights.labelHeight + above.heights.dotHeight
-        : (above.heights.dotHeight ?? null);
-
-      const heightDiff =
-        aboveHeight && belowHeight && belowHeight - aboveHeight;
-
+      // "below" gets priority for southbound direction, prefer to modify "above"
       if (heightDiff && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
         above.heights.labelHeight = 40 - heightDiff + 2;
