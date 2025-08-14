@@ -22,12 +22,19 @@ export const avoidLabelOverlaps = (
   const southboundVehicles: VehicleWithHeight[] = [];
   const northboundboundVehicles: VehicleWithHeight[] = [];
 
+  // sortedVehiclesByHeight.forEach((v) => {
+  //   console.log(
+  //     `${v.vehicle.vehiclePosition.label}, height: ${v.heights.dotHeight}, labelHeight: ${v.heights.labelHeight ?? "NONE"}, direction: ${v.vehicle.vehiclePosition.directionId}`,
+  //   );
+  // });
+
   /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
   the updated directionId from RTR may not match which side of the ladder branch we expect it to be on, 
   which breaks the pattern of comparing trains that share the same directionId */
   for (const vH of sortedVehiclesByHeight) {
     const vp = vH.vehicle.vehiclePosition;
     if (vp.stopId === "Alewife-01" || vp.stopId === "Braintree-01") {
+      console.log(`special case found: ${vp.label}`);
       northboundboundVehicles.push(vH);
     } else if (vp.stopId === "Alewife-02" || vp.stopId === "Braintree-02") {
       southboundVehicles.push(vH);
@@ -40,6 +47,9 @@ export const avoidLabelOverlaps = (
     }
   }
 
+  // northboundboundVehicles.forEach((v) => {
+  //   console.log(`northbound V: ${v.vehicle.vehiclePosition.label}`);
+  // });
   if (northboundboundVehicles.length > 1) {
     let above = northboundboundVehicles[0];
     let below: VehicleWithHeight;
@@ -57,7 +67,10 @@ export const avoidLabelOverlaps = (
     }
     processedNorthbound.push(above);
   } else {
-    processedNorthbound.concat(northboundboundVehicles);
+    // processedNorthbound.concat(northboundboundVehicles);
+    if (northboundboundVehicles.length > 0) {
+      processedNorthbound.push(northboundboundVehicles[0]);
+    }
   }
 
   if (southboundVehicles.length > 1) {
@@ -82,7 +95,13 @@ export const avoidLabelOverlaps = (
   } else {
     processedSouthbound.concat(southboundVehicles);
   }
-
+  console.log("lengths after processing:");
+  console.log(`processedSouthbound: ${processedSouthbound.length}`);
+  console.log(`processedNorthbound: ${processedNorthbound.length}`);
+  const combo = processedSouthbound.concat(processedNorthbound);
+  combo.forEach((v) => {
+    console.log(`vehicle in combo: ${v.vehicle.vehiclePosition.label}`);
+  });
   return processedSouthbound.concat(processedNorthbound);
 };
 
@@ -107,11 +126,38 @@ export const Train = ({
   const label = vehicle.vehiclePosition.label;
   const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
   return (
-    <div className="relative flex">
+    <div className="relative">
+      {/* line that connects to dot */}
+      {/* TODO: reverse translation for southbound */}
+      <svg
+        className={className([
+          "absolute top-[calc(50%-3px)] transform pointer-events-none",
+          forceDirection === 1 ? "-translate-x-[calc(7%)]" : "",
+          // orientation,
+        ])}
+        // viewBox="0 0 50 6"
+        // width={"100%"}
+        // height={"100%"}
+      >
+        <line
+          className={className([
+            theme.backgroundColor === "bg-crimson" ? "stroke-crimson"
+            : theme.backgroundColor === "bg-tangerine" ? "stroke-tangerine"
+            : "stroke-gray-300",
+            // orientation,
+          ])}
+          x1={forceDirection === 1 ? 0 : 50}
+          y1={forceDirection === 1 ? 0 : 0}
+          x2={forceDirection === 1 ? 30 : 0}
+          y2={forceDirection === 1 ? labelHeight ?? 0 : 0}
+          strokeWidth={labelHeight ? "6px" : "12px"}
+        />
+      </svg>
+
       {/* train label */}
       <button
         className={className([
-          "m-1 relative flex items-center justify-center rounded-3xl w-24 h-10 font-semibold",
+          "m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
           highlight ? "border-[3px] animate-pulse" : "border",
           theme.borderColor,
           extraClassName,
@@ -143,42 +189,27 @@ export const Train = ({
         {displayLabel}
       </button>
 
-      <div>
-        {/* TODO: add svg rendering at angle */}
-        {/* line that connects to dot */}
+      {/* dot that attaches to ladder */}
+      {/* semi-transparent border */}
+      <div
+        className={className([
+          "absolute rounded-full h-[32px] w-[32px] border-8 border-opacity-35 top-2 z-1",
+          theme.borderColor,
+          forceDirection == 0 ?
+            highlight ? "translate-x-[calc(100%+3px)]"
+            : "translate-x-[calc(100%+3px)]"
+          : highlight ? "-translate-x-[calc(100%+3px)]"
+          : "-translate-x-[calc(100%+3px)]",
+          orientation,
+        ])}
+      >
+        {/* actual dot */}
         <div
           className={className([
-            "absolute top-1/2 w-5 h-1.5 transform -translate-y-1/2",
-            forceDirection == 0 ?
-              "translate-x-[calc(100%-5px)]"
-            : "-translate-x-[calc(100%-5px)]",
+            "absolute rounded-full h-[16px] w-[16px]",
             theme.backgroundColor,
-            orientation,
           ])}
         />
-
-        {/* dot that attaches to ladder */}
-        {/* semi-transparent border */}
-        <div
-          className={className([
-            "absolute rounded-full h-[32px] w-[32px] border-8 border-opacity-35 top-2",
-            theme.borderColor,
-            forceDirection == 0 ?
-              highlight ? "translate-x-[calc(100%+3px)]"
-              : "translate-x-[calc(100%+3px)]"
-            : highlight ? "-translate-x-[calc(100%+3px)]"
-            : "-translate-x-[calc(100%+3px)]",
-            orientation,
-          ])}
-        >
-          {/* actual dot */}
-          <div
-            className={className([
-              "absolute rounded-full h-[16px] w-[16px]",
-              theme.backgroundColor,
-            ])}
-          />
-        </div>
       </div>
     </div>
   );
