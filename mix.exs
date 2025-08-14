@@ -57,7 +57,7 @@ defmodule Orbit.MixProject do
       {:fast_local_datetime, "== 1.0.1"},
       {:floki, "== 0.38.0", only: :test},
       {:geocalc, "== 0.8.5"},
-      {:guardian, "== 2.3.2"},
+      {:guardian, "== 2.4.0"},
       {:guardian_phoenix, "== 2.0.1"},
       # used by ex_aws
       {:hackney, "== 1.25.0"},
