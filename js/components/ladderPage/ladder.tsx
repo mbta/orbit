@@ -3,6 +3,7 @@ import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
+import { className } from "../../util/dom";
 import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
 import { avoidLabelOverlaps, Train } from "./train";
@@ -22,19 +23,20 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
-  // TODO: swap back to useVehicles
-  const vehicles = useVehicles() ?? [];
+  // TODO: revert when ready for PR
+  // const vehicles = useVehicles() ?? [];
 
-  /**
+  // testing
   const vehicles = [
     // northbound
     {
       vehiclePosition: {
         routeId: "Red",
         revenue: true,
-        directionId: 1,
-        label: "1888",
-        cars: ["1888", "1889"],
+        // "edge case" you must account for
+        directionId: 0,
+        label: "1800",
+        cars: ["1800", "1889"],
         position: { latitude: 42.396207, longitude: -71.141318 },
         stationId: "place-alfcl",
         stopId: "Alewife-01",
@@ -42,7 +44,7 @@ export const Ladders = ({
         // stopStatus: StopStatus.InTransitTo,
         heading: 85,
         timestamp: null,
-        vehicleId: "R-1888",
+        vehicleId: "R-1800",
         tripId: null,
       },
       ocsTrips: { current: null, next: [] },
@@ -52,15 +54,54 @@ export const Ladders = ({
         routeId: "Red",
         revenue: true,
         directionId: 1,
-        label: "1999",
-        cars: ["1999", "1998"],
-        position: { latitude: 42.397113, longitude: -71.137466 },
+        label: "1900",
+        cars: ["1900", "1998"],
+        position: { latitude: 42.396118, longitude: -71.139291 },
         stationId: "place-alfcl",
-        stopId: "70061",
+        // stopId: "70061",
+        stopId: "Alewife-01",
         stopStatus: StopStatus.InTransitTo,
         heading: 85,
         timestamp: null,
-        vehicleId: "R-1999",
+        vehicleId: "R-1900",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 1,
+        label: "1901",
+        cars: ["1901", "1997"],
+        position: { latitude: 42.398085, longitude: -71.135502 },
+        stationId: "place-alfcl",
+        // stopId: "70061",
+        stopId: "Alewife-01",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1901",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 1,
+        label: "1776",
+        cars: ["1776", "1777"],
+        position: { latitude: 42.398085, longitude: -71.135502 },
+        stationId: "place-alfcl",
+        // stopId: "70061",
+        stopId: "Alewife-01",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-1776",
         tripId: null,
       },
       ocsTrips: { current: null, next: [] },
@@ -103,8 +144,43 @@ export const Ladders = ({
       },
       ocsTrips: { current: null, next: [] },
     },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 0,
+        label: "2000",
+        cars: ["2000", "1998"],
+        position: { latitude: 42.397348, longitude: -71.124904 },
+        stationId: "place-davis",
+        stopId: "70063",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-2000",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
+    {
+      vehiclePosition: {
+        routeId: "Red",
+        revenue: true,
+        directionId: 0,
+        label: "2025",
+        cars: ["2025", "1998"],
+        position: { latitude: 42.397762, longitude: -71.130197 },
+        stationId: "place-davis",
+        stopId: "70063",
+        stopStatus: StopStatus.InTransitTo,
+        heading: 85,
+        timestamp: null,
+        vehicleId: "R-2025",
+        tripId: null,
+      },
+      ocsTrips: { current: null, next: [] },
+    },
   ];
-   */
 
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
@@ -220,6 +296,14 @@ const TrainsAndStations = ({
   //   );
   // });
 
+  // processedSortedVehicles.forEach((processedV) => {
+  //   if (processedV.heights.labelHeight) {
+  //     console.log(
+  //       `${processedV.vehicle.vehiclePosition.label}, labelHeight: ${processedV.heights.labelHeight}, direction: ${processedV.vehicle.vehiclePosition.directionId}`,
+  //     );
+  //   }
+  // });
+
   return (
     <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
@@ -248,7 +332,10 @@ const TrainsAndStations = ({
               position: "absolute",
               top: `${vehicleWithHeight.heights.dotHeight}px`,
             }}
-            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
+            className={className([
+              "pointer-events-none",
+              direction === 0 ? "left-[24px]" : "right-[24px]",
+            ])}
           >
             <Train
               theme={trainTheme}
@@ -263,61 +350,6 @@ const TrainsAndStations = ({
           </div>
         );
       })}
-
-      {/* TODO: remove once ready for PR */}
-      {/* {vehicles.map((vehicle) => {
-        const { vehiclePosition: vp } = vehicle;
-        // should still be able to render trains that ARE StoppedAt a station,
-        // even if they have a null position
-        if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
-          return null;
-        }
-
-        const trainHeight = height(vp, ladderConfig);
-        if (trainHeight === -1) {
-          console.error(
-            `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
-          );
-          return null;
-        } else if (trainHeight === null) {
-          console.error(
-            `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
-          );
-          return null;
-        }
-        // add 80 for top margin above the station list borders
-        const px = trainHeight + 80;
-        // console.log(`final height for ${vp.label}: ${px}`);
-
-        const trainTheme = themeForVehicleOnLadder(vehicle, ladderConfig);
-
-        const station = ladderConfig.find((station) =>
-          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
-        );
-
-        const direction =
-          vp.stopId !== null ?
-            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
-          : vp.directionId;
-
-        return (
-          <div
-            key={vp.vehicleId}
-            style={{ position: "absolute", top: `${px}px` }}
-            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
-          >
-            <Train
-              theme={trainTheme}
-              vehicle={vehicle}
-              forceDirection={direction}
-              highlight={
-                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
-              }
-              setSideBarSelection={setSideBarSelection}
-            />
-          </div>
-        );
-      })} */}
     </div>
   );
 };
