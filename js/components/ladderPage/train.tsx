@@ -22,19 +22,12 @@ export const avoidLabelOverlaps = (
   const southboundVehicles: VehicleWithHeight[] = [];
   const northboundboundVehicles: VehicleWithHeight[] = [];
 
-  // sortedVehiclesByHeight.forEach((v) => {
-  //   console.log(
-  //     `${v.vehicle.vehiclePosition.label}, height: ${v.heights.dotHeight}, labelHeight: ${v.heights.labelHeight ?? "NONE"}, direction: ${v.vehicle.vehiclePosition.directionId}`,
-  //   );
-  // });
-
   /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
   the updated directionId from RTR may not match which side of the ladder branch we expect it to be on, 
   which breaks the pattern of comparing trains that share the same directionId */
   for (const vH of sortedVehiclesByHeight) {
     const vp = vH.vehicle.vehiclePosition;
     if (vp.stopId === "Alewife-01" || vp.stopId === "Braintree-01") {
-      console.log(`special case found: ${vp.label}`);
       northboundboundVehicles.push(vH);
     } else if (vp.stopId === "Alewife-02" || vp.stopId === "Braintree-02") {
       southboundVehicles.push(vH);
@@ -47,18 +40,14 @@ export const avoidLabelOverlaps = (
     }
   }
 
-  // northboundboundVehicles.forEach((v) => {
-  //   console.log(`northbound V: ${v.vehicle.vehiclePosition.label}`);
-  // });
   if (northboundboundVehicles.length > 1) {
     let above = northboundboundVehicles[0];
     let below: VehicleWithHeight;
     for (let i = 1; i < northboundboundVehicles.length; i += 1) {
       below = northboundboundVehicles[i];
-      const heightDiff = vehicleHeightDiff(above, below);
-
+      const heightDiff = vehicleHeightDiff(above, below, 1);
       // "above" gets priority for northbound direction, prefer to modify "below"
-      if (heightDiff && heightDiff < 40) {
+      if (heightDiff !== null && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
         below.heights.labelHeight = 40 - heightDiff + 2;
       }
@@ -67,7 +56,6 @@ export const avoidLabelOverlaps = (
     }
     processedNorthbound.push(above);
   } else {
-    // processedNorthbound.concat(northboundboundVehicles);
     if (northboundboundVehicles.length > 0) {
       processedNorthbound.push(northboundboundVehicles[0]);
     }
@@ -81,10 +69,10 @@ export const avoidLabelOverlaps = (
     // eslint-disable-next-line better-mutation/no-mutation
     for (let i = southboundVehicles.length - 1; i > 0; i -= 1) {
       above = southboundVehicles[i - 1];
-      const heightDiff = vehicleHeightDiff(above, below);
+      const heightDiff = vehicleHeightDiff(above, below, -1);
 
       // "below" gets priority for southbound direction, prefer to modify "above"
-      if (heightDiff && heightDiff < 40) {
+      if (heightDiff !== null && heightDiff < 40) {
         // add +2 to provide some buffer space between the labels
         above.heights.labelHeight = 40 - heightDiff + 2;
       }
@@ -93,15 +81,10 @@ export const avoidLabelOverlaps = (
     }
     processedSouthbound.push(below);
   } else {
-    processedSouthbound.concat(southboundVehicles);
+    if (southboundVehicles.length > 0) {
+      processedSouthbound.push(southboundVehicles[0]);
+    }
   }
-  console.log("lengths after processing:");
-  console.log(`processedSouthbound: ${processedSouthbound.length}`);
-  console.log(`processedNorthbound: ${processedNorthbound.length}`);
-  const combo = processedSouthbound.concat(processedNorthbound);
-  combo.forEach((v) => {
-    console.log(`vehicle in combo: ${v.vehicle.vehiclePosition.label}`);
-  });
   return processedSouthbound.concat(processedNorthbound);
 };
 
@@ -128,28 +111,25 @@ export const Train = ({
   return (
     <div className="relative">
       {/* line that connects to dot */}
-      {/* TODO: reverse translation for southbound */}
       <svg
         className={className([
-          "absolute top-[calc(50%-3px)] transform pointer-events-none",
-          forceDirection === 1 ? "-translate-x-[calc(7%)]" : "",
-          // orientation,
+          "absolute w-20 transform top-[calc(50%-3px)]",
+          forceDirection === 1 ?
+            "-translate-x-[calc(25%)]"
+          : "-scale-y-100 -scale-x-100 translate-x-[calc(25%)] -translate-y-[calc(100%-5px)]",
+          orientation,
         ])}
-        // viewBox="0 0 50 6"
-        // width={"100%"}
-        // height={"100%"}
       >
         <line
           className={className([
             theme.backgroundColor === "bg-crimson" ? "stroke-crimson"
             : theme.backgroundColor === "bg-tangerine" ? "stroke-tangerine"
             : "stroke-gray-300",
-            // orientation,
           ])}
-          x1={forceDirection === 1 ? 0 : 50}
-          y1={forceDirection === 1 ? 0 : 0}
-          x2={forceDirection === 1 ? 30 : 0}
-          y2={forceDirection === 1 ? labelHeight ?? 0 : 0}
+          x1={0}
+          y1={0}
+          x2={30}
+          y2={labelHeight ?? 0}
           strokeWidth={labelHeight ? "6px" : "12px"}
         />
       </svg>
@@ -157,7 +137,7 @@ export const Train = ({
       {/* train label */}
       <button
         className={className([
-          "m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
+          "pointer-events-auto m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
           highlight ? "border-[3px] animate-pulse" : "border",
           theme.borderColor,
           extraClassName,
