@@ -23,7 +23,7 @@ export const avoidLabelOverlaps = (
   const northboundboundVehicles: VehicleWithHeight[] = [];
 
   /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
-  the updated directionId from RTR may not match which side of the ladder branch we expect it to be on, 
+  the updated directionId from RTR may not match which side of the ladder branch we expect it to be on,
   which breaks the pattern of comparing trains that share the same directionId */
   for (const vH of sortedVehiclesByHeight) {
     const vp = vH.vehicle.vehiclePosition;
@@ -113,15 +113,16 @@ export const Train = ({
       {/* line that connects to dot */}
       <svg
         className={className([
-          "absolute w-20 transform top-[calc(50%-3px)]",
+          "absolute w-20 transform top-[calc(50%-4px)]",
           forceDirection === 1 ?
-            "-translate-x-[calc(25%)]"
-          : "-scale-y-100 -scale-x-100 translate-x-[calc(25%)] -translate-y-[calc(100%-5px)]",
+            "-translate-x-[calc(22%)]"
+          : "-scale-y-100 -scale-x-100 translate-x-[calc(22%)] -translate-y-[calc(100%-7px)]",
           orientation,
         ])}
       >
         <line
           className={className([
+            "translate-y-1",
             theme.backgroundColor === "bg-crimson" ? "stroke-crimson"
             : theme.backgroundColor === "bg-tangerine" ? "stroke-tangerine"
             : "stroke-gray-300",
@@ -130,7 +131,8 @@ export const Train = ({
           y1={0}
           x2={30}
           y2={labelHeight ?? 0}
-          strokeWidth={labelHeight ? "6px" : "12px"}
+          // strokeWidth={labelHeight ? "6px" : "6px"}
+          strokeWidth={"6px"}
         />
       </svg>
 
