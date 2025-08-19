@@ -14,11 +14,59 @@ import { SideBarSelection } from "./sidebar";
 import { TrainTheme } from "./trainTheme";
 import { ReactElement } from "react";
 
+/**
+ * Takes in a sorted array of vehiclesWithHeight (asc) and processes
+ * every vehicle, comparing 2 at a time. If there is a pill height overlap
+ * between the current pair, then the "next" vehicle has its labelHeight adjusted
+ */
+const adjustLabelHeights = (
+  vehiclesWithHeights: VehicleWithHeight[],
+  directionId: 1 | 0,
+): VehicleWithHeight[] => {
+  // when traveling southbound, vehicles at the end of the sorted array (by height asc)
+  // are further "ahead" down the ladder than vehicles above it. To process southbound
+  // vehicles with the same logic, we reverse the array first.
+  const vehicles =
+    directionId === 1 ? vehiclesWithHeights : (
+      [...vehiclesWithHeights].reverse()
+    );
+
+  const processedVehicles = [];
+  let curr = vehicles[0];
+  let next: VehicleWithHeight;
+  for (let i = 1; i < vehicles.length; i += 1) {
+    next = vehicles[i];
+    const heightDiff =
+      directionId === 1 ?
+        vehicleHeightDiff(curr, next, directionId)
+      : vehicleHeightDiff(next, curr, directionId);
+
+    if (heightDiff !== null && heightDiff < 40) {
+      //use timestamp as tiebreaker for vehicles at the same station.
+      // if curr arrived before next, don't modify as the algorithm will work as normal
+      if (heightDiff === 0) {
+        const currTimestamp = curr.vehicle.vehiclePosition.timestamp;
+        const nextTimestamp = next.vehicle.vehiclePosition.timestamp;
+        if (currTimestamp && nextTimestamp && nextTimestamp < currTimestamp) {
+          const temp = next;
+          next = curr;
+          curr = temp;
+        }
+      }
+      next.heights.labelHeight = 40 - heightDiff + 2;
+    }
+    processedVehicles.push(curr);
+    curr = next;
+  }
+  processedVehicles.push(curr);
+  return processedVehicles;
+};
+
 export const avoidLabelOverlaps = (
   sortedVehiclesByHeight: VehicleWithHeight[],
 ): VehicleWithHeight[] => {
-  const processedSouthbound: VehicleWithHeight[] = [];
-  const processedNorthbound: VehicleWithHeight[] = [];
+  let processedSouthbound: VehicleWithHeight[] = [];
+  let processedNorthbound: VehicleWithHeight[] = [];
   const southboundVehicles: VehicleWithHeight[] = [];
   const northboundboundVehicles: VehicleWithHeight[] = [];
 
@@ -41,47 +89,17 @@ export const avoidLabelOverlaps = (
   }
 
   if (northboundboundVehicles.length > 1) {
-    let above = northboundboundVehicles[0];
-    let below: VehicleWithHeight;
-    for (let i = 1; i < northboundboundVehicles.length; i += 1) {
-      below = northboundboundVehicles[i];
-      const heightDiff = vehicleHeightDiff(above, below, 1);
-      // "above" gets priority for northbound direction, prefer to modify "below"
-      if (heightDiff !== null && heightDiff < 40) {
-        // add +2 to provide some buffer space between the labels
-        below.heights.labelHeight = 40 - heightDiff + 2;
-      }
-      processedNorthbound.push(above);
-      above = below;
-    }
-    processedNorthbound.push(above);
+    processedNorthbound = adjustLabelHeights(northboundboundVehicles, 1);
   } else {
-    if (northboundboundVehicles.length > 0) {
+    if (northboundboundVehicles.length === 1) {
       processedNorthbound.push(northboundboundVehicles[0]);
     }
   }
 
   if (southboundVehicles.length > 1) {
-    // start from the "back" of the array in asc order by height
-    // "below" get's priority for southbound direction
-    let below = southboundVehicles[southboundVehicles.length - 1];
-    let above: VehicleWithHeight;
-    // eslint-disable-next-line better-mutation/no-mutation
-    for (let i = southboundVehicles.length - 1; i > 0; i -= 1) {
-      above = southboundVehicles[i - 1];
-      const heightDiff = vehicleHeightDiff(above, below, -1);
-
-      // "below" gets priority for southbound direction, prefer to modify "above"
-      if (heightDiff !== null && heightDiff < 40) {
-        // add +2 to provide some buffer space between the labels
-        above.heights.labelHeight = 40 - heightDiff + 2;
-      }
-      processedSouthbound.push(below);
-      below = above;
-    }
-    processedSouthbound.push(below);
+    processedSouthbound = adjustLabelHeights(southboundVehicles, 0);
   } else {
-    if (southboundVehicles.length > 0) {
+    if (southboundVehicles.length === 1) {
       processedSouthbound.push(southboundVehicles[0]);
     }
   }
@@ -131,7 +149,6 @@ export const Train = ({
           y1={0}
           x2={30}
           y2={labelHeight ?? 0}
-          // strokeWidth={labelHeight ? "6px" : "6px"}
           strokeWidth={"6px"}
         />
       </svg>

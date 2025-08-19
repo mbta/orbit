@@ -103,8 +103,11 @@ const proportionalProgress = (
 export const vehicleHeightDiff = (
   above: VehicleWithHeight,
   below: VehicleWithHeight,
-  directionModifier: 1 | -1,
+  directionId: 1 | 0,
 ): number | null => {
+  // for southbound heights, negate label height to "subtract" progress
+  const directionModifier = directionId === 1 ? 1 : -1;
+
   const aboveHeight =
     above.heights.labelHeight && above.heights.dotHeight ?
       above.heights.labelHeight * directionModifier + above.heights.dotHeight
@@ -115,7 +118,7 @@ export const vehicleHeightDiff = (
       below.heights.labelHeight * directionModifier + below.heights.dotHeight
     : (below.heights.dotHeight ?? null);
 
-  // remember that in css styling, greater height values means
+  // remember that in css styling greater top values are
   // "further down from the top", thus subtract above from below
   return aboveHeight && belowHeight && belowHeight - aboveHeight;
 };

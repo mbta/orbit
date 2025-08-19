@@ -23,165 +23,7 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
-  // TODO: revert when ready for PR
-  // const vehicles = useVehicles() ?? [];
-
-  // testing
-  const vehicles = [
-    // northbound
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        // "edge case" you must account for
-        directionId: 0,
-        label: "1800",
-        cars: ["1800", "1889"],
-        position: { latitude: 42.396207, longitude: -71.141318 },
-        stationId: "place-alfcl",
-        stopId: "Alewife-01",
-        stopStatus: StopStatus.StoppedAt,
-        // stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1800",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 1,
-        label: "1900",
-        cars: ["1900", "1998"],
-        position: { latitude: 42.396118, longitude: -71.139291 },
-        stationId: "place-alfcl",
-        // stopId: "70061",
-        stopId: "Alewife-01",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1900",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 1,
-        label: "1901",
-        cars: ["1901", "1997"],
-        position: { latitude: 42.398085, longitude: -71.135502 },
-        stationId: "place-alfcl",
-        // stopId: "70061",
-        stopId: "Alewife-01",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1901",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 1,
-        label: "1776",
-        cars: ["1776", "1777"],
-        position: { latitude: 42.398085, longitude: -71.135502 },
-        stationId: "place-alfcl",
-        // stopId: "70061",
-        stopId: "Alewife-01",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1776",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    // southbound
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 0,
-        label: "1888",
-        cars: ["1888", "1889"],
-        position: { latitude: 42.39674, longitude: -71.121815 },
-        stationId: "place-davis",
-        stopId: "70063",
-        stopStatus: StopStatus.StoppedAt,
-        // stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1888",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 0,
-        label: "1999",
-        cars: ["1999", "1998"],
-        position: { latitude: 42.397348, longitude: -71.124904 },
-        stationId: "place-davis",
-        stopId: "70063",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-1999",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 0,
-        label: "2000",
-        cars: ["2000", "1998"],
-        position: { latitude: 42.397348, longitude: -71.124904 },
-        stationId: "place-davis",
-        stopId: "70063",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-2000",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-    {
-      vehiclePosition: {
-        routeId: "Red",
-        revenue: true,
-        directionId: 0,
-        label: "2025",
-        cars: ["2025", "1998"],
-        position: { latitude: 42.397762, longitude: -71.130197 },
-        stationId: "place-davis",
-        stopId: "70063",
-        stopStatus: StopStatus.InTransitTo,
-        heading: 85,
-        timestamp: null,
-        vehicleId: "R-2025",
-        tripId: null,
-      },
-      ocsTrips: { current: null, next: [] },
-    },
-  ];
-
+  const vehicles = useVehicles() ?? [];
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
@@ -268,8 +110,6 @@ const TrainsAndStations = ({
     return { vehicle: vehicle, heights: { dotHeight: trainHeight + 80 } };
   });
 
-  // TODO: do we need a tie-breaker if somehow the vehicles are at the same height?
-  //  -> go by timestamp (i.e whichever vehicle got there first)
   const sortedVehiclesByHeight = [
     ...vehiclesWithHeights.filter(
       (vehicle) => vehicle.heights.dotHeight !== null,
@@ -281,28 +121,6 @@ const TrainsAndStations = ({
   });
 
   const processedSortedVehicles = avoidLabelOverlaps(sortedVehiclesByHeight);
-
-  // TODO: remove
-  // just a sanity check of the sorting from above ^ -----------------------------------------------------
-  // sortedVehiclesByHeight.forEach((sortedV) => {
-  //   console.log(
-  //     `${sortedV.vehicle.vehiclePosition.label}, height: ${sortedV.heights.dotHeight}, direction: ${sortedV.vehicle.vehiclePosition.directionId}`,
-  //   );
-  // });
-
-  // processedSortedVehicles.forEach((processedV) => {
-  //   console.log(
-  //     `${processedV.vehicle.vehiclePosition.label}, height: ${processedV.heights.dotHeight}, labelHeight: ${processedV.heights.labelHeight ?? "NONE"}, direction: ${processedV.vehicle.vehiclePosition.directionId}`,
-  //   );
-  // });
-
-  // processedSortedVehicles.forEach((processedV) => {
-  //   if (processedV.heights.labelHeight) {
-  //     console.log(
-  //       `${processedV.vehicle.vehiclePosition.label}, labelHeight: ${processedV.heights.labelHeight}, direction: ${processedV.vehicle.vehiclePosition.directionId}`,
-  //     );
-  //   }
-  // });
 
   return (
     <div className="relative flex snap-center snap-always">
