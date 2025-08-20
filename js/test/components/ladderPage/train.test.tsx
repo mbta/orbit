@@ -66,7 +66,7 @@ describe("Train", () => {
       />,
     );
 
-    // using a testId here because adding role="img" may cause undue attention from 
+    // using a testId here because adding role="img" may cause undue attention from
     // assistive tech and needlessly apply roles to several components.
     expect(view.getByTestId("dot-pill-connector-line")).toHaveAttribute(
       "y2",
