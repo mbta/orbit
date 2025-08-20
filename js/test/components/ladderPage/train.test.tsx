@@ -13,7 +13,7 @@ describe("Train", () => {
         theme={TrainThemes.crimson}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
-        labelHeight={null}
+        labelOffset={null}
         setSideBarSelection={jest.fn()}
       />,
     );
@@ -27,7 +27,7 @@ describe("Train", () => {
         highlight={true}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
-        labelHeight={null}
+        labelOffset={null}
         setSideBarSelection={jest.fn()}
         className={""} // Empty, but still worth making sure it doesn't error :-)
       />,
@@ -46,7 +46,7 @@ describe("Train", () => {
         vehicle={vehicleFactory.build()}
         highlight={true}
         forceDirection={1}
-        labelHeight={null}
+        labelOffset={null}
         setSideBarSelection={jest.fn()}
         className={""} // Empty, but still worth making sure it doesn't error :-)
       />,
@@ -55,13 +55,13 @@ describe("Train", () => {
     expect(view.getByText("1877")).toHaveClass("some-border-color");
   });
 
-  test("renders at an angle when labelHeight provided", () => {
+  test("renders at an angle when labelOffset provided", () => {
     const view = render(
       <Train
         theme={TrainThemes.crimson}
         vehicle={vehicleFactory.build()}
         forceDirection={1}
-        labelHeight={42}
+        labelOffset={42}
         setSideBarSelection={jest.fn()}
       />,
     );

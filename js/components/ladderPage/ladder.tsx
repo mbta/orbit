@@ -67,7 +67,7 @@ export const Ladders = ({
 
 type TrainHeights = {
   dotHeight: number | null;
-  labelHeight?: number | null;
+  labelOffset?: number | null;
 };
 
 export type VehicleWithHeight = {
@@ -159,7 +159,7 @@ const TrainsAndStations = ({
               theme={trainTheme}
               vehicle={vehicleWithHeight.vehicle}
               forceDirection={direction}
-              labelHeight={vehicleWithHeight.heights.labelHeight ?? null}
+              labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
               highlight={
                 vp.label === sideBarSelection?.vehicle.vehiclePosition.label
               }

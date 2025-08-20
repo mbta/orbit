@@ -17,9 +17,9 @@ import { ReactElement } from "react";
 /**
  * Takes in a sorted array of vehiclesWithHeight (asc) and processes
  * every vehicle, comparing 2 at a time. If there is a pill height overlap
- * between the current pair, then the "next" vehicle has its labelHeight adjusted
+ * between the current pair, then the "next" vehicle has its labelOffset adjusted
  */
-const adjustLabelHeights = (
+const adjustlabelOffsets = (
   vehiclesWithHeights: VehicleWithHeight[],
   directionId: 1 | 0,
 ): VehicleWithHeight[] => {
@@ -42,7 +42,7 @@ const adjustLabelHeights = (
       : vehicleHeightDiff(next, curr, directionId);
 
     if (heightDiff !== null && heightDiff < 40) {
-      //use timestamp as tiebreaker for vehicles at the same station.
+      // use timestamp as tiebreaker for vehicles at the same station.
       // if curr arrived before next, don't modify as the algorithm will work as normal
       if (heightDiff === 0) {
         const currTimestamp = curr.vehicle.vehiclePosition.timestamp;
@@ -53,7 +53,8 @@ const adjustLabelHeights = (
           curr = temp;
         }
       }
-      next.heights.labelHeight = 40 - heightDiff + 2;
+      // add +2 to the offset to provide a little space between pills
+      next.heights.labelOffset = 40 - heightDiff + 2;
     }
     processedVehicles.push(curr);
     curr = next;
@@ -65,10 +66,8 @@ const adjustLabelHeights = (
 export const avoidLabelOverlaps = (
   sortedVehiclesByHeight: VehicleWithHeight[],
 ): VehicleWithHeight[] => {
-  let processedSouthbound: VehicleWithHeight[] = [];
-  let processedNorthbound: VehicleWithHeight[] = [];
   const southboundVehicles: VehicleWithHeight[] = [];
-  const northboundboundVehicles: VehicleWithHeight[] = [];
+  const northboundVehicles: VehicleWithHeight[] = [];
 
   /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
   the updated directionId from RTR may not match which side of the ladder branch we expect it to be on,
@@ -76,39 +75,28 @@ export const avoidLabelOverlaps = (
   for (const vH of sortedVehiclesByHeight) {
     const vp = vH.vehicle.vehiclePosition;
     if (vp.stopId === "Alewife-01" || vp.stopId === "Braintree-01") {
-      northboundboundVehicles.push(vH);
+      northboundVehicles.push(vH);
     } else if (vp.stopId === "Alewife-02" || vp.stopId === "Braintree-02") {
       southboundVehicles.push(vH);
     } else {
       if (vH.vehicle.vehiclePosition.directionId === 0) {
         southboundVehicles.push(vH);
       } else {
-        northboundboundVehicles.push(vH);
+        northboundVehicles.push(vH);
       }
     }
   }
 
-  // processedNorthbound =
-  //   northboundboundVehicles.length > 1 ?
-  //     adjustLabelHeights(northboundboundVehicles, 1)
-  //   : northboundboundVehicles.length === 1 ? [northboundboundVehicles[0]]
-  //   : [];
+  const processedNorthbound =
+    northboundVehicles.length > 1 ?
+      adjustlabelOffsets(northboundVehicles, 1)
+    : northboundVehicles;
 
-  if (northboundboundVehicles.length > 1) {
-    processedNorthbound = adjustLabelHeights(northboundboundVehicles, 1);
-  } else {
-    if (northboundboundVehicles.length === 1) {
-      processedNorthbound.push(northboundboundVehicles[0]);
-    }
-  }
+  const processedSouthbound =
+    southboundVehicles.length > 1 ?
+      adjustlabelOffsets(southboundVehicles, 0)
+    : southboundVehicles;
 
-  if (southboundVehicles.length > 1) {
-    processedSouthbound = adjustLabelHeights(southboundVehicles, 0);
-  } else {
-    if (southboundVehicles.length === 1) {
-      processedSouthbound.push(southboundVehicles[0]);
-    }
-  }
   return processedSouthbound.concat(processedNorthbound);
 };
 
@@ -116,7 +104,7 @@ export const Train = ({
   theme,
   vehicle,
   forceDirection,
-  labelHeight,
+  labelOffset,
   highlight,
   className: extraClassName,
   setSideBarSelection,
@@ -124,7 +112,7 @@ export const Train = ({
   theme: TrainTheme;
   vehicle: Vehicle;
   forceDirection: DirectionId;
-  labelHeight: number | null;
+  labelOffset: number | null;
   highlight?: boolean;
   className?: string;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
@@ -155,7 +143,7 @@ export const Train = ({
           x1={0}
           y1={0}
           x2={30}
-          y2={labelHeight ?? 0}
+          y2={labelOffset ?? 0}
           strokeWidth={"6px"}
         />
       </svg>
@@ -170,10 +158,10 @@ export const Train = ({
         ])}
         style={{
           top: `${
-            labelHeight ?
+            labelOffset ?
               forceDirection === 0 ?
-                labelHeight * -1
-              : labelHeight
+                labelOffset * -1
+              : labelOffset
             : 0
           }px`,
         }}

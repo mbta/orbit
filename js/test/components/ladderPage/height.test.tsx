@@ -83,7 +83,7 @@ describe("vehicleHeightDiff()", () => {
           }),
           ocsTrips: { current: null, next: [] },
         },
-        heights: { dotHeight: 80, labelHeight: null },
+        heights: { dotHeight: 80, labelOffset: null },
       };
 
       const belowNorthbound: VehicleWithHeight = {
@@ -96,7 +96,7 @@ describe("vehicleHeightDiff()", () => {
           }),
           ocsTrips: { current: null, next: [] },
         },
-        heights: { dotHeight: 95, labelHeight: null },
+        heights: { dotHeight: 95, labelOffset: null },
       };
       expect(vehicleHeightDiff(aboveNorthbound, belowNorthbound, 1)).toBe(15);
     });
@@ -115,7 +115,7 @@ describe("vehicleHeightDiff()", () => {
           }),
           ocsTrips: { current: null, next: [] },
         },
-        heights: { dotHeight: 180, labelHeight: null },
+        heights: { dotHeight: 180, labelOffset: null },
       };
 
       const belowSouthbound: VehicleWithHeight = {
@@ -128,7 +128,7 @@ describe("vehicleHeightDiff()", () => {
           }),
           ocsTrips: { current: null, next: [] },
         },
-        heights: { dotHeight: 200, labelHeight: null },
+        heights: { dotHeight: 200, labelOffset: null },
       };
       expect(vehicleHeightDiff(aboveSouthbound, belowSouthbound, 1)).toBe(20);
     });

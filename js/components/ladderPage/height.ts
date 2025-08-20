@@ -105,17 +105,17 @@ export const vehicleHeightDiff = (
   below: VehicleWithHeight,
   directionId: 1 | 0,
 ): number | null => {
-  // for southbound heights, negate label height to "subtract" progress
+  // for southbound heights, negate label offsets to "subtract" progress
   const directionModifier = directionId === 1 ? 1 : -1;
 
   const aboveHeight =
-    above.heights.labelHeight && above.heights.dotHeight ?
-      above.heights.labelHeight * directionModifier + above.heights.dotHeight
+    above.heights.labelOffset && above.heights.dotHeight ?
+      above.heights.labelOffset * directionModifier + above.heights.dotHeight
     : (above.heights.dotHeight ?? null);
 
   const belowHeight =
-    below.heights.labelHeight && below.heights.dotHeight ?
-      below.heights.labelHeight * directionModifier + below.heights.dotHeight
+    below.heights.labelOffset && below.heights.dotHeight ?
+      below.heights.labelOffset * directionModifier + below.heights.dotHeight
     : (below.heights.dotHeight ?? null);
 
   // remember that in css styling greater top values are
