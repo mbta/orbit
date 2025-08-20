@@ -19,7 +19,7 @@ import { ReactElement } from "react";
  * every vehicle, comparing 2 at a time. If there is a pill height overlap
  * between the current pair, then the "next" vehicle has its labelOffset adjusted
  */
-const adjustlabelOffsets = (
+const adjustLabelOffsets = (
   vehiclesWithHeights: VehicleWithHeight[],
   directionId: 1 | 0,
 ): VehicleWithHeight[] => {
@@ -89,12 +89,12 @@ export const avoidLabelOverlaps = (
 
   const processedNorthbound =
     northboundVehicles.length > 1 ?
-      adjustlabelOffsets(northboundVehicles, 1)
+      adjustLabelOffsets(northboundVehicles, 1)
     : northboundVehicles;
 
   const processedSouthbound =
     southboundVehicles.length > 1 ?
-      adjustlabelOffsets(southboundVehicles, 0)
+      adjustLabelOffsets(southboundVehicles, 0)
     : southboundVehicles;
 
   return processedSouthbound.concat(processedNorthbound);

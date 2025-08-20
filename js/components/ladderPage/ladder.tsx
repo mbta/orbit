@@ -65,14 +65,14 @@ export const Ladders = ({
   );
 };
 
-type TrainHeights = {
+type TrainHeight = {
   dotHeight: number | null;
   labelOffset?: number | null;
 };
 
 export type VehicleWithHeight = {
   vehicle: Vehicle;
-  heights: TrainHeights;
+  heights: TrainHeight;
 };
 
 const TrainsAndStations = ({

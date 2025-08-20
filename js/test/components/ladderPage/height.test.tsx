@@ -98,7 +98,40 @@ describe("vehicleHeightDiff()", () => {
         },
         heights: { dotHeight: 95, labelOffset: null },
       };
+
+      const aboveNorthboundOffsetted: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            stationId: "place-alfcl",
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 80, labelOffset: 10 },
+      };
+
+      const belowNorthboundOffsetted: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            stationId: "place-alfcl",
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.InTransitTo,
+            position: { latitude: 42.396245, longitude: -71.14036 },
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 95, labelOffset: 5 },
+      };
+
       expect(vehicleHeightDiff(aboveNorthbound, belowNorthbound, 1)).toBe(15);
+      expect(
+        vehicleHeightDiff(
+          aboveNorthboundOffsetted,
+          belowNorthboundOffsetted,
+          1,
+        ),
+      ).toBe(10);
     });
   });
 
@@ -130,7 +163,61 @@ describe("vehicleHeightDiff()", () => {
         },
         heights: { dotHeight: 200, labelOffset: null },
       };
-      expect(vehicleHeightDiff(aboveSouthbound, belowSouthbound, 1)).toBe(20);
+
+      const aboveSouthboundOffsetted: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            directionId: 0,
+            stationId: "place-davis",
+            stopId: "70063",
+            stopStatus: StopStatus.InTransitTo,
+            position: { latitude: 42.397317, longitude: -71.123838 },
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 180, labelOffset: 10 },
+      };
+
+      const belowSouthboundOffsetted: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            directionId: 0,
+            stationId: "place-davis",
+            stopId: "70063",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 200, labelOffset: 5 },
+      };
+      expect(vehicleHeightDiff(aboveSouthbound, belowSouthbound, 0)).toBe(20);
+      expect(
+        vehicleHeightDiff(
+          aboveSouthboundOffsetted,
+          belowSouthboundOffsetted,
+          0,
+        ),
+      ).toBe(25);
     });
+  });
+
+  test("returns null for null heights", () => {
+    const aboveNorthbound: VehicleWithHeight = {
+      vehicle: {
+        vehiclePosition: vehiclePositionFactory.build(),
+        ocsTrips: { current: null, next: [] },
+      },
+      heights: { dotHeight: null, labelOffset: null },
+    };
+
+    const belowNorthbound: VehicleWithHeight = {
+      vehicle: {
+        vehiclePosition: vehiclePositionFactory.build(),
+        ocsTrips: { current: null, next: [] },
+      },
+      heights: { dotHeight: null, labelOffset: null },
+    };
+
+    expect(vehicleHeightDiff(aboveNorthbound, belowNorthbound, 1)).toBeNull();
   });
 });

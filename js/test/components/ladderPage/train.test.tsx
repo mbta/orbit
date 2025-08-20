@@ -1,4 +1,8 @@
-import { Train } from "../../../components/ladderPage/train";
+import { VehicleWithHeight } from "../../../components/ladderPage/ladder";
+import {
+  avoidLabelOverlaps,
+  Train,
+} from "../../../components/ladderPage/train";
 import {
   TrainTheme,
   TrainThemes,
@@ -73,5 +77,93 @@ describe("Train", () => {
       "42",
     );
     expect(view.getByRole("button")).toHaveStyle({ top: "42px" });
+  });
+});
+
+describe("avoidLabelOverlaps", () => {
+  test("calculates labelOffsets for a sorted array of vehiclesWithHeights", () => {
+    // not using accurate vehicle or trip values, only heights are relevant for test
+    const vehiclesWithHeights: VehicleWithHeight[] = [
+      // northbound
+      {
+        // specifically test catching vehicles at Alewife-01 despite the directionId
+        vehicle: vehicleFactory.build({
+          vehiclePosition: { directionId: 0, stopId: "Alewife-01" },
+        }),
+        heights: { dotHeight: 80, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 85, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 100, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 250, labelOffset: null },
+      },
+      //southbound
+      {
+        // specifically test catching vehicles at Alewife-02 despite the directionId
+        vehicle: vehicleFactory.build({
+          vehiclePosition: { directionId: 1, stopId: "Alewife-02" },
+        }),
+        heights: { dotHeight: 80, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 85, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 100, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 250, labelOffset: null },
+      },
+    ];
+    expect(avoidLabelOverlaps(vehiclesWithHeights)).toStrictEqual([
+      // southbound (northbound gets concatenated onto southbound during processing, thus new order)
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 250, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 100, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
+        heights: { dotHeight: 85, labelOffset: 27 },
+      },
+      {
+        vehicle: vehicleFactory.build({
+          vehiclePosition: { directionId: 1, stopId: "Alewife-02" },
+        }),
+        heights: { dotHeight: 80, labelOffset: 64 },
+      },
+      // northbound
+      {
+        vehicle: vehicleFactory.build({
+          vehiclePosition: { directionId: 0, stopId: "Alewife-01" },
+        }),
+        heights: { dotHeight: 80, labelOffset: null },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 85, labelOffset: 37 },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 100, labelOffset: 64 },
+      },
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 250, labelOffset: null },
+      },
+    ]);
   });
 });
