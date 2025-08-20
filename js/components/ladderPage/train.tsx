@@ -88,6 +88,12 @@ export const avoidLabelOverlaps = (
     }
   }
 
+  // processedNorthbound =
+  //   northboundboundVehicles.length > 1 ?
+  //     adjustLabelHeights(northboundboundVehicles, 1)
+  //   : northboundboundVehicles.length === 1 ? [northboundboundVehicles[0]]
+  //   : [];
+
   if (northboundboundVehicles.length > 1) {
     processedNorthbound = adjustLabelHeights(northboundboundVehicles, 1);
   } else {
@@ -139,6 +145,7 @@ export const Train = ({
         ])}
       >
         <line
+          data-testid="dot-pill-connector-line"
           className={className([
             "translate-y-1",
             theme.backgroundColor === "bg-crimson" ? "stroke-crimson"

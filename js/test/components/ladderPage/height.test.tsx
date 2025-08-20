@@ -1,4 +1,8 @@
-import { height } from "../../../components/ladderPage/height";
+import {
+  height,
+  vehicleHeightDiff,
+} from "../../../components/ladderPage/height";
+import { VehicleWithHeight } from "../../../components/ladderPage/ladder";
 import { Stations } from "../../../data/stations";
 import { StopStatus } from "../../../models/vehiclePosition";
 import { vehiclePositionFactory } from "../../helpers/factory";
@@ -64,5 +68,69 @@ describe("height()", () => {
   test("returns -1 for VehiclePosition not found on stationList", () => {
     const pos = vehiclePositionFactory.build();
     expect(height(pos, Stations.Red[0])).toBe(-1);
+  });
+});
+
+describe("vehicleHeightDiff()", () => {
+  describe("northbound", () => {
+    test("calculates height diff for valid vehicles", () => {
+      const aboveNorthbound: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            stationId: "place-alfcl",
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 80, labelHeight: null },
+      };
+
+      const belowNorthbound: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            stationId: "place-alfcl",
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.InTransitTo,
+            position: { latitude: 42.396245, longitude: -71.14036 },
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 95, labelHeight: null },
+      };
+      expect(vehicleHeightDiff(aboveNorthbound, belowNorthbound, 1)).toBe(15);
+    });
+  });
+
+  describe("southbound", () => {
+    test("calculates height diff for valid vehicles", () => {
+      const aboveSouthbound: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            directionId: 0,
+            stationId: "place-davis",
+            stopId: "70063",
+            stopStatus: StopStatus.InTransitTo,
+            position: { latitude: 42.397317, longitude: -71.123838 },
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 180, labelHeight: null },
+      };
+
+      const belowSouthbound: VehicleWithHeight = {
+        vehicle: {
+          vehiclePosition: vehiclePositionFactory.build({
+            directionId: 0,
+            stationId: "place-davis",
+            stopId: "70063",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+          ocsTrips: { current: null, next: [] },
+        },
+        heights: { dotHeight: 200, labelHeight: null },
+      };
+      expect(vehicleHeightDiff(aboveSouthbound, belowSouthbound, 1)).toBe(20);
+    });
   });
 });
