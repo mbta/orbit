@@ -129,8 +129,8 @@ export const Train = ({
         className={className([
           "absolute w-20 transform top-[calc(50%-4px)]",
           forceDirection === 1 ?
-            "-translate-x-[calc(22%)]"
-          : "-scale-y-100 -scale-x-100 translate-x-[calc(22%)] -translate-y-[calc(100%-7px)]",
+            "-translate-x-[17.6px]"
+          : "-scale-y-100 -scale-x-100 translate-x-[17.6px] -translate-y-[calc(100%-7px)]",
           orientation,
         ])}
         style={{ height: `${labelOffset !== null ? labelOffset + 8 : 8}px` }}
@@ -140,12 +140,7 @@ export const Train = ({
         into position in order to achieve "upward" angles */}
         <line
           data-testid="dot-pill-connector-line"
-          className={className([
-            "translate-y-1",
-            theme.backgroundColor === "bg-crimson" ? "stroke-crimson"
-            : theme.backgroundColor === "bg-tangerine" ? "stroke-tangerine"
-            : "stroke-gray-300",
-          ])}
+          className={className(["translate-y-1", theme.strokeColor])}
           x1={0}
           y1={0}
           x2={30}

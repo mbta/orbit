@@ -1,20 +1,24 @@
 export type TrainTheme = {
   backgroundColor: string;
   borderColor: string;
+  strokeColor: string;
 };
 
 export const TrainThemes: Record<string, TrainTheme> = {
   crimson: {
     backgroundColor: "bg-crimson",
     borderColor: "border-crimson",
+    strokeColor: "stroke-crimson",
   },
   tangerine: {
     backgroundColor: "bg-tangerine",
     borderColor: "border-tangerine",
+    strokeColor: "stroke-tangerine",
   },
   gray: {
     backgroundColor: "bg-gray-300",
     borderColor: "border-gray-300",
+    strokeColor: "stroke-gray-300",
   },
 } as const;
 
