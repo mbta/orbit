@@ -21,7 +21,7 @@ import { ReactElement } from "react";
  */
 const adjustLabelOffsets = (
   vehiclesWithHeights: VehicleWithHeight[],
-  directionId: DirectionId
+  directionId: DirectionId,
 ): VehicleWithHeight[] => {
   // A sorted array (by height asc) works well for processing Northbound vehicles because
   // vehicles with greater height values are positioned further from the top (and are towards
@@ -153,7 +153,7 @@ export const Train = ({
           y1={0}
           x2={30}
           y2={labelOffset ?? 0}
-          strokeWidth={"6px"}
+          strokeWidth="6px"
         />
       </svg>
 
