@@ -1,4 +1,5 @@
 import { LadderConfig } from "../../data/stations";
+import { DirectionId } from "../../models/common";
 import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
 import { VehicleWithHeight } from "./ladder";
@@ -100,10 +101,17 @@ const proportionalProgress = (
   }
 };
 
+/**
+ * Takes in 2 VehicleWithHeight's, representing 2 train pills on the ladder,
+ * one being "above" the other, and thus the other being "below".
+ * For each pill, add (or subtract via negation depending on direction)
+ * its labelOffset to its dotHeight to calculate the current height of the pill.
+ * Finally, calculate the difference in height between the 2 pills.
+ */
 export const vehicleHeightDiff = (
   above: VehicleWithHeight,
   below: VehicleWithHeight,
-  directionId: 1 | 0,
+  directionId: DirectionId
 ): number | null => {
   // for southbound heights, negate label offsets to "subtract" progress
   const directionModifier = directionId === 1 ? 1 : -1;
