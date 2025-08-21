@@ -123,6 +123,8 @@ export const Train = ({
   return (
     <div className="relative">
       {/* line that connects to dot */}
+      {/* the bounding box is determined by the pill button. the svg element must be transformed such that its
+      dimensions covers the area between the dot and the pill in order to render the line that connects them */}
       <svg
         className={className([
           "absolute w-20 transform top-[calc(50%-4px)]",
@@ -131,7 +133,11 @@ export const Train = ({
           : "-scale-y-100 -scale-x-100 translate-x-[calc(22%)] -translate-y-[calc(100%-7px)]",
           orientation,
         ])}
+        style={{ height: `${labelOffset !== null ? labelOffset + 8 : 8}px` }}
       >
+        {/* to render the connecting line between dots and any offsetted pills, we simply utilize x, y coordinates on the line
+        and angle them "downwards." For southbound trains we mirror (flip) them on their x and y axes and then transform them 
+        into position in order to achieve "upward" angles */}
         <line
           data-testid="dot-pill-connector-line"
           className={className([
