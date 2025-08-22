@@ -25,8 +25,8 @@ const adjustLabelOffsets = (
   directionId: DirectionId,
 ): VehicleWithHeight[] => {
   // A sorted array (by height asc) works well for processing Northbound vehicles because
-  // vehicles with greater height values are positioned further from the top (and are towards
-  // the end of the array), vice versa for smaller heights.
+  // vehicles with greater height values (css "top" styling) are positioned further down
+  // from the top (and are towards the end of the array), vice versa for smaller heights.
   // When traveling southbound, vehicles at the end of the sorted array are actually further
   // "ahead" down the ladder than vehicles above it. To reuse the same logic
   // between northbound & southbound, we reverse southbound arrays for processing.
