@@ -10,7 +10,7 @@ export type StationId = string;
 export const StationId = z.string();
 
 export type DirectionId = number;
-export const DirectionId = z.number();
+export const DirectionId = z.literal(0).or(z.literal(1));
 
 // Not a TypeScript enum since those cannot have overloaded keys.
 export const Direction = {

@@ -187,6 +187,13 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
   ],
 };
 
+export const DirectionalStopIds = new Map([
+  ["Alewife-01", 1],
+  ["Alewife-02", 0],
+  ["Braintree-01", 1],
+  ["Braintree-02", 0],
+]);
+
 export const stationSidebarNames = new Map([
   ["JFK/ UMASS ASH", "JFK"],
   ["JFK/ UMASS BRT", "JFK"],

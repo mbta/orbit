@@ -1,3 +1,4 @@
+import { DirectionalStopIds } from "../../data/stations";
 import {
   ORBIT_HR_STAKEHOLDERS,
   ORBIT_RL_TRAINSTARTERS,
@@ -72,15 +73,18 @@ export const avoidLabelOverlaps = (
   const southboundVehicles: VehicleWithHeight[] = [];
   const northboundVehicles: VehicleWithHeight[] = [];
 
-  /* sometimes when a train reaches Alewife or Braintree (and is assigned to a specific track)
+  /* Categorize vehicles by direction. 
+  When a train reaches a station with specific track stopIds (ex: Alewife or Braintree)
   the updated directionId from RTR may not match which side of the ladder branch we expect it to be on,
-  which breaks the pattern of comparing trains that share the same directionId */
+  which breaks the pattern of comparing trains that share the same directionId. Check for that here */
   for (const vH of sortedVehiclesByHeight) {
     const vp = vH.vehicle.vehiclePosition;
-    if (vp.stopId === "Alewife-01" || vp.stopId === "Braintree-01") {
-      northboundVehicles.push(vH);
-    } else if (vp.stopId === "Alewife-02" || vp.stopId === "Braintree-02") {
-      southboundVehicles.push(vH);
+    if (vp.stopId && DirectionalStopIds.has(vp.stopId)) {
+      if (DirectionalStopIds.get(vp.stopId) === 1) {
+        northboundVehicles.push(vH);
+      } else {
+        southboundVehicles.push(vH);
+      }
     } else {
       if (vH.vehicle.vehiclePosition.directionId === 0) {
         southboundVehicles.push(vH);
