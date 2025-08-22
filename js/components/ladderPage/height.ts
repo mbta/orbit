@@ -111,7 +111,7 @@ const proportionalProgress = (
 export const vehicleHeightDiff = (
   above: VehicleWithHeight,
   below: VehicleWithHeight,
-  directionId: DirectionId
+  directionId: DirectionId,
 ): number | null => {
   // for southbound heights, negate label offsets to "subtract" progress
   const directionModifier = directionId === 1 ? 1 : -1;
