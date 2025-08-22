@@ -7,6 +7,7 @@ import {
   TrainTheme,
   TrainThemes,
 } from "../../../components/ladderPage/trainTheme";
+import { dateTimeFromISO } from "../../../dateTime";
 import { vehicleFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 
@@ -43,6 +44,7 @@ describe("Train", () => {
     const theme: TrainTheme = {
       backgroundColor: "some-background-color",
       borderColor: "some-border-color",
+      strokeColor: "some-stroke-color",
     };
     const view = render(
       <Train
@@ -125,7 +127,7 @@ describe("avoidLabelOverlaps", () => {
         heights: { dotHeight: 250, labelOffset: null },
       },
     ];
-    expect(avoidLabelOverlaps(vehiclesWithHeights)).toStrictEqual([
+    expect(avoidLabelOverlaps(vehiclesWithHeights)).toEqual([
       // southbound (northbound gets concatenated onto southbound during processing, thus new order)
       {
         vehicle: vehicleFactory.build({ vehiclePosition: { directionId: 0 } }),
@@ -163,6 +165,43 @@ describe("avoidLabelOverlaps", () => {
       {
         vehicle: vehicleFactory.build(),
         heights: { dotHeight: 250, labelOffset: null },
+      },
+    ]);
+  });
+
+  test("uses vehiclePosition timestamp as tiebreaker for vehicles at same height", () => {
+    const vehiclesWithHeights: VehicleWithHeight[] = [
+      // newer timestamp
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 100 },
+      },
+      // older timestamp
+      {
+        vehicle: vehicleFactory.build({
+          vehiclePosition: {
+            label: "1700",
+            timestamp: dateTimeFromISO("2025-04-29T21:26:00Z"),
+          },
+        }),
+        heights: { dotHeight: 100 },
+      },
+    ];
+    expect(avoidLabelOverlaps(vehiclesWithHeights)).toEqual([
+      // older timestamp
+      {
+        vehicle: vehicleFactory.build({
+          vehiclePosition: {
+            label: "1700",
+            timestamp: dateTimeFromISO("2025-04-29T21:26:00Z"),
+          },
+        }),
+        heights: { dotHeight: 100 },
+      },
+      // newer timestamp (now has a labelOffset)
+      {
+        vehicle: vehicleFactory.build(),
+        heights: { dotHeight: 100, labelOffset: 42 },
       },
     ]);
   });

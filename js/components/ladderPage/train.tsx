@@ -95,12 +95,12 @@ export const avoidLabelOverlaps = (
   }
 
   return (
-    northboundVehicles.length > 1 ?
-      adjustLabelOffsets(northboundVehicles, 1)
-    : northboundVehicles).concat(
     southboundVehicles.length > 1 ?
       adjustLabelOffsets(southboundVehicles, 0)
-    : southboundVehicles,
+    : southboundVehicles).concat(
+    northboundVehicles.length > 1 ?
+      adjustLabelOffsets(northboundVehicles, 1)
+    : northboundVehicles,
   );
 };
 
