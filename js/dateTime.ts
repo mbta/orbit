@@ -13,9 +13,6 @@ export const dateTimeFromUnix = (unixSeconds: number): DateTime =>
 
 export const dateTimeToISODate = (dt: DateTime<true>): string => dt.toISODate();
 
-export const dateTimeCompare = (a: DateTime, b: DateTime): number =>
-  a.valueOf() - b.valueOf();
-
 export const daysBetween = (now: DateTime, date: DateTime) => {
   return date.diff(now, "days").days;
 };
