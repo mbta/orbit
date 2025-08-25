@@ -94,14 +94,14 @@ export const avoidLabelOverlaps = (
     }
   }
 
-  return (
-    southboundVehicles.length > 1 ?
+  return [
+    ...(southboundVehicles.length > 1 ?
       adjustLabelOffsets(southboundVehicles, 0)
-    : southboundVehicles).concat(
-    northboundVehicles.length > 1 ?
+    : southboundVehicles),
+    ...(northboundVehicles.length > 1 ?
       adjustLabelOffsets(northboundVehicles, 1)
-    : northboundVehicles,
-  );
+    : northboundVehicles),
+  ];
 };
 
 export const Train = ({
