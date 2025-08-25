@@ -38,7 +38,7 @@ export const Menu = (): ReactElement => {
 
 export const HelpMenu = (): ReactElement => {
   return (
-    <main className="w-5/6 mx-auto mt-4 max-w-[400px]">
+    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14">
       <Link
         className="mb-6 tracking-widest h-full w-16 text-sm font-semibold uppercase no-underline"
         to={paths.menu}
