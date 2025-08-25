@@ -1,6 +1,8 @@
 import { LadderConfig } from "../../data/stations";
+import { DirectionId } from "../../models/common";
 import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
 import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { VehicleWithHeight } from "./ladder";
 
 export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
   let height = 68;
@@ -97,4 +99,34 @@ const proportionalProgress = (
   } else {
     return proportionBetweenStartFinish * travelLength;
   }
+};
+
+/**
+ * Takes in 2 VehicleWithHeight's, representing 2 train pills on the ladder,
+ * one being "above" the other, and thus the other being "below".
+ * For each pill, add (or subtract via negation depending on direction)
+ * its labelOffset to its dotHeight to calculate the current height of the pill.
+ * Finally, calculate the difference in height between the 2 pills.
+ */
+export const vehicleHeightDiff = (
+  above: VehicleWithHeight,
+  below: VehicleWithHeight,
+  directionId: DirectionId,
+): number | null => {
+  // for southbound heights, negate label offsets to "subtract" progress
+  const directionModifier = directionId === 1 ? 1 : -1;
+
+  const aboveHeight =
+    above.heights.labelOffset && above.heights.dotHeight ?
+      above.heights.labelOffset * directionModifier + above.heights.dotHeight
+    : (above.heights.dotHeight ?? null);
+
+  const belowHeight =
+    below.heights.labelOffset && below.heights.dotHeight ?
+      below.heights.labelOffset * directionModifier + below.heights.dotHeight
+    : (below.heights.dotHeight ?? null);
+
+  // remember that in css styling greater top values are
+  // "further down from the top", thus subtract above from below
+  return aboveHeight && belowHeight && belowHeight - aboveHeight;
 };

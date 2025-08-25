@@ -3,9 +3,10 @@ import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
+import { className } from "../../util/dom";
 import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
-import { Train } from "./train";
+import { avoidLabelOverlaps, Train } from "./train";
 import {
   TrainTheme,
   TrainThemes,
@@ -23,7 +24,6 @@ export const Ladders = ({
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
   const vehicles = useVehicles() ?? [];
-
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
@@ -65,6 +65,16 @@ export const Ladders = ({
   );
 };
 
+type TrainHeight = {
+  dotHeight: number | null;
+  labelOffset?: number | null;
+};
+
+export type VehicleWithHeight = {
+  vehicle: Vehicle;
+  heights: TrainHeight;
+};
+
 const TrainsAndStations = ({
   ladderConfig,
   vehicles,
@@ -76,33 +86,53 @@ const TrainsAndStations = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
+  const vehiclesWithHeights: VehicleWithHeight[] = vehicles.map((vehicle) => {
+    const { vehiclePosition: vp } = vehicle;
+    // should still be able to render trains that are StoppedAt a station,
+    // even if they have a null position
+    if (vp.position == null && vp.stopStatus !== StopStatus.StoppedAt) {
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    }
+
+    const trainHeight = height(vp, ladderConfig);
+    if (trainHeight === -1) {
+      console.error(
+        `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
+      );
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    } else if (trainHeight === null) {
+      console.error(
+        `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
+      );
+      return { vehicle: vehicle, heights: { dotHeight: null } };
+    }
+    // add 80 for top margin above the station list borders
+    return { vehicle: vehicle, heights: { dotHeight: trainHeight + 80 } };
+  });
+
+  const sortedVehiclesByHeight = [
+    ...vehiclesWithHeights.filter(
+      (vehicle) => vehicle.heights.dotHeight !== null,
+    ),
+  ].sort((v1, v2) => {
+    const v1DotHeight = v1.heights.dotHeight;
+    const v2DotHeight = v2.heights.dotHeight;
+    return v1DotHeight && v2DotHeight ? v1DotHeight - v2DotHeight : 0;
+  });
+
+  const processedSortedVehicles = avoidLabelOverlaps(sortedVehiclesByHeight);
+
   return (
     <div className="relative flex snap-center snap-always">
       <StationList stations={ladderConfig} />
-      {vehicles.map((vehicle) => {
-        const { vehiclePosition: vp } = vehicle;
-        // should still be able to render trains that ARE StoppedAt a station,
-        // even if they have a null position
-        if (vp.position === null && vp.stopStatus !== StopStatus.StoppedAt) {
-          return null;
-        }
 
-        const trainHeight = height(vp, ladderConfig);
-        if (trainHeight === -1) {
-          console.error(
-            `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
-          );
-          return null;
-        } else if (trainHeight === null) {
-          console.error(
-            `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
-          );
-          return null;
-        }
-        // add 80 for top margin above the station list borders
-        const px = trainHeight + 80;
+      {processedSortedVehicles.map((vehicleWithHeight) => {
+        const vp = vehicleWithHeight.vehicle.vehiclePosition;
 
-        const trainTheme = themeForVehicleOnLadder(vehicle, ladderConfig);
+        const trainTheme = themeForVehicleOnLadder(
+          vehicleWithHeight.vehicle,
+          ladderConfig,
+        );
 
         const station = ladderConfig.find((station) =>
           station.stop_ids.some((stop_id) => stop_id === vp.stopId),
@@ -116,13 +146,20 @@ const TrainsAndStations = ({
         return (
           <div
             key={vp.vehicleId}
-            style={{ position: "absolute", top: `${px}px` }}
-            className={direction === 0 ? "left-[24px]" : "right-[24px]"}
+            style={{
+              position: "absolute",
+              top: `${vehicleWithHeight.heights.dotHeight}px`,
+            }}
+            className={className([
+              "pointer-events-none",
+              direction === 0 ? "left-[24px]" : "right-[24px]",
+            ])}
           >
             <Train
               theme={trainTheme}
-              vehicle={vehicle}
+              vehicle={vehicleWithHeight.vehicle}
               forceDirection={direction}
+              labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
               highlight={
                 vp.label === sideBarSelection?.vehicle.vehiclePosition.label
               }
