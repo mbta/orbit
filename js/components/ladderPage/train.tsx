@@ -125,7 +125,7 @@ export const Train = ({
   const label = vehicle.vehiclePosition.label;
   const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
   return (
-    <div className="relative">
+    <div className={className(["relative", highlight ? "animate-pulse" : ""])}>
       {/* line that connects to dot */}
       {/* the bounding box is determined by the pill button. the svg element must be transformed such that its
       dimensions covers the area between the dot and the pill in order to render the line that connects them */}
@@ -157,7 +157,7 @@ export const Train = ({
       <button
         className={className([
           "pointer-events-auto m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
-          highlight ? "border-[3px] animate-pulse" : "border",
+          highlight ? "border-[3px]" : "border",
           theme.borderColor,
           extraClassName,
         ])}
