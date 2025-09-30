@@ -43,7 +43,7 @@ defmodule Orbit.MixProject do
       {:bandit, "== 1.7.0"},
       {:broadway_kinesis, github: "mbta/broadway_kinesis"},
       # used by ex_aws to parse AWS CLI settings/credentials
-      {:configparser_ex, "== 4.0.0", only: :dev},
+      {:configparser_ex, "== 5.0.0", only: :dev},
       {:credo, "== 1.7.12", only: [:dev, :test], runtime: false},
       {:csv, "== 3.2.2"},
       {:dialyxir, "== 1.4.5", only: [:dev, :test], runtime: false},
