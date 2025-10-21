@@ -56,7 +56,7 @@ RUN mix release --path /app-release
 
 ### Production Stage
 # Run in minimal Alpine container
-FROM alpine:3.22.1 AS runtime
+FROM alpine:3.22.2 AS runtime
 
 # HTTP port
 EXPOSE 4001
