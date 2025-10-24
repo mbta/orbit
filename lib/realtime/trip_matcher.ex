@@ -36,7 +36,12 @@ defmodule Realtime.TripMatcher do
           fn -> nil end
         )
 
-      next = trip_chain(ocs_trips_by_uid, vehicle_id, current_trip && current_trip.next_uid)
+      next =
+        next_trip_chain(
+          ocs_trips_by_uid,
+          vehicle_id,
+          current_trip
+        )
 
       ocs_current_and_next = %{current: current_trip, next: next}
 
@@ -74,23 +79,80 @@ defmodule Realtime.TripMatcher do
     |> populate_actual_departures(DateTime.utc_now())
   end
 
-  # Look up the trip with the given start trip UID, and return the possible chain of
-  # next trips from that trip onward for the given train UID.
-  @spec trip_chain(%{String.t() => Trip.t()}, String.t(), String.t() | nil) :: [Trip.t()]
-  defp trip_chain(trips_by_uid, train_uid, start_trip_uid)
+  # For the given current Trip and train UID, find the sequence of "next" trips
+  # after the current trip for the that same train.
+  @spec next_trip_chain(%{String.t() => Trip.t()}, String.t(), Trip.t() | nil) ::
+          [
+            Trip.t()
+          ]
+  defp next_trip_chain(trips_by_uid, train_uid, current_trip)
 
-  defp trip_chain(_trips_by_uid, _train_uid, nil) do
+  defp next_trip_chain(_trips_by_uid, _train_uid, nil) do
     []
   end
 
-  defp trip_chain(trips_by_uid, train_uid, next_trip_uid) do
-    with trip when not is_nil(trip) <- Map.get(trips_by_uid, next_trip_uid),
-         # Check that trip isn't assigned to other train
-         true <- trip.train_uid == nil || trip.train_uid == train_uid do
-      [trip | trip_chain(trips_by_uid, train_uid, trip.next_uid)]
+  defp next_trip_chain(trips_by_uid, train_uid, current_trip) do
+    {status, chain} =
+      trip_chain_recursive(
+        trips_by_uid,
+        train_uid,
+        current_trip.next_uid,
+        MapSet.new([current_trip.uid])
+      )
+
+    if status == :loop_detected do
+      next_trip_uids = Enum.map_join(chain, ", ", fn trip -> trip.uid end)
+
+      Logger.warning(
+        "Realtime.TripMatcher ocs_trip_loop_detected trip_uid=#{current_trip.uid} next_uids=[#{next_trip_uids}]"
+      )
+    end
+
+    chain
+  end
+
+  # Look up the trip with the given start trip UID, and return the possible chain of
+  # next trips from that trip onward for the given train UID.
+  # The 'visited' MapSet contains trip UIDs visited so far, and is used to detect and avoid loops.
+  # If a loop does occur, the sequence up until the loop was detected will be reported as the next
+  # set of trips.
+  @spec trip_chain_recursive(
+          %{String.t() => Trip.t()},
+          String.t(),
+          String.t() | nil,
+          MapSet.t(String.t())
+        ) ::
+          {:ok | :loop_detected,
+           [
+             Trip.t()
+           ]}
+  defp trip_chain_recursive(trips_by_uid, train_uid, start_trip_uid, visited)
+
+  defp trip_chain_recursive(_trips_by_uid, _train_uid, nil, _visited) do
+    {:ok, []}
+  end
+
+  defp trip_chain_recursive(trips_by_uid, train_uid, next_trip_uid, visited) do
+    if MapSet.member?(visited, next_trip_uid) do
+      # We detected a loop in the next_trip_uid chain sent from OCS.
+      # End the sequence here.
+      {:loop_detected, []}
     else
-      _ ->
-        []
+      with trip when not is_nil(trip) <- Map.get(trips_by_uid, next_trip_uid),
+           # Check that trip isn't assigned to other train
+           true <- trip.train_uid == nil || trip.train_uid == train_uid,
+           {status, trip_chain} <-
+             trip_chain_recursive(
+               trips_by_uid,
+               train_uid,
+               trip.next_uid,
+               MapSet.put(visited, next_trip_uid)
+             ) do
+        {status, [trip | trip_chain]}
+      else
+        _ ->
+          {:ok, []}
+      end
     end
   end
 
