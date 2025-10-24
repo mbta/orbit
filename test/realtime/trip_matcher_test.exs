@@ -2,6 +2,7 @@ defmodule Realtime.TripMatcherTest do
   use Orbit.DataCase, async: true
 
   import Orbit.Factory
+  import Test.Support.Helpers
 
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
@@ -186,6 +187,106 @@ defmodule Realtime.TripMatcherTest do
                  ]
                )
     end
+  end
+
+  @tag timeout: 1000
+  test "avoids infinite recursion if OCS creates a loop in the schedule" do
+    # Test for loop of length > 1
+    log =
+      capture_log do
+        assert [
+                 %Vehicle{
+                   position: %VehiclePosition{},
+                   ocs_trips: %{
+                     current: %Trip{
+                       train_uid: "5483E6C7",
+                       uid: "1234FFAC"
+                     },
+                     next: [
+                       %Trip{
+                         uid: "1234FFAD"
+                       },
+                       %Trip{
+                         uid: "1234FFAE"
+                       }
+                     ]
+                   }
+                 }
+               ] =
+                 Realtime.TripMatcher.match_trips(
+                   [
+                     %VehiclePosition{
+                       vehicle_id: "R-5483E6C7",
+                       trip_id: "69349212"
+                     }
+                   ],
+                   [],
+                   [
+                     %Trip{
+                       train_uid: "5483E6C7",
+                       assigned_at: @test_datetime,
+                       uid: "1234FFAC",
+                       next_uid: "1234FFAD"
+                     },
+                     %Trip{
+                       uid: "1234FFAE",
+                       # Loop back to current trip
+                       next_uid: "1234FFAC"
+                     },
+                     %Trip{
+                       uid: "1234FFAD",
+                       next_uid: "1234FFAE"
+                     }
+                   ]
+                 )
+      end
+
+    # Check that it logs a complaint about the loop
+    assert Enum.any?(log, fn line ->
+             line ==
+               ~S([warning] Realtime.TripMatcher ocs_trip_loop_detected trip_uid=1234FFAC next_uids=[1234FFAD, 1234FFAE])
+           end)
+
+    # Test for loop of length 1
+    log =
+      capture_log do
+        assert [
+                 %Vehicle{
+                   position: %VehiclePosition{},
+                   ocs_trips: %{
+                     current: %Trip{
+                       train_uid: "5483E6C7",
+                       uid: "1234FFAC"
+                     },
+                     next: []
+                   }
+                 }
+               ] =
+                 Realtime.TripMatcher.match_trips(
+                   [
+                     %VehiclePosition{
+                       vehicle_id: "R-5483E6C7",
+                       trip_id: "69349212"
+                     }
+                   ],
+                   [],
+                   [
+                     %Trip{
+                       train_uid: "5483E6C7",
+                       assigned_at: @test_datetime,
+                       uid: "1234FFAC",
+                       # Trip refers to itself as "next"
+                       next_uid: "1234FFAC"
+                     }
+                   ]
+                 )
+      end
+
+    # Check that it logs a complaint about the loop
+    assert Enum.any?(log, fn line ->
+             line ==
+               ~S([warning] Realtime.TripMatcher ocs_trip_loop_detected trip_uid=1234FFAC next_uids=[])
+           end)
   end
 
   test "matches a VehiclePosition to a TripUpdate on trip_id" do
