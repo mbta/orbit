@@ -36,12 +36,7 @@ defmodule Realtime.TripMatcher do
           fn -> nil end
         )
 
-      next =
-        next_trip_chain(
-          ocs_trips_by_uid,
-          vehicle_id,
-          current_trip
-        )
+      next = next_trip_chain(ocs_trips_by_uid, vehicle_id, current_trip)
 
       ocs_current_and_next = %{current: current_trip, next: next}
 
