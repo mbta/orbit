@@ -16,7 +16,7 @@ defmodule OrbitWeb.Auth.Guardian do
       nil ->
         {:error, :user_not_found}
 
-      user ->
+      %User{} = user ->
         {:ok, %User{user | groups: groups}}
     end
   end
