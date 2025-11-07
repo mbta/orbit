@@ -46,7 +46,7 @@ defmodule Orbit.MixProject do
       {:configparser_ex, "== 4.0.0", only: :dev},
       {:credo, "== 1.7.13", only: [:dev, :test], runtime: false},
       {:csv, "== 3.2.2"},
-      {:dialyxir, "== 1.4.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "== 1.4.7", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "== 0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "== 3.13.2"},
