@@ -15,7 +15,7 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-FROM node:22.21.1-alpine3.22 AS node
+FROM node:22.21.1-alpine3.23 AS node
 
 # npm deps
 ENV NODE_ENV=production
@@ -56,7 +56,7 @@ RUN mix release --path /app-release
 
 ### Production Stage
 # Run in minimal Alpine container
-FROM alpine:3.22.2 AS runtime
+FROM alpine:3.23.0 AS runtime
 
 # HTTP port
 EXPOSE 4001
