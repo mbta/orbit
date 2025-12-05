@@ -68,7 +68,7 @@ defmodule Orbit.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:httpoison, "== 2.2.3"},
+      {:httpoison, "== 2.3.0"},
       {:jason, "== 1.4.4"},
       {:laboratory, github: "andrewdolce/laboratory", branch: "cowboy-dep-fix"},
       {:lcov_ex, "== 0.3.4", only: [:test], runtime: false},
