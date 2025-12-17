@@ -35,7 +35,7 @@ jobs:
           echo "node-modules-restore=cache-node-modules-" >> $GITHUB_OUTPUT
           echo "node-modules=cache-node-modules-${{ hashFiles('package-lock.json', '.tool-versions') }}" >> $GITHUB_OUTPUT
       - name: asdf cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.asdf
           key: ${{ steps.cache-keys.outputs.asdf }}
@@ -54,7 +54,7 @@ jobs:
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - name: Restore Mix cache, with partial
         id: mix-deps-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             deps
@@ -89,7 +89,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
@@ -97,7 +97,7 @@ jobs:
         uses: mbta/actions/reshim-asdf@v2
       - uses: actions/checkout@v5
       - name: Restore Mix cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             deps
@@ -129,7 +129,7 @@ jobs:
     needs: setup
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
@@ -137,7 +137,7 @@ jobs:
         uses: mbta/actions/reshim-asdf@v2
       - uses: actions/checkout@v5
       - name: Restore Mix cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             deps
@@ -145,7 +145,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key-mix-deps }}
       - name: Restore node_modules cache, with partial
         id: node-modules-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: node_modules
           key: ${{ needs.setup.outputs.cache-key-node-modules }}
