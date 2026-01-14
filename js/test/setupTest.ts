@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom";
-import { TextEncoder } from "util";
 import { resetMetaData } from "./helpers/metadata";
 import { neverPromise } from "./helpers/promiseWithResolvers";
 // add all jest-extended matchers
@@ -7,9 +6,6 @@ import * as jestExtendedMatchers from "jest-extended";
 import { Channel, Push, Socket } from "phoenix";
 
 expect.extend(jestExtendedMatchers);
-
-// https://github.com/jsdom/jsdom/issues/2524
-global.TextEncoder = TextEncoder;
 
 // always prevent these side-effects from being called in tests
 jest.mock("../browser", () => ({
