@@ -3,7 +3,9 @@ import { HeavyRailLine } from "../types";
 import { DateTime } from "luxon";
 import { z } from "zod";
 
-const CERT_TYPES = ["right_of_way", "rail"];
+// we no longer check ROW certs
+// asana task: https://app.asana.com/1/15492006741476/project/1200273269966439/task/1212407153023881
+const CERT_TYPES = ["rail"];
 const WARN_WITHIN_D = 60;
 
 export type Certification = {
@@ -75,11 +77,7 @@ export const filterRelevantForOperators = (
   cs: Certification[],
   line: HeavyRailLine,
 ) => {
-  return cs.filter(
-    (c) =>
-      (c.type === "rail" && c.railLine === line) || // Rail cert: line must match
-      (c.type === "right_of_way" && [line, "none"].includes(c.railLine)), // ROW cert: must be 'none' or same line
-  );
+  return cs.filter((c) => c.type === "rail" && c.railLine === line);
 };
 
 export const filterExpiresSoon = (
