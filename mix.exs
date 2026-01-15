@@ -40,7 +40,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.9.0"},
+      {:bandit, "1.9.0"},
       {:broadway_kinesis, github: "mbta/broadway_kinesis"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "4.0.0", only: :dev},
@@ -81,7 +81,7 @@ defmodule Orbit.MixProject do
       {:phoenix_live_dashboard, "0.8.7"},
       {:phoenix_live_reload, "1.6.1", only: :dev},
       {:phoenix_live_view, "1.1.17"},
-      {:postgrex, "== 0.22.0"},
+      {:postgrex, "0.22.0"},
       {:sentry, "11.0.4"},
       {:sobelow, "0.14.1", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "1.1.0"},
