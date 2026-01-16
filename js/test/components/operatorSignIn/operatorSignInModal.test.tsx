@@ -182,7 +182,7 @@ describe("OperatorSignInModal", () => {
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
     expect(fetchMock).toHaveBeenCalledWith("/api/signin", {
-      body: '{"override":[{"type":"rail","rail_line":"blue","expires":"2023-12-12"},{"type":"right_of_way","rail_line":"blue"}],"signed_in_employee_badge":"1234","signed_in_at":1720742401,"line":"blue","radio_number":"22","method":"manual"}',
+      body: '{"override":[{"type":"rail","rail_line":"blue","expires":"2023-12-12"}],"signed_in_employee_badge":"1234","signed_in_at":1720742401,"line":"blue","radio_number":"22","method":"manual"}',
       headers: {
         "content-type": "application/json",
         "x-csrf-token": "TEST-CSRF-TOKEN",

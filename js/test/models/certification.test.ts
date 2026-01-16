@@ -48,34 +48,6 @@ describe("filterRelevantForOperators", () => {
     ).toHaveLength(0);
   });
 
-  test("keep ROW cert with none line for BL", () => {
-    expect(
-      filterRelevantForOperators(
-        [
-          certificationFactory.build({
-            railLine: "none",
-            type: "right_of_way",
-          }),
-        ],
-        "blue",
-      ),
-    ).toHaveLength(1);
-  });
-
-  test("keep ROW cert with blue line for BL", () => {
-    expect(
-      filterRelevantForOperators(
-        [
-          certificationFactory.build({
-            railLine: "blue",
-            type: "right_of_way",
-          }),
-        ],
-        "blue",
-      ),
-    ).toHaveLength(1);
-  });
-
   test("ignore ROW cert OL for BL", () => {
     expect(
       filterRelevantForOperators(
@@ -92,26 +64,6 @@ describe("filterRelevantForOperators", () => {
 });
 
 describe("getMissing", () => {
-  test("emits right_of_way when missing", () => {
-    expect(
-      getMissing(
-        [
-          {
-            type: "rail",
-            expires: dateTimeFromISO("2082-01-01"),
-            railLine: "blue",
-          },
-        ],
-        "blue",
-      ),
-    ).toEqual([
-      {
-        type: "right_of_way",
-        railLine: "blue",
-      },
-    ]);
-  });
-
   test("emits rail when missing", () => {
     expect(
       getMissing(
@@ -132,20 +84,7 @@ describe("getMissing", () => {
     ]);
   });
 
-  test("emits both when both missing", () => {
-    expect(getMissing([], "blue")).toEqual([
-      {
-        type: "right_of_way",
-        railLine: "blue",
-      },
-      {
-        type: "rail",
-        railLine: "blue",
-      },
-    ]);
-  });
-
-  test("emits nothing when both present", () => {
+  test("emits nothing when rail present", () => {
     expect(
       getMissing(
         [
