@@ -77,7 +77,7 @@ export const filterRelevantForOperators = (
   cs: Certification[],
   line: HeavyRailLine,
 ) => {
-  return cs.filter((c) => c.type === "rail" && c.railLine === line);
+  return cs.filter((c) => CERT_TYPES.includes(c.type) && c.railLine === line);
 };
 
 export const filterExpiresSoon = (
