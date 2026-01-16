@@ -50,7 +50,7 @@ defmodule Orbit.MixProject do
       {:diskusage_logger, "0.2.0", only: :prod},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "3.13.2"},
-      {:ex_aws, "2.5.9"},
+      {:ex_aws, "== 2.6.1"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.8"},
       {:ex_machina, "2.8.0", only: :test},
