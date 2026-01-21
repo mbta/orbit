@@ -50,7 +50,11 @@ config :phoenix, :plug_init_mode, :runtime
 # Auth
 config :ueberauth, Ueberauth,
   providers: [
-    keycloak: {OrbitWeb.Auth.Strategy.FakeOidcc, []}
+    keycloak:
+      {Ueberauth.Strategy.FakeOidcc,
+       [
+         client_id: "test-client-id"
+       ]}
   ]
 
 config :ueberauth_oidcc,

@@ -4,7 +4,7 @@ defmodule OrbitWeb.AuthControllerTest do
 
   defp login_with_groups(conn, groups) do
     conn
-    |> get(~p"/auth/keycloak/callback?#{%{"email" => "user@example.com", "groups" => groups}}")
+    |> get(~p"/auth/keycloak/callback?#{%{"email" => "user@example.com", "roles" => groups}}")
   end
 
   describe "/login" do
