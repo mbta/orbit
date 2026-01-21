@@ -89,6 +89,8 @@ defmodule Orbit.MixProject do
       {:timex, "3.7.13"},
       {:tz, "0.28.1"},
       {:ueberauth, "0.10.8"},
+      {:ueberauth_fake_oidcc,
+       github: "skyqrose/ueberauth_fake_oidcc", tag: "v0.1.2", only: [:dev, :test]},
       {:ueberauth_oidcc, "0.4.2"}
     ]
   end
