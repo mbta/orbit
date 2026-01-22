@@ -4,6 +4,8 @@ defmodule Orbit.Ocs.Stream.Producer do
   to the StreamConsumer.
   """
 
+  use BroadwayKinesis.Logger
+
   use BroadwayKinesis.Producer,
     consumer_arn:
       Application.fetch_env!(:orbit, Orbit.Ocs.Stream.Producer)
