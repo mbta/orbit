@@ -13,6 +13,17 @@ Checklist
 
 <!-- check one from each section with (x) -->
 
+- Appearance:
+  - `( )` Light & dark mode
+  - `( )` Desktop & mobile sizes
+- Browsers:
+  - `( )` Chromium
+  - `( )` Firefox
+  - `( )` Safari
+- Privacy:
+  - `( )` Commits free of internal data
+  - `( )` PR description free of internal data
+  - `( )` Logging free of internal data
 - Tests:
   - `( )` Has tests
   - `( )` Doesn't need tests
