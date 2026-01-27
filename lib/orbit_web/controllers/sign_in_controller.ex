@@ -63,6 +63,7 @@ defmodule OrbitWeb.SignInController do
   end
 
   @spec validate_override(map()) :: boolean()
+  @dialyzer {:no_opaque, validate_override: 1}
   defp validate_override(override) do
     Enum.all?(override, fn cert ->
       MapSet.member?(Certification.certification_type_strings(), cert["type"]) and
