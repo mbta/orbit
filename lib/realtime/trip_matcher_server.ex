@@ -30,6 +30,7 @@ defmodule Realtime.TripMatcherServer do
   end
 
   @impl GenServer
+  @dialyzer {:no_opaque, init: 1}
   @spec init(any()) ::
           {:ok, state()}
   def init(_args) do
