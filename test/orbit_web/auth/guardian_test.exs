@@ -21,7 +21,7 @@ defmodule OrbitWeb.Auth.GuardianTest do
     end
 
     test "parses the user's groups" do
-      user = insert(:user)
+      %User{} = user = insert(:user)
 
       assert {:ok, %User{user | groups: ["orbit-admin", "orbit-bl-ffd"]}} ==
                Guardian.resource_from_claims(%{
