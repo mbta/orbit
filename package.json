@@ -17,14 +17,14 @@
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "4.0.0",
     "@sentry/react": "9.47.1",
-    "@tailwindcss/forms": "0.5.10",
+    "@tailwindcss/forms": "0.5.11",
     "esbuild": "0.27.2",
-    "luxon": "3.7.1",
+    "luxon": "3.7.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-router": "7.5.3",
-    "tailwindcss": "3.4.17",
-    "zod": "3.25.64"
+    "tailwindcss": "3.4.19",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@eslint/js": "9.19.0",
