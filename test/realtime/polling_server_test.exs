@@ -44,8 +44,9 @@ defmodule Realtime.PollingServerTest do
 
   defp reject_expected_logs(logs) do
     logs
-    |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
-    |> Enum.reject(fn s -> String.starts_with?(s, "[info] Tzdata") end)
+    |> Enum.reject(fn s ->
+      String.starts_with?(s, "[info] s3 method=read") or String.starts_with?(s, "[info] Tzdata")
+    end)
   end
 
   test "logs when there's new data" do
