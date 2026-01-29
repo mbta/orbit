@@ -42,6 +42,13 @@ defmodule Realtime.PollingServerTest do
     :ok
   end
 
+  defp reject_expected_logs(logs) do
+    logs
+    |> Enum.reject(fn s ->
+      String.starts_with?(s, "[info] s3 method=read") or String.starts_with?(s, "[info] Tzdata")
+    end)
+  end
+
   test "logs when there's new data" do
     log =
       capture_log do
@@ -49,7 +56,7 @@ defmodule Realtime.PollingServerTest do
         send(:vehicle_positions_test, :poll)
         Process.sleep(50)
       end
-      |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
+      |> reject_expected_logs()
 
     assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=1 count=1"]
 
@@ -58,7 +65,7 @@ defmodule Realtime.PollingServerTest do
         send(:vehicle_positions_test, :poll)
         Process.sleep(50)
       end
-      |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
+      |> reject_expected_logs()
 
     assert log == []
 
@@ -68,7 +75,7 @@ defmodule Realtime.PollingServerTest do
         send(:vehicle_positions_test, :poll)
         Process.sleep(50)
       end
-      |> Enum.reject(fn s -> String.starts_with?(s, "[info] s3 method=read") end)
+      |> reject_expected_logs()
 
     assert log == ["[info] poll_new_data source=vehicle_positions_test timestamp=2 count=1"]
   end
