@@ -60,8 +60,11 @@ defmodule Realtime.TripMatcher do
           #  trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated
           #  arrival
           # https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
+          #
+          # However, if the OCS trip is missing the destination (ie. bad/missing data from OCS)
+          # then ignore this criteria.
 
-          arrival_station == ocs_current_destination_gtfs and
+          (is_nil(ocs_current_destination_gtfs) or arrival_station == ocs_current_destination_gtfs) and
             trip_update.trip_id == vp.trip_id
         end)
 
