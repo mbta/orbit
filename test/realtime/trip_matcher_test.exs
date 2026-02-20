@@ -357,6 +357,45 @@ defmodule Realtime.TripMatcherTest do
                  }
                ]
              )
+
+    # Unless OCS trip is missing its destination
+    assert [
+             %Vehicle{
+               trip_update: %TripUpdate{},
+               position: %VehiclePosition{
+                 vehicle_id: "R-5483E6C7",
+                 trip_id: "69349212"
+               }
+             }
+           ] =
+             Realtime.TripMatcher.match_trips(
+               [
+                 %VehiclePosition{
+                   vehicle_id: "R-5483E6C7",
+                   trip_id: "69349212"
+                 }
+               ],
+               [
+                 %TripUpdate{
+                   route_id: "Red",
+                   vehicle_id: "R-5483E6C7",
+                   trip_id: "69349212",
+                   stop_time_updates: [
+                     %StopTimeUpdate{
+                       station_id: "place-asmnl"
+                     }
+                   ]
+                 }
+               ],
+               [
+                 %Trip{
+                   train_uid: "5483E6C7",
+                   destination_station: nil,
+                   assigned_at: @test_datetime,
+                   uid: "1234FFAB"
+                 }
+               ]
+             )
   end
 
   describe "statistics" do
