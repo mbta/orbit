@@ -78,7 +78,21 @@ config :orbit, OrbitWeb.Auth.Guardian,
 
 config :ueberauth, Ueberauth,
   providers: [
-    keycloak: {OrbitWeb.Auth.Strategy.FakeOidcc, []}
+    keycloak:
+      {Ueberauth.Strategy.FakeOidcc,
+       [
+         initial_email: "user@example.com",
+         # matches OrbitWeb.Auth.Groups
+         roles: [
+           "orbit-admin",
+           "orbit-bl-ffd",
+           "orbit-rl-trainstarters",
+           "orbit-tid-staff",
+           "orbit-bl-stakeholders",
+           "orbit-hr-stakeholders"
+         ],
+         client_id: "dev-client-id"
+       ]}
   ]
 
 config :ueberauth_oidcc,
