@@ -75,7 +75,7 @@ defmodule Orbit.MixProject do
       {:logster, "2.0.0-rc.5"},
       {:mock, "0.3.9", only: :test},
       {:oban, "2.20.1"},
-      {:phoenix, "1.7.21"},
+      {:phoenix, "== 1.8.4"},
       {:phoenix_ecto, "4.7.0"},
       {:phoenix_html, "4.3.0"},
       {:phoenix_live_dashboard, "0.8.7"},
