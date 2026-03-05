@@ -15,7 +15,6 @@ export default {
     "./js/**/*.tsx",
     "./lib/orbit_web.ex",
     "./lib/orbit_web/**/*.*ex",
-    "./storybook/**/*.html",
   ],
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {

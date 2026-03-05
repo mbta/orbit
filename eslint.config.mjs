@@ -17,7 +17,6 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-expect-error no types for this plugin
 import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
-import pluginStorybook from "eslint-plugin-storybook";
 import pluginTestingLibrary from "eslint-plugin-testing-library";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -31,7 +30,6 @@ export default tseslint.config(
     ...pluginReactRecommended,
     settings: { react: { version: "detect" } },
   },
-  ...pluginStorybook.configs["flat/recommended"],
   pluginReactJsx,
   configPrettier,
   {
