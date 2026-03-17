@@ -11,6 +11,7 @@ defmodule Orbit.Application do
         OrbitWeb.Telemetry,
         Orbit.Repo,
         {Ecto.Migrator, repos: Application.fetch_env!(:orbit, :ecto_repos)},
+        {DNSCluster, Application.fetch_env!(:orbit, DNSCluster)},
         {Oban, Application.fetch_env!(:orbit, Oban)},
         {Phoenix.PubSub, name: Orbit.PubSub},
         # Start a worker by calling: Orbit.Worker.start_link(arg)
