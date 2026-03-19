@@ -1,6 +1,8 @@
 defmodule OrbitWeb.Router do
   use OrbitWeb, :router
 
+  import Phoenix.LiveDashboard.Router
+
   pipeline :browser do
     if Application.compile_env(:orbit, :force_https?) do
       plug(Plug.SSL,
@@ -44,6 +46,12 @@ defmodule OrbitWeb.Router do
   pipeline :authenticated do
     plug(OrbitWeb.Auth.Guardian.Pipeline)
     plug(OrbitWeb.Plugs.RequireLogin)
+  end
+
+  pipeline :require_group_orbit_admin do
+    plug(OrbitWeb.Plugs.RequireGroup, [
+      OrbitWeb.Auth.Groups.orbit_admin()
+    ])
   end
 
   pipeline :require_group_orbit_bl_ffd do
@@ -99,16 +107,19 @@ defmodule OrbitWeb.Router do
     post "/api/signin", SignInController, :submit
   end
 
-  scope "/", OrbitWeb do
+  scope "/admin", OrbitWeb do
     pipe_through :accepts_html
     pipe_through :authenticated
+    pipe_through :require_group_orbit_admin
 
-    get "/admin/employee", Admin.AdminController, :get_employee
-    post "/admin/employee", Admin.AdminController, :post_employee
-    delete "/admin/employee", Admin.AdminController, :delete_employee
-    get "/admin/rfid", Admin.AdminController, :get_rfid
-    post "/admin/rfid", Admin.AdminController, :post_rfid
-    delete "/admin/rfid", Admin.AdminController, :delete_rfid
+    get "/employee", Admin.AdminController, :get_employee
+    post "/employee", Admin.AdminController, :post_employee
+    delete "/employee", Admin.AdminController, :delete_employee
+    get "/rfid", Admin.AdminController, :get_rfid
+    post "/rfid", Admin.AdminController, :post_rfid
+    delete "/rfid", Admin.AdminController, :delete_rfid
+
+    live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
   end
 
   scope "/", OrbitWeb do
@@ -134,22 +145,5 @@ defmodule OrbitWeb.Router do
     ])
 
     forward("/", Laboratory.Router)
-  end
-
-  # Enable LiveDashboard in development
-  if Application.compile_env(:orbit, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :accepts_html
-      pipe_through :authenticated
-
-      live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
-    end
   end
 end
