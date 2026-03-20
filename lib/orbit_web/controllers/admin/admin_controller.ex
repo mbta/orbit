@@ -6,8 +6,6 @@ defmodule OrbitWeb.Admin.AdminController do
   alias Orbit.Employee
   alias Orbit.Repo
 
-  plug(OrbitWeb.Plugs.RequireAdmin)
-
   plug(
     OrbitWeb.Plugs.RequireAllowTestData
     when action in [
