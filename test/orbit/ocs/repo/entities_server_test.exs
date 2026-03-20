@@ -27,9 +27,8 @@ defmodule Orbit.Ocs.EntitiesServerTest do
     :ok
   end
 
-  test "subscribed client gets latest data on subscribing" do
-    assert %{entities: [%Trip{uid: "11111"}]} =
-             EntitiesServer.subscribe(self())
+  test "subscribed client gets server PID on subscribing" do
+    assert is_pid(EntitiesServer.subscribe(self()))
   end
 
   test "changes are not pushed until throttle time" do
@@ -65,10 +64,10 @@ defmodule Orbit.Ocs.EntitiesServerTest do
   end
 
   test "ensure_push triggers a send if too much time has passed" do
-    EntitiesServer.subscribe(self())
+    pid = EntitiesServer.subscribe(self())
 
     message = build(:tsch_new, trip_uid: "22222")
-    EntitiesServer.new_messages([message])
+    EntitiesServer.new_messages(pid, [message])
 
     refute_receive {:new_data, :ocs_trips, _}
 
@@ -78,7 +77,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
          utc_now: fn -> @mock_start_time_plus_3 end
        ]}
     ]) do
-      send(EntitiesServer, :ensure_push)
+      send(pid, :ensure_push)
       refute_receive {:new_data, :ocs_trips, _}
     end
 
@@ -88,7 +87,7 @@ defmodule Orbit.Ocs.EntitiesServerTest do
          utc_now: fn -> @mock_start_time_plus_5 end
        ]}
     ]) do
-      send(EntitiesServer, :ensure_push)
+      send(pid, :ensure_push)
       assert_receive {:new_data, :ocs_trips, %{entities: trips, timestamp: _}}
       assert Enum.any?(trips, fn trip -> trip.uid == "11111" end)
       assert Enum.any?(trips, fn trip -> trip.uid == "22222" end)

@@ -22,7 +22,7 @@ defmodule Orbit.Application do
         if Application.get_env(:orbit, :subscribe_to_ocs?) do
           [
             BroadwayKinesis.ProducerRegistry,
-            Orbit.Ocs.Supervisor
+            {Highlander, Orbit.Ocs.Supervisor}
           ]
         else
           []

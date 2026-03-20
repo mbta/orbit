@@ -70,6 +70,7 @@ defmodule Orbit.MixProject do
        app: false,
        compile: false,
        depth: 1},
+      {:highlander, "0.2.1"},
       {:httpoison, "2.3.0"},
       {:jason, "1.4.4"},
       {:laboratory, github: "andrewdolce/laboratory", branch: "cowboy-dep-fix"},
