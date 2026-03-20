@@ -48,6 +48,7 @@ defmodule Orbit.MixProject do
       {:csv, "3.2.2"},
       {:dialyxir, "1.4.7", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "0.2.0", only: :prod},
+      {:dns_cluster, "0.2.0"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "3.13.2"},
       {:ex_aws, "2.5.9"},

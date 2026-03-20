@@ -47,6 +47,9 @@ config :phoenix,
   # We use logster instead of the default Phoenix logging
   logger: false
 
+# Distributed Elixir
+config :orbit, DNSCluster, query: :ignore, log: :info
+
 # Auth
 config :ueberauth, Ueberauth,
   providers: [

@@ -52,6 +52,9 @@ if config_env() == :prod do
       rtr_public: System.fetch_env!("S3_RTR_PUBLIC")
     ]
 
+  # Distributed Elixir
+  config :orbit, DNSCluster, query: System.get_env("DNS_CLUSTER_QUERY") || :ignore
+
   # CSV import jobs
   config :orbit, Orbit.Import.Personnel, pathname: System.fetch_env!("GLIDES_PERSONNEL_PATHNAME")
   config :orbit, Orbit.Import.Rfid, pathname: System.fetch_env!("GLIDES_RFID_PATHNAME")

@@ -45,6 +45,7 @@ COPY --from=node /app/priv/static/assets /app/priv/static/assets
 COPY ./priv/repo/migrations /app/priv/repo/migrations
 COPY ./config /app/config
 COPY ./lib /app/lib
+COPY ./rel /app/rel
 WORKDIR /app
 ARG RELEASE
 ENV RELEASE=${RELEASE}
@@ -58,8 +59,8 @@ RUN mix release --path /app-release
 # Run in minimal Alpine container
 FROM alpine:3.23.3 AS runtime
 
-# HTTP port
-EXPOSE 4001
+# Expose HTTP, EPMD, and Erlang RPC
+EXPOSE 4001 4369 57195
 
 # Erlang depends on these
 RUN apk add --no-cache ncurses-libs libstdc++ libgcc
