@@ -9,9 +9,6 @@ defmodule Orbit.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      preferred_cli_env: [
-        test_all: :test
-      ],
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :laboratory]
@@ -29,6 +26,10 @@ defmodule Orbit.MixProject do
       included_applications: [:laboratory],
       extra_applications: [:logger, :runtime_tools]
     ]
+  end
+
+  def cli do
+    [preferred_envs: [test_all: :test]]
   end
 
   # Specifies which paths to compile per environment.
