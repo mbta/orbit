@@ -5,6 +5,8 @@ config :orbit,
   environment: "test",
   release: "test",
   force_https?: false,
+  # Oban.Peer.leader? doesn't work in MIX_ENV=test, but we want to test like we are a leader.
+  leader?: true,
   poll_rtr?: false,
   subscribe_to_ocs?: false
 
