@@ -104,9 +104,11 @@ defmodule Realtime.VehicleEventDetector do
         send(pid, {:new_data, :vehicle_events, new_events})
       end)
 
-      new_events
-      |> Enum.map(&VehicleEvent.changeset/1)
-      |> Enum.each(&Repo.insert(&1, log: false))
+      if Orbit.Oban.leader?() do
+        new_events
+        |> Enum.map(&VehicleEvent.changeset/1)
+        |> Enum.each(&Repo.insert(&1, log: false))
+      end
     end
 
     {:noreply, new_state}
