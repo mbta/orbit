@@ -15,6 +15,7 @@ defmodule Realtime.TripMatcherServer do
              ocs_trips: %{timestamp: integer(), entities: [Trip.t()]}
            },
            out: %{timestamp: integer(), entities: [Vehicle.t()]},
+           entities_server_ref: reference() | nil,
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
          }
@@ -34,14 +35,17 @@ defmodule Realtime.TripMatcherServer do
   @spec init(any()) ::
           {:ok, state()}
   def init(_args) do
-    Logger.info("Initialized TripMatcherServer")
+    Logger.info("#{__MODULE__} initialize pid=#{inspect(self())}")
 
     Realtime.PollingServer.subscribe(self(), :vehicle_positions)
     Realtime.PollingServer.subscribe(self(), :trip_updates)
 
-    if Application.get_env(:orbit, :subscribe_to_ocs?) do
-      Orbit.Ocs.EntitiesServer.subscribe(self())
-    end
+    ocs_ref =
+      if Application.get_env(:orbit, :subscribe_to_ocs?) do
+        try_subscribe_to_ocs()
+      else
+        nil
+      end
 
     schedule()
 
@@ -53,6 +57,7 @@ defmodule Realtime.TripMatcherServer do
          ocs_trips: %{timestamp: 0, entities: []}
        },
        out: %{timestamp: 0, entities: []},
+       entities_server_ref: ocs_ref,
        subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
      }}
@@ -133,8 +138,25 @@ defmodule Realtime.TripMatcherServer do
 
   @impl GenServer
   @spec handle_info({:DOWN, reference(), :process, pid(), term()}, state()) :: {:noreply, state()}
-  def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
-    {:noreply, %{state | subscriptions: MapSet.delete(state.subscriptions, pid)}}
+  def handle_info({:DOWN, monitor_ref, :process, pid, _reason}, state) do
+    if monitor_ref == state.entities_server_ref do
+      # The process that terminated was the EntitiesServer we subscribed to
+      Process.send_after(self(), :retry_entities_server, 3000)
+      {:noreply, %{state | entities_server_ref: nil}}
+    else
+      # The process that terminated was somebody that subscribed to us
+      {:noreply, %{state | subscriptions: MapSet.delete(state.subscriptions, pid)}}
+    end
+  end
+
+  def handle_info(:retry_entities_server, state) do
+    case try_subscribe_to_ocs() do
+      :error ->
+        {:noreply, %{state | entities_server_ref: nil}}
+
+      ref ->
+        {:noreply, %{state | entities_server_ref: ref}}
+    end
   end
 
   defp push_new_data(state) do
@@ -143,5 +165,17 @@ defmodule Realtime.TripMatcherServer do
     end)
 
     Map.put(state, :last_push_to_subscriptions, DateTime.utc_now())
+  end
+
+  defp try_subscribe_to_ocs do
+    self()
+    |> Orbit.Ocs.EntitiesServer.subscribe()
+    |> Process.monitor()
+  catch
+    :exit, {:noproc, _} ->
+      Logger.error("TripMatcherServer unable to connect to Ocs.EntitiesServer; waiting to retry")
+      Process.send_after(self(), :retry_entities_server, 3000)
+
+      :error
   end
 end

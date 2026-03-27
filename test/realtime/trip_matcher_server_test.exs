@@ -4,7 +4,9 @@ defmodule Realtime.TripMatcherServerTest do
   alias Orbit.Vehicle
   alias Realtime.PollingServer
   alias Realtime.TripMatcherServer
+  import Mock
   import Orbit.Factory
+  import Test.Support.Helpers
 
   setup do
     {:ok, _} =
@@ -57,12 +59,21 @@ defmodule Realtime.TripMatcherServerTest do
         id: :trip_updates
       )
 
-    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
-
     :ok
   end
 
+  test_with_mocks "retries EntitiesServer if it fails to connect the first time", [
+    {Orbit.Ocs.EntitiesServer, [:passthrough], []}
+  ] do
+    reassign_env(:orbit, :subscribe_to_ocs?, true)
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
+    Process.sleep(4000)
+    assert_called_at_least(Orbit.Ocs.EntitiesServer.subscribe(:_), 2)
+  end
+
   test "subscribed client gets latest data on subscribing" do
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
+
     send(
       Realtime.TripMatcherServer,
       {:new_data, :vehicle_positions, %{timestamp: 4, entities: [build(:vehicle_position)]}}
@@ -73,6 +84,8 @@ defmodule Realtime.TripMatcherServerTest do
   end
 
   test "subscribed client gets latest data on incoming VehiclePosition" do
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
+
     send(
       Realtime.TripMatcherServer,
       {:new_data, :vehicle_positions, %{timestamp: 4, entities: [build(:vehicle_position)]}}
@@ -89,6 +102,7 @@ defmodule Realtime.TripMatcherServerTest do
   end
 
   test "ensure_push triggers a send if too much time has passed" do
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
     TripMatcherServer.subscribe(self())
 
     refute_receive {:new_data, :vehicles, []}

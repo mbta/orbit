@@ -16,12 +16,12 @@ defmodule Orbit.Ocs.EntitiesServer do
 
   @spec start_link(any()) :: GenServer.on_start()
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+    GenServer.start_link(__MODULE__, opts, name: {:global, __MODULE__})
   end
 
   @impl GenServer
   def init(opts) do
-    Logger.info("Initialized Ocs.EntitiesServer")
+    Logger.info("#{__MODULE__} initialize pid=#{inspect(self())}")
 
     # Configurable for tests
     if Keyword.get(opts, :schedule_pushes?, true) do
@@ -42,7 +42,7 @@ defmodule Orbit.Ocs.EntitiesServer do
   def handle_call({:subscribe, pid}, _from, state) do
     Process.monitor(pid)
 
-    {:reply, state.out, %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
+    {:reply, self(), %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
   end
 
   @impl GenServer
@@ -80,9 +80,9 @@ defmodule Orbit.Ocs.EntitiesServer do
 
   # Subscribe
 
-  @spec subscribe(pid(), atom()) :: output()
+  @spec subscribe(pid(), atom()) :: pid()
   def subscribe(subscriber_pid, server_name \\ __MODULE__) do
-    GenServer.call(server_name, {:subscribe, subscriber_pid})
+    GenServer.call({:global, server_name}, {:subscribe, subscriber_pid})
   end
 
   # Push
@@ -112,7 +112,9 @@ defmodule Orbit.Ocs.EntitiesServer do
         }
     }
 
-    Logger.info("#{__MODULE__} : push_to_all_subscribers")
+    Logger.info(
+      "#{__MODULE__} push_to_all_subscribers pids=#{state.subscriptions |> Enum.map_join(",", &inspect(&1))}"
+    )
 
     Enum.each(state.subscriptions, fn pid ->
       send(pid, {:new_data, :ocs_trips, state.out})
@@ -123,8 +125,8 @@ defmodule Orbit.Ocs.EntitiesServer do
 
   # Message Processing
 
-  @spec new_messages(atom(), [Message.t()]) :: :ok
-  def new_messages(pid \\ __MODULE__, messages) do
+  @spec new_messages(atom() | {:global, atom()}, [Message.t()]) :: :ok
+  def new_messages(pid \\ {:global, __MODULE__}, messages) do
     GenServer.call(pid, {:new_messages, messages}, 10_000)
   end
 
