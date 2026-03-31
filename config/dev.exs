@@ -86,10 +86,13 @@ config :ueberauth, Ueberauth,
          roles: [
            "orbit-admin",
            "orbit-bl-ffd",
-           "orbit-rl-trainstarters",
-           "orbit-tid-staff",
            "orbit-bl-stakeholders",
-           "orbit-hr-stakeholders"
+           "orbit-hr-dispatchers",
+           "orbit-hr-stakeholders",
+           "orbit-rl-chief-inspectors",
+           "orbit-rl-inspectors",
+           "orbit-rl-trainstarters",
+           "orbit-tid-staff"
          ],
          client_id: "dev-client-id"
        ]}
