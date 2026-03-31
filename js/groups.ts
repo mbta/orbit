@@ -7,6 +7,7 @@ export const ORBIT_HR_STAKEHOLDERS = "orbit-hr-stakeholders";
 export const ORBIT_RL_CHIEF_INSPECTORS = "orbit-rl-chief-inspectors";
 export const ORBIT_RL_INSPECTORS = "orbit-rl-inspectors";
 export const ORBIT_RL_TRAINSTARTERS = "orbit-rl-trainstarters";
+export const ORBIT_RL_YARDMASTERS = "orbit-rl-yardmasters";
 export const ORBIT_TID_STAFF = "orbit-tid-staff";
 
 export const userHasOneOf = (desiredGroups: string[]) => {

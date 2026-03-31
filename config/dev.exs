@@ -92,6 +92,7 @@ config :ueberauth, Ueberauth,
            "orbit-rl-chief-inspectors",
            "orbit-rl-inspectors",
            "orbit-rl-trainstarters",
+           "orbit-rl-yardmasters",
            "orbit-tid-staff"
          ],
          client_id: "dev-client-id"

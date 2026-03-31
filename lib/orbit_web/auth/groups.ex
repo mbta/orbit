@@ -1,11 +1,12 @@
 defmodule OrbitWeb.Auth.Groups do
   def orbit_admin, do: "orbit-admin"
   def orbit_bl_ffd, do: "orbit-bl-ffd"
-  def orbit_rl_trainstarters, do: "orbit-rl-trainstarters"
+  def orbit_bl_stakeholders, do: "orbit-bl-stakeholders"
+  def orbit_hr_dispatchers, do: "orbit-hr-dispatchers"
+  def orbit_hr_stakeholders, do: "orbit-hr-stakeholders"
   def orbit_rl_chief_inspectors, do: "orbit-rl-chief-inspectors"
   def orbit_rl_inspectors, do: "orbit-rl-inspectors"
+  def orbit_rl_trainstarters, do: "orbit-rl-trainstarters"
+  def orbit_rl_yardmaster, do: "orbit-rl-yardmasters"
   def orbit_tid_staff, do: "orbit-tid-staff"
-  def orbit_bl_stakeholders, do: "orbit-bl-stakeholders"
-  def orbit_hr_stakeholders, do: "orbit-hr-stakeholders"
-  def orbit_hr_dispatchers, do: "orbit-hr-dispatchers"
 end
