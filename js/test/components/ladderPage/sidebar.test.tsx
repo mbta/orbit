@@ -14,7 +14,7 @@ describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
     const view = render(
       <SideBar
-        selection={{ vehicle: vehicleFactory.build() }}
+        selection={{ vehicle: vehicleFactory.build(), routeId: "Red" }}
         close={() => {}}
       />,
     );
@@ -33,6 +33,7 @@ describe("sidebar", () => {
               }),
             },
           }),
+          routeId: "Red",
         }}
         close={() => {}}
       />,
@@ -50,6 +51,7 @@ describe("sidebar", () => {
               current: null,
             },
           }),
+          routeId: "Red",
         }}
         close={() => {}}
       />,
@@ -63,6 +65,7 @@ describe("sidebar", () => {
       <SideBar
         selection={{
           vehicle: vehicleFactory.build(),
+          routeId: "Red",
         }}
         close={() => {}}
       />,
@@ -93,6 +96,7 @@ describe("sidebar", () => {
                   ],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -133,6 +137,7 @@ describe("sidebar", () => {
                   ],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -151,6 +156,7 @@ describe("sidebar", () => {
           <SideBar
             selection={{
               vehicle: vehicleFactory.build(),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -177,6 +183,7 @@ describe("sidebar", () => {
                   next: [ocsTripFactory.build({ offset: 3 })],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -198,6 +205,7 @@ describe("sidebar", () => {
                   next: [ocsTripFactory.build({ offset: -3 })],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -218,6 +226,7 @@ describe("sidebar", () => {
                   next: [ocsTripFactory.build({ offset: 0 })],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -238,6 +247,7 @@ describe("sidebar", () => {
                   next: [ocsTripFactory.build({ offset: null })],
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -261,6 +271,7 @@ describe("sidebar", () => {
                   }),
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -281,6 +292,7 @@ describe("sidebar", () => {
                   }),
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -302,6 +314,7 @@ describe("sidebar", () => {
                   }),
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -322,6 +335,7 @@ describe("sidebar", () => {
                   }),
                 },
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -344,6 +358,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -374,6 +389,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -403,12 +419,37 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
         );
         expect(view.getByText(/^5 min later/)).toBeInTheDocument();
         expect(view.getByText(/^5 min early/)).toBeInTheDocument();
+      });
+
+      test("does not show if destination stations mismatch", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T22:29:00.000Z",
+                      ),
+                      stationId: "place-brdwy",
+                    }),
+                  ],
+                }),
+              }),
+              routeId: "Red",
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/^ min later/)).not.toBeInTheDocument();
       });
 
       test("does not show if arriving 4 minutes later than scheduled", () => {
@@ -426,6 +467,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -460,6 +502,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -491,6 +534,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -522,6 +566,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -559,6 +604,7 @@ describe("sidebar", () => {
                   ],
                 }),
               }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -576,6 +622,7 @@ describe("sidebar", () => {
         <SideBar
           selection={{
             vehicle: vehicleFactory.build(),
+            routeId: "Red",
           }}
           close={() => {}}
         />,
@@ -593,7 +640,7 @@ describe("sidebar", () => {
       const view = render(
         // Must wrap sidebar in router to allow Link elements
         <MemoryRouter>
-          <SideBar selection={{ vehicle }} close={() => {}} />,
+          <SideBar selection={{ vehicle, routeId: "Red" }} close={() => {}} />,
         </MemoryRouter>,
       );
 
@@ -606,7 +653,7 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicle: vehicleFactory.build() }}
+            selection={{ vehicle: vehicleFactory.build(), routeId: "Red" }}
             close={() => {}}
           />,
         );
@@ -626,6 +673,30 @@ describe("sidebar", () => {
                   next: [ocsTripFactory.build()],
                 },
               }),
+              routeId: "Red",
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getAllByText("---")).toHaveLength(1);
+      });
+
+      test("displays '---' when destination stations mismatch", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({ stationId: "place-davis" }),
+                  ],
+                }),
+                ocsTrips: {
+                  current: ocsTripFactory.build(),
+                  next: [ocsTripFactory.build()],
+                },
+              }),
+              routeId: "Red",
             }}
             close={() => {}}
           />,
@@ -638,7 +709,7 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicle: vehicleFactory.build() }}
+            selection={{ vehicle: vehicleFactory.build(), routeId: "Red" }}
             close={() => {}}
           />,
         );

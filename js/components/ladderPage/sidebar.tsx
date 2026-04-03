@@ -84,7 +84,7 @@ const CurrentTrip = ({
 }) => {
   const current = vehicle.ocsTrips.current;
 
-  // The last prediction in the TripUpdate (i.e. the destination) must match the OCS 
+  // The last prediction in the TripUpdate (i.e. the destination) must match the OCS
   // trip. Before this, vehicles at Ashmont SB that are assigned to the next NB
   // trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated arrival
   // https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
@@ -108,8 +108,8 @@ const CurrentTrip = ({
       estimatedArrival(vehicle.tripUpdate)
     : null;
 
-  // only calculate lateness if using estimated time
-  const lateDepMin = estArrival !== null ? lateDeparture(vehicle) : null;
+  const lateDepMin = lateDeparture(vehicle);
+  // only calculate late arrival if using estimated arrival time
   const lateArrMin = estArrival !== null ? lateArrival(vehicle) : null;
 
   const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
