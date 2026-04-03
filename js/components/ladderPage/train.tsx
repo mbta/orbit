@@ -1,7 +1,11 @@
 import { DirectionalStopIds } from "../../data/stations";
 import {
+  ORBIT_HR_DISPATCHERS,
   ORBIT_HR_STAKEHOLDERS,
+  ORBIT_RL_CHIEF_INSPECTORS,
+  ORBIT_RL_INSPECTORS,
   ORBIT_RL_TRAINSTARTERS,
+  ORBIT_RL_YARDMASTERS,
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
@@ -179,8 +183,12 @@ export const Train = ({
         }}
         disabled={
           !userHasOneOf([
+            ORBIT_HR_DISPATCHERS,
             ORBIT_HR_STAKEHOLDERS,
+            ORBIT_RL_CHIEF_INSPECTORS,
+            ORBIT_RL_INSPECTORS,
             ORBIT_RL_TRAINSTARTERS,
+            ORBIT_RL_YARDMASTERS,
             ORBIT_TID_STAFF,
           ])
         }
