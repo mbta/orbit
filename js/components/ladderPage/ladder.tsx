@@ -54,6 +54,7 @@ export const Ladders = ({
         ([stationList, vehicles], index) => (
           <TrainsAndStations
             key={index}
+            routeId={routeId}
             ladderConfig={stationList}
             vehicles={vehicles}
             sideBarSelection={sideBarSelection}
@@ -77,11 +78,13 @@ export type VehicleWithHeight = {
 
 const TrainsAndStations = ({
   ladderConfig,
+  routeId,
   vehicles,
   sideBarSelection,
   setSideBarSelection,
 }: {
   ladderConfig: LadderConfig;
+  routeId: RouteId;
   vehicles: Vehicle[];
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
@@ -156,6 +159,7 @@ const TrainsAndStations = ({
             ])}
           >
             <Train
+              routeId={routeId}
               theme={trainTheme}
               vehicle={vehicleWithHeight.vehicle}
               forceDirection={direction}

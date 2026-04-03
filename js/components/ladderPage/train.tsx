@@ -5,7 +5,7 @@ import {
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
-import { DirectionId } from "../../models/common";
+import { DirectionId, RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
@@ -105,6 +105,7 @@ export const avoidLabelOverlaps = (
 };
 
 export const Train = ({
+  routeId,
   theme,
   vehicle,
   forceDirection,
@@ -113,6 +114,7 @@ export const Train = ({
   className: extraClassName,
   setSideBarSelection,
 }: {
+  routeId: RouteId;
   theme: TrainTheme;
   vehicle: Vehicle;
   forceDirection: DirectionId;
@@ -174,6 +176,7 @@ export const Train = ({
           e.stopPropagation();
           const sideBarSelection: SideBarSelection = {
             vehicle,
+            routeId
           };
           setSideBarSelection(sideBarSelection);
         }}

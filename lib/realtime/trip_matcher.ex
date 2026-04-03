@@ -40,32 +40,10 @@ defmodule Realtime.TripMatcher do
 
       ocs_current_and_next = %{current: current_trip, next: next}
 
-      ocs_current_destination_gtfs =
-        case current_trip do
-          %Trip{destination_station: destination_station} ->
-            Stations.ocs_to_gtfs(destination_station)
-
-          _ ->
-            nil
-        end
-
       # Find TripUpdate
-
       trip_update =
         Enum.find(trip_updates, fn trip_update ->
-          arrival_station = TripUpdate.last_arrival_stop(trip_update)
-
-          # The last prediction in the TripUpdate (i.e. the destination) must match the OCS
-          #  trip. Before this, vehicles at Ashmont SB that are assigned to the next NB
-          #  trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated
-          #  arrival
-          # https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
-          #
-          # However, if the OCS trip is missing the destination (ie. bad/missing data from OCS)
-          # then ignore this criteria.
-
-          (is_nil(ocs_current_destination_gtfs) or arrival_station == ocs_current_destination_gtfs) and
-            trip_update.trip_id == vp.trip_id
+          trip_update.trip_id == vp.trip_id
         end)
 
       %Vehicle{

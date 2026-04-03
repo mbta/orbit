@@ -72,3 +72,11 @@ export const estimatedArrival = (tu?: TripUpdate): DateTime | null => {
   const stu = tu.stopTimeUpdates[tu.stopTimeUpdates.length - 1];
   return stu.predictedArrivalTime;
 };
+
+export const lastArrivalStationId = (tu?: TripUpdate): string | null => {
+  if (tu == undefined || tu.stopTimeUpdates.length === 0) {
+    return null;
+  }
+
+  return tu.stopTimeUpdates.at(-1)?.stationId ?? null;
+};
