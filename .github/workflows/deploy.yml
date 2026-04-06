@@ -51,7 +51,9 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           context: .
-          cache-from: type=gha
+          no-cache: true
+          # FIXME: Caching is temporarily disabled due to GH issues
+          # cache-from: type=gha
           build-args: |
             RELEASE=${{ steps.calc-version.outputs.version-id }}
           tags: ${{ steps.calc-version.outputs.tag-list }}
