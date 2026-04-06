@@ -168,6 +168,8 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
+          # FIXME: Caching is temporarily disabled due to GH issues
+          no-cache: true
           load: true
       - name: docker compose build
         run: docker compose build
