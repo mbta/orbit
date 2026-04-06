@@ -19,6 +19,7 @@ describe("trackSideBarOpened", () => {
   test("track FS event with correct name", () => {
     trackSideBarOpened({
       vehicle: vehicleFactory.build(),
+      routeId: "Red",
     });
 
     expect(FullStory).toHaveBeenCalledWith("trackEvent", {
@@ -42,7 +43,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -81,7 +82,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -107,7 +108,7 @@ describe("trackSideBarOpened", () => {
         }),
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -131,7 +132,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -155,7 +156,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -179,7 +180,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,
@@ -216,7 +217,7 @@ describe("trackSideBarOpened", () => {
         },
       });
 
-      trackSideBarOpened({ vehicle });
+      trackSideBarOpened({ vehicle, routeId: "Red" });
 
       expect(FullStory).toHaveBeenCalledWith("trackEvent", {
         name: expectedEventName,

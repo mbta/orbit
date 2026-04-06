@@ -46,6 +46,7 @@ describe("LadderPage SideBar", () => {
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       expect(mockTrackSideBarOpened).toHaveBeenCalledWith({
         vehicle: vehicleFactory.build(),
+        routeId: "Red"
       });
     });
 
