@@ -310,7 +310,7 @@ describe("Ladder", () => {
                 cars: ["1888", "1889", "1890", "1891"],
               }),
             }),
-            routeId: "Red"
+            routeId: "Red",
           }}
         />,
       );

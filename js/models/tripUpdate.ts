@@ -78,5 +78,5 @@ export const lastArrivalStationId = (tu?: TripUpdate): string | null => {
     return null;
   }
 
-  return tu.stopTimeUpdates.at(-1)?.stationId ?? null;
+  return tu.stopTimeUpdates[tu.stopTimeUpdates.length - 1].stationId;
 };

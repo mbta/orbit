@@ -176,7 +176,7 @@ export const Train = ({
           e.stopPropagation();
           const sideBarSelection: SideBarSelection = {
             vehicle,
-            routeId
+            routeId,
           };
           setSideBarSelection(sideBarSelection);
         }}
