@@ -15,7 +15,6 @@ describe("Train", () => {
   test("shows label", () => {
     const view = render(
       <Train
-        routeId="Red"
         theme={TrainThemes.crimson}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
@@ -29,7 +28,6 @@ describe("Train", () => {
   test("accepts additional properties", () => {
     const view = render(
       <Train
-        routeId="Red"
         theme={TrainThemes.crimson}
         highlight={true}
         vehicle={vehicleFactory.build()}
@@ -50,7 +48,6 @@ describe("Train", () => {
     };
     const view = render(
       <Train
-        routeId="Red"
         theme={theme}
         vehicle={vehicleFactory.build()}
         highlight={true}
@@ -67,7 +64,6 @@ describe("Train", () => {
   test("renders at an angle when labelOffset provided", () => {
     const view = render(
       <Train
-        routeId="Red"
         theme={TrainThemes.crimson}
         vehicle={vehicleFactory.build()}
         forceDirection={1}

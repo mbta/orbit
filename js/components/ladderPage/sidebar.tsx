@@ -1,6 +1,6 @@
 import { formatStationName, gtfsToOcsStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
-import { CarId, RouteId } from "../../models/common";
+import { CarId } from "../../models/common";
 import {
   estimatedArrival,
   lastArrivalStationId,
@@ -19,7 +19,6 @@ import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
-  routeId: RouteId;
 };
 
 export const SideBar = ({
@@ -39,7 +38,7 @@ export const SideBar = ({
       </button>
       <div className="h-full">
         <Consist vehicle={selection.vehicle} />
-        <CurrentTrip vehicle={selection.vehicle} routeId={selection.routeId} />
+        <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
           <VehicleCopyButton
@@ -75,13 +74,7 @@ const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
   );
 };
 
-const CurrentTrip = ({
-  vehicle,
-  routeId,
-}: {
-  vehicle: Vehicle;
-  routeId: RouteId;
-}) => {
+const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
 
   // The last prediction in the TripUpdate (i.e. the destination) must match the OCS
@@ -96,8 +89,11 @@ const CurrentTrip = ({
 
   const rtrLastArrivalStationOcsName =
     rtrLastArrivalStationId !== null ?
-      gtfsToOcsStationName(routeId, rtrLastArrivalStationId)
+      gtfsToOcsStationName(rtrLastArrivalStationId)
     : null;
+
+  console.warn(`ocsDestinationStationId: ${ocsDestinationStationId}`);
+  console.warn(`rtrLastArrivalStationOcsName: ${rtrLastArrivalStationOcsName}`);
 
   const estArrival =
     (

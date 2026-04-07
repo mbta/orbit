@@ -237,7 +237,9 @@ export const formatStationName = (station: string | null | undefined) => {
   );
 };
 
-export const gtfsToOcsStationName = (route_id: RouteId, stationId: string) => {
-  return Stations[route_id].flat().find((station) => station.id === stationId)
-    ?.ocs_station_name;
+export const gtfsToOcsStationName = (stationId: string) => {
+  return Object.values(Stations)
+    .flat()
+    .flat()
+    .find((station) => station.id === stationId)?.ocs_station_name;
 };
