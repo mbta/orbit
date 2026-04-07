@@ -411,6 +411,29 @@ describe("sidebar", () => {
         expect(view.getByText(/^5 min early/)).toBeInTheDocument();
       });
 
+      test("does not show if destination stations mismatch", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T22:29:00.000Z",
+                      ),
+                      stationId: "place-brdwy",
+                    }),
+                  ],
+                }),
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/^ min later/)).not.toBeInTheDocument();
+      });
+
       test("does not show if arriving 4 minutes later than scheduled", () => {
         const view = render(
           <SideBar
@@ -621,6 +644,28 @@ describe("sidebar", () => {
             selection={{
               vehicle: vehicleFactory.build({
                 tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+                ocsTrips: {
+                  current: ocsTripFactory.build(),
+                  next: [ocsTripFactory.build()],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getAllByText("---")).toHaveLength(1);
+      });
+
+      test("displays '---' when destination stations mismatch", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({ stationId: "place-davis" }),
+                  ],
+                }),
                 ocsTrips: {
                   current: ocsTripFactory.build(),
                   next: [ocsTripFactory.build()],

@@ -1,7 +1,10 @@
-import { formatStationName } from "../../data/stations";
+import { formatStationName, gtfsToOcsStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import { estimatedArrival } from "../../models/tripUpdate";
+import {
+  estimatedArrival,
+  lastArrivalStationId,
+} from "../../models/tripUpdate";
 import {
   lateArrival,
   lateDeparture,
@@ -73,10 +76,35 @@ const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
-  const estArrival = estimatedArrival(vehicle.tripUpdate);
+
+  // The last prediction in the TripUpdate (i.e. the destination) must match the OCS
+  // trip. Before this, vehicles at Ashmont SB that are assigned to the next NB
+  // trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated arrival
+  // https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
+  //
+  // However, if the OCS trip is missing the destination (ie. bad/missing data from OCS)
+  // then ignore this criteria.
+  const ocsDestinationStationId = vehicle.ocsTrips.current?.destinationStation;
+  const rtrLastArrivalStationId = lastArrivalStationId(vehicle.tripUpdate);
+
+  const rtrLastArrivalStationOcsName =
+    rtrLastArrivalStationId !== null ?
+      gtfsToOcsStationName(rtrLastArrivalStationId)
+    : null;
+
+  const estArrival =
+    (
+      ocsDestinationStationId === null ||
+      ocsDestinationStationId === undefined ||
+      ocsDestinationStationId === rtrLastArrivalStationOcsName
+    ) ?
+      estimatedArrival(vehicle.tripUpdate)
+    : null;
 
   const lateDepMin = lateDeparture(vehicle);
-  const lateArrMin = lateArrival(vehicle);
+  // only calculate late arrival if using estimated arrival time
+  const lateArrMin = estArrival !== null ? lateArrival(vehicle) : null;
+
   const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
   const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
   const showLateBox = showLateDep || showLateArr;
