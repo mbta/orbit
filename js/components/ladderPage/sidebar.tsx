@@ -92,9 +92,6 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       gtfsToOcsStationName(rtrLastArrivalStationId)
     : null;
 
-  console.warn(`ocsDestinationStationId: ${ocsDestinationStationId}`);
-  console.warn(`rtrLastArrivalStationOcsName: ${rtrLastArrivalStationOcsName}`);
-
   const estArrival =
     (
       ocsDestinationStationId === null ||
