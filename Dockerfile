@@ -1,5 +1,5 @@
 ### Elixir Deps
-FROM hexpm/elixir:1.19.5-erlang-28.4.1-alpine-3.23.3 AS elixir-deps
+FROM hexpm/elixir:1.19.5-erlang-28.4.1-alpine-3.23.4 AS elixir-deps
 
 # git is needed to fetch some mix deps
 RUN apk add --no-cache git
@@ -57,7 +57,7 @@ RUN mix release --path /app-release
 
 ### Production Stage
 # Run in minimal Alpine container
-FROM alpine:3.23.3 AS runtime
+FROM alpine:3.23.4 AS runtime
 
 # Expose HTTP, EPMD, and Erlang RPC
 EXPOSE 4001 4369 57195
