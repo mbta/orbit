@@ -7,7 +7,6 @@ defmodule Realtime.TripMatcherTest do
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
-  alias Realtime.Data.TripUpdate.StopTimeUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
 
