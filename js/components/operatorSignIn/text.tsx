@@ -7,7 +7,7 @@ export const useSignInText = (): {
   text: ReactElement;
 } => {
   return {
-    version: 1,
+    version: 3,
     text: (
       <ul className="my-7 mx-5 list-disc leading-tight">
         <li>I do not have an electronic device in my possession.</li>
@@ -17,7 +17,7 @@ export const useSignInText = (): {
           prescribed or non-prescribed.
         </li>
         <li>I have a valid Certification Card in my possession.</li>
-        <li>I have read the Day/Night Orders.</li>
+        <li>I have read the Daily Operating Bulletin.</li>
         <li>I am in my MBTA uniform.</li>
         <li>I have read relevant Special Orders and announcements.</li>
       </ul>
