@@ -52,7 +52,7 @@ defmodule Orbit.MixProject do
       {:dns_cluster, "0.2.0"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "3.13.2"},
-      {:ex_aws, "2.6.1"},
+      {:ex_aws, "== 2.7.0"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
       {:ex_machina, "2.8.0", only: :test},
