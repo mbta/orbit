@@ -16,7 +16,7 @@ jobs:
     name: Deploy to Prod
     uses: ./.github/workflows/deploy.yml
     permissions:
-      id-token: write  # allows workflow to exchange short-lived tokens directly from cloud provider
+      id-token: write # allows workflow to exchange short-lived tokens directly from cloud provider
       contents: read
     with:
       env: prod
