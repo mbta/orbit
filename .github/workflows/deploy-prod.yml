@@ -9,12 +9,20 @@ concurrency:
   group: prod
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   deploy:
     name: Deploy to Prod
     uses: ./.github/workflows/deploy.yml
+    permissions:
+      id-token: write  # allows workflow to exchange short-lived tokens directly from cloud provider
+      contents: read
     with:
       env: prod
       # the release name
       version-name: ${{ github.ref_name }}
-    secrets: inherit
+    secrets:
+      AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
+      DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
