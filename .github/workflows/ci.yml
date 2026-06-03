@@ -24,7 +24,7 @@ jobs:
       cache-key-node-modules: ${{ steps.cache-keys.outputs.node-modules }}
       cache-key-node-modules-restore: ${{ steps.cache-keys.outputs.node-modules }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
       - name: Set cache keys
         id: cache-keys
         run: |
@@ -35,17 +35,17 @@ jobs:
           echo "node-modules-restore=cache-node-modules-" >> $GITHUB_OUTPUT
           echo "node-modules=cache-node-modules-${{ hashFiles('package-lock.json', '.tool-versions') }}" >> $GITHUB_OUTPUT
       - name: asdf cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.asdf
           key: ${{ steps.cache-keys.outputs.asdf }}
           restore-keys: ${{ steps.cache-keys.outputs.asdf-restore }}
         id: asdf-cache
-      - uses: asdf-vm/actions/install@v4
+      - uses: asdf-vm/actions/install@v4.0.1
         # only run `asdf install` if we didn't hit the cache
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@v2
+        uses: mbta/actions/reshim-asdf@v2.14.0
       - name: mix rebar and hex
         run: |
           mix local.rebar --force
@@ -54,7 +54,7 @@ jobs:
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - name: Restore Mix cache, with partial
         id: mix-deps-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: |
             deps
@@ -89,15 +89,15 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@v2
-      - uses: actions/checkout@v6
+        uses: mbta/actions/reshim-asdf@v2.14.0
+      - uses: actions/checkout@v6.0.3
       - name: Restore Mix cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           path: |
             deps
@@ -116,7 +116,7 @@ jobs:
           DATABASE_PASSWORD: ${{env.DATABASE_PASSWORD}}
           DATABASE_HOST: ${{env.DATABASE_HOST}}
           DATABASE_NAME: ${{env.DATABASE_NAME}}
-      - uses: mbta/actions/dialyzer@v2
+      - uses: mbta/actions/dialyzer@v2.14.0
       - name: Check for unused dependencies
         run: mix deps.unlock --check-unused
       - name: Sobelow (security analysis)
@@ -129,15 +129,15 @@ jobs:
     needs: setup
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@v2
-      - uses: actions/checkout@v6
+        uses: mbta/actions/reshim-asdf@v2.14.0
+      - uses: actions/checkout@v6.0.3
       - name: Restore Mix cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v5.0.5
         with:
           path: |
             deps
@@ -145,7 +145,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key-mix-deps }}
       - name: Restore node_modules cache, with partial
         id: node-modules-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: node_modules
           key: ${{ needs.setup.outputs.cache-key-node-modules }}
@@ -161,11 +161,11 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@v4.1.0
       - name: docker build
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@v7.2.0
         with:
           context: .
           # FIXME: Caching is temporarily disabled due to GH issues

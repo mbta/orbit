@@ -27,11 +27,11 @@ jobs:
     environment: ${{ inputs.env }}
 
     steps:
-      - uses: aws-actions/configure-aws-credentials@v6
+      - uses: aws-actions/configure-aws-credentials@v6.2.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.3
         with:
           fetch-depth: 0
       - name: Get versions
@@ -46,9 +46,9 @@ jobs:
           echo "version-id=$version_id" | tee -a $GITHUB_OUTPUT
           echo "deploy-tag=$version_tag" | tee -a $GITHUB_OUTPUT
           printf "tag-list=%s,%s,%s\n" "$git_hash_tag" "$latest_env_tag" "$version_tag" | tee -a $GITHUB_OUTPUT
-      - uses: aws-actions/amazon-ecr-login@v2
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: aws-actions/amazon-ecr-login@v2.1.5
+      - uses: docker/setup-buildx-action@v4.1.0
+      - uses: docker/build-push-action@v7.2.0
         with:
           context: .
           no-cache: true
@@ -58,13 +58,13 @@ jobs:
             RELEASE=${{ steps.calc-version.outputs.version-id }}
           tags: ${{ steps.calc-version.outputs.tag-list }}
           push: true
-      - uses: mbta/actions/deploy-ecs@v2
+      - uses: mbta/actions/deploy-ecs@v2.14.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           ecs-cluster: orbit
           ecs-service: orbit-${{ inputs.env }}
           docker-tag: ${{ steps.calc-version.outputs.deploy-tag }}
-      - uses: mbta/actions/notify-slack-deploy@v2
+      - uses: mbta/actions/notify-slack-deploy@v2.14.0
         if: ${{ !cancelled() }}
         with:
           webhook-url: ${{ secrets.SLACK_WEBHOOK }}
