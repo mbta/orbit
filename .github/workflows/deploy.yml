@@ -1,3 +1,5 @@
+name: Deploy Orbit
+
 on:
   workflow_call:
     inputs:
@@ -16,39 +18,46 @@ on:
       SLACK_WEBHOOK:
         required: true
 
+permissions: {}
+
 jobs:
   deploy:
     name: Deploy to ${{ inputs.env }}
     timeout-minutes: 30
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      id-token: write # allows workflow to exchange short-lived tokens directly from cloud provider
       contents: read
     environment: ${{ inputs.env }}
 
     steps:
-      - uses: aws-actions/configure-aws-credentials@v6
+      - uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b # v6.2.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Get versions
         id: calc-version
+        env:
+          VERSION: ${{ inputs.version-name }}
+          ENV: ${{ inputs.env }}
+          DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
         run: |
-          docker_repo="${{ secrets.DOCKER_REPO }}"
+          docker_repo="${DOCKER_REPO}"
           git_hash="$(git rev-parse --short HEAD)"
-          version_id="${{ inputs.version-name }}-$git_hash"
+          version_id="${VERSION}-$git_hash"
           git_hash_tag="$docker_repo:git-$git_hash"
-          latest_env_tag="$docker_repo:latest-${{ inputs.env }}"
+          latest_env_tag="$docker_repo:latest-${ENV}"
           version_tag="$docker_repo:$version_id"
           echo "version-id=$version_id" | tee -a $GITHUB_OUTPUT
           echo "deploy-tag=$version_tag" | tee -a $GITHUB_OUTPUT
           printf "tag-list=%s,%s,%s\n" "$git_hash_tag" "$latest_env_tag" "$version_tag" | tee -a $GITHUB_OUTPUT
-      - uses: aws-actions/amazon-ecr-login@v2
-      - uses: docker/setup-buildx-action@v4
-      - uses: docker/build-push-action@v7
+      - uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419 # v2.1.5
+      - uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+      - uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: .
           no-cache: true
@@ -58,13 +67,13 @@ jobs:
             RELEASE=${{ steps.calc-version.outputs.version-id }}
           tags: ${{ steps.calc-version.outputs.tag-list }}
           push: true
-      - uses: mbta/actions/deploy-ecs@v2
+      - uses: mbta/actions/deploy-ecs@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           ecs-cluster: orbit
           ecs-service: orbit-${{ inputs.env }}
           docker-tag: ${{ steps.calc-version.outputs.deploy-tag }}
-      - uses: mbta/actions/notify-slack-deploy@v2
+      - uses: mbta/actions/notify-slack-deploy@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
         if: ${{ !cancelled() }}
         with:
           webhook-url: ${{ secrets.SLACK_WEBHOOK }}
