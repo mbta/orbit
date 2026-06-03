@@ -44,7 +44,6 @@ jobs:
         env:
           VERSION: ${{ inputs.version-name }}
           ENV: ${{ inputs.env }}
-        secrets:
           DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
         run: |
           docker_repo="${DOCKER_REPO}"
