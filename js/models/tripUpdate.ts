@@ -64,19 +64,18 @@ export const TripUpdateData = z.object({
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
 
-export const estimatedArrival = (tu?: TripUpdate): DateTime | null => {
-  if (tu == undefined || tu.stopTimeUpdates.length === 0) {
-    return null;
-  }
+const stopTimeUpdateForLastArrivalStation = (stopTimeUpdates: StopTimeUpdate[] | null | undefined): StopTimeUpdate | null => {
+  if (!stopTimeUpdates || stopTimeUpdates.length == 0) return null;
 
-  const stu = tu.stopTimeUpdates[tu.stopTimeUpdates.length - 1];
-  return stu.predictedArrivalTime;
+  return stopTimeUpdates.filter(
+    value => !!value?.predictedArrivalTime,
+  )[stopTimeUpdates.length - 1]
+}
+
+export const estimatedArrival = (tu?: TripUpdate): DateTime | null => {
+  return stopTimeUpdateForLastArrivalStation(tu?.stopTimeUpdates)?.predictedArrivalTime ?? null;
 };
 
 export const lastArrivalStationId = (tu?: TripUpdate): string | null => {
-  if (tu == undefined || tu.stopTimeUpdates.length === 0) {
-    return null;
-  }
-
-  return tu.stopTimeUpdates[tu.stopTimeUpdates.length - 1].stationId;
+  return stopTimeUpdateForLastArrivalStation(tu?.stopTimeUpdates)?.stationId ?? null;
 };
