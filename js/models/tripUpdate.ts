@@ -70,6 +70,6 @@ export const estimatedArrival = (
   vehicle: Vehicle
 ): DateTime | null => {
   return vehicle.tripUpdate?.stopTimeUpdates?.find(stopTimeUpdate => {
-    stopTimeUpdate.stationId === ocsStationNameToGtfs(vehicle.ocsTrips.current?.destinationStation ?? "")
+    return stopTimeUpdate.stationId === ocsStationNameToGtfs(vehicle.ocsTrips.current?.destinationStation ?? "")
   })?.predictedArrivalTime ?? null;
 };
