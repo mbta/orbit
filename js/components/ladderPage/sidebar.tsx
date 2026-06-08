@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { formatStationName, gtfsToOcsStationName, ocsStationNameToGtfs } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import { predictedArrivalTimeForOcsStationId } from "../../models/tripUpdate";
+import { estimatedArrival } from "../../models/tripUpdate";
 import {
   lateArrival,
   lateDeparture,
@@ -75,11 +75,7 @@ const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
 
-  // OCS Destination must be present to provide an estimated arrival
-  const estArrival: DateTime | null = predictedArrivalTimeForOcsStationId(
-    vehicle.tripUpdate?.stopTimeUpdates, 
-    current?.destinationStation,
-  );
+  const estArrival: DateTime | null = estimatedArrival(vehicle);
 
   const lateDepMin = lateDeparture(vehicle);
   // only calculate late arrival if using estimated arrival time

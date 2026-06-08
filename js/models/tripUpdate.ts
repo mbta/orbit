@@ -3,6 +3,7 @@ import { dateTimeFromUnix } from "../dateTime";
 import { RouteId } from "./common";
 import { DateTime } from "luxon";
 import { z } from "zod";
+import { Vehicle } from "./vehicle";
 
 export const StopTimeUpdateData = z.object({
   station_id: z.string(),
@@ -65,27 +66,10 @@ export const TripUpdateData = z.object({
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
 
-export const predictedArrivalTimeForOcsStationId = (
-  stopTimeUpdates: StopTimeUpdate[] | null | undefined, 
-  ocsStationId: string | null | undefined,
-) => {
-  if (!ocsStationId) return null;
-
-  return stopTimeUpdates?.find(stopTimeUpdate => {
-    stopTimeUpdate.stationId === ocsStationNameToGtfs(ocsStationId)
+export const estimatedArrival = (
+  vehicle: Vehicle
+): DateTime | null => {
+  return vehicle.tripUpdate?.stopTimeUpdates?.find(stopTimeUpdate => {
+    stopTimeUpdate.stationId === ocsStationNameToGtfs(vehicle.ocsTrips.current?.destinationStation ?? "")
   })?.predictedArrivalTime ?? null;
-};
-
-const stopTimeUpdateForLastStation = (stopTimeUpdates: StopTimeUpdate[] | null | undefined): StopTimeUpdate | null => {
-  if (!stopTimeUpdates || stopTimeUpdates.length == 0) return null;
-
-  return stopTimeUpdates[stopTimeUpdates.length - 1];
-}
-
-export const estimatedArrival = (tu?: TripUpdate): DateTime | null => {
-  return stopTimeUpdateForLastStation(tu?.stopTimeUpdates)?.predictedArrivalTime ?? null;
-};
-
-export const lastArrivalStationId = (tu?: TripUpdate): string | null => {
-  return stopTimeUpdateForLastStation(tu?.stopTimeUpdates)?.stationId ?? null;
 };
