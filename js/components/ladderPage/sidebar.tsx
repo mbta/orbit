@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { formatStationName, gtfsToOcsStationName, ocsStationNameToGtfs } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import { estimatedArrival } from "../../models/tripUpdate";
+import { predictedArrivalTimeForOcsStationId } from "../../models/tripUpdate";
 import {
   lateArrival,
   lateDeparture,
@@ -75,25 +75,11 @@ const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
 
-  const estArrival: DateTime | null = ((): DateTime | null => {
-    // The last prediction in the TripUpdate (i.e. the destination) must match the OCS
-    // trip. Before this, vehicles at Ashmont SB that are assigned to the next NB
-    // trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated arrival
-    // https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
-    //
-    // However, if the OCS trip is missing the destination (ie. bad/missing data from OCS)
-    // then ignore this criteria.
-    const ocsDestinationStationId = current?.destinationStation;
-
-    if (!!ocsDestinationStationId) {
-      const rtrStationIdForOcsDestinationStation = ocsStationNameToGtfs(ocsDestinationStationId);
-      return vehicle.tripUpdate?.stopTimeUpdates.find(stopTimeUpdate => {
-        stopTimeUpdate.stationId === rtrStationIdForOcsDestinationStation
-      })?.predictedArrivalTime ?? null;
-    } else {
-      return estimatedArrival(vehicle.tripUpdate)
-    }
-  })();
+  // OCS Destination must be present to provide an estimated arrival
+  const estArrival: DateTime | null = predictedArrivalTimeForOcsStationId(
+    vehicle.tripUpdate?.stopTimeUpdates, 
+    current?.destinationStation,
+  );
 
   const lateDepMin = lateDeparture(vehicle);
   // only calculate late arrival if using estimated arrival time
