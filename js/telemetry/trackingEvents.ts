@@ -34,7 +34,7 @@ export const trackSideBarOpened = (selection: SideBarSelection) => {
       !currentTrip || (currentTrip.departed && !currentTrip.actualDeparture),
 
     // Other fields associated with current trip
-    current_estimated_arrival: !estimatedArrival(vehicle.tripUpdate),
+    current_estimated_arrival: !estimatedArrival(vehicle),
   };
 
   // If we have a currentTrip, and said trip does not have an assigned nextUid, then assume
