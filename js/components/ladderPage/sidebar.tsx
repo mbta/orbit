@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { formatStationName, gtfsToOcsStationName, ocsStationNameToGtfs } from "../../data/stations";
+import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
