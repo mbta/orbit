@@ -240,8 +240,7 @@ export const formatStationName = (station: string | null | undefined) => {
 export const ocsStationNameToGtfs = (ocsStationName: string): string | null => {
   return (
     Object.values(Stations)
-      .flat()
-      .flat()
+      .flat(2)
       .find((station) => station.ocs_station_name === ocsStationName)?.id ??
     null
   );
