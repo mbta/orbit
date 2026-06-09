@@ -1,4 +1,3 @@
-import { DateTime } from "luxon";
 import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
@@ -13,6 +12,7 @@ import {
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
+import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {

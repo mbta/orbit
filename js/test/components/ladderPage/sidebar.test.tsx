@@ -641,15 +641,22 @@ describe("sidebar", () => {
           <SideBar
             selection={{
               vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [
-                  stopTimeUpdateFactory.build({
-                    predictedArrivalTime: dateTimeFromISO("2025-04-29T21:51:38Z"),
-                    stationId: "place-brdwy",
-                  }),
-                  stopTimeUpdateFactory.build({
-                    predictedArrivalTime: dateTimeFromISO("2025-04-29T21:53:38Z"),
-                    stationId: "place-asmnl",
-                  })] }),
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T21:51:38Z",
+                      ),
+                      stationId: "place-brdwy",
+                    }),
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T21:53:38Z",
+                      ),
+                      stationId: "place-asmnl",
+                    }),
+                  ],
+                }),
                 ocsTrips: {
                   current: ocsTripFactory.build({
                     originStation: "ALEWIFE",

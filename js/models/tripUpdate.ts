@@ -1,9 +1,9 @@
 import { ocsStationNameToGtfs } from "../data/stations";
 import { dateTimeFromUnix } from "../dateTime";
 import { RouteId } from "./common";
+import { Vehicle } from "./vehicle";
 import { DateTime } from "luxon";
 import { z } from "zod";
-import { Vehicle } from "./vehicle";
 
 export const StopTimeUpdateData = z.object({
   station_id: z.string(),
@@ -66,12 +66,14 @@ export const TripUpdateData = z.object({
 });
 export type TripUpdateData = z.infer<typeof TripUpdateData>;
 
-export const estimatedArrival = (
-  vehicle: Vehicle
-): DateTime | null => {
-  const gtfsStopId = ocsStationNameToGtfs(vehicle.ocsTrips.current?.destinationStation ?? "");
-  
-  return vehicle.tripUpdate?.stopTimeUpdates?.find(stopTimeUpdate => {
-    return stopTimeUpdate.stationId === gtfsStopId
-  })?.predictedArrivalTime ?? null;
+export const estimatedArrival = (vehicle: Vehicle): DateTime | null => {
+  const gtfsStopId = ocsStationNameToGtfs(
+    vehicle.ocsTrips.current?.destinationStation ?? "",
+  );
+
+  return (
+    vehicle.tripUpdate?.stopTimeUpdates?.find((stopTimeUpdate) => {
+      return stopTimeUpdate.stationId === gtfsStopId;
+    })?.predictedArrivalTime ?? null
+  );
 };
