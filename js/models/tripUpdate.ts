@@ -68,7 +68,7 @@ export type TripUpdateData = z.infer<typeof TripUpdateData>;
 
 export const estimatedArrival = (vehicle: Vehicle): DateTime | null => {
   const gtfsStopId = ocsStationNameToGtfs(
-    vehicle.ocsTrips.current?.destinationStation ?? "",
+    vehicle.ocsTrips?.current?.destinationStation ?? "",
   );
 
   return (
