@@ -15,7 +15,7 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-FROM node:24.16.0-alpine3.23 AS node
+FROM node:24.16.0-alpine3.24 AS node
 
 # npm deps
 ENV NODE_ENV=production
@@ -57,7 +57,7 @@ RUN mix release --path /app-release
 
 ### Production Stage
 # Run in minimal Alpine container
-FROM alpine:3.23.4 AS runtime
+FROM alpine:3.24.1 AS runtime
 
 # Expose HTTP, EPMD, and Erlang RPC
 EXPOSE 4001 4369 57195
