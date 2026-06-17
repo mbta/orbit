@@ -103,7 +103,7 @@ export const lateDeparture = (vehicle: Vehicle): number | null => {
  */
 export const lateArrival = (vehicle: Vehicle): number | null => {
   const scheduled = vehicle.ocsTrips.current?.scheduledArrival;
-  const estimated = estimatedArrival(vehicle.tripUpdate);
+  const estimated = estimatedArrival(vehicle);
 
   if (scheduled === null || scheduled === undefined || estimated === null) {
     return null;
@@ -123,7 +123,7 @@ export const lateForNext = (vehicle: Vehicle): number | null => {
     return null;
   }
 
-  const estimated = estimatedArrival(vehicle.tripUpdate);
+  const estimated = estimatedArrival(vehicle);
   const nextDeparture = nextTrip.scheduledDeparture;
 
   if (estimated === null || nextDeparture === null) {

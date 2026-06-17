@@ -636,6 +636,42 @@ describe("sidebar", () => {
         expect(view.getByText("5:51p")).toBeInTheDocument();
       });
 
+      test("is arrival prediction for OCS provided destination even if RTR provides additional STUs", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T21:51:38Z",
+                      ),
+                      stationId: "place-brdwy",
+                    }),
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T21:53:38Z",
+                      ),
+                      stationId: "place-asmnl",
+                    }),
+                  ],
+                }),
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "BROADWAY",
+                  }),
+                  next: [ocsTripFactory.build()],
+                },
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.getByText("5:51p")).toBeInTheDocument();
+      });
+
       // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
       // for "---" placeholders into one test mocking missing data for all fields
       test("displays '---' when unavailable", () => {

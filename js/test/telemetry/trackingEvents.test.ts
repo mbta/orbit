@@ -54,6 +54,7 @@ describe("trackSideBarOpened", () => {
           missing_data: [
             "current_actual_departure",
             "current_destination_station",
+            "current_estimated_arrival",
             "current_origin_station",
             "current_scheduled_arrival",
             "current_scheduled_departure",
@@ -92,6 +93,7 @@ describe("trackSideBarOpened", () => {
           ocs_next_trip_uid: null,
           missing_data: [
             "current_destination_station",
+            "current_estimated_arrival",
             "current_origin_station",
             "current_scheduled_arrival",
             "current_scheduled_departure",

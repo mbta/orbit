@@ -1,10 +1,7 @@
-import { formatStationName, gtfsToOcsStationName } from "../../data/stations";
+import { formatStationName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
-import {
-  estimatedArrival,
-  lastArrivalStationId,
-} from "../../models/tripUpdate";
+import { estimatedArrival } from "../../models/tripUpdate";
 import {
   lateArrival,
   lateDeparture,
@@ -15,6 +12,7 @@ import {
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
+import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
@@ -77,29 +75,7 @@ const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
 
-  // The last prediction in the TripUpdate (i.e. the destination) must match the OCS
-  // trip. Before this, vehicles at Ashmont SB that are assigned to the next NB
-  // trip in OCS, but not RTR yet (due to the turnaround), will have an old estimated arrival
-  // https://app.asana.com/1/15492006741476/project/1206105669438487/task/1210824268353890
-  //
-  // However, if the OCS trip is missing the destination (ie. bad/missing data from OCS)
-  // then ignore this criteria.
-  const ocsDestinationStationId = vehicle.ocsTrips.current?.destinationStation;
-  const rtrLastArrivalStationId = lastArrivalStationId(vehicle.tripUpdate);
-
-  const rtrLastArrivalStationOcsName =
-    rtrLastArrivalStationId !== null ?
-      gtfsToOcsStationName(rtrLastArrivalStationId)
-    : null;
-
-  const estArrival =
-    (
-      ocsDestinationStationId === null ||
-      ocsDestinationStationId === undefined ||
-      ocsDestinationStationId === rtrLastArrivalStationOcsName
-    ) ?
-      estimatedArrival(vehicle.tripUpdate)
-    : null;
+  const estArrival: DateTime | null = estimatedArrival(vehicle);
 
   const lateDepMin = lateDeparture(vehicle);
   // only calculate late arrival if using estimated arrival time
