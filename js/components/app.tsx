@@ -1,4 +1,5 @@
 import { reload } from "../browser";
+import { DataWarningsProvider } from "../contexts/dataWarningsContext";
 import { SocketProvider } from "../contexts/socketContext";
 import {
   ORBIT_BL_FFD,
@@ -119,7 +120,9 @@ const router = createBrowserRouter([
 export const App = (): ReactElement => {
   return (
     <SocketProvider>
-      <RouterProvider router={router}></RouterProvider>
+      <DataWarningsProvider>
+        <RouterProvider router={router}></RouterProvider>
+      </DataWarningsProvider>
     </SocketProvider>
   );
 };

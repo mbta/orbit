@@ -74,6 +74,6 @@ export const useChannel = <RawData, Data>({
         event,
       );
     }
-  }, [topic, event, channel, parser, RawData]);
+  }, [topic, event, channel, RawData]);
   return data;
 };
