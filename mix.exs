@@ -41,7 +41,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "1.10.1"},
+      {:bandit, "== 1.12.0"},
       {:broadway_kinesis, github: "mbta/broadway_kinesis"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "5.0.0", only: :dev},
