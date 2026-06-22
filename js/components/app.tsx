@@ -10,6 +10,7 @@ import {
 } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
+import { Banner } from "./banner";
 import { Header } from "./header";
 import { LadderPage } from "./ladderPage/ladderPage";
 import { LandingPage } from "./landingPage";
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     element: (
       <>
+        <Banner />
         <AppcuesTrackPage />
         <Header />
         <Outlet />
