@@ -12,7 +12,7 @@ import { DataWarning, useDataWarnings } from "../contexts/dataWarningsContext";
 
 export const useVehicles = (): Vehicle[] | null => {
   const now = useNow("minute");
-  const {warnings, setWarnings} = useDataWarnings();
+  const { setWarnings } = useDataWarnings();
   const [mostRecentTimestamp, setMostRecentTimestamp] = useState(now.toUnixInteger());
   const socket = useSocket();
   const result = useChannel({
