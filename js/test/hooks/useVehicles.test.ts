@@ -1,3 +1,4 @@
+import { DataWarningsProvider } from "../../contexts/dataWarningsContext";
 import { useChannel } from "../../hooks/useChannel";
 import { useVehicles } from "../../hooks/useVehicles";
 import { renderHook } from "@testing-library/react";
@@ -15,7 +16,7 @@ describe("useVehicles", () => {
     });
   });
   test("subscribes to the proper topic", () => {
-    renderHook(useVehicles);
+    renderHook(useVehicles, { wrapper: DataWarningsProvider });
     expect(mockUseChannel).toHaveBeenCalledWith(
       expect.objectContaining({
         topic: "vehicles",

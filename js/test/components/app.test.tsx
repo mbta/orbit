@@ -14,6 +14,7 @@ import {
 import { getMetaContent } from "../../util/metadata";
 import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
+import { DataWarningsProvider } from "../../contexts/dataWarningsContext";
 
 jest.mock("../../util/metadata", () => ({
   getMetaContent: jest.fn(),
@@ -191,10 +192,12 @@ describe("App", () => {
 
         const view = render(
           <MemoryRouter initialEntries={["/"]}>
-            <Routes>
-              <Route path="/" element={<UserGroupRedirects />} />
-              <Route path="/ladder" element={<LadderPage routeId="Red" />} />
-            </Routes>
+            <DataWarningsProvider>
+              <Routes>
+                <Route path="/" element={<UserGroupRedirects />} />
+                <Route path="/ladder" element={<LadderPage routeId="Red" />} />
+              </Routes>
+            </DataWarningsProvider>
           </MemoryRouter>,
         );
 
@@ -210,10 +213,12 @@ describe("App", () => {
 
         const view = render(
           <MemoryRouter initialEntries={["/"]}>
-            <Routes>
-              <Route path="/" element={<UserGroupRedirects />} />
-              <Route path="/ladder" element={<LadderPage routeId="Red" />} />
-            </Routes>
+            <DataWarningsProvider>
+              <Routes>
+                <Route path="/" element={<UserGroupRedirects />} />
+                <Route path="/ladder" element={<LadderPage routeId="Red" />} />
+              </Routes>
+            </DataWarningsProvider>
           </MemoryRouter>,
         );
 
