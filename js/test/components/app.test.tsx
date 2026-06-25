@@ -24,10 +24,11 @@ const mockGetMetaContent = getMetaContent as jest.MockedFunction<
 
 jest.mock("../../contexts/dataWarningsContext", () => ({
   __esModule: true,
-  useDataWarnings: jest.fn(() => ({
-    warnings: {},
-    setWarnings: (warnings: any) => {},
-  })),
+  useDataWarnings: jest.fn(() => [
+    new Set([]),
+    (warnings: any) => {},
+    (warnings: any) => {},
+  ]),
 }));
 
 describe("App", () => {
