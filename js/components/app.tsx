@@ -80,12 +80,12 @@ const router = createBrowserRouter([
   {
     errorElement: <ErrorBoundary />,
     element: (
-      <>
+      <DataWarningsProvider>
         <Banner />
         <AppcuesTrackPage />
         <Header />
         <Outlet />
-      </>
+      </DataWarningsProvider>
     ),
     children: [
       {
@@ -122,9 +122,7 @@ const router = createBrowserRouter([
 export const App = (): ReactElement => {
   return (
     <SocketProvider>
-      <DataWarningsProvider>
-        <RouterProvider router={router}></RouterProvider>
-      </DataWarningsProvider>
+      <RouterProvider router={router}></RouterProvider>
     </SocketProvider>
   );
 };
