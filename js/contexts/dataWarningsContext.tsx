@@ -17,7 +17,11 @@ const DataWarningsContext = createContext<
 export const DataWarningsProvider = ({ children }: { children: ReactNode }) => {
   const [warnings, setWarnings] = useState<DataWarnings>(new Set());
   const addWarning: (warning: DataWarning) => void = (warning: DataWarning) => {
-    setWarnings((warnings) => warnings.add(warning));
+    setWarnings((warnings) => {
+      const newSet = new Set(warnings);
+      newSet.add(warning);
+      return newSet;
+    });
   };
   const removeWarning: (warning: DataWarning) => void = (
     warning: DataWarning,
