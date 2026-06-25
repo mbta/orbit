@@ -5,11 +5,7 @@ import { ReactElement } from "react";
 export const Banner = (): ReactElement => {
   const [warnings] = useDataWarnings();
 
-  return (
-      Array.from(Object.values(warnings)).reduce(
-        (previous, current) => previous && current,
-      )
-    ) ?
+  return warnings.size > 0 ?
       <div
         className={className(["flex flex-col px-3 py-4 text-xs bg-yellow/25"])}
       >
@@ -23,14 +19,12 @@ export const Banner = (): ReactElement => {
         </div>
         <div className="ml-5 flex flex-1 flex-col text-slate-600">
           <ul className="list-inside list-disc">
-            {Object.entries(warnings)
-              .filter(([key, value]) => value)
-              .map(([key, value]) => {
-                if (key === "VEHICLE_POSITIONS_STALE") {
-                  return <li key={key}>Train positions out of date</li>;
-                }
-                return <></>;
-              })}
+            {[...warnings].map((warning) => {
+              if (warning === "vehicle_positions_stale") {
+                return <li key={warning}>Train positions out of date</li>;
+              }
+              return <></>;
+            })}
           </ul>
         </div>
       </div>

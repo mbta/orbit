@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export const useVehicles = (): Vehicle[] | null => {
   const now = useNow("minute");
-  const [, setWarnings] = useDataWarnings();
+  const [, addWarning, removeWarning] = useDataWarnings();
   const [mostRecentTimestamp, setMostRecentTimestamp] = useState(
     now.toUnixInteger(),
   );
@@ -29,12 +29,14 @@ export const useVehicles = (): Vehicle[] | null => {
     defaultResult: null,
   });
   useEffect(() => {
-    setWarnings((warnings: DataWarning) => ({
-      ...warnings,
-      VEHICLE_POSITIONS_STALE:
-        now &&
-        now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3,
-    }));
+    if (
+      now &&
+      now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3
+    ) {
+      addWarning("vehicle_positions_stale");
+    } else {
+      removeWarning("vehicle_positions_stale");
+    }
   }, [now]);
 
   return result;
