@@ -27,11 +27,12 @@ export const useVehicles = (): Vehicle[] | null => {
     defaultResult: null,
   });
   useEffect(() => {
-    if (now && now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3) {
-      setWarnings((warnings: DataWarning) => ({...warnings, VEHICLE_POSITIONS_STALE: true}));
-    } else {
-      setWarnings((warnings: DataWarning) => ({...warnings, VEHICLE_POSITIONS_STALE: false}));
-    }
+    setWarnings((warnings: DataWarning) => ({
+      ...warnings,
+      VEHICLE_POSITIONS_STALE: now && now.diff(
+        dateTimeFromUnix(mostRecentTimestamp), "minute"
+      ).minutes > 3
+    }));
   }, [now])
 
   return result;
