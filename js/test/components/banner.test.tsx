@@ -15,10 +15,10 @@ describe("Landing Page", () => {
 
   test("renders when warning is present", () => {
     (useDataWarnings as jest.Mock).mockImplementation(
-      jest.fn(() => ({
-        warnings: { VEHICLE_POSITIONS_STALE: true },
-        setWarnings: (warnings: any) => {},
-      })),
+      jest.fn(() => ([
+        { VEHICLE_POSITIONS_STALE: true },
+        (warnings: any) => {},
+      ])),
     );
 
     const view = render(
@@ -32,10 +32,10 @@ describe("Landing Page", () => {
 
   test("is hidden when no warning is present", () => {
     (useDataWarnings as jest.Mock).mockImplementation(
-      jest.fn(() => ({
-        warnings: { VEHICLE_POSITIONS_STALE: false },
-        setWarnings: (warnings: any) => {},
-      })),
+      jest.fn(() => ([
+        { VEHICLE_POSITIONS_STALE: false },
+        (warnings: any) => {},
+      ])),
     );
 
     const view = render(

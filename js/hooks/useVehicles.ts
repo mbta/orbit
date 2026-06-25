@@ -1,5 +1,7 @@
 import { useSocket } from "../contexts/socketContext";
 import "../models/vehiclePosition";
+import { DataWarning, useDataWarnings } from "../contexts/dataWarningsContext";
+import { dateTimeFromUnix, useNow } from "../dateTime";
 import {
   Vehicle,
   VehicleDataMessage,
@@ -7,13 +9,13 @@ import {
 } from "../models/vehicle";
 import { useChannel } from "./useChannel";
 import { useEffect, useState } from "react";
-import { dateTimeFromUnix, useNow } from "../dateTime";
-import { DataWarning, useDataWarnings } from "../contexts/dataWarningsContext";
 
 export const useVehicles = (): Vehicle[] | null => {
   const now = useNow("minute");
-  const { setWarnings } = useDataWarnings();
-  const [mostRecentTimestamp, setMostRecentTimestamp] = useState(now.toUnixInteger());
+  const [, setWarnings] = useDataWarnings();
+  const [mostRecentTimestamp, setMostRecentTimestamp] = useState(
+    now.toUnixInteger(),
+  );
   const socket = useSocket();
   const result = useChannel({
     socket,
@@ -29,11 +31,11 @@ export const useVehicles = (): Vehicle[] | null => {
   useEffect(() => {
     setWarnings((warnings: DataWarning) => ({
       ...warnings,
-      VEHICLE_POSITIONS_STALE: now && now.diff(
-        dateTimeFromUnix(mostRecentTimestamp), "minute"
-      ).minutes > 3
+      VEHICLE_POSITIONS_STALE:
+        now &&
+        now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3,
     }));
-  }, [now])
+  }, [now]);
 
   return result;
 };

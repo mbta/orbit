@@ -3,7 +3,7 @@ import { useDataWarnings } from "../contexts/dataWarningsContext";
 import { className } from "../util/dom";
 
 export const Banner = (): ReactElement => {
-    const { warnings } = useDataWarnings();
+  const [warnings] = useDataWarnings();
 
     return Array.from(Object.values(warnings)).reduce((previous, current) => previous && current) ? (
         <div

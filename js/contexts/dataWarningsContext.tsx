@@ -1,17 +1,14 @@
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
-export type DataWarning = {VEHICLE_POSITIONS_STALE: boolean};
+export type DataWarning = { VEHICLE_POSITIONS_STALE: boolean };
 
 const DataWarningsContext = createContext<any>(null);
 export const DataWarningsProvider = ({ children }: { children: ReactNode }) => {
-  const [warnings, setWarnings] = useState<DataWarning>({VEHICLE_POSITIONS_STALE: false});
+  const [warnings, setWarnings] = useState<DataWarning>({
+    VEHICLE_POSITIONS_STALE: false,
+  });
   return (
-    <DataWarningsContext.Provider value={{warnings, setWarnings}}>
+    <DataWarningsContext.Provider value={[warnings, setWarnings]}>
       {children}
     </DataWarningsContext.Provider>
   );
