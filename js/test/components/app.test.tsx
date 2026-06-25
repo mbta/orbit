@@ -14,7 +14,6 @@ import {
 import { getMetaContent } from "../../util/metadata";
 import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
-import { DataWarningsProvider } from "../../contexts/dataWarningsContext";
 
 jest.mock("../../util/metadata", () => ({
   getMetaContent: jest.fn(),
@@ -22,6 +21,11 @@ jest.mock("../../util/metadata", () => ({
 const mockGetMetaContent = getMetaContent as jest.MockedFunction<
   typeof getMetaContent
 >;
+
+jest.mock("../../contexts/dataWarningsContext", () => ({
+  __esModule: true,
+  useDataWarnings: jest.fn(() => ({ warnings: {}, setWarnings: (warnings: any) => {} })),
+}));
 
 describe("App", () => {
   //NOTE: skipping this test while root path temporarily reroutes to /operators.
@@ -192,12 +196,10 @@ describe("App", () => {
 
         const view = render(
           <MemoryRouter initialEntries={["/"]}>
-            <DataWarningsProvider>
-              <Routes>
-                <Route path="/" element={<UserGroupRedirects />} />
-                <Route path="/ladder" element={<LadderPage routeId="Red" />} />
-              </Routes>
-            </DataWarningsProvider>
+            <Routes>
+              <Route path="/" element={<UserGroupRedirects />} />
+              <Route path="/ladder" element={<LadderPage routeId="Red" />} />
+            </Routes>
           </MemoryRouter>,
         );
 
@@ -213,12 +215,10 @@ describe("App", () => {
 
         const view = render(
           <MemoryRouter initialEntries={["/"]}>
-            <DataWarningsProvider>
-              <Routes>
-                <Route path="/" element={<UserGroupRedirects />} />
-                <Route path="/ladder" element={<LadderPage routeId="Red" />} />
-              </Routes>
-            </DataWarningsProvider>
+            <Routes>
+              <Route path="/" element={<UserGroupRedirects />} />
+              <Route path="/ladder" element={<LadderPage routeId="Red" />} />
+            </Routes>
           </MemoryRouter>,
         );
 
