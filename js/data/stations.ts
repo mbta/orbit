@@ -218,7 +218,6 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         location: { latitude: 42.437735, longitude: -71.070875 },
         stop_ids: ["70036", "Oak Grove-01", "Oak Grove-02"],
         forcedDirections: new Map([
-          // TODO: verify platforms
           ["Oak Grove-01", 1],
           ["Oak Grove-02", 0],
         ]),
@@ -375,7 +374,6 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         location: { latitude: 42.300926, longitude: -71.114129 },
         stop_ids: ["70001", "Forest Hills-01", "Forest Hills-02"],
         forcedDirections: new Map([
-          // TODO: verify platforms
           ["Forest Hills-01", 1],
           ["Forest Hills-02", 0],
         ]),
