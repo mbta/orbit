@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: run-task-${{ github.workflow }}-${{ inputs.env }}
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
