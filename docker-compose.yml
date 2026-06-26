@@ -1,7 +1,7 @@
 # Config for running the Docker container in CI / local development. Not used in production.
 services:
   db:
-    image: postgres:15@sha256:1b92e7a80c021647bf70f5d3eb66066a998e4f5cf43c07bb9dc9f729782cf88e
+    image: postgres:15@sha256:c687464d7fa61dbfe1282708d9a9c54ce1ec7000bcc517b0aa382af17464a16a
     environment:
       - POSTGRES_PASSWORD=insecure
     healthcheck:
