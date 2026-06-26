@@ -45,6 +45,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   return (
     <main className="flex h-screen justify-center">
+      {sideBarSelection !== null ?
+        <SideBar selection={sideBarSelection} close={close} />
+      : null}
       <div
         className={className([
           "flex overflow-auto transition-all duration-300 ease-in-out w-full",
@@ -59,9 +62,6 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           sideBarSelection={sideBarSelection}
         />
       </div>
-      {sideBarSelection !== null ?
-        <SideBar selection={sideBarSelection} close={close} />
-      : null}
     </main>
   );
 };

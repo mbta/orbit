@@ -10,4 +10,5 @@ export type IconName =
   | "menu"
   | "red-line"
   | "shield"
-  | "sign-out";
+  | "sign-out"
+  | "warning-circle";

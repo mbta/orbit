@@ -10,8 +10,8 @@ export const Banner = (): ReactElement => {
         className={className(["flex flex-col px-3 py-4 text-xs bg-yellow/25"])}
       >
         <div className="flex flex-row items-center gap-2">
-          <svg className={className(["h-3 w-3 inline fill-yellow"])}>
-            <use xlinkHref={"/images/info.svg"} />
+          <svg className={className(["h-4 w-4 inline fill-yellow"])}>
+            <use xlinkHref={"/images/warning-circle.svg"} />
           </svg>
           <p className="font-semibold uppercase tracking-wide-4 text-slate-800">
             Data Issue
