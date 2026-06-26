@@ -71,7 +71,7 @@ jobs:
         # only run `asdf install` if we didn't hit the cache
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
+        uses: mbta/actions/reshim-asdf@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
       - name: mix rebar and hex
         run: |
           mix local.rebar --force
@@ -120,7 +120,7 @@ jobs:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
+        uses: mbta/actions/reshim-asdf@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
@@ -144,7 +144,7 @@ jobs:
           DATABASE_PASSWORD: ${{env.DATABASE_PASSWORD}}
           DATABASE_HOST: ${{env.DATABASE_HOST}}
           DATABASE_NAME: ${{env.DATABASE_NAME}}
-      - uses: mbta/actions/dialyzer@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
+      - uses: mbta/actions/dialyzer@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
       - name: Check for unused dependencies
         run: mix deps.unlock --check-unused
       - name: Sobelow (security analysis)
@@ -162,7 +162,7 @@ jobs:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
       - name: Setup asdf environment
-        uses: mbta/actions/reshim-asdf@6cff1d5eef7e0d780190353278bc84fdf6177dab # v2.18
+        uses: mbta/actions/reshim-asdf@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
