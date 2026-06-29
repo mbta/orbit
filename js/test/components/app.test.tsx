@@ -26,8 +26,8 @@ jest.mock("../../contexts/dataWarningsContext", () => ({
   __esModule: true,
   useDataWarnings: jest.fn(() => [
     new Set([]),
-    (warnings: any) => {},
-    (warnings: any) => {},
+    () => {},
+    () => {},
   ]),
 }));
 

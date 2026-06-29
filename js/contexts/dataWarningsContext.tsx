@@ -7,10 +7,10 @@ const DataWarningsContext = createContext<
   [DataWarnings, (warning: DataWarning) => void, (warning: DataWarning) => void]
 >([
   new Set(),
-  (warning) => {
+  () => {
     throw Error("Not implemented");
   },
-  (warning) => {
+  () => {
     throw Error("Not implemented");
   },
 ]);

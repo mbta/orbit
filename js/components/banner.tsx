@@ -20,10 +20,7 @@ export const Banner = (): ReactElement => {
         <div className="ml-5 flex flex-1 flex-col text-slate-600">
           <ul className="list-inside list-disc">
             {[...warnings].map((warning) => {
-              if (warning === "vehicle_positions_stale") {
                 return <li key={warning}>Train positions out of date</li>;
-              }
-              return <></>;
             })}
           </ul>
         </div>
