@@ -81,10 +81,12 @@ const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
     element: (
       <DataWarningsProvider>
-        <Banner />
         <AppcuesTrackPage />
-        <Header />
-        <Outlet />
+        <div className="flex flex-col h-screen">
+          <Banner />
+          <Header />
+          <Outlet />
+        </div>
       </DataWarningsProvider>
     ),
     children: [
