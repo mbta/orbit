@@ -51,7 +51,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       <div
         className={className([
           "flex transition-all duration-300 ease-in-out w-full",
-          sideBarSelection && "ml-80 min-[1485px]:ml-0",
+          sideBarSelection && "ml-80 min-[1485px]:ml-30",
         ])}
         // Close sidebar when clicking anywhere in the background
         onClick={close}
