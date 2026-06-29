@@ -63,7 +63,7 @@ export const HelpMenu = (): ReactElement => {
       </MenuLink>
       <MenuLink
         icon="clipboard"
-        iconExtraClassName="w-3 mr-2"
+        iconExtraClassName="w-4 mr-1 border-black border-solid border-1"
         newTab={true}
         to="https://www.mbta.com/orbit-training"
       >

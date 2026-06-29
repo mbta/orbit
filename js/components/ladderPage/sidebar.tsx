@@ -275,7 +275,7 @@ const VehicleCopyButton = ({ vehicle }: { vehicle: Vehicle }) => {
       }}
     >
       <img
-        className="m-1 h-4 w-4 transition-opacity"
+        className="m-1 h-6 w-6 transition-opacity"
         src={
           copied ?
             "/images/clipboard-green-check.svg"
