@@ -73,7 +73,7 @@ defmodule Orbit.MixProject do
       {:highlander, "0.2.1"},
       {:httpoison, "2.3.0"},
       {:jason, "1.4.4"},
-      {:laboratory, github: "andrewdolce/laboratory", branch: "cowboy-dep-fix"},
+      {:laboratory, github: "paulswartz/laboratory", branch: "cookie_opts"},
       {:lcov_ex, "0.3.4", only: [:test], runtime: false},
       {:logster, "2.0.0-rc.5"},
       {:mock, "0.3.9", only: :test},
