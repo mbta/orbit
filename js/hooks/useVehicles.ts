@@ -44,7 +44,7 @@ export const useVehicles = (): Vehicle[] | null => {
     // Disabling this because it's due to outdated react-hooks lint rules
     // Remove when that library is updated
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [now],
+    [now, mostRecentTimestamp],
   );
 
   return result;
