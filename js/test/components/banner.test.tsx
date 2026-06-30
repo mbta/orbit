@@ -15,11 +15,7 @@ describe("Landing Page", () => {
 
   test("renders when warning is present", () => {
     (useDataWarnings as jest.Mock).mockImplementation(
-      jest.fn(() => [
-        new Set(["vehicle_positions_stale"]),
-        () => {},
-        () => {},
-      ]),
+      jest.fn(() => [new Set(["vehicle_positions_stale"]), () => {}, () => {}]),
     );
 
     const view = render(

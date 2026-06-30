@@ -8,7 +8,7 @@ import {
   vehicleFromVehicleData,
 } from "../models/vehicle";
 import { useChannel } from "./useChannel";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 
 export const useVehicles = (): Vehicle[] | null => {
   const now = useNow("minute");
@@ -19,7 +19,7 @@ export const useVehicles = (): Vehicle[] | null => {
   const parser = useCallback((message: VehicleDataMessage): Vehicle[] => {
     setMostRecentTimestamp(message.data.timestamp);
     return message.data.entities.map((data) => vehicleFromVehicleData(data));
-  }, [])
+  }, []);
   const socket = useSocket();
   const result = useChannel({
     socket,
@@ -29,15 +29,23 @@ export const useVehicles = (): Vehicle[] | null => {
     RawData: VehicleDataMessage,
     defaultResult: null,
   });
-  useEffect(() => {
-    if (
-      now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3
-    ) {
+  const checkForStaleData = useEffectEvent(() => {
+    if (now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3) {
       addWarning("vehicle_positions_stale");
     } else {
       removeWarning("vehicle_positions_stale");
     }
-  }, [now]);
+  });
+
+  useEffect(
+    () => {
+      checkForStaleData();
+    },
+    // Disabling this because it's due to outdated react-hooks lint rules
+    // Remove when that library is updated
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [now],
+  );
 
   return result;
 };
