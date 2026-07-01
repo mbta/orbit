@@ -1,4 +1,5 @@
 import { reload } from "../browser";
+import { DataWarningsProvider } from "../contexts/dataWarningsContext";
 import { SocketProvider } from "../contexts/socketContext";
 import {
   ORBIT_BL_FFD,
@@ -9,6 +10,7 @@ import {
 } from "../groups";
 import { paths } from "../paths";
 import { AppcuesTrackPage } from "./appcues";
+import { Banner } from "./banner";
 import { Header } from "./header";
 import { LadderPage } from "./ladderPage/ladderPage";
 import { LandingPage } from "./landingPage";
@@ -78,11 +80,16 @@ const router = createBrowserRouter([
   {
     errorElement: <ErrorBoundary />,
     element: (
-      <>
+      <DataWarningsProvider>
         <AppcuesTrackPage />
-        <Header />
-        <Outlet />
-      </>
+        <div className="flex flex-col h-screen">
+          <div className="sticky top-0 z-header">
+            <Banner />
+            <Header />
+          </div>
+          <Outlet />
+        </div>
+      </DataWarningsProvider>
     ),
     children: [
       {
