@@ -27,7 +27,7 @@ export const SideBar = ({
   close: () => void;
 }): ReactElement => {
   return (
-    <aside className="sm:min-w-[350px] sticky flex flex-col left-0 sm:w-80 bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="sm:min-w-[320px] sticky flex flex-col left-0 sm:w-80 bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
