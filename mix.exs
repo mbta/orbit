@@ -45,6 +45,8 @@ defmodule Orbit.MixProject do
       {:broadway_kinesis, github: "mbta/broadway_kinesis"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "5.0.0", only: :dev},
+      # Needed by laboratory for prod build
+      {:cowboy, "2.17.0"},
       {:credo, "1.7.13", only: [:dev, :test], runtime: false},
       {:csv, "3.2.2"},
       {:dialyxir, "1.4.7", only: [:dev, :test], runtime: false},
@@ -73,7 +75,9 @@ defmodule Orbit.MixProject do
       {:highlander, "0.2.1"},
       {:httpoison, "2.3.0"},
       {:jason, "1.4.4"},
-      {:laboratory, github: "andrewdolce/laboratory", branch: "cowboy-dep-fix"},
+      {:laboratory,
+       git: "https://github.com/paulswartz/laboratory.git",
+       ref: "24adbe2cb18d8368e140ab5e13c8f5b75adea742"},
       {:lcov_ex, "0.3.4", only: [:test], runtime: false},
       {:logster, "2.0.0-rc.5"},
       {:mock, "0.3.9", only: :test},
