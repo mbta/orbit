@@ -53,7 +53,7 @@ defmodule Orbit.MixProject do
       {:diskusage_logger, "0.2.0", only: :prod},
       {:dns_cluster, "0.2.0"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
-      {:ecto_sql, "3.13.2"},
+      {:ecto_sql, "3.14.0"},
       {:ex_aws, "2.6.1"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
