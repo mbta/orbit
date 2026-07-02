@@ -73,7 +73,7 @@ defmodule Orbit.MixProject do
        depth: 1},
       {:highlander, "0.2.1"},
       {:httpoison, "2.3.0"},
-      {:jason, "1.4.4"},
+      {:jason, "1.4.5"},
       {:laboratory,
        git: "https://github.com/paulswartz/laboratory.git",
        ref: "24adbe2cb18d8368e140ab5e13c8f5b75adea742"},
