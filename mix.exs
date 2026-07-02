@@ -60,7 +60,6 @@ defmodule Orbit.MixProject do
       {:ex_machina, "2.8.0", only: :test},
       {:fast_local_datetime, "1.0.1"},
       {:floki, "0.38.0", only: :test},
-      {:geocalc, "0.8.5"},
       {:guardian, "2.4.0"},
       {:guardian_phoenix, "2.0.1"},
       # used by ex_aws
