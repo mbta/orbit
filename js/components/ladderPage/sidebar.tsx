@@ -27,14 +27,14 @@ export const SideBar = ({
   close: () => void;
 }): ReactElement => {
   return (
-    <aside className="fixed flex flex-col left-0 top-[theme(height.header)] w-full sm:w-80 h-[calc(100vh-theme(height.header))] bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="sm:min-w-[320px] sticky flex flex-col left-0 sm:w-80 bg-gray-100 transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <button
         className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
       >
         <img src="/images/close.svg" alt="Close" />
       </button>
-      <div className="h-full">
+      <div className="h-full w-screen sm:w-auto">
         <Consist vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />

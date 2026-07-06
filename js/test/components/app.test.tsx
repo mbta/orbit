@@ -22,6 +22,11 @@ const mockGetMetaContent = getMetaContent as jest.MockedFunction<
   typeof getMetaContent
 >;
 
+jest.mock("../../contexts/dataWarningsContext", () => ({
+  __esModule: true,
+  useDataWarnings: jest.fn(() => [new Set([]), () => {}, () => {}]),
+}));
+
 describe("App", () => {
   //NOTE: skipping this test while root path temporarily reroutes to /operators.
   //TODO: do not skip this once root path is no longer just rerouting.

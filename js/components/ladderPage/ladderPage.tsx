@@ -44,11 +44,13 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   }, [onEscape]);
 
   return (
-    <main className="flex h-screen justify-center">
+    <main className="flex overflow-y-auto overflow-x-hidden justify-center">
+      {sideBarSelection !== null ?
+        <SideBar selection={sideBarSelection} close={close} />
+      : null}
       <div
         className={className([
-          "flex overflow-auto transition-all duration-300 ease-in-out w-full",
-          sideBarSelection && "ml-80 min-[1485px]:ml-0",
+          "flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
         ])}
         // Close sidebar when clicking anywhere in the background
         onClick={close}
@@ -59,9 +61,6 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           sideBarSelection={sideBarSelection}
         />
       </div>
-      {sideBarSelection !== null ?
-        <SideBar selection={sideBarSelection} close={close} />
-      : null}
     </main>
   );
 };
