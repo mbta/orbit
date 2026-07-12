@@ -72,7 +72,7 @@ defmodule Orbit.MixProject do
        compile: false,
        depth: 1},
       {:highlander, "0.2.1"},
-      {:httpoison, "2.3.0"},
+      {:httpoison, "== 3.0.0"},
       {:jason, "1.4.5"},
       {:laboratory,
        git: "https://github.com/paulswartz/laboratory.git",
