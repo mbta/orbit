@@ -23,14 +23,39 @@ defmodule Orbit.Import.ImportCertifications do
     |> import!(certification_type)
   end
 
+  defp parse_certification_date(date_string) do
+    case DateTime.from_iso8601(date_string) do
+      {:ok, datetime, _} ->
+        datetime |> NaiveDateTime.to_date()
+
+      _ ->
+        # Fallback: parse manually from "M/D/YYYY h:m AM/PM" format
+        case String.split(date_string, ~r/[\/\s:]/, trim: true) do
+          [month, day, year, hour, minute, am_pm] ->
+            hour = parse_hour(hour, am_pm)
+
+            {:ok, date} =
+              Date.new(String.to_integer(year), String.to_integer(month), String.to_integer(day))
+
+            date
+
+          _ ->
+            raise "Invalid date format: #{date_string}"
+        end
+    end
+  end
+
+  defp parse_hour(hour_str, "PM"), do: String.to_integer(hour_str) + 12
+  defp parse_hour("12", "AM"), do: 0
+  defp parse_hour(hour_str, _), do: String.to_integer(hour_str)
+
   @spec import!(Enumerable.t(), Certification.certification_type()) :: :ok
   def import!(rows, certification_type) do
     Enum.map(rows, fn certification ->
       title = certification["Certifications - Certification Title"]
       expires_string = certification["Certifications - Certification Period Expiration Date"]
 
-      expires =
-        expires_string |> Timex.parse!("{M}/{D}/{YYYY} {h12}:{m} {AM}") |> NaiveDateTime.to_date()
+      expires = parse_certification_date(expires_string)
 
       rail_line =
         cond do

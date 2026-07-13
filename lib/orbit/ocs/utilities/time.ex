@@ -2,7 +2,6 @@ defmodule Orbit.Ocs.Utilities.Time do
   @moduledoc """
   Some utility functions for dealing with times
   """
-  require FastLocalDatetime
   require Logger
 
   @doc """
@@ -136,20 +135,18 @@ defmodule Orbit.Ocs.Utilities.Time do
     new_dt
   end
 
-  @spec seconds_since_midnight_to_date_time(integer, Date.t(), Timex.Types.valid_timezone()) ::
+  @spec seconds_since_midnight_to_date_time(integer, Date.t(), String.t()) ::
           DateTime.t()
   def seconds_since_midnight_to_date_time(
         seconds_since_midnight,
         %Date{} = current_service_date,
         timezone \\ Application.get_env(:orbit, :timezone)
       ) do
-    {:ok, dt} =
-      current_service_date
-      |> service_date_pseudo_midnight_unix()
-      |> Kernel.+(seconds_since_midnight)
-      |> FastLocalDatetime.unix_to_datetime(timezone)
-
-    dt
+    current_service_date
+    |> service_date_pseudo_midnight_unix()
+    |> Kernel.+(seconds_since_midnight)
+    |> DateTime.from_unix!(:second)
+    |> DateTime.shift_zone!(timezone)
   end
 
   @doc """
