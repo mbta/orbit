@@ -77,4 +77,6 @@ config :sentry,
   # dsn and environment_name are loaded at runtime
   enable_source_code_context: true,
   release: Application.compile_env(:orbit, :release),
-  root_source_code_paths: [File.cwd!()]
+  root_source_code_paths: [File.cwd!()],
+  client: Sentry.HttpsClient,
+  http_adapter: {:finch, orbit_finch}

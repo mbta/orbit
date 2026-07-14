@@ -17,7 +17,8 @@ defmodule Orbit.Application do
         # Start a worker by calling: Orbit.Worker.start_link(arg)
         # {Orbit.Worker, arg},
         # Start to serve requests, typically the last entry
-        OrbitWeb.Endpoint
+        OrbitWeb.Endpoint,
+        {Finch, name: :orbit_finch}
       ] ++
         if Application.get_env(:orbit, :subscribe_to_ocs?) do
           [
