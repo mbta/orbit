@@ -24,30 +24,18 @@ defmodule Orbit.Import.ImportCertifications do
   end
 
   defp parse_certification_date(date_string) do
-    case DateTime.from_iso8601(date_string) do
-      {:ok, datetime, _} ->
-        datetime |> NaiveDateTime.to_date()
+    case String.split(date_string, ~r/[\/\s:]/, trim: true) do
+      [month, day, year, _hour, _minute, _am_pm] ->
+        month_int = String.to_integer(month)
+        day_int = String.to_integer(day)
+        year_int = String.to_integer(year)
+        {:ok, date} = Date.new(year_int, month_int, day_int)
+        date
 
       _ ->
-        # Fallback: parse manually from "M/D/YYYY h:m AM/PM" format
-        case String.split(date_string, ~r/[\/\s:]/, trim: true) do
-          [month, day, year, hour, minute, am_pm] ->
-            hour = parse_hour(hour, am_pm)
-
-            {:ok, date} =
-              Date.new(String.to_integer(year), String.to_integer(month), String.to_integer(day))
-
-            date
-
-          _ ->
-            raise "Invalid date format: #{date_string}"
-        end
+        raise "Invalid date format: #{date_string}"
     end
   end
-
-  defp parse_hour(hour_str, "PM"), do: String.to_integer(hour_str) + 12
-  defp parse_hour("12", "AM"), do: 0
-  defp parse_hour(hour_str, _), do: String.to_integer(hour_str)
 
   @spec import!(Enumerable.t(), Certification.certification_type()) :: :ok
   def import!(rows, certification_type) do
