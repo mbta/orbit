@@ -79,4 +79,4 @@ config :sentry,
   release: Application.compile_env(:orbit, :release),
   root_source_code_paths: [File.cwd!()],
   client: Sentry.HttpsClient,
-  http_adapter: {:finch, orbit_finch}
+  http_adapter: {:finch, :orbit_finch}
