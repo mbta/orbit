@@ -44,8 +44,7 @@ defmodule Orbit.MixProject do
       {:bandit, "1.12.0"},
       {
         :broadway_kinesis,
-        # TODO: use ref to point to hash
-        github: "mbta/broadway_kinesis", branch: "djp-update-hackney-and-related-deps"
+        github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
       },
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "5.0.0", only: :dev},
