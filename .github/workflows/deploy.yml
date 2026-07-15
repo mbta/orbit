@@ -67,13 +67,13 @@ jobs:
             RELEASE=${{ steps.calc-version.outputs.version-id }}
           tags: ${{ steps.calc-version.outputs.tag-list }}
           push: true
-      - uses: mbta/actions/deploy-ecs@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
+      - uses: mbta/actions/deploy-ecs@788f8e264e9ebb1b76b927c89e6466d5a162be80 # v2.24
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           ecs-cluster: orbit
           ecs-service: orbit-${{ inputs.env }}
           docker-tag: ${{ steps.calc-version.outputs.deploy-tag }}
-      - uses: mbta/actions/notify-slack-deploy@d37877022d4ae12e96663d2e0a970a5214a2e232 # v2.20
+      - uses: mbta/actions/notify-slack-deploy@788f8e264e9ebb1b76b927c89e6466d5a162be80 # v2.24
         if: ${{ !cancelled() }}
         with:
           webhook-url: ${{ secrets.SLACK_WEBHOOK }}
