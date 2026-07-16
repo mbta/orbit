@@ -61,7 +61,7 @@ jobs:
           echo "node-modules-restore=cache-node-modules-" >> $GITHUB_OUTPUT
           echo "node-modules=cache-node-modules-${CACHE_NODE_MODULES}" >> $GITHUB_OUTPUT
       - name: asdf cache
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.asdf
           key: ${{ steps.cache-keys.outputs.asdf }}
@@ -80,7 +80,7 @@ jobs:
         if: steps.asdf-cache.outputs.cache-hit != 'true'
       - name: Restore Mix cache, with partial
         id: mix-deps-cache
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             deps
@@ -115,7 +115,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
@@ -125,7 +125,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Restore Mix cache
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             deps
@@ -157,7 +157,7 @@ jobs:
     needs: setup
     steps:
       - name: asdf cache
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.asdf
           key: ${{ needs.setup.outputs.cache-key-asdf }}
@@ -167,7 +167,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Restore Mix cache
-        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             deps
@@ -175,7 +175,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key-mix-deps }}
       - name: Restore node_modules cache, with partial
         id: node-modules-cache
-        uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: node_modules
           key: ${{ needs.setup.outputs.cache-key-node-modules }}
