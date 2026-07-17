@@ -4,14 +4,18 @@ defmodule Orbit.Ocs.ParserTest do
   alias Orbit.Ocs.Utilities.Time, as: OcsTime
 
   def get_time_today(msg_time) do
-    time = Timex.parse!(msg_time, "{h24}:{m}:{s}")
+    {:ok, time} = Time.from_iso8601(msg_time)
 
-    today =
-      :orbit
-      |> Application.get_env(:timezone)
-      |> Timex.now()
+    today = DateTime.now!(Application.get_env(:orbit, :timezone))
 
-    Timex.set(today, hour: time.hour, minute: time.minute, second: time.second)
+    {:ok, datetime} =
+      DateTime.new(
+        DateTime.to_date(today),
+        time,
+        Application.get_env(:orbit, :timezone)
+      )
+
+    datetime
   end
 
   describe "parse/2" do
@@ -76,19 +80,23 @@ defmodule Orbit.Ocs.ParserTest do
     end
 
     test "handles empty message" do
-      assert Orbit.Ocs.Parser.parse("", Timex.local()) == {:error, %MatchError{term: [""]}}
+      assert Orbit.Ocs.Parser.parse("", DateTime.now!("America/New_York")) ==
+               {:error, %MatchError{term: [""]}}
     end
 
     test "handles non-integer message counter" do
       assert Orbit.Ocs.Parser.parse(
                "not_an_integer,DEVI,02:04:55,B,SW,WON_SW1,0,1,0,1",
-               Timex.local()
+               DateTime.now!("America/New_York")
              ) ==
                {:error, %MatchError{term: :error}}
     end
 
     test "handles message type not defined" do
-      assert Orbit.Ocs.Parser.parse("4364,NOTD,02:04:55,B,SW,WON_SW1,0,1,0,1", Timex.local()) ==
+      assert Orbit.Ocs.Parser.parse(
+               "4364,NOTD,02:04:55,B,SW,WON_SW1,0,1,0,1",
+               DateTime.now!("America/New_York")
+             ) ==
                {:error,
                 %RuntimeError{
                   message: "Message type NOTD did not match any expected message"
@@ -96,7 +104,7 @@ defmodule Orbit.Ocs.ParserTest do
     end
 
     test "handles message in unexpected format" do
-      assert Orbit.Ocs.Parser.parse("4364,,02:04:55,", Timex.local()) ==
+      assert Orbit.Ocs.Parser.parse("4364,,02:04:55,", DateTime.now!("America/New_York")) ==
                {:error,
                 %RuntimeError{
                   message: "Message type  did not match any expected message"
@@ -106,7 +114,7 @@ defmodule Orbit.Ocs.ParserTest do
     test "handles non-time value" do
       assert Orbit.Ocs.Parser.parse(
                "not_an_integer,DEVI,this_is_not_a_time,B,SW,WON_SW1,0,1,0,1",
-               Timex.local()
+               DateTime.now!("America/New_York")
              ) == {:error, %MatchError{term: :error}}
     end
   end

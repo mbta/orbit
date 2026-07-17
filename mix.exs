@@ -42,7 +42,10 @@ defmodule Orbit.MixProject do
   defp deps do
     [
       {:bandit, "1.12.0"},
-      {:broadway_kinesis, github: "mbta/broadway_kinesis"},
+      {
+        :broadway_kinesis,
+        github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
+      },
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "5.0.0", only: :dev},
       # Needed by laboratory for prod build
@@ -54,16 +57,16 @@ defmodule Orbit.MixProject do
       {:dns_cluster, "0.2.0"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "3.14.0"},
-      {:ex_aws, "2.6.1"},
+      {:ex_aws, "2.7.0"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
       {:ex_machina, "2.8.0", only: :test},
-      {:fast_local_datetime, "1.0.1"},
+      {:finch, "~> 0.15"},
       {:floki, "0.38.0", only: :test},
       {:guardian, "2.4.0"},
       {:guardian_phoenix, "2.0.1"},
       # used by ex_aws
-      {:hackney, "1.25.0"},
+      {:hackney, "4.5.2"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -72,7 +75,7 @@ defmodule Orbit.MixProject do
        compile: false,
        depth: 1},
       {:highlander, "0.2.1"},
-      {:httpoison, "2.3.0"},
+      {:httpoison, "3.0.0"},
       {:jason, "1.4.5"},
       {:laboratory,
        git: "https://github.com/paulswartz/laboratory.git",
@@ -88,11 +91,10 @@ defmodule Orbit.MixProject do
       {:phoenix_live_reload, "1.6.1", only: :dev},
       {:phoenix_live_view, "1.1.17"},
       {:postgrex, "0.22.2"},
-      {:sentry, "11.0.4"},
+      {:sentry, "13.3.0"},
       {:sobelow, "0.14.1", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "1.1.0"},
       {:telemetry_poller, "1.3.0"},
-      {:timex, "3.7.13"},
       {:tz, "0.28.1"},
       {:ueberauth, "0.10.8"},
       {:ueberauth_fake_oidcc,

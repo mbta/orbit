@@ -67,7 +67,7 @@ defmodule OrbitWeb.SignInExportController do
         time:
           &1.operator_sign_in.signed_in_at
           |> DateTime.shift_zone!(@timezone)
-          |> Timex.format!("{YYYY}-{0M}-{0D} {0h24}:{0m}:{0s}"),
+          |> Calendar.strftime("%Y-%m-%d %H:%M:%S"),
         signer_badge: &1.operator_sign_in.signed_in_employee.badge_number,
         signer_name: Employee.display_name(&1.operator_sign_in.signed_in_employee),
         radio_number: &1.operator_sign_in.radio_number,

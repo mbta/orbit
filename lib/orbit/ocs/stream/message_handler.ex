@@ -66,7 +66,7 @@ defmodule Orbit.Ocs.MessageHandler do
 
   @spec expired?(Orbit.Ocs.Message.t(), DateTime.t()) :: boolean
   def expired?(%{timestamp: timestamp}, current_time) do
-    Timex.Comparable.diff(current_time, timestamp, :seconds) > @expired_seconds
+    DateTime.diff(current_time, timestamp) > @expired_seconds
   end
 
   def expired?(_message, _current_time) do

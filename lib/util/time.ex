@@ -33,7 +33,7 @@ defmodule Util.Time do
 
   @spec service_date_for_utc_datetime(DateTime.t()) :: Date.t()
   def service_date_for_utc_datetime(utc_datetime) do
-    eastern_datetime = Timex.Timezone.convert(utc_datetime, @timezone)
+    eastern_datetime = DateTime.shift_zone!(utc_datetime, @timezone)
     real_date = DateTime.to_date(eastern_datetime)
 
     if eastern_datetime.hour in [0, 1, 2] do

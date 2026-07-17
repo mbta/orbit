@@ -23,14 +23,27 @@ defmodule Orbit.Import.ImportCertifications do
     |> import!(certification_type)
   end
 
+  defp parse_certification_date(date_string) do
+    case String.split(date_string, ~r/[\/\s:]/, trim: true) do
+      [month, day, year, _hour, _minute, _am_pm] ->
+        month_int = String.to_integer(month)
+        day_int = String.to_integer(day)
+        year_int = String.to_integer(year)
+        {:ok, date} = Date.new(year_int, month_int, day_int)
+        date
+
+      _ ->
+        raise "Invalid date format: #{date_string}"
+    end
+  end
+
   @spec import!(Enumerable.t(), Certification.certification_type()) :: :ok
   def import!(rows, certification_type) do
     Enum.map(rows, fn certification ->
       title = certification["Certifications - Certification Title"]
       expires_string = certification["Certifications - Certification Period Expiration Date"]
 
-      expires =
-        expires_string |> Timex.parse!("{M}/{D}/{YYYY} {h12}:{m} {AM}") |> NaiveDateTime.to_date()
+      expires = parse_certification_date(expires_string)
 
       rail_line =
         cond do
