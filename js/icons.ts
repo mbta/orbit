@@ -7,6 +7,7 @@ export type IconName =
   | "help"
   | "info"
   | "logo"
+  | "magnifying-glass"
   | "menu"
   | "red-line"
   | "shield"

@@ -17,6 +17,7 @@ import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
+  searchedCar?: CarId | null;
 };
 
 export const SideBar = ({
@@ -35,7 +36,10 @@ export const SideBar = ({
         <img src="/images/close.svg" alt="Close" />
       </button>
       <div className="h-full w-screen sm:w-auto">
-        <Consist vehicle={selection.vehicle} />
+        <Consist
+          vehicle={selection.vehicle}
+          searchedCar={selection.searchedCar ?? null}
+        />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
@@ -50,24 +54,37 @@ export const SideBar = ({
   );
 };
 
-const Consist = ({ vehicle }: { vehicle: Vehicle }) => {
+const Consist = ({
+  vehicle,
+  searchedCar,
+}: {
+  vehicle: Vehicle;
+  searchedCar: CarId | null;
+}) => {
   const vp = vehicle.vehiclePosition;
   const consist: CarId[] = reorder(vp.label, vp.cars, vp.directionId);
   const processedConsist = remapLabels(consist, vp.routeId);
   const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
     <div className="mt-14 px-4 flex">
-      {processedConsist.map((label, index) => (
-        <div
-          key={index}
-          className={className([
-            "mr-2",
-            index === leadCarIndex ? "font-bold text-2xl" : "pt-1.5",
-          ])}
-        >
-          {label}
-        </div>
-      ))}
+      {processedConsist.map((label, index) => {
+        const isLeadCar = index === leadCarIndex;
+        const isSearchMatch =
+          searchedCar !== null && consist[index] === searchedCar;
+
+        return (
+          <div
+            key={index}
+            className={className([
+              "mr-2",
+              isLeadCar ? "font-bold text-2xl" : "pt-1.5",
+              isSearchMatch ? "bg-[#ffdb00]" : "",
+            ])}
+          >
+            {label}
+          </div>
+        );
+      })}
     </div>
   );
 };

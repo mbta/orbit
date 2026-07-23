@@ -31,6 +31,7 @@ describe("Ladder", () => {
         routeId={"Red"}
         setSideBarSelection={jest.fn()}
         sideBarSelection={null}
+        vehicles={useVehicles() ?? []}
       />,
     );
     expect(view.getByText("Alewife")).toBeInTheDocument();
@@ -76,6 +77,7 @@ describe("Ladder", () => {
         routeId="Red"
         setSideBarSelection={jest.fn()}
         sideBarSelection={null}
+        vehicles={useVehicles() ?? []}
       />,
     );
     expect(view.getByText("1877")).toBeInTheDocument();
@@ -138,6 +140,7 @@ describe("Ladder", () => {
             routeId="Red"
             setSideBarSelection={jest.fn()}
             sideBarSelection={null}
+            vehicles={useVehicles() ?? []}
           />,
         );
 
@@ -180,6 +183,7 @@ describe("Ladder", () => {
             routeId="Red"
             setSideBarSelection={jest.fn()}
             sideBarSelection={null}
+            vehicles={useVehicles() ?? []}
           />,
         );
 
@@ -263,6 +267,7 @@ describe("Ladder", () => {
             routeId="Red"
             setSideBarSelection={jest.fn()}
             sideBarSelection={null}
+            vehicles={useVehicles() ?? []}
           />,
         );
 
@@ -311,6 +316,7 @@ describe("Ladder", () => {
               }),
             }),
           }}
+          vehicles={useVehicles() ?? []}
         />,
       );
       expect(view.getByText("1888")).toBeInTheDocument();
@@ -335,6 +341,7 @@ describe("Ladder", () => {
           routeId="Red"
           setSideBarSelection={jest.fn()}
           sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
         />,
       );
       expect(view.getByText("1888")).toBeInTheDocument();
