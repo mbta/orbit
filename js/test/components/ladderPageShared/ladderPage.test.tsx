@@ -3,7 +3,7 @@ import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
-import { vehicleFactory } from "../../helpers/factory";
+import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -29,6 +29,11 @@ const mockTrackSideBarOpened = trackSideBarOpened as jest.MockedFunction<
 >;
 
 describe("LadderPage SideBar", () => {
+  beforeEach(() => {
+    mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
+    mockTrackSideBarOpened.mockClear();
+  });
+
   describe("with red line sidebar permissions", () => {
     beforeAll(() => {
       mockGetMetaContent.mockImplementation((field: MetaDataKey) => {
@@ -67,6 +72,182 @@ describe("LadderPage SideBar", () => {
       expect(
         view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
+    });
+
+    test("searches by 3-digit car number and blurs the search input", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.click(input);
+      await user.type(input, "876{Enter}");
+
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      expect(input).not.toHaveFocus();
+    });
+
+    test("searches with icon click and clear button closes sidebar", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1876");
+      await user.click(view.getByRole("button", { name: "Search for car" }));
+
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+
+      await user.click(view.getByRole("button", { name: "×" }));
+      expect(input).toHaveValue("");
+      expect(
+        view.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+    });
+
+    test("clicking a different train clears the search query", async () => {
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            label: "1877",
+            cars: ["1877", "1876", "1807", "1806", "1815", "1814"],
+            vehicleId: "R-5482CAAA",
+          }),
+        }),
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            label: "1888",
+            cars: ["1888", "1889", "1890", "1891"],
+            vehicleId: "R-5482CAAB",
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1877{Enter}");
+      expect(input).toHaveValue("1877");
+
+      await user.click(view.getByRole("button", { name: "1888" }));
+      expect(input).toHaveValue("");
+    });
+
+    test("clicking the same train keeps query and searched-car highlight", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1876{Enter}");
+      expect(input).toHaveValue("1876");
+      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+
+      await user.click(view.getByRole("button", { name: "1877" }));
+
+      expect(input).toHaveValue("1876");
+      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+    });
+
+    test("no-result search clears searched-car highlight", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1876{Enter}");
+      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+
+      await user.clear(input);
+      await user.type(input, "9999{Enter}");
+
+      expect(
+        view.getByText('⚠️ No search results for "9999"'),
+      ).toBeInTheDocument();
+      expect(
+        view.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+    });
+
+    test("searches 1520 and 2520 as the same car", async () => {
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            label: "1520",
+            cars: ["1520", "1521", "1522", "1523"],
+            directionId: 0,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "2520{Enter}");
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      const firstHighlighted2520 = view
+        .getAllByText("2520")
+        .find((element) => element.className.includes("bg-[#ffdb00]"));
+      expect(firstHighlighted2520).toBeDefined();
+
+      await user.click(view.getByRole("button", { name: "Close" }));
+      expect(input).toHaveValue("");
+
+      await user.type(input, "1520{Enter}");
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      const secondHighlighted2520 = view
+        .getAllByText("2520")
+        .find((element) => element.className.includes("bg-[#ffdb00]"));
+      expect(secondHighlighted2520).toBeDefined();
+    });
+
+    test("shows and clears no-results search error", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "ab{Enter}");
+
+      expect(
+        view.getByText('⚠️ No search results for "ab"'),
+      ).toBeInTheDocument();
+
+      await user.type(input, "1");
+      expect(
+        view.queryByText('⚠️ No search results for "ab"'),
+      ).not.toBeInTheDocument();
+
+      await user.click(view.getByText("Davis"));
+      await user.click(input);
+      expect(
+        view.queryByText('⚠️ No search results for "ab"'),
+      ).not.toBeInTheDocument();
+
+      await user.type(input, "12{Enter}");
+      expect(
+        view.getByText('⚠️ No search results for "12"'),
+      ).toBeInTheDocument();
+
+      await user.click(view.getByRole("button", { name: "×" }));
+      expect(input).toHaveValue("");
+      expect(
+        view.queryByText('⚠️ No search results for "12"'),
+      ).not.toBeInTheDocument();
+    });
+
+    test("closing sidebar by background click resets the search bar", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1877{Enter}");
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+      expect(input).toHaveValue("1877");
+
+      await user.click(view.getByText("Davis"));
+      expect(
+        view.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+      expect(input).toHaveValue("");
     });
   });
 
