@@ -1,5 +1,4 @@
 import { LadderConfig, Stations } from "../../data/stations";
-import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
@@ -18,12 +17,13 @@ export const Ladders = ({
   routeId,
   sideBarSelection,
   setSideBarSelection,
+  vehicles,
 }: {
   routeId: RouteId;
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
+  vehicles: Vehicle[];
 }): ReactElement => {
-  const vehicles = useVehicles() ?? [];
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
