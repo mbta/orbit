@@ -79,7 +79,7 @@ defmodule Orbit.MixProject do
       {:jason, "1.4.5"},
       {:laboratory,
        git: "https://github.com/paulswartz/laboratory.git",
-       ref: "24adbe2cb18d8368e140ab5e13c8f5b75adea742"},
+       ref: "974737000b9407e89975ef1c3ac645390be5fe93"},
       {:lcov_ex, "0.3.4", only: [:test], runtime: false},
       {:logster, "2.0.0-rc.5"},
       {:mock, "0.3.9", only: :test},
