@@ -7,11 +7,7 @@ import { Ladders } from "./ladder";
 import { SideBar, SideBarSelection } from "./sidebar";
 import { ReactElement, useCallback, useEffect, useState } from "react";
 
-export const LadderPageShared = ({
-  routeId,
-}: {
-  routeId: RouteId;
-}): ReactElement => {
+export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const [sideBarSelection, setSideBarSelection] =
     useState<SideBarSelection | null>(null);
 

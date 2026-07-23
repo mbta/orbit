@@ -13,7 +13,7 @@ import { AppcuesTrackPage } from "./appcues";
 import { Banner } from "./banner";
 import { Header } from "./header";
 import { LadderPage } from "./ladderPage/ladderPage";
-import { LadderPageShared } from "./ladderPageShared/ladderPage";
+import { LadderPage as LadderPageShared } from "./ladderPageShared/ladderPage";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";

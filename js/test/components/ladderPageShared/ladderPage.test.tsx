@@ -1,4 +1,4 @@
-import { LadderPageShared as LadderPage } from "../../../components/ladderPageShared/ladderPage";
+import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
