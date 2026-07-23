@@ -61,7 +61,7 @@ defmodule Orbit.MixProject do
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
       {:ex_machina, "2.8.0", only: :test},
-      {:finch, "== 0.15.0"},
+      {:finch, "0.15.0"},
       {:floki, "0.38.0", only: :test},
       {:guardian, "2.4.0"},
       {:guardian_phoenix, "2.0.1"},
