@@ -107,18 +107,7 @@ defmodule Realtime.PollingServer do
         new_timestamp = data.timestamp
 
         if old_timestamp != new_timestamp do
-          log_level = if Application.get_env(:orbit, :log_polls?, true), do: :info, else: nil
-
-          if log_level do
-            Logger.log(
-              log_level,
-              "poll_new_data source=#{state.server_name} timestamp=#{data.timestamp} count=#{length(data.entities)}"
-            )
-          end
-
-          Enum.each(state.subscriptions, fn pid ->
-            send(pid, {:new_data, state.entity_type, data})
-          end)
+          handle_changed(state, data)
         end
 
         %{state | cached_data: data}
@@ -136,6 +125,25 @@ defmodule Realtime.PollingServer do
 
   def handle_info({:DOWN, _monitor_ref, :process, pid, _reason}, state) do
     {:noreply, %{state | subscriptions: MapSet.delete(state.subscriptions, pid)}}
+  end
+
+  defp handle_changed(state, data) do
+    maybe_log_new_data(state, data)
+
+    Enum.each(state.subscriptions, fn pid ->
+      send(pid, {:new_data, state.entity_type, data})
+    end)
+  end
+
+  defp maybe_log_new_data(state, data) do
+    log_level = if Application.get_env(:orbit, :log_polls?, true), do: :info, else: nil
+
+    if log_level do
+      Logger.log(
+        log_level,
+        "poll_new_data source=#{state.server_name} timestamp=#{data.timestamp} count=#{length(data.entities)}"
+      )
+    end
   end
 
   @impl true
