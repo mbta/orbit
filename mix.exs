@@ -51,7 +51,7 @@ defmodule Orbit.MixProject do
       {:configparser_ex, "5.0.0", only: :dev},
       # Needed by laboratory for prod build
       {:cowboy, "2.17.0"},
-      {:credo, "1.7.13", only: [:dev, :test], runtime: false},
+      {:credo, "1.7.19", only: [:dev, :test], runtime: false},
       {:csv, "3.2.2"},
       {:dialyxir, "1.4.7", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "0.2.0", only: :prod},
