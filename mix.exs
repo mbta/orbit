@@ -88,7 +88,7 @@ defmodule Orbit.MixProject do
       # mock 0.3.9 still pins meck ~> 0.9.2, which fails to compile on OTP 29
       # (deprecated `catch` expression, escalated by meck's warnings_as_errors).
       # meck 1.x fixes it and stays API-compatible for mock's usage; override the pin.
-      {:meck, "~> 1.2", only: :test, override: true},
+      {:meck, "1.2.0", only: :test, override: true},
       {:oban, "2.21.1"},
       {:phoenix, "1.8.9"},
       {:phoenix_ecto, "4.7.0"},
