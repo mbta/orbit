@@ -6,10 +6,6 @@ defmodule Util.PositionType do
     {:ok, %Util.Position{latitude: latitude, longitude: longitude}}
   end
 
-  def cast(%Util.Position{} = position) do
-    {:ok, position}
-  end
-
   def cast(_), do: :error
 
   def load(%{latitude: latitude, longitude: longitude}) do
