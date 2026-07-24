@@ -1,0 +1,132 @@
+import { LadderConfig } from "../../data/stations";
+import { DirectionId } from "../../models/common";
+import { LatLng, proportionBetweenLatLngs } from "../../models/latlng";
+import { StopStatus, VehiclePosition } from "../../models/vehiclePosition";
+import { VehicleWithHeight } from "./ladder";
+
+export const height = (pos: VehiclePosition, stationList: LadderConfig) => {
+  let height = 68;
+  let index = -1;
+  // add up the bottom margins of stations while finding the vp's station's index
+  // this will get us right up to the station on the ladder
+  for (let i = 0; i < stationList.length; i += 1) {
+    if (pos.stationId === stationList[i].id) {
+      index = i;
+      break;
+    }
+    // spacingRatio * 32 = actual px value of bottom margin
+    // 24 = height of the station name
+    height += stationList[i].spacingRatio * 32 + 24;
+  }
+
+  // somehow the vp was not in the correct stationlist (unlikely)
+  if (index === -1) {
+    return -1;
+  }
+
+  const currentStation = stationList[index];
+  if (currentStation.id === "place-brntn") {
+    height += 24; // extra padding because "Quincy Adams" wraps
+  }
+  if (pos.stopStatus === StopStatus.StoppedAt) {
+    return height;
+  }
+
+  // --- proportionally backtrack progress if train is still in transit towards the station ---
+
+  // handle case where trains InTransitTo are "above" the first station
+  if (pos.directionId === 0 && index === 0) {
+    return 20;
+  } else if (pos.directionId === 1 && index === stationList.length - 1) {
+    // handle case where trains InTransitTo are "below" the first station
+    return height + 40;
+  }
+
+  const start =
+    pos.directionId === 0 ?
+      stationList[index - 1].location
+    : stationList[index + 1].location;
+
+  const finish = currentStation.location;
+
+  const travelLength =
+    pos.directionId === 0 ?
+      stationList[index - 1].spacingRatio * 32 + 24
+    : currentStation.spacingRatio * 32 + 24;
+
+  // northbound StationLists are in reverse order of travel (up). to backtrack
+  // progress towards the station the vp is in relation to, we must add on the
+  // current station's bottom margin (aka the travelLength) to travel back towards it
+  if (pos.directionId === 1) {
+    height += travelLength;
+  }
+
+  if (pos.position !== null) {
+    const progress = proportionalProgress(
+      start,
+      finish,
+      pos.position,
+      travelLength,
+      pos.directionId,
+    );
+    if (progress === null) {
+      return null;
+    } else {
+      height -= progress;
+    }
+  }
+  return height;
+};
+
+const proportionalProgress = (
+  start: LatLng,
+  finish: LatLng,
+  point: LatLng,
+  travelLength: number,
+  direction: number,
+) => {
+  const proportionBetweenStartFinish = proportionBetweenLatLngs(
+    start,
+    finish,
+    point,
+  );
+  if (proportionBetweenStartFinish === null) {
+    return null;
+  }
+
+  if (direction === 0) {
+    return (1 - proportionBetweenStartFinish) * travelLength;
+  } else {
+    return proportionBetweenStartFinish * travelLength;
+  }
+};
+
+/**
+ * Takes in 2 VehicleWithHeight's, representing 2 train pills on the ladder,
+ * one being "above" the other, and thus the other being "below".
+ * For each pill, add (or subtract via negation depending on direction)
+ * its labelOffset to its dotHeight to calculate the current height of the pill.
+ * Finally, calculate the difference in height between the 2 pills.
+ */
+export const vehicleHeightDiff = (
+  above: VehicleWithHeight,
+  below: VehicleWithHeight,
+  directionId: DirectionId,
+): number | null => {
+  // for southbound heights, negate label offsets to "subtract" progress
+  const directionModifier = directionId === 1 ? 1 : -1;
+
+  const aboveHeight =
+    above.heights.labelOffset && above.heights.dotHeight ?
+      above.heights.labelOffset * directionModifier + above.heights.dotHeight
+    : (above.heights.dotHeight ?? null);
+
+  const belowHeight =
+    below.heights.labelOffset && below.heights.dotHeight ?
+      below.heights.labelOffset * directionModifier + below.heights.dotHeight
+    : (below.heights.dotHeight ?? null);
+
+  // remember that in css styling greater top values are
+  // "further down from the top", thus subtract above from below
+  return aboveHeight && belowHeight && belowHeight - aboveHeight;
+};
