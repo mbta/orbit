@@ -4,8 +4,6 @@ defmodule Orbit.Ocs.Entities do
   to the Trains and Trips in the database.
   Also provides querying of relevant entities for the current service date.
   """
-  require Logger
-
   alias Orbit.Ocs.Train
   alias Orbit.Ocs.Trip
   alias Orbit.RailLine
