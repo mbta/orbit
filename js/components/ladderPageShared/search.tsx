@@ -92,7 +92,7 @@ export const SearchBar = ({
   }, [onSearchCleared, setQuery]);
 
   return (
-    <div className="absolute right-10 top-16 z-object min-w-20 max-w-[337px]">
+    <div className="absolute right-10 top-16 z-[1] w-full pl-16 md:pl-0 md:min-w-20 md:max-w-[337px]">
       <form
         className="relative"
         onSubmit={(event) => {
