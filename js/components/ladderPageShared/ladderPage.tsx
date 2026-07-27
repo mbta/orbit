@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
+import { Vehicle } from "../../models/vehicle";
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
 import { Ladders } from "./ladder";
@@ -9,8 +10,11 @@ import { findVehicleMatch, SearchBar, VehicleSearchMatch } from "./search";
 import { SideBar, SideBarSelection } from "./sidebar";
 import { ReactElement, useCallback, useEffect, useState } from "react";
 
+// Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
+const NO_VEHICLES: Vehicle[] = [];
+
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
-  const vehicles = useVehicles() ?? [];
+  const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SideBarSelection | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
