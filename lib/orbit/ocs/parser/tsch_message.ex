@@ -281,7 +281,7 @@ defmodule Orbit.Ocs.Parser.TschMessage do
 
   @spec log_error_for_extra_fields(integer, String.t(), list()) :: nil
   defp log_error_for_extra_fields(message_counter, message_type, values)
-       when length(values) > 0 do
+       when values != [] do
     Logger.error(
       "Orbit.Ocs.Parser.TschMessage: Unexpected extra values at end of message count=#{inspect(message_counter)} type=#{inspect(message_type)} extra_values=#{inspect(values)}"
     )
