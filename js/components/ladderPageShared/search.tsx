@@ -22,7 +22,7 @@ const searchableValuesForCar = (car: CarId, routeId: RouteId): Set<string> => {
   return values;
 };
 
-const findVehicleMatch = (
+export const findVehicleMatch = (
   vehicles: Vehicle[],
   search: string,
 ): VehicleSearchMatch | null => {
@@ -47,15 +47,15 @@ const findVehicleMatch = (
 export const SearchBar = ({
   vehicles,
   query,
-  setQuery,
   onSearchMatch,
   onSearchCleared,
+  onQueryChange,
 }: {
   vehicles: Vehicle[];
   query: string;
-  setQuery: (query: string) => void;
   onSearchMatch: (match: VehicleSearchMatch) => boolean;
   onSearchCleared: () => void;
+  onQueryChange: (query: string) => void;
 }): ReactElement => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -86,10 +86,10 @@ export const SearchBar = ({
   }, [onSearchCleared, onSearchMatch, query, vehicles]);
 
   const clearSearch = useCallback(() => {
-    setQuery("");
+    onQueryChange("");
     setErrorMessage(null);
     onSearchCleared();
-  }, [onSearchCleared, setQuery]);
+  }, [onSearchCleared, onQueryChange]);
 
   return (
     <div className="absolute right-10 top-16 z-[10] w-full pl-16 md:pl-0 md:min-w-20 md:max-w-[337px]">
@@ -128,7 +128,7 @@ export const SearchBar = ({
             event.stopPropagation();
           }}
           onChange={(event) => {
-            setQuery(event.target.value);
+            onQueryChange(event.target.value);
           }}
         />
 

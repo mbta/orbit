@@ -5,7 +5,7 @@ import { RouteId } from "../../models/common";
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
 import { Ladders } from "./ladder";
-import { SearchBar, VehicleSearchMatch } from "./search";
+import { findVehicleMatch, SearchBar, VehicleSearchMatch } from "./search";
 import { SideBar, SideBarSelection } from "./sidebar";
 import { ReactElement, useCallback, useEffect, useState } from "react";
 
@@ -57,8 +57,30 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   const onSearchCleared = useCallback(() => {
-    setSideBarSelection(null);
+    setSideBarSelection((selection) => {
+      if (selection === null || selection.searchedCar === undefined) {
+        return selection;
+      }
+
+      return { vehicle: selection.vehicle };
+    });
   }, [setSideBarSelection]);
+
+  const onQueryChange = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+
+      if (sideBarSelection?.searchedCar === undefined) {
+        return;
+      }
+
+      const match = findVehicleMatch(vehicles, query.trim());
+      if (match === null) {
+        setSideBarSelection(null);
+      }
+    },
+    [setSearchQuery, sideBarSelection, vehicles],
+  );
 
   const openSideBarFromLadder = useCallback(
     (selection: SideBarSelection | null) => {
@@ -108,9 +130,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         <SearchBar
           vehicles={vehicles}
           query={searchQuery}
-          setQuery={setSearchQuery}
           onSearchMatch={onSearchMatch}
           onSearchCleared={onSearchCleared}
+          onQueryChange={onQueryChange}
         />
         <Ladders
           routeId={routeId}
