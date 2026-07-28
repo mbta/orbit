@@ -113,7 +113,7 @@ export const Train = ({
   vehicle,
   forceDirection,
   labelOffset,
-  highlight,
+  selected,
   className: extraClassName,
   setSideBarSelection,
 }: {
@@ -121,7 +121,7 @@ export const Train = ({
   vehicle: Vehicle;
   forceDirection: DirectionId;
   labelOffset: number | null;
-  highlight?: boolean;
+  selected?: boolean;
   className?: string;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
@@ -129,7 +129,7 @@ export const Train = ({
   const label = vehicle.vehiclePosition.label;
   const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
   return (
-    <div className={className(["relative", highlight ? "animate-pulse" : ""])}>
+    <div className={className(["relative", selected ? "animate-pulse" : ""])}>
       {/* line that connects to dot */}
       {/* the bounding box is determined by the pill button. the svg element must be transformed such that its
       dimensions covers the area between the dot and the pill in order to render the line that connects them */}
@@ -161,7 +161,7 @@ export const Train = ({
       <button
         className={className([
           "pointer-events-auto m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
-          highlight ? "border-[3px]" : "border",
+          selected ? "border-[3px]" : "border",
           theme.borderColor,
           extraClassName,
         ])}
@@ -176,10 +176,10 @@ export const Train = ({
         }}
         onClick={(e) => {
           e.stopPropagation();
-          const sideBarSelection: SideBarSelection = {
-            vehicle,
-          };
-          setSideBarSelection(sideBarSelection);
+          if (selected) {
+            return;
+          }
+          setSideBarSelection({ vehicle });
         }}
         disabled={
           !userHasOneOf([
@@ -203,9 +203,9 @@ export const Train = ({
           "absolute rounded-full h-[32px] w-[32px] border-8 border-opacity-35 top-2 z-1",
           theme.borderColor,
           forceDirection == 0 ?
-            highlight ? "translate-x-[calc(100%+3px)]"
+            selected ? "translate-x-[calc(100%+3px)]"
             : "translate-x-[calc(100%+3px)]"
-          : highlight ? "-translate-x-[calc(100%+3px)]"
+          : selected ? "-translate-x-[calc(100%+3px)]"
           : "-translate-x-[calc(100%+3px)]",
           orientation,
         ])}

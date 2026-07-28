@@ -29,7 +29,7 @@ describe("Train", () => {
     const view = render(
       <Train
         theme={TrainThemes.crimson}
-        highlight={true}
+        selected={true}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
         labelOffset={null}
@@ -50,7 +50,7 @@ describe("Train", () => {
       <Train
         theme={theme}
         vehicle={vehicleFactory.build()}
-        highlight={true}
+        selected={true}
         forceDirection={1}
         labelOffset={null}
         setSideBarSelection={jest.fn()}

@@ -160,7 +160,7 @@ const TrainsAndStations = ({
               vehicle={vehicleWithHeight.vehicle}
               forceDirection={direction}
               labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
-              highlight={
+              selected={
                 vp.label === sideBarSelection?.vehicle.vehiclePosition.label
               }
               setSideBarSelection={setSideBarSelection}
