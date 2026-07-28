@@ -164,6 +164,27 @@ describe("LadderPage SideBar", () => {
       ).not.toBeInTheDocument();
     });
 
+    test("removing a leading 1 from a successful search resets to unsubmitted state", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      const input = view.getByPlaceholderText("Car #");
+      await user.type(input, "1876{Enter}");
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+      await user.click(input);
+      input.setSelectionRange(0, 1);
+      await user.keyboard("{Delete}");
+
+      expect(input).toHaveValue("876");
+      expect(
+        view.queryByRole("button", { name: "Close" }),
+      ).not.toBeInTheDocument();
+      expect(
+        view.queryByText('⚠️ No search results for "876"'),
+      ).not.toBeInTheDocument();
+    });
+
     test("no-result search clears searched-car highlight", async () => {
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);
