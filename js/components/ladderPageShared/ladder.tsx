@@ -143,6 +143,12 @@ const TrainsAndStations = ({
             (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
           : vp.directionId;
 
+        const selected =
+          vp.label === sideBarSelection?.vehicle.vehiclePosition.label;
+        const shouldScrollIntoView =
+          sideBarSelection?.searchedCar != null &&
+          vp.label === sideBarSelection.vehicle.vehiclePosition.label;
+
         return (
           <div
             key={vp.vehicleId}
@@ -160,9 +166,8 @@ const TrainsAndStations = ({
               vehicle={vehicleWithHeight.vehicle}
               forceDirection={direction}
               labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
-              selected={
-                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
-              }
+              selected={selected}
+              scrollIntoView={shouldScrollIntoView}
               setSideBarSelection={setSideBarSelection}
             />
           </div>

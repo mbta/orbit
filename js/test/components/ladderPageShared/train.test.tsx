@@ -9,7 +9,7 @@ import {
 } from "../../../components/ladderPageShared/trainTheme";
 import { dateTimeFromISO } from "../../../dateTime";
 import { vehicleFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 
 describe("Train", () => {
   test("shows label", () => {
@@ -79,6 +79,33 @@ describe("Train", () => {
       "42",
     );
     expect(view.getByRole("button")).toHaveStyle({ top: "42px" });
+  });
+
+  test("brings selected searched trains into view", async () => {
+    const scrollIntoView = jest.spyOn(
+      HTMLButtonElement.prototype,
+      "scrollIntoView",
+    );
+
+    render(
+      <Train
+        theme={TrainThemes.crimson}
+        vehicle={vehicleFactory.build()}
+        forceDirection={1}
+        labelOffset={null}
+        selected={true}
+        scrollIntoView={true}
+        setSideBarSelection={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "center",
+        inline: "nearest",
+      });
+    });
+    scrollIntoView.mockRestore();
   });
 });
 
