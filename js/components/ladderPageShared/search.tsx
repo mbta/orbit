@@ -22,7 +22,7 @@ const searchableValuesForCar = (car: CarId, routeId: RouteId): Set<string> => {
   return values;
 };
 
-export const findVehicleMatch = (
+const findVehicleMatch = (
   vehicles: Vehicle[],
   search: string,
 ): VehicleSearchMatch | null => {

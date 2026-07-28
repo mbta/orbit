@@ -6,7 +6,7 @@ import { Vehicle } from "../../models/vehicle";
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
 import { Ladders } from "./ladder";
-import { findVehicleMatch, SearchBar, VehicleSearchMatch } from "./search";
+import { SearchBar, VehicleSearchMatch } from "./search";
 import { SideBar, SideBarSelection } from "./sidebar";
 import { ReactElement, useCallback, useEffect, useState } from "react";
 
@@ -73,50 +73,17 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const onQueryChange = useCallback(
     (query: string) => {
       setSearchQuery(query);
-
-      if (sideBarSelection?.searchedCar === undefined) {
-        return;
-      }
-
-      const match = findVehicleMatch(vehicles, query.trim());
-      if (match === null) {
-        setSideBarSelection(null);
-      }
+      setSideBarSelection(null);
     },
-    [setSearchQuery, sideBarSelection, vehicles],
+    [setSearchQuery, setSideBarSelection],
   );
 
   const openSideBarFromLadder = useCallback(
     (selection: SideBarSelection | null) => {
-      const currentVehicleLabel =
-        sideBarSelection?.vehicle.vehiclePosition.label;
-      const newVehicleLabel = selection?.vehicle.vehiclePosition.label;
-
-      const newPill =
-        currentVehicleLabel !== undefined &&
-        newVehicleLabel !== undefined &&
-        currentVehicleLabel !== newVehicleLabel;
-
-      if (newPill) {
-        setSearchQuery("");
-      }
-
-      const nextSelection =
-        (
-          !newPill &&
-          selection !== null &&
-          selection.searchedCar === undefined &&
-          sideBarSelection?.searchedCar !== undefined
-        ) ?
-          {
-            ...selection,
-            searchedCar: sideBarSelection.searchedCar,
-          }
-        : selection;
-
-      openSideBar(nextSelection);
+      setSearchQuery("");
+      openSideBar(selection);
     },
-    [openSideBar, setSearchQuery, sideBarSelection],
+    [openSideBar, setSearchQuery],
   );
 
   return (
