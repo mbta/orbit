@@ -168,7 +168,7 @@ describe("LadderPage SideBar", () => {
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);
 
-      const input = view.getByPlaceholderText("Car #");
+      const input = view.getByPlaceholderText("Car #") as HTMLInputElement;
       await user.type(input, "1876{Enter}");
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
 
