@@ -78,5 +78,5 @@ config :sentry,
   enable_source_code_context: true,
   release: Application.compile_env(:orbit, :release),
   root_source_code_paths: [File.cwd!()],
-  client: Sentry.HttpsClient,
+  client: Sentry.HackneyClient,
   http_adapter: {:finch, :orbit_finch}
