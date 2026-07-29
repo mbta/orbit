@@ -1,4 +1,4 @@
-import { formatStationName } from "../../data/stations";
+import { formatStationName, gtfsIdToDisplayName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
@@ -40,6 +40,7 @@ export const SideBar = ({
           vehicle={selection.vehicle}
           searchedCar={selection.searchedCar ?? null}
         />
+        <CurrentLocation vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
@@ -86,6 +87,22 @@ const Consist = ({
         );
       })}
     </div>
+  );
+};
+
+const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
+  return (
+    <section className="m-5 pt-5 border-t border-gray-300">
+      <h2 className="text-lg font-semibold uppercase">Current Location</h2>
+
+      <div className="flex justify-between mt-3">
+        <div className="flex flex-col justify-between">
+          <span className="font-bold">
+            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
+          </span>
+        </div>
+      </div>
+    </section>
   );
 };
 
