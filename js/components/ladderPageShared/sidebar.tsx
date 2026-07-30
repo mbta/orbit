@@ -9,6 +9,7 @@ import {
   latestOcsUpdatedAt,
   Vehicle,
 } from "../../models/vehicle";
+import { StopStatus } from "../../models/vehiclePosition";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
@@ -96,7 +97,13 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
       <h2 className="text-lg font-semibold uppercase">Current Location</h2>
 
       <div className="flex justify-between mt-3">
-        <div className="flex flex-col justify-between">
+        <div className="flex justify-between">
+          <span>
+            {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
+              "Boarding at"
+            : "Next stop"}
+            &nbsp;
+          </span>
           <span className="font-bold">
             {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
           </span>
