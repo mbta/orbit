@@ -98,12 +98,10 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
 
       <div className="flex justify-between mt-3">
         <div className="flex justify-between">
-          <span>
-            {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
-              "Boarding at"
-            : "Next stop"}
-            &nbsp;
-          </span>
+          {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
+            "Boarding at"
+          : "Next stop"}
+          &nbsp;
           <span className="font-bold">
             {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
           </span>
@@ -195,7 +193,10 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const nextDepMin = lateForNext(vehicle);
   const showLateBox = nextDepMin !== null && nextDepMin >= 5;
   return (
-    <section className="m-5 pt-5 border-t border-gray-300">
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="next-trip-section"
+    >
       <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
       {showLateBox && (
         <Late

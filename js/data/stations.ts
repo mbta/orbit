@@ -519,8 +519,7 @@ export const gtfsIdToDisplayName = (
   if (!station) return undefined;
 
   if (station.ocs_station_name) {
-    const cleaned = station.ocs_station_name.replace(/\s*\[.*\]$/, "");
-    return formatStationName(cleaned);
+    return formatStationName(station.ocs_station_name);
   } else if (station.name) {
     return station.name;
   } else {
