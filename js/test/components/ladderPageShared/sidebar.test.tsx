@@ -649,6 +649,50 @@ describe("sidebar", () => {
       expect(view.getByText(/Boarding at/i)).toBeInTheDocument();
       expect(view.getByText(/Park Street/i)).toBeInTheDocument();
     });
+
+    test("shows 'Next stop [station]' when in-transit to a station", () => {
+      const vehicle = vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          stationId: "place-pktrm",
+          stopStatus: StopStatus.InTransitTo,
+        }),
+        tripUpdate: tripUpdateFactory.build(),
+        ocsTrips: { current: null, next: [] },
+      });
+
+      const view = render(
+        <MemoryRouter>
+          <SideBar selection={{ vehicle }} close={() => {}} />
+        </MemoryRouter>,
+      );
+
+      expect(view.getByText(/Next stop/i)).toBeInTheDocument();
+      expect(view.getByText(/Park Street/i)).toBeInTheDocument();
+    });
+
+    test("falls back to placeholder when station info is missing", () => {
+      const vehicle = vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          stationId: null,
+          stopStatus: StopStatus.InTransitTo,
+        }),
+        tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+        ocsTrips: { current: null, next: [] },
+      });
+
+      const view = render(
+        <MemoryRouter>
+          <SideBar selection={{ vehicle }} close={() => {}} />
+        </MemoryRouter>,
+      );
+
+      const currentLocationSection = view.getByTestId(
+        "current-location-section",
+      );
+      const scoped = within(currentLocationSection);
+
+      expect(scoped.getByText("---")).toBeInTheDocument();
+    });
   });
 
   describe("Current Trip section", () => {

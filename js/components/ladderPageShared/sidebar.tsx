@@ -93,7 +93,10 @@ const Consist = ({
 
 const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
   return (
-    <section className="m-5 pt-5 border-t border-gray-300">
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="current-location-section"
+    >
       <h2 className="text-lg font-semibold uppercase">Current Location</h2>
 
       <div className="flex justify-between mt-3">
