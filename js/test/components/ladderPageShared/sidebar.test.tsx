@@ -646,8 +646,13 @@ describe("sidebar", () => {
         </MemoryRouter>,
       );
 
-      expect(view.getByText(/Boarding at/i)).toBeInTheDocument();
-      expect(view.getByText(/Park Street/i)).toBeInTheDocument();
+      const currentLocationSection = view.getByTestId(
+        "current-location-section",
+      );
+      const scoped = within(currentLocationSection);
+
+      expect(scoped.getByText(/Boarding at/i)).toBeInTheDocument();
+      expect(scoped.getByText(/Park Street/i)).toBeInTheDocument();
     });
 
     test("shows 'Next stop [station]' when in-transit to a station", () => {
@@ -666,8 +671,13 @@ describe("sidebar", () => {
         </MemoryRouter>,
       );
 
-      expect(view.getByText(/Next stop/i)).toBeInTheDocument();
-      expect(view.getByText(/Park Street/i)).toBeInTheDocument();
+      const currentLocationSection = view.getByTestId(
+        "current-location-section",
+      );
+      const scoped = within(currentLocationSection);
+
+      expect(scoped.getByText(/Next stop/i)).toBeInTheDocument();
+      expect(scoped.getByText(/Park Street/i)).toBeInTheDocument();
     });
 
     test("falls back to placeholder when station info is missing", () => {
