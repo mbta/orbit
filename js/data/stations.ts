@@ -509,6 +509,24 @@ export const formatStationName = (station: string | null | undefined) => {
   );
 };
 
+export const gtfsIdToDisplayName = (
+  gtfsId: string | null | undefined,
+): string | undefined => {
+  if (!gtfsId) return undefined;
+
+  const allStations = Object.values(Stations).flat(2);
+  const station = allStations.find((s) => s.id === gtfsId);
+  if (!station) return undefined;
+
+  if (station.ocs_station_name) {
+    return formatStationName(station.ocs_station_name);
+  } else if (station.name) {
+    return station.name;
+  } else {
+    return undefined;
+  }
+};
+
 export const ocsStationNameToGtfs = (ocsStationName: string): string | null => {
   return (
     Object.values(Stations)

@@ -1,4 +1,4 @@
-import { formatStationName } from "../../data/stations";
+import { formatStationName, gtfsIdToDisplayName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
@@ -9,6 +9,7 @@ import {
   latestOcsUpdatedAt,
   Vehicle,
 } from "../../models/vehicle";
+import { StopStatus } from "../../models/vehiclePosition";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
@@ -40,6 +41,7 @@ export const SideBar = ({
           vehicle={selection.vehicle}
           searchedCar={selection.searchedCar ?? null}
         />
+        <CurrentLocation vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
@@ -86,6 +88,29 @@ const Consist = ({
         );
       })}
     </div>
+  );
+};
+
+const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
+  return (
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="current-location-section"
+    >
+      <h2 className="text-lg font-semibold uppercase">Current Location</h2>
+
+      <div className="flex justify-between mt-3">
+        <div className="flex justify-between">
+          {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
+            "Boarding at"
+          : "Next stop"}
+          &nbsp;
+          <span className="font-bold">
+            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
+          </span>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -171,7 +196,10 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const nextDepMin = lateForNext(vehicle);
   const showLateBox = nextDepMin !== null && nextDepMin >= 5;
   return (
-    <section className="m-5 pt-5 border-t border-gray-300">
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="next-trip-section"
+    >
       <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
       {showLateBox && (
         <Late
