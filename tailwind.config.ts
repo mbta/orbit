@@ -6,9 +6,11 @@
 import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
+import railTechUITheme from "rail-tech-ui/dist/src/tailwind.config";
 import plugin from "tailwindcss/plugin";
 
 export default {
+  ...railTechUITheme,
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
@@ -18,6 +20,7 @@ export default {
   ],
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
+    ...railTechUITheme.theme,
     colors: {
       "mbta-red": "#DA291C",
       "mbta-orange": "#ED8B00",
@@ -40,6 +43,7 @@ export default {
       tangerine: "#CF8300",
       white: "#ffffff",
       yellow: "#FFC961",
+      ...railTechUITheme.theme.extend.colors,
     },
     zIndex: {
       layout: "1000",
@@ -49,6 +53,7 @@ export default {
       "modal-content": "3001",
     },
     extend: {
+      ...railTechUITheme.theme.extend,
       height: {
         header: "49px",
       },

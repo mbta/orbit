@@ -1,3 +1,8 @@
+@import "../../node_modules/rail-tech-ui/dist/css/variables.base.css";
+@import "../../node_modules/rail-tech-ui/dist/css/variables.light.css";
+@import "../../node_modules/rail-tech-ui/dist/css/variables.dark.css";
+@import "../../node_modules/rail-tech-ui/dist/css/variables.ops.css";
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
