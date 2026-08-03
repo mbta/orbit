@@ -66,26 +66,35 @@ const Consist = ({
   const processedConsist = remapLabels(consist, vp.routeId);
   const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <div className="mt-14 px-4 flex">
-      {processedConsist.map((label, index) => {
-        const isLeadCar = index === leadCarIndex;
-        const isSearchMatch =
-          searchedCar !== null && consist[index] === searchedCar;
+    <section className="mt-14 flex flex-col gap-1.5">
+      <div className="px-4 flex">
+        {processedConsist.map((label, index) => {
+          const isLeadCar = index === leadCarIndex;
+          const isSearchMatch =
+            searchedCar !== null && consist[index] === searchedCar;
 
-        return (
-          <div
-            key={index}
-            className={className([
-              "mr-2",
-              isLeadCar ? "font-bold text-2xl" : "pt-1.5",
-              isSearchMatch ? "bg-[#ffdb00]" : "",
-            ])}
-          >
-            {label}
-          </div>
-        );
-      })}
-    </div>
+          return (
+            <div
+              key={index}
+              className={className([
+                "mr-2",
+                isLeadCar ? "font-bold text-2xl" : "pt-1.5",
+                isSearchMatch ? "bg-[#ffdb00]" : "",
+              ])}
+            >
+              {label}
+            </div>
+          );
+        })}
+      </div>
+      <a
+        href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
+        className="hidden mt-2 px-1.5 py-3 md:flex flex-row items-center gap-1.5 border-black border max-w-fit mx-auto rounded-2xl"
+      >
+        <img src="/images/network.svg" alt="" className="h-4 w-4" />
+        See Cars&rsquo; History
+      </a>
+    </section>
   );
 };
 
