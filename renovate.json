@@ -111,5 +111,8 @@
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
     }
-  ]
+  ],
+  "constraints": {
+    "erlang": ">=29.0.0"
+  }
 }
