@@ -92,7 +92,7 @@ defmodule Orbit.MixProject do
       {:phoenix_ecto, "4.7.0"},
       {:phoenix_html, "4.3.0"},
       {:phoenix_live_dashboard, "0.8.7"},
-      {:phoenix_live_reload, "1.6.1", only: :dev},
+      {:phoenix_live_reload, "== 1.7.0", only: :dev},
       {:phoenix_live_view, "1.2.7"},
       {:postgrex, "0.22.2"},
       {:req, "0.6.3"},
