@@ -4,6 +4,8 @@ defmodule Realtime.VehicleEventDetector do
   and stores them in the vehicle_events table
   """
 
+  require Logger
+
   use GenServer
   alias Orbit.RailLine
   alias Orbit.Repo
@@ -108,6 +110,8 @@ defmodule Realtime.VehicleEventDetector do
         new_events
         |> Enum.map(&VehicleEvent.changeset/1)
         |> Enum.each(&Repo.insert(&1, log: false))
+
+        Enum.each(new_events, &log_new_event/1)
       end
     end
 
@@ -386,5 +390,14 @@ defmodule Realtime.VehicleEventDetector do
         # Jumped to a far away station. Probably a data problem.
         []
     end
+  end
+
+  # Exposed for testing
+  def log_new_event(vehicle_event) do
+    consist = vehicle_event.cars && Enum.join(vehicle_event.cars, "-")
+
+    Logger.info(
+      "vehicle_event_detector new_event service_date=#{vehicle_event.service_date} cars=#{consist} station_id=#{vehicle_event.station_id} vehicle_id=#{vehicle_event.vehicle_id} direction_id=#{vehicle_event.direction_id} rail_line=#{vehicle_event.rail_line} arrival_departure=#{vehicle_event.arrival_departure}"
+    )
   end
 end
