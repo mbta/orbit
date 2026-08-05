@@ -7,7 +7,6 @@ import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
 import railTechUITheme from "rail-tech-ui/dist/src/tailwind.config";
-import colors from "tailwindcss/colors";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -21,44 +20,32 @@ export default {
   ],
   darkMode: ["class", '[data-mode="dark"]'],
   theme: {
-    ...railTechUITheme.theme,
-    colors: {
-      "mbta-red": "#DA291C",
-      "mbta-orange": "#ED8B00",
-      "mbta-blue": "#003DA5",
-      slate: colors.slate,
-      black: "#000000",
-      blue: {
-        DEFAULT: "#003DA5",
-        ...colors.blue,
-      },
-      crimson: "#960018",
-      gray: {
-        100: "#F6F6F6",
-        200: "#E8E8E8",
-        300: "#929292",
-        400: "#494F5C",
-        500: "#1C1E23",
-      },
-      green: "#145A06",
-      orange: "#ED8B00",
-      red: {
-        200: "#FF4531",
-      },
-      tangerine: "#CF8300",
-      white: "#ffffff",
-      yellow: "#FFC961",
-      ...railTechUITheme.theme.extend.colors,
-    },
-    zIndex: {
-      layout: "1000",
-      object: "2000",
-      header: "2500",
-      "modal-backdrop": "3000",
-      "modal-content": "3001",
-    },
     extend: {
       ...railTechUITheme.theme.extend,
+      // Orbit-specific color overrides merged with rail-tech-ui's tokens.
+      // Orbit values only override shades they explicitly define; glides-*, heavy-rail-*, etc. are preserved.
+      colors: {
+        ...railTechUITheme.theme.extend.colors,
+        crimson: "#960018",
+        tangerine: "#CF8300",
+        blue: { DEFAULT: "#003DA5" },
+        green: "#145A06",
+        gray: {
+          100: "#F6F6F6",
+          200: "#E8E8E8",
+          300: "#929292",
+          400: "#494F5C",
+          500: "#1C1E23",
+        },
+        red: { 200: "#FF4531" },
+      },
+      zIndex: {
+        layout: "1000",
+        object: "2000",
+        header: "2500",
+        "modal-backdrop": "3000",
+        "modal-content": "3001",
+      },
       height: {
         header: "49px",
       },

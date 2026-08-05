@@ -6,7 +6,7 @@ export const Banner = (): ReactElement => {
   const [warnings] = useDataWarnings();
 
   return warnings.size > 0 ?
-      <div className={className(["px-3 py-4 text-xs bg-yellow/25"])}>
+      <div className={className(["px-3 py-4 text-xs bg-glides-mustard/25"])}>
         <div className="flex flex-row items-center gap-2">
           <svg className={className(["h-4 w-4 inline fill-yellow"])}>
             <use xlinkHref={"/images/warning-circle.svg"} />
