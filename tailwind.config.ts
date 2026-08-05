@@ -7,6 +7,7 @@ import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
 import railTechUITheme from "rail-tech-ui/dist/src/tailwind.config";
+import colors from "tailwindcss/colors";
 import plugin from "tailwindcss/plugin";
 
 export default {
@@ -25,8 +26,12 @@ export default {
       "mbta-red": "#DA291C",
       "mbta-orange": "#ED8B00",
       "mbta-blue": "#003DA5",
+      slate: colors.slate,
       black: "#000000",
-      blue: "#003DA5",
+      blue: {
+        DEFAULT: "#003DA5",
+        ...colors.blue,
+      },
       crimson: "#960018",
       gray: {
         100: "#F6F6F6",
