@@ -139,13 +139,13 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
+    expect(await view.findByText("signed in successfully")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/signin",
       expect.objectContaining({
         body: expect.stringMatching(/"override":null/),
       }),
     );
-    expect(view.getByText("signed in successfully")).toBeInTheDocument();
   });
 
   test("submits successful attestation to the server with override", async () => {
@@ -181,6 +181,7 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
+    expect(await view.findByText("signed in successfully")).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith("/api/signin", {
       body: '{"override":[{"type":"rail","rail_line":"blue","expires":"2023-12-12"}],"signed_in_employee_badge":"1234","signed_in_at":1720742401,"line":"blue","radio_number":"22","method":"manual"}',
       headers: {
@@ -189,7 +190,6 @@ describe("OperatorSignInModal", () => {
       },
       method: "post",
     });
-    expect(view.getByText("signed in successfully")).toBeInTheDocument();
   });
 
   test("runs onComplete on successful sign-in", async () => {
@@ -221,7 +221,9 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
-    expect(onCompleteFn).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(onCompleteFn).toHaveBeenCalledOnce();
+    });
   });
 
   test("shows failure component on error", async () => {
@@ -254,7 +256,7 @@ describe("OperatorSignInModal", () => {
     await userEvent.click(
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
-    expect(view.getByText("Something went wrong")).toBeInTheDocument();
+    expect(await view.findByText("Something went wrong")).toBeInTheDocument();
     expect(console.error).toHaveBeenCalledOnce();
   });
 
@@ -338,7 +340,9 @@ describe("OperatorSignInModal", () => {
       view.getByRole("button", { name: "Complete Fit for Duty Check" }),
     );
 
-    expect(view.getByText(/signed in successfully/i)).toBeInTheDocument();
+    expect(
+      await view.findByText(/signed in successfully/i),
+    ).toBeInTheDocument();
 
     view.rerender(
       <OperatorSignInModal show={false} onComplete={jest.fn()} close={close} />,
