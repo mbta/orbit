@@ -122,6 +122,21 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
     </section>
   );
 };
+const StationDisplay = ({
+  scheduled,
+  updated,
+}: {
+  scheduled: string | null;
+  updated?: string | null;
+}) =>
+  updated ?
+    <span>
+      <span className="line-through">
+        {formatStationName(scheduled) ?? "---"}
+      </span>{" "}
+      <span>{formatStationName(updated)}</span>
+    </span>
+  : <span>{formatStationName(scheduled) ?? "---"}</span>;
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
@@ -150,9 +165,19 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       <div className="flex justify-between mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>{formatStationName(current?.originStation) ?? "---"}</span>
+          <span>
+            <StationDisplay
+              scheduled={current?.originStation ?? null}
+              updated={current?.originStationUpdated}
+            />
+          </span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>{formatStationName(current?.destinationStation) ?? "---"}</span>
+          <span>
+            <StationDisplay
+              scheduled={current?.destinationStation ?? null}
+              updated={current?.destinationStationUpdated}
+            />
+          </span>
         </div>
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Scheduled</span>
@@ -221,9 +246,19 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       <div className="flex mt-3">
         <div className="flex flex-col justify-between">
           <span className="text-gray-300">Departure</span>
-          <span>{formatStationName(next?.originStation) ?? "---"}</span>
+          <span>
+            <StationDisplay
+              scheduled={next?.originStation ?? null}
+              updated={next?.originStationUpdated}
+            />
+          </span>
           <span className="text-gray-300 mt-5">Arrival</span>
-          <span>{formatStationName(next?.destinationStation) ?? "---"}</span>
+          <span>
+            <StationDisplay
+              scheduled={next?.destinationStation ?? null}
+              updated={next?.destinationStationUpdated}
+            />
+          </span>
         </div>
         <div className="flex flex-col ml-7">
           <span className="text-gray-300">Scheduled</span>

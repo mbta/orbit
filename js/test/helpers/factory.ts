@@ -69,6 +69,8 @@ export const ocsTripFactory = Factory.define<OCSTrip>(() => ({
   actualDeparture: dateTimeFromISO("2025-04-29T21:43:00.000Z"),
   originStation: "ASHMONT",
   destinationStation: "ALEWIFE",
+  originStationUpdated: null,
+  destinationStationUpdated: null,
   offset: 0,
   deleted: false,
   updatedAt: dateTimeFromISO("2025-04-29T06:00:00.000Z"),

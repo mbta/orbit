@@ -808,4 +808,32 @@ describe("sidebar", () => {
       });
     });
   });
+
+  test("renders strikethrough when origin station is updated", () => {
+    const view = render(
+      <MemoryRouter>
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  originStation: "ASHMONT",
+                  originStationUpdated: "JFK",
+                  nextUid: null,
+                }),
+                next: [],
+              },
+            }),
+          }}
+          close={() => {}}
+        />
+      </MemoryRouter>,
+    );
+
+    const scheduled = view.getByText("Ashmont");
+    const updated = view.getByText("JFK");
+
+    expect(scheduled).toHaveClass("line-through");
+    expect(updated).toBeInTheDocument();
+  });
 });
