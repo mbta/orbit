@@ -3,7 +3,6 @@
 // apparently it's not standard to publish types for eslint plugins
 
 import pluginJs from "@eslint/js";
-import { defineConfig } from "eslint/config";
 import configPrettier from "eslint-config-prettier";
 // @ts-expect-error no types for this plugin
 import pluginBetterMutation from "eslint-plugin-better-mutation";
@@ -17,6 +16,7 @@ import pluginReactJsx from "eslint-plugin-react/configs/jsx-runtime.js";
 // @ts-expect-error no types for this plugin
 import pluginReactRecommended from "eslint-plugin-react/configs/recommended.js";
 import pluginTestingLibrary from "eslint-plugin-testing-library";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
