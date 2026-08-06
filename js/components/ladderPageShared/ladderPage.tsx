@@ -62,7 +62,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   const onSearchCleared = useCallback(() => {
     setSideBarSelection((selection) => {
-      if (selection === null || selection.searchedCar === undefined) {
+      if (selection?.searchedCar === undefined) {
         return selection;
       }
 
