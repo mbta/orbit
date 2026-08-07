@@ -6,9 +6,17 @@ export const Banner = (): ReactElement => {
   const [warnings] = useDataWarnings();
 
   return warnings.size > 0 ?
-      <div className={className(["px-3 py-4 text-xs bg-glides-mustard/25"])}>
+      <div
+        className={className([
+          "px-3 py-4 text-xs bg-error-state-warning-bg-light",
+        ])}
+      >
         <div className="flex flex-row items-center gap-2">
-          <svg className={className(["h-4 w-4 inline fill-yellow"])}>
+          <svg
+            className={className([
+              "h-4 w-4 inline fill-error-state-warning-light",
+            ])}
+          >
             <use xlinkHref={"/images/warning-circle.svg"} />
           </svg>
           <p className="font-semibold uppercase tracking-wide-4 text-slate-800">
