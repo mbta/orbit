@@ -187,7 +187,7 @@ defmodule Realtime.TripMatcher do
   @spec statistics_log_line(map()) :: String.t()
   def statistics_log_line(statistics) do
     "trip_matcher_statistics #{Enum.map_join(statistics, " ", fn
-      {key, vehicle_ids} when is_list(vehicle_ids) -> "#{key}=#{Enum.join(vehicle_ids, ",")}"
+      {key, vehicle_ids} when is_list(vehicle_ids) -> "#{key}=\"#{Enum.join(vehicle_ids, ",")}\""
       {key, value} -> "#{key}=#{inspect(value)}"
     end)}"
   end
