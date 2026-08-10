@@ -1,4 +1,4 @@
-import { formatStationName } from "../../data/stations";
+import { formatStationName, gtfsIdToDisplayName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
@@ -9,6 +9,7 @@ import {
   latestOcsUpdatedAt,
   Vehicle,
 } from "../../models/vehicle";
+import { StopStatus } from "../../models/vehiclePosition";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
@@ -40,6 +41,7 @@ export const SideBar = ({
           vehicle={selection.vehicle}
           searchedCar={selection.searchedCar ?? null}
         />
+        <CurrentLocation vehicle={selection.vehicle} />
         <CurrentTrip vehicle={selection.vehicle} />
         <NextTrip vehicle={selection.vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
@@ -66,26 +68,58 @@ const Consist = ({
   const processedConsist = remapLabels(consist, vp.routeId);
   const leadCarIndex = vp.directionId === 0 ? 0 : vp.cars.length - 1;
   return (
-    <div className="mt-14 px-4 flex">
-      {processedConsist.map((label, index) => {
-        const isLeadCar = index === leadCarIndex;
-        const isSearchMatch =
-          searchedCar !== null && consist[index] === searchedCar;
+    <section className="mt-14 flex flex-col gap-1.5">
+      <div className="px-4 flex">
+        {processedConsist.map((label, index) => {
+          const isLeadCar = index === leadCarIndex;
+          const isSearchMatch =
+            searchedCar !== null && consist[index] === searchedCar;
 
-        return (
-          <div
-            key={index}
-            className={className([
-              "mr-2",
-              isLeadCar ? "font-bold text-2xl" : "pt-1.5",
-              isSearchMatch ? "bg-[#ffdb00]" : "",
-            ])}
-          >
-            {label}
-          </div>
-        );
-      })}
-    </div>
+          return (
+            <div
+              key={index}
+              className={className([
+                "mr-2",
+                isLeadCar ? "font-bold text-2xl" : "pt-1.5",
+                isSearchMatch ? "bg-[#ffdb00]" : "",
+              ])}
+            >
+              {label}
+            </div>
+          );
+        })}
+      </div>
+      <a
+        href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
+        className="hidden mt-2 px-1.5 py-3 md:flex flex-row items-center gap-1.5 border-black border max-w-fit mx-auto rounded-2xl"
+      >
+        <img src="/images/network.svg" alt="" className="h-4 w-4" />
+        See Cars&rsquo; History
+      </a>
+    </section>
+  );
+};
+
+const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
+  return (
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="current-location-section"
+    >
+      <h2 className="text-lg font-semibold uppercase">Current Location</h2>
+
+      <div className="flex justify-between mt-3">
+        <div className="flex justify-between">
+          {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
+            "Boarding at"
+          : "Next stop"}
+          &nbsp;
+          <span className="font-bold">
+            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
+          </span>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -171,7 +205,10 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const nextDepMin = lateForNext(vehicle);
   const showLateBox = nextDepMin !== null && nextDepMin >= 5;
   return (
-    <section className="m-5 pt-5 border-t border-gray-300">
+    <section
+      className="m-5 pt-5 border-t border-gray-300"
+      data-testid="next-trip-section"
+    >
       <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
       {showLateBox && (
         <Late

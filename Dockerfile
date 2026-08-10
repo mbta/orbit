@@ -1,5 +1,5 @@
 ### Elixir Deps
-FROM hexpm/elixir:1.20.2-erlang-29.0.4-alpine-3.23.5 AS elixir-deps
+FROM hexpm/elixir:1.20.3-erlang-29.0.5-alpine-3.23.5 AS elixir-deps
 
 # git is needed to fetch some mix deps
 RUN apk add --no-cache git
@@ -21,7 +21,7 @@ RUN mix deps.compile
 # due to an ECS issue (see: https://stitchworkflow.com/blog/aws-ecs-alpine-changes/)
 # but since we're just using this image for building the static
 # frontend assets we think a mismatch is fine.
-FROM node:24.18.0-alpine3.24 AS node
+FROM node:24.19.0-alpine3.24 AS node
 
 # npm deps
 ENV NODE_ENV=production

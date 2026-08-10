@@ -5,7 +5,7 @@ defmodule Orbit.MixProject do
     [
       app: :orbit,
       version: "0.1.0",
-      elixir: "~> 1.16",
+      elixir: "~> 1.20",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [module_definition: :interpreted],
       start_permanent: Mix.env() == :prod,
@@ -42,7 +42,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "1.12.0"},
+      {:bandit, "1.12.4"},
       {
         :broadway_kinesis,
         github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
@@ -50,7 +50,7 @@ defmodule Orbit.MixProject do
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "5.0.0", only: :dev},
       # Needed by laboratory for prod build
-      {:cowboy, "2.17.0"},
+      {:cowboy, "2.18.0"},
       {:credo, "1.7.19", only: [:dev, :test], runtime: false},
       {:csv, "3.2.2"},
       {:dialyxir, "1.4.7", only: [:dev, :test], runtime: false},
@@ -61,13 +61,11 @@ defmodule Orbit.MixProject do
       {:ex_aws, "2.7.0"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
-      {:ex_machina, "2.8.0", only: :test},
+      {:ex_machina, "2.8.2", only: :test},
       {:finch, "0.23.0"},
-      {:floki, "0.38.0", only: :test},
-      {:guardian, "2.4.0"},
+      {:floki, "0.38.4", only: :test},
+      {:guardian, "2.4.1"},
       {:guardian_phoenix, "2.0.1"},
-      # used by ex_aws
-      {:hackney, "4.5.2"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -78,10 +76,8 @@ defmodule Orbit.MixProject do
       {:highlander, "0.2.1"},
       {:httpoison, "3.0.0"},
       {:jason, "1.4.5"},
-      {:laboratory,
-       git: "https://github.com/paulswartz/laboratory.git",
-       ref: "24adbe2cb18d8368e140ab5e13c8f5b75adea742"},
-      {:lcov_ex, "0.3.4", only: [:test], runtime: false},
+      {:laboratory, [github: "mbta/laboratory", ref: "2d9ed1cf4471c0001d2f97d483a219c58158e141"]},
+      {:lcov_ex, "0.3.5", only: [:test], runtime: false},
       {:logster, "2.0.0-rc.5"},
       {:mock, "0.3.9", only: :test},
       # https://github.com/jjh42/mock/issues/153
@@ -89,19 +85,20 @@ defmodule Orbit.MixProject do
       # (deprecated `catch` expression, escalated by meck's warnings_as_errors).
       # meck 1.x fixes it and stays API-compatible for mock's usage; override the pin.
       {:meck, "1.2.0", only: :test, override: true},
-      {:oban, "2.21.1"},
+      {:oban, "2.23.1"},
       {:phoenix, "1.8.9"},
       {:phoenix_ecto, "4.7.0"},
       {:phoenix_html, "4.3.0"},
       {:phoenix_live_dashboard, "0.8.7"},
-      {:phoenix_live_reload, "1.6.1", only: :dev},
-      {:phoenix_live_view, "1.2.7"},
-      {:postgrex, "0.22.2"},
-      {:sentry, "13.3.0"},
-      {:sobelow, "0.14.1", only: [:dev, :test], runtime: false},
+      {:phoenix_live_reload, "1.7.0", only: :dev},
+      {:phoenix_live_view, "1.2.8"},
+      {:postgrex, "0.22.3"},
+      {:req, "0.6.3"},
+      {:sentry, "13.4.1"},
+      {:sobelow, "== 0.15.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "1.1.0"},
       {:telemetry_poller, "1.3.0"},
-      {:tz, "0.28.1"},
+      {:tz, "0.28.2"},
       {:ueberauth, "0.10.8"},
       {:ueberauth_fake_oidcc,
        github: "skyqrose/ueberauth_fake_oidcc", tag: "v0.1.2", only: [:dev, :test]},

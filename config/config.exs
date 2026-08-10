@@ -50,6 +50,8 @@ config :phoenix,
 # Distributed Elixir
 config :orbit, DNSCluster, query: :ignore, log: :info
 
+config :ex_aws, http_client: ExAws.Request.Req
+
 # Auth
 config :ueberauth, Ueberauth,
   providers: [
