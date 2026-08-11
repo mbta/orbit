@@ -186,7 +186,17 @@ defmodule Realtime.TripMatcher do
 
   @spec statistics_log_line(map()) :: String.t()
   def statistics_log_line(statistics) do
-    "trip_matcher_statistics #{Enum.map_join(statistics, " ", fn
+    # Impose an explicit sort order, with :total coming first, followed by
+    # other fields in alphabetical order. This is necessary to ensure that there is
+    # a consistent order when checking against expected logs in unit tests.
+    total =
+      Map.take(statistics, [:total]) |> Map.to_list()
+
+    rest =
+      Map.delete(statistics, :total)
+      |> Enum.sort_by(fn {key, _} -> key end)
+
+    "trip_matcher_statistics #{Enum.map_join(total ++ rest, " ", fn
       {key, vehicle_ids} when is_list(vehicle_ids) -> "#{key}=\"#{Enum.join(vehicle_ids, ",")}\""
       {key, value} -> "#{key}=#{inspect(value)}"
     end)}"
