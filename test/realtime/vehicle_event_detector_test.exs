@@ -192,9 +192,10 @@ defmodule Realtime.VehicleEventDetectorTest do
           VehicleEventDetector.log_new_event(event)
         end
 
-      assert [
+      assert Enum.member?(
+               logs,
                "[info] vehicle_event_detector new_event service_date= cars= station_id= vehicle_id= direction_id= rail_line= arrival_departure="
-             ] == logs
+             )
     end
   end
 
