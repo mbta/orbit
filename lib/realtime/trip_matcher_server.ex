@@ -116,9 +116,11 @@ defmodule Realtime.TripMatcherServer do
         state.in.ocs_trips.entities
       )
 
-    TripMatcher.statistics(new_vehicles)
-    |> TripMatcher.statistics_log_line()
-    |> Logger.info()
+    if state.in.ocs_trips.timestamp != 0 do
+      TripMatcher.statistics(new_vehicles)
+      |> TripMatcher.statistics_log_line()
+      |> Logger.info()
+    end
 
     # We use the vehicle position timestamp as the overall timestamp, as that's
     # the most clear indicator of data age
