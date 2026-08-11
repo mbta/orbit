@@ -142,10 +142,29 @@ defmodule Realtime.TripMatcherServerTest do
         Process.sleep(50)
       end
 
-    statistics_log = Enum.find(logs, &match?("[info] trip_matcher_statistics" <> _, &1))
+    # Missing trip fields are not guaranteed to log in a consistent order, so
+    # need to sort and then compare.
+    fields =
+      Enum.find_value(logs, fn log ->
+        case log do
+          "[info] trip_matcher_statistics total=1 " <> fields -> fields
+          _ -> false
+        end
+      end)
+      |> String.split(" ")
+      |> Enum.sort()
 
-    # Should log missing fields for vehicle ID
-    assert ~s([info] trip_matcher_statistics total=1 missing_current_actual_departure_time="R-12345678" missing_current_arrival_station="R-12345678" missing_current_departure_station="R-12345678" missing_current_estimated_arrival_time="R-12345678" missing_current_scheduled_arrival_time="R-12345678" missing_current_scheduled_departure_time="R-12345678" missing_next_arrival_station="R-12345678" missing_next_departure_station="R-12345678" missing_next_scheduled_arrival_time="R-12345678" missing_next_scheduled_departure_time="R-12345678") ==
-             statistics_log
+    assert fields == [
+             ~s(missing_current_actual_departure_time="R-12345678"),
+             ~s(missing_current_arrival_station="R-12345678"),
+             ~s(missing_current_departure_station="R-12345678"),
+             ~s(missing_current_estimated_arrival_time="R-12345678"),
+             ~s(missing_current_scheduled_arrival_time="R-12345678"),
+             ~s(missing_current_scheduled_departure_time="R-12345678"),
+             ~s(missing_next_arrival_station="R-12345678"),
+             ~s(missing_next_departure_station="R-12345678"),
+             ~s(missing_next_scheduled_arrival_time="R-12345678"),
+             ~s(missing_next_scheduled_departure_time="R-12345678")
+           ]
   end
 end
