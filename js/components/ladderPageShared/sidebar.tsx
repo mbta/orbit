@@ -14,13 +14,13 @@ import { getColorSchemeSetting } from "../../util/colorScheme";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
-import { TrainTheme } from "./trainTheme";
+import { themeForVehicleRoute } from "./ladder";
+import { TrainThemes } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
-  theme: TrainTheme;
   searchedCar?: CarId | null;
 };
 
@@ -35,7 +35,7 @@ export const SideBar = ({
 
   return (
     <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-white light:text-black dark:bg-slate-800 dark:text-white transition-transform duration-300 ease-in-out animate-slide-in-from-left">
-      <Banner vehicle={selection.vehicle} theme={selection.theme} />
+      <Banner vehicle={selection.vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
@@ -82,15 +82,13 @@ const processVehicleConsist = (
   return { consist, processedConsist, leadCarIndex };
 };
 
-const Banner = ({
-  vehicle,
-  theme,
-}: {
-  vehicle: Vehicle;
-  theme: TrainTheme;
-}) => {
+const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
   const { processedConsist, leadCarIndex } = processVehicleConsist(vehicle);
   const current = vehicle.ocsTrips.current;
+
+  // TODO: fallbacks to braintree theme... better alternative?
+  // somehow provide ladderConfig to perform full themeForVehicleOnLadder() with fallbacks?
+  const theme = themeForVehicleRoute(vehicle) ?? TrainThemes.braintree;
   return (
     <section className="pb-5 border-b border-gray-300">
       <div className={className([theme.backgroundColor, "h-2 w-full"])} />
@@ -99,10 +97,13 @@ const Banner = ({
           <span
             className={className([
               "flex items-center justify-center w-6 h-6 rounded-full font-bold text-base light:text-white dark:text-slate-800",
-              theme.backgroundColor,
+              // override theme to gray if nonrev
+              !vehicle.vehiclePosition.revenue ?
+                TrainThemes.gray.backgroundColor
+              : theme.backgroundColor,
             ])}
           >
-            B
+            {theme === TrainThemes.ashmont ? "A" : "B"}
           </span>
           <div>{processedConsist[leadCarIndex]}</div>
         </div>

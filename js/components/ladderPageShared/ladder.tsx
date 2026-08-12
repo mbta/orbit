@@ -223,6 +223,13 @@ const StationList = ({
   );
 };
 
+export const themeForVehicleRoute = (vehicle: Vehicle): TrainTheme | null => {
+  const routePatternId = vehicle.tripUpdate?.routePatternId;
+  return routePatternId != null ?
+      trainThemesByRoutePattern.get(routePatternId) ?? null
+    : null
+};
+
 const themeForVehicleOnLadder = (
   vehicle: Vehicle,
   ladderConfig: LadderConfig,
@@ -231,13 +238,9 @@ const themeForVehicleOnLadder = (
     return TrainThemes.gray;
   }
 
-  const routePatternId = vehicle.tripUpdate?.routePatternId;
-  const themeFromRoute =
-    routePatternId != null ?
-      trainThemesByRoutePattern.get(routePatternId)
-    : null;
-  if (themeFromRoute) {
-    return themeFromRoute;
+  const theme = themeForVehicleRoute(vehicle);
+  if (theme) {
+    return theme;
   }
 
   // Route pattern is missing or unfamiliar. Guess colors based on current
