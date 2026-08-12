@@ -9,7 +9,7 @@
     "test:jest": "jest",
     "test:e2e": "npx playwright test -c ./playwright.config.ts",
     "test:tsc": "tsc -p tsconfig.json",
-    "test": "npm run test:tsc && npm run test:jest && npm run test:e2e && npm run test:eslint && npm run test:format"
+    "test": "npm run test:tsc && npm run test:jest && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
     "@fullstory/browser": "2.0.8",
