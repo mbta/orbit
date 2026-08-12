@@ -245,5 +245,5 @@ const themeForVehicleOnLadder = (
   const isAshmontLadder = ladderConfig.some(
     (station) => station.id === "place-asmnl",
   );
-  return isAshmontLadder ? TrainThemes.tangerine : TrainThemes.crimson;
+  return isAshmontLadder ? TrainThemes.ashmont : TrainThemes.braintree;
 };

@@ -94,8 +94,18 @@ const Banner = ({
   return (
     <section className="pb-5 border-b border-gray-300">
       <div className={className([theme.backgroundColor, "h-2 w-full"])} />
-      <div className="px-4 pt-2">
-        <div>{processedConsist[leadCarIndex]}</div>
+      <div className="px-4 pt-2 text-md">
+        <div className="flex items-center gap-2">
+          <span
+            className={className([
+              "flex items-center justify-center w-6 h-6 rounded-full font-bold text-base light:text-white dark:text-slate-800",
+              theme.backgroundColor,
+            ])}
+          >
+            B
+          </span>
+          <div>{processedConsist[leadCarIndex]}</div>
+        </div>
         <div>
           {current?.scheduledDeparture ?
             dateTimeFormat(current.scheduledDeparture, "service")
