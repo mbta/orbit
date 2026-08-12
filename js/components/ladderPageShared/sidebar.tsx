@@ -10,14 +10,17 @@ import {
   Vehicle,
 } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
+import { getColorSchemeSetting } from "../../util/colorScheme";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
+import { TrainTheme } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
+  theme: TrainTheme;
   searchedCar?: CarId | null;
 };
 
@@ -28,14 +31,22 @@ export const SideBar = ({
   selection: SideBarSelection;
   close: () => void;
 }): ReactElement => {
+  const colorScheme = getColorSchemeSetting();
+
   return (
     <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-white light:text-black dark:bg-slate-800 dark:text-white transition-transform duration-300 ease-in-out animate-slide-in-from-left">
-      <Banner vehicle={selection.vehicle} />
+      <Banner vehicle={selection.vehicle} theme={selection.theme} />
       <button
-        className="absolute m-3 top-0 right-0 h-4 w-4 hover:fill-slate-700"
+        className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
       >
-        <img src="/images/close.svg" alt="Close" />
+        <img
+          src="/images/close.svg"
+          alt="Close"
+          style={{
+            filter: colorScheme === "light" ? "invert(0.4)" : "invert(1)",
+          }}
+        />
       </button>
       <div className="h-full w-screen sm:w-auto">
         <CurrentLocation vehicle={selection.vehicle} />
@@ -71,16 +82,26 @@ const processVehicleConsist = (
   return { consist, processedConsist, leadCarIndex };
 };
 
-const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
+const Banner = ({
+  vehicle,
+  theme,
+}: {
+  vehicle: Vehicle;
+  theme: TrainTheme;
+}) => {
   const { processedConsist, leadCarIndex } = processVehicleConsist(vehicle);
   const current = vehicle.ocsTrips.current;
   return (
-    <section className="px-4 pt-4 pb-5 border-b border-gray-300">
-      <div>{processedConsist[leadCarIndex]}</div>
-      <div>
-        {current?.scheduledDeparture ?
-          `${dateTimeFormat(current.scheduledDeparture, "service")} Sched`
-        : "---"}
+    <section className="pb-5 border-b border-gray-300">
+      <div className={className([theme.backgroundColor, "h-2 w-full"])} />
+      <div className="px-4 pt-2">
+        <div>{processedConsist[leadCarIndex]}</div>
+        <div>
+          {current?.scheduledDeparture ?
+            dateTimeFormat(current.scheduledDeparture, "service")
+          : "---"}{" "}
+          Sched
+        </div>
       </div>
     </section>
   );

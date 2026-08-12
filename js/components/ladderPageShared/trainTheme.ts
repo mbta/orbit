@@ -5,15 +5,15 @@ export type TrainTheme = {
 };
 
 export const TrainThemes: Record<string, TrainTheme> = {
-  crimson: {
-    backgroundColor: "bg-crimson",
-    borderColor: "border-crimson",
-    strokeColor: "stroke-crimson",
+  braintree: {
+    backgroundColor: "bg-heavy-rail-braintree",
+    borderColor: "border-heavy-rail-braintree",
+    strokeColor: "stroke-heavy-rail-braintree",
   },
-  tangerine: {
-    backgroundColor: "bg-tangerine",
-    borderColor: "border-tangerine",
-    strokeColor: "stroke-tangerine",
+  ashmont: {
+    backgroundColor: "bg-heavy-rail-ashmont",
+    borderColor: "border-heavy-rail-ashmont",
+    strokeColor: "stroke-heavy-rail-ashmont",
   },
   gray: {
     backgroundColor: "bg-gray-300",
@@ -26,8 +26,8 @@ export const trainThemesByRoutePattern: ReadonlyMap<
   string,
   Readonly<TrainTheme>
 > = new Map([
-  ["Red-1-0", TrainThemes.tangerine],
-  ["Red-1-1", TrainThemes.tangerine],
-  ["Red-3-0", TrainThemes.crimson],
-  ["Red-3-1", TrainThemes.crimson],
+  ["Red-1-0", TrainThemes.ashmont],
+  ["Red-1-1", TrainThemes.ashmont],
+  ["Red-3-0", TrainThemes.braintree],
+  ["Red-3-1", TrainThemes.braintree],
 ]);
