@@ -252,10 +252,14 @@ jobs:
             _build
           key: ${{ needs.setup.outputs.cache-key-mix-deps }}
       - name: Restore node_modules cache
+        id: node-modules-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: node_modules
           key: ${{ needs.setup.outputs.cache-key-node-modules }}
+      - name: npm ci
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run DB migrations
