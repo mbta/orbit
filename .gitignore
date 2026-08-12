@@ -39,3 +39,9 @@ npm-debug.log
 config/dev.secret.exs
 
 .elixir_ls/
+
+# Playwright
+/test-results/
+/blob-report/
+/playwright/.auth/
+/playwright-report

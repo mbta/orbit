@@ -1,10 +1,12 @@
 {
   "include": [
+    "e2e",
     "js",
     "tailwind.config.ts",
     // this js file has a @/ts-check. to check it, allowJs must be on.
     "eslint.config.mjs",
-    "jest.config.ts"
+    "jest.config.ts",
+    "playwright.config.ts"
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */

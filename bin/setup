@@ -37,3 +37,6 @@ echo ""
 echo "# npm ci"
 npm ci
 echo ""
+
+echo "npx playwright install"
+npx playwright install
