@@ -15,7 +15,7 @@
     "@fullstory/browser": "2.0.8",
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "5.0.0",
-    "@sentry/react": "10.69.0",
+    "@sentry/react": "10.70.0",
     "@tailwindcss/forms": "0.5.11",
     "esbuild": "0.28.2",
     "luxon": "3.7.2",
@@ -60,7 +60,7 @@
     "ts-jest": "29.4.6",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.66.0",
+    "typescript-eslint": "8.67.0",
     "typescript-language-server": "5.1.3"
   }
 }

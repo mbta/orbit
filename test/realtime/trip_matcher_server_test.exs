@@ -112,4 +112,59 @@ defmodule Realtime.TripMatcherServerTest do
 
     assert_receive {:new_data, :vehicles, %{timestamp: _, entities: []}}
   end
+
+  test "does not log missing OCS data before first tick of OCS data" do
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
+    TripMatcherServer.subscribe(self())
+
+    vehicle = build(:vehicle_position, vehicle_id: "R-12345678")
+
+    logs =
+      capture_log do
+        send(
+          Realtime.TripMatcherServer,
+          {:new_data, :vehicle_positions, %{timestamp: 4, entities: [vehicle]}}
+        )
+
+        Process.sleep(50)
+      end
+
+    # Should not log trip matcher statistics if we haven't got OCS data yet
+    assert not Enum.any?(logs, &match?("[info] trip_matcher_statistics" <> _, &1))
+
+    logs =
+      capture_log do
+        send(
+          Realtime.TripMatcherServer,
+          {:new_data, :ocs_trips, %{timestamp: 5, entities: [build(:ocs_trip)]}}
+        )
+
+        Process.sleep(50)
+      end
+
+    # Missing trip fields are not guaranteed to log in a consistent order, so
+    # need to sort and then compare.
+    fields =
+      Enum.find_value(logs, fn log ->
+        case log do
+          "[info] trip_matcher_statistics total=1 " <> fields -> fields
+          _ -> false
+        end
+      end)
+      |> String.split(" ")
+      |> Enum.sort()
+
+    assert fields == [
+             ~s(missing_current_actual_departure_time="R-12345678"),
+             ~s(missing_current_arrival_station="R-12345678"),
+             ~s(missing_current_departure_station="R-12345678"),
+             ~s(missing_current_estimated_arrival_time="R-12345678"),
+             ~s(missing_current_scheduled_arrival_time="R-12345678"),
+             ~s(missing_current_scheduled_departure_time="R-12345678"),
+             ~s(missing_next_arrival_station="R-12345678"),
+             ~s(missing_next_departure_station="R-12345678"),
+             ~s(missing_next_scheduled_arrival_time="R-12345678"),
+             ~s(missing_next_scheduled_departure_time="R-12345678")
+           ]
+  end
 end
