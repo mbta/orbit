@@ -259,7 +259,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run DB migrations
-        run: mix migrate
+        run: mix ecto.migrate
         env:
           GLIDES_DB_USERNAME: ${{env.DATABASE_USER}}
           GLIDES_DB_PASSWORD: ${{env.DATABASE_PASSWORD}}
