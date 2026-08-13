@@ -836,4 +836,30 @@ describe("sidebar", () => {
     expect(scheduled).toHaveClass("line-through");
     expect(updated).toBeInTheDocument();
   });
+
+  test("renders only updated station if scheduled station is missing", () => {
+    const view = render(
+      <MemoryRouter>
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  originStation: null,
+                  originStationUpdated: "JFK",
+                  nextUid: null,
+                }),
+                next: [],
+              },
+            }),
+          }}
+          close={() => {}}
+        />
+      </MemoryRouter>,
+    );
+
+    const updatedAsScheduled = view.getByText("JFK");
+    expect(updatedAsScheduled).not.toHaveClass("line-through");
+    expect(updatedAsScheduled).toBeInTheDocument();
+  });
 });

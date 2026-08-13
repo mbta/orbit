@@ -128,15 +128,16 @@ const StationDisplay = ({
 }: {
   scheduled: string | null;
   updated?: string | null;
-}) =>
-  updated ?
-    <span>
-      <span className="line-through">
-        {formatStationName(scheduled) ?? "---"}
-      </span>{" "}
-      <span>{formatStationName(updated)}</span>
-    </span>
-  : <span>{formatStationName(scheduled) ?? "---"}</span>;
+}) => {
+  const scheduledFormatted = formatStationName(scheduled);
+  const updatedFormatted = formatStationName(updated);
+  return scheduledFormatted && updatedFormatted ?
+      <span>
+        <span className="line-through">{scheduledFormatted}</span>{" "}
+        <span>{updatedFormatted}</span>
+      </span>
+    : <span>{scheduledFormatted ?? updatedFormatted ?? "---"}</span>;
+};
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
