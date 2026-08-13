@@ -235,13 +235,13 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
             />
           </span>
         </div>
-        <div className="flex flex-col justify-between">
-          <span className="font-bold pr-3">
+        <div className="flex flex-col justify-between font-bold pr-3">
+          <span>
             {current?.actualDeparture ?
               dateTimeFormat(current.actualDeparture, "service")
             : "---"}
           </span>
-          <span className="font-bold">
+          <span>
             {estArrival ? dateTimeFormat(estArrival, "service") : "---"}
           </span>
         </div>
