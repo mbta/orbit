@@ -34,7 +34,7 @@ export const SideBar = ({
   const colorScheme = getColorSchemeSetting();
 
   return (
-    <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-white light:text-black dark:bg-slate-800 dark:text-white transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <Banner vehicle={selection.vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
@@ -90,7 +90,7 @@ const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
   // somehow provide ladderConfig to perform full themeForVehicleOnLadder() with fallbacks?
   const theme = themeForVehicleRoute(vehicle) ?? TrainThemes.braintree;
   return (
-    <section className="pb-5 border-b border-gray-300">
+    <section className="pb-3 border-b-2 light:border-drawer-border-light dark:border-drawer-border-dark">
       <div className={className([theme.backgroundColor, "h-2 w-full"])} />
       <div className="px-4 pt-2 text-md">
         <div className="flex items-center gap-2">
@@ -128,45 +128,60 @@ const Consist = ({
   const { consist, processedConsist, leadCarIndex } =
     processVehicleConsist(vehicle);
   return (
-    <section className="mt-7 flex flex-col gap-1.5">
-      <div className="px-4 flex">
-        {processedConsist.map((label, index) => {
-          const isLeadCar = index === leadCarIndex;
-          const isSearchMatch =
-            searchedCar !== null && consist[index] === searchedCar;
-
-          return (
-            <div
-              key={index}
-              className={className([
-                "mr-2",
-                isLeadCar ? "font-bold text-2xl" : "pt-1.5",
-                isSearchMatch ? "bg-[#ffdb00]" : "",
-              ])}
-            >
-              {label}
-            </div>
-          );
-        })}
+    <section className="mt-3 mx-2 flex flex-col rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
+      <div className="light:bg-card-header-light dark:bg-card-header-dark">
+        <h2 className="mx-3 text-xs">Cars</h2>
       </div>
-      <a
-        href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
-        className="hidden mt-2 px-1.5 py-3 md:flex flex-row items-center gap-1.5 border-black border max-w-fit mx-auto rounded-2xl"
-      >
-        <img src="/images/network.svg" alt="" className="h-4 w-4" />
-        See Cars&rsquo; History
-      </a>
+      <div className="light:bg-card-background-light dark:bg-card-background-dark">
+        <div className="px-3 flex">
+          {processedConsist.map((label, index) => {
+            const isLeadCar = index === leadCarIndex;
+            const isSearchMatch =
+              searchedCar !== null && consist[index] === searchedCar;
+
+            return (
+              <div
+                key={index}
+                className={className([
+                  "mr-1",
+                  isLeadCar ? "font-bold text-2xl" : "pt-1.5",
+                  isSearchMatch ? "bg-[#ffdb00]" : "",
+                ])}
+              >
+                {label}
+              </div>
+            );
+          })}
+        </div>
+        <a
+          href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
+          className="hidden mt-1 mb-4 w-fit px-3 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
+        >
+          <span
+            aria-hidden="true"
+            className="h-5 w-5 shrink-0 light:bg-button-tertiary-text-light dark:bg-button-tertiary-text-dark [mask-image:url('/images/network.svg')] [-webkit-mask-image:url('/images/network.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
+          />
+          <span className="light:text-button-tertiary-text-light dark:text-button-tertiary-text-dark">
+            See Cars&rsquo; History
+          </span>
+        </a>
+      </div>
     </section>
   );
 };
 
 const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
   return (
-    <section className="m-5 pt-5" data-testid="current-location-section">
-      <h2 className="text-lg font-semibold uppercase">Current Location</h2>
+    <section
+      className="mt-3 mx-2 rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark"
+      data-testid="current-location-section"
+    >
+      <div className="light:bg-card-header-light dark:bg-card-header-dark">
+        <h2 className="mx-3 text-xs">Current Location</h2>
+      </div>
 
-      <div className="flex justify-between mt-3">
-        <div className="flex justify-between">
+      <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between">
+        <div className="flex justify-between mx-3 text-base pt-2 pb-2">
           {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
             "Boarding at"
           : "Next stop"}
@@ -201,36 +216,40 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 
   const estArrival: DateTime | null = estimatedArrival(vehicle);
 
-  const lateDepMin = lateDeparture(vehicle);
+  // const lateDepMin = lateDeparture(vehicle);
   // only calculate late arrival if using estimated arrival time
-  const lateArrMin = estArrival !== null ? lateArrival(vehicle) : null;
+  // const lateArrMin = estArrival !== null ? lateArrival(vehicle) : null;
 
-  const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
-  const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
-  const showLateBox = showLateDep || showLateArr;
+  // const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
+  // const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
+  // const showLateBox = showLateDep || showLateArr;
 
   return (
-    <section className="m-5 pt-5">
-      <h2 className="text-lg font-semibold uppercase">Current Trip</h2>
-      {showLateBox && (
+    <section className="mt-3 mx-2 rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
+      <div className="light:bg-card-header-light dark:bg-card-header-dark">
+        <h2 className="mx-3 text-xs">Current Trip</h2>
+      </div>
+      {/* {showLateBox && (
         <Late
           departedLate={showLateDep ? lateDepMin : null}
           arrivingLate={showLateArr ? lateArrMin : null}
           arrivingLateText={"scheduled."}
         />
-      )}
+      )} */}
 
-      <div className="flex justify-between mt-3">
-        <div className="flex flex-col justify-between">
-          <span className="text-gray-300">Departure</span>
+      <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between pt-1.5 pb-1.5">
+        <div className="flex flex-col justify-between mx-2">
           <span>
+            {/* Departed {formatStationName(current?.originStation) ?? "---"} */}
+            Departed{" "}
             <StationDisplay
               scheduled={current?.originStation ?? null}
               updated={current?.originStationUpdated}
             />
           </span>
-          <span className="text-gray-300 mt-5">Arrival</span>
-          <span>
+          <span className="mt-2">
+            Arriving at{" "}
+            {/* {formatStationName(current?.destinationStation) ?? "---"} */}
             <StationDisplay
               scheduled={current?.destinationStation ?? null}
               updated={current?.destinationStationUpdated}
@@ -238,28 +257,11 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           </span>
         </div>
         <div className="flex flex-col justify-between">
-          <span className="text-gray-300">Scheduled</span>
-          <span className="font-bold">
-            {current?.scheduledDeparture ?
-              dateTimeFormat(current.scheduledDeparture, "service")
-            : "---"}{" "}
-            <Offset value={current?.offset} />
-          </span>
-          <span className="text-gray-300 mt-5">Scheduled</span>
-          <span className="font-bold">
-            {current?.scheduledArrival ?
-              dateTimeFormat(current.scheduledArrival, "service")
-            : "---"}{" "}
-          </span>
-        </div>
-        <div className="flex flex-col justify-between">
-          <span className="text-gray-300">Actual</span>
-          <span className="font-bold">
+          <span className="font-bold pr-3">
             {current?.actualDeparture ?
               dateTimeFormat(current.actualDeparture, "service")
             : "---"}
           </span>
-          <span className="text-gray-300 mt-5">Estimated</span>
           <span className="font-bold">
             {estArrival ? dateTimeFormat(estArrival, "service") : "---"}
           </span>
@@ -288,53 +290,41 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const nextDepMin = lateForNext(vehicle);
   const showLateBox = nextDepMin !== null && nextDepMin >= 5;
   return (
-    <section
-      className="mt-5 border-t border-gray-300"
-      data-testid="next-trip-section"
-    >
-      <div className="m-5">
-        <h2 className="text-lg font-semibold uppercase">Next Trip</h2>
-        {showLateBox && (
-          <Late
-            departedLate={null}
-            arrivingLate={nextDepMin}
-            arrivingLateText={"next trip's departure time."}
-          />
-        )}
-
-        <div className="flex mt-3">
-          <div className="flex flex-col justify-between">
-            <span className="text-gray-300">Departure</span>
-            {/* <span>{formatStationName(next?.originStation) ?? "---"}</span> */}
-            <StationDisplay
-              scheduled={next?.originStation ?? null}
-              updated={next?.originStationUpdated}
-            />
-            <span className="text-gray-300 mt-5">Arrival</span>
-            {/* <span>{formatStationName(next?.destinationStation) ?? "---"}</span> */}
-            <StationDisplay
-              scheduled={next?.destinationStation ?? null}
-              updated={next?.destinationStationUpdated}
-            />
+    <div className="mt-4 border-t-2 light:border-drawer-border-light dark:border-drawer-border-dark">
+      <section
+        className="mt-4 mx-2 border light:border-card-border-light dark:border-card-border-dark rounded-lg overflow-hidden"
+        data-testid="next-trip-section"
+      >
+        <div className="">
+          <div className="light:bg-card-header-light dark:bg-card-header-dark">
+            <h2 className="mx-3 text-xs">Next Trip</h2>
           </div>
-          <div className="flex flex-col ml-7">
-            <span className="text-gray-300">Scheduled</span>
-            <span className="font-bold">
-              {next?.scheduledDeparture ?
-                dateTimeFormat(next.scheduledDeparture, "service")
-              : "---"}{" "}
-              <Offset value={next?.offset} />
-            </span>
-            <span className="text-gray-300 mt-5">Scheduled</span>
-            <span className="font-bold">
-              {next?.scheduledArrival ?
-                dateTimeFormat(next.scheduledArrival, "service")
-              : "---"}{" "}
-            </span>
+          {showLateBox && (
+            <Late
+              departedLate={null}
+              arrivingLate={nextDepMin}
+              arrivingLateText={"next trip's departure time."}
+            />
+          )}
+
+          <div className="flex pt-1 light:bg-card-background-light dark:bg-card-background-dark">
+            <div className="flex flex-col mx-3 mb-3 justify-between">
+              <span>
+                {formatStationName(next?.originStation) ?? "---"} to{" "}
+                {formatStationName(next?.destinationStation) ?? "---"}
+              </span>
+              <span>
+                {next?.scheduledDeparture ?
+                  dateTimeFormat(next.scheduledDeparture, "service")
+                : "---"}
+                {" Sched"}
+                <Offset value={next?.offset} />
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 
