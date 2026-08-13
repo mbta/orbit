@@ -133,7 +133,7 @@ const Consist = ({
         <h2 className="mx-3 text-xs">Cars</h2>
       </div>
       <div className="light:bg-card-background-light dark:bg-card-background-dark">
-        <div className="px-3 flex">
+        <div className="mt-1 px-3 flex">
           {processedConsist.map((label, index) => {
             const isLeadCar = index === leadCarIndex;
             const isSearchMatch =
@@ -155,13 +155,13 @@ const Consist = ({
         </div>
         <a
           href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
-          className="hidden mt-1 mb-4 w-fit px-3 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
+          className="hidden mt-1 mb-4 w-fit px-6 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
         >
           <span
             aria-hidden="true"
-            className="h-5 w-5 shrink-0 light:bg-button-tertiary-text-light dark:bg-button-tertiary-text-dark [mask-image:url('/images/network.svg')] [-webkit-mask-image:url('/images/network.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
+            className="h-4 w-4 shrink-0 light:bg-button-tertiary-text-light dark:bg-button-tertiary-text-dark [mask-image:url('/images/network.svg')] [-webkit-mask-image:url('/images/network.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
           />
-          <span className="light:text-button-tertiary-text-light dark:text-button-tertiary-text-dark">
+          <span className="light:text-button-tertiary-text-light dark:text-button-tertiary-text-dark text-xs font-bold">
             See Cars&rsquo; History
           </span>
         </a>
@@ -309,7 +309,7 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 
           <div className="flex pt-1 light:bg-card-background-light dark:bg-card-background-dark">
             <div className="flex flex-col mx-3 mb-3 justify-between">
-              <span>
+              <span className="mb-1">
                 {formatStationName(next?.originStation) ?? "---"} to{" "}
                 {formatStationName(next?.destinationStation) ?? "---"}
               </span>
