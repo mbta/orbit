@@ -82,6 +82,7 @@ const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
 
   // TODO: fallbacks to braintree theme... better alternative?
   // somehow provide ladderConfig to perform full themeForVehicleOnLadder() with fallbacks?
+  // extract the branch/route from just the vehicle above?
   const theme = themeForVehicleRoute(vehicle) ?? TrainThemes.braintree;
   return (
     <section className="pb-3 border-b-2 light:border-drawer-border-light dark:border-drawer-border-dark">
@@ -91,10 +92,7 @@ const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
           <span
             className={className([
               "flex items-center justify-center w-6 h-6 rounded-full font-bold text-base light:text-white dark:text-slate-800",
-              // override theme to gray if nonrev
-              !vehicle.vehiclePosition.revenue ?
-                TrainThemes.gray.backgroundColor
-              : theme.backgroundColor,
+              theme.backgroundColor,
             ])}
           >
             {theme === TrainThemes.ashmont ? "A" : "B"}

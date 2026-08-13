@@ -224,20 +224,19 @@ const StationList = ({
 };
 
 export const themeForVehicleRoute = (vehicle: Vehicle): TrainTheme | null => {
+  if (!vehicle.vehiclePosition.revenue) {
+    return TrainThemes.gray;
+  }
   const routePatternId = vehicle.tripUpdate?.routePatternId;
   return routePatternId != null ?
-      trainThemesByRoutePattern.get(routePatternId) ?? null
-    : null
+      (trainThemesByRoutePattern.get(routePatternId) ?? null)
+    : null;
 };
 
 const themeForVehicleOnLadder = (
   vehicle: Vehicle,
   ladderConfig: LadderConfig,
 ): TrainTheme => {
-  if (!vehicle.vehiclePosition.revenue) {
-    return TrainThemes.gray;
-  }
-
   const theme = themeForVehicleRoute(vehicle);
   if (theme) {
     return theme;

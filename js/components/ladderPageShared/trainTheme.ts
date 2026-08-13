@@ -16,9 +16,9 @@ export const TrainThemes: Record<string, TrainTheme> = {
     strokeColor: "stroke-heavy-rail-ashmont",
   },
   gray: {
-    backgroundColor: "bg-gray-300",
-    borderColor: "border-gray-300",
-    strokeColor: "stroke-gray-300",
+    backgroundColor: "bg-glides-gray-400",
+    borderColor: "border-glides-gray-400",
+    strokeColor: "stroke-glides-gray-400",
   },
 } as const;
 
