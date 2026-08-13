@@ -507,6 +507,41 @@ defmodule Orbit.Ocs.EntitiesTest do
              } = queried_trip
     end
 
+    test "TSCH_DST sets scheduled destination on existing trip if not yet set" do
+      # TSCH_NEW omits the destination station (which does happen for "add_type: A" messages)
+      message = %Message.TschNewMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "NEW_TRIP_UID"
+      }
+
+      Entities.apply_changes(message)
+
+      message = %Message.TschDstMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "NEW_TRIP_UID",
+        dest_sta: "DEST_STA_2"
+      }
+
+      Entities.apply_changes(message)
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "NEW_TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               destination_station: "DEST_STA_2",
+               destination_station_updated: nil
+             } = queried_trip
+    end
+
     test "upserts trip for TSCH_DEL (marks deleted)" do
       message = %Message.TschDelMessage{
         counter: 111,
