@@ -2,13 +2,7 @@ import { formatStationName, gtfsIdToDisplayName } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
-import {
-  lateArrival,
-  lateDeparture,
-  lateForNext,
-  latestOcsUpdatedAt,
-  Vehicle,
-} from "../../models/vehicle";
+import { lateForNext, latestOcsUpdatedAt, Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { getColorSchemeSetting } from "../../util/colorScheme";
 import { remapLabels, reorder } from "../../util/consist";
@@ -214,29 +208,13 @@ const StationDisplay = ({
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
-
   const estArrival: DateTime | null = estimatedArrival(vehicle);
-
-  // const lateDepMin = lateDeparture(vehicle);
-  // only calculate late arrival if using estimated arrival time
-  // const lateArrMin = estArrival !== null ? lateArrival(vehicle) : null;
-
-  // const showLateDep = lateDepMin !== null && Math.abs(lateDepMin) >= 5;
-  // const showLateArr = lateArrMin !== null && Math.abs(lateArrMin) >= 5;
-  // const showLateBox = showLateDep || showLateArr;
 
   return (
     <section className="mt-3 mx-2 rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
       <div className="light:bg-card-header-light dark:bg-card-header-dark">
         <h2 className="mx-3 text-xs">Current Trip</h2>
       </div>
-      {/* {showLateBox && (
-        <Late
-          departedLate={showLateDep ? lateDepMin : null}
-          arrivingLate={showLateArr ? lateArrMin : null}
-          arrivingLateText={"scheduled."}
-        />
-      )} */}
 
       <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between pt-1.5 pb-1.5">
         <div className="flex flex-col justify-between mx-2">
@@ -274,22 +252,13 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 
 const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const current = vehicle.ocsTrips.current;
-  if (current && !current.nextUid) {
-    // Explicitly, no next trip is assigned, so show "none"
-    return (
-      <section className="border-t border-gray-300">
-        <h2 className="m-5 pt-5 text-lg text-gray-300 font-semibold">
-          NEXT TRIP - none
-        </h2>
-      </section>
-    );
-  }
 
   const next =
     vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
 
   const nextDepMin = lateForNext(vehicle);
-  const showLateBox = nextDepMin !== null && nextDepMin >= 5;
+  const showLateBox = nextDepMin !== null && nextDepMin >= 1;
+
   return (
     <div className="mt-4 border-t-2 light:border-drawer-border-light dark:border-drawer-border-dark">
       <section
@@ -300,27 +269,34 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           <div className="light:bg-card-header-light dark:bg-card-header-dark">
             <h2 className="mx-3 text-xs">Next Trip</h2>
           </div>
-          {showLateBox && (
-            <Late
-              departedLate={null}
-              arrivingLate={nextDepMin}
-              arrivingLateText={"next trip's departure time."}
-            />
-          )}
 
-          <div className="flex pt-1 light:bg-card-background-light dark:bg-card-background-dark">
-            <div className="flex flex-col mx-3 mb-3 justify-between">
-              <span className="mb-1">
-                {formatStationName(next?.originStation) ?? "---"} to{" "}
-                {formatStationName(next?.destinationStation) ?? "---"}
-              </span>
-              <span>
-                {next?.scheduledDeparture ?
-                  dateTimeFormat(next.scheduledDeparture, "service")
-                : "---"}
-                {" Sched"}
-              </span>
+          <div className="pb-3 light:bg-card-background-light dark:bg-card-background-dark">
+            <div className="flex pt-1">
+              <div className="flex flex-col mx-3 mb-2 justify-between">
+                {current && !current.nextUid ?
+                  <span>none</span>
+                : <>
+                    <span className="mb-1">
+                      {formatStationName(next?.originStation) ?? "---"} to{" "}
+                      {formatStationName(next?.destinationStation) ?? "---"}
+                    </span>
+                    <span>
+                      {next?.scheduledDeparture ?
+                        dateTimeFormat(next.scheduledDeparture, "service")
+                      : "---"}
+                      {" Sched"}
+                    </span>
+                  </>
+                }
+              </div>
             </div>
+            {showLateBox && (
+              <Late
+                departedLate={null}
+                arrivingLate={nextDepMin}
+                arrivingLateText={"next trip's departure time."}
+              />
+            )}
           </div>
         </div>
       </section>
@@ -337,6 +313,7 @@ const Offset = ({ value }: { value: number | null | undefined }) => {
 };
 
 const Late = ({
+  // TODO: refactor out if no longer used
   departedLate,
   arrivingLate,
   arrivingLateText,
@@ -346,16 +323,12 @@ const Late = ({
   arrivingLateText: string | null;
 }) => {
   return (
-    <div className="border-gray-300 bg-gray-200 rounded-lg text-black italic p-2 text-sm">
+    <div className="mx-2 light:bg-error-state-warning-bg-light dark:bg-error-state-warning-bg-dark rounded-lg italic p-2">
       <div className="flex">
-        <div className="mt-0.5 mr-1">
-          <img
-            src={`/images/clock.svg`}
-            // Per MDN re: alt text:
-            // > If the image doesn't require a fallback (such as for an image which is decorative or an advisory icon
-            //   of minimal importance), you may specify an empty string ("")
-            alt={""}
-            className={"w-4"}
+        <div className="mt-0.5 pr-1.5">
+          <span
+            aria-hidden="true"
+            className="block h-3 w-3 shrink-0 translate-y-0.5 bg-error-state-warning-dark [mask-image:url('/images/warning-triangle.svg')] [-webkit-mask-image:url('/images/warning-triangle.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
           />
         </div>
         <div className="flex-1">
