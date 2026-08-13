@@ -111,6 +111,7 @@ const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
           {current?.scheduledDeparture ?
             dateTimeFormat(current.scheduledDeparture, "service")
           : "---"}{" "}
+          <Offset value={vehicle.ocsTrips.current?.offset} />
           Sched
         </div>
       </div>
@@ -318,7 +319,6 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
                   dateTimeFormat(next.scheduledDeparture, "service")
                 : "---"}
                 {" Sched"}
-                <Offset value={next?.offset} />
               </span>
             </div>
           </div>
@@ -333,7 +333,7 @@ const Offset = ({ value }: { value: number | null | undefined }) => {
     return null;
   }
 
-  return "(" + (value > 0 ? `+${value}` : value.toString()) + ")";
+  return "(" + (value > 0 ? `+${value}` : value.toString()) + ") ";
 };
 
 const Late = ({
