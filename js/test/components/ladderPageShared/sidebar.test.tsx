@@ -107,18 +107,18 @@ describe("sidebar", () => {
           />,
         );
         // current trip
-        expect(view.getByText("Alewife")).toBeInTheDocument();
-        expect(view.getByText("Braintree")).toBeInTheDocument();
+        expect(view.getByText("Departed Alewife")).toBeInTheDocument();
+        expect(view.getByText("Arriving at Braintree")).toBeInTheDocument();
 
         // next trip
         const nextSection = view.getByTestId("next-trip-section");
         const scoped = within(nextSection);
 
         expect(scoped.getByText(/Next Trip/i)).toBeInTheDocument();
-        expect(scoped.getByText(/JFK/i)).toBeInTheDocument();
+        expect(scoped.getByText(/JFK to Kendall/i)).toBeInTheDocument();
       });
 
-      test("shows scheduled departure and arrival times if present", () => {
+      test("shows next scheduled departure if present", () => {
         const view = render(
           <SideBar
             selection={{
@@ -126,20 +126,12 @@ describe("sidebar", () => {
                 ocsTrips: {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
-                    scheduledDeparture: dateTimeFromISO(
-                      "2025-07-07T17:05:00.000Z",
-                    ),
-                    scheduledArrival: dateTimeFromISO(
-                      "2025-07-07T18:05:00.000Z",
-                    ),
                   }),
                   next: [
                     ocsTripFactory.build({
                       scheduledDeparture: dateTimeFromISO(
+                        // next scheduled dep is 2:10pm
                         "2025-07-07T18:10:00.000Z",
-                      ),
-                      scheduledArrival: dateTimeFromISO(
-                        "2025-07-07T19:10:00.000Z",
                       ),
                     }),
                   ],
@@ -150,12 +142,11 @@ describe("sidebar", () => {
           />,
         );
         // current trip
-        expect(view.getByText(/1:05p/)).toBeInTheDocument();
-        expect(view.getByText(/2:05p/)).toBeInTheDocument();
+        // only uses actualDeparture and predictedArrivalTime, no scheduled times.
 
         //next trip
-        expect(view.getByText(/2:10p/)).toBeInTheDocument();
-        expect(view.getByText(/3:10p/)).toBeInTheDocument();
+        expect(view.getByText(/Ashmont to Alewife/)).toBeInTheDocument();
+        expect(view.getByText(/2:10p Sched/)).toBeInTheDocument();
       });
 
       test('shows "last updated from OCS" timestamp (in local wall time) if present', () => {
@@ -409,7 +400,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/than next trip's departure time./)).not.toBeInTheDocument();
+        expect(
+          view.queryByText(/than next trip's departure time./),
+        ).not.toBeInTheDocument();
       });
 
       test("everything all at once", () => {
@@ -569,6 +562,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        expect(view.getByText("Arriving at Alewife")).toBeInTheDocument();
         expect(view.getByText("5:51p")).toBeInTheDocument();
       });
 
@@ -659,6 +653,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        expect(view.getByText("Departed Ashmont")).toBeInTheDocument();
         expect(view.getByText("5:43p")).toBeInTheDocument();
       });
     });
@@ -718,4 +713,9 @@ describe("sidebar", () => {
     expect(updatedAsScheduled).toBeInTheDocument();
   });
   // TODO: add a describe block for Next Trip section
+  describe("Next Trip section", () => {
+    test("tests something", () => {
+      //something
+    });
+  });
 });
