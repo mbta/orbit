@@ -29,7 +29,7 @@ export const SideBar = ({
 
   return (
     <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
-      <Banner vehicle={selection.vehicle} />
+      <Header vehicle={selection.vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
@@ -76,7 +76,7 @@ const processVehicleConsist = (
   return { consist, processedConsist, leadCarIndex };
 };
 
-const Banner = ({ vehicle }: { vehicle: Vehicle }) => {
+const Header = ({ vehicle }: { vehicle: Vehicle }) => {
   const { processedConsist, leadCarIndex } = processVehicleConsist(vehicle);
   const current = vehicle.ocsTrips.current;
 
