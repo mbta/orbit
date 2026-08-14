@@ -20,7 +20,13 @@ describe("sidebar", () => {
         close={() => {}}
       />,
     );
-    expect(view.getByText("1877")).toHaveClass("font-bold text-2xl");
+
+    // lead car is now in sidebar header so it appears twice now
+    expect(
+      view
+        .getAllByText("1877")
+        .some((car) => car.classList.contains("font-bold")),
+    ).toBe(true);
     expect(view.getByText("1814")).toBeInTheDocument();
   });
 
@@ -60,7 +66,7 @@ describe("sidebar", () => {
     expect(view.getByText("Next Trip")).toBeInTheDocument();
   });
 
-  test('renders "next trip none" header if next trip is explicitly unset', () => {
+  test('renders "None" for Next Trip next trip is explicitly unset', () => {
     const view = render(
       <SideBar
         selection={{
@@ -69,8 +75,8 @@ describe("sidebar", () => {
         close={() => {}}
       />,
     );
-    expect(view.queryByText("Next Trip")).not.toBeInTheDocument();
-    expect(view.getByText("NEXT TRIP - none")).toBeInTheDocument();
+    expect(view.getByText("Next Trip")).toBeInTheDocument();
+    expect(view.getByText("None")).toBeInTheDocument();
   });
 
   describe("Trips", () => {

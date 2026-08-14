@@ -272,7 +272,7 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
             <div className="flex pt-1">
               <div className="flex flex-col mx-3 mb-2 justify-between">
                 {current && !current.nextUid ?
-                  <span>none</span>
+                  <span>None</span>
                 : <>
                     <span className="mb-1">
                       {formatStationName(next?.originStation) ?? "---"} to{" "}
