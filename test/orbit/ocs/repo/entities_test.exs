@@ -88,8 +88,203 @@ defmodule Orbit.Ocs.EntitiesTest do
                scheduled_departure: @test_datetime_utc,
                scheduled_arrival: @test_datetime_utc,
                offset: nil,
+               # Scheduled endpoints from setup are preserved; new values from
+               # the TSCH_NEW go to the updated columns because they differ.
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: "ORIGIN_STA",
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DEST_STA"
+             } = queried
+    end
+
+    test "TSCH_NEW with changed endpoints preserves scheduled stations and records updates" do
+      message = %Message.TschNewMessage{
+        counter: 112,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        add_type: "S",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STATION_2",
+        dest_sta: "DESTINATION_STATION_2",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(message)
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: "ORIGIN_STATION_2",
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DESTINATION_STATION_2"
+             } = queried
+    end
+
+    test "TSCH_NEW replayed with scheduled endpoints leaves updated columns null" do
+      message = %Message.TschNewMessage{
+        counter: 113,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        add_type: "S",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STATION",
+        dest_sta: "DESTINATION_STATION",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(message)
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: nil,
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: nil
+             } = queried
+    end
+
+    test "TSCH_NEW reverting to scheduled endpoints clears updated columns" do
+      changed = %Message.TschNewMessage{
+        counter: 114,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        add_type: "S",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STATION_2",
+        dest_sta: "DESTINATION_STATION_2",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(changed)
+
+      Entities.apply_changes(%{
+        changed
+        | origin_sta: "ORIGIN_STATION",
+          dest_sta: "DESTINATION_STATION"
+      })
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: nil,
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: nil
+             } = queried
+    end
+
+    test "TSCH_NEW populates scheduled endpoints on a trip that has none yet" do
+      %Trip{
+        service_date: @test_service_date,
+        uid: "BARE_TRIP_UID",
+        rail_line: :red,
+        train_uid: "TRAIN_UID"
+      }
+      |> Trip.changeset()
+      |> Repo.insert!()
+
+      message = %Message.TschNewMessage{
+        counter: 115,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "BARE_TRIP_UID",
+        add_type: "S",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STA",
+        dest_sta: "DEST_STA",
+        prev_trip_uid: nil,
+        next_trip_uid: nil
+      }
+
+      Entities.apply_changes(message)
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "BARE_TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
                origin_station: "ORIGIN_STA",
-               destination_station: "DEST_STA"
+               origin_station_updated: nil,
+               destination_station: "DEST_STA",
+               destination_station_updated: nil
+             } = queried
+    end
+
+    test "TSCH_NEW with no endpoint values preserves scheduled and updated endpoints" do
+      changed = %Message.TschNewMessage{
+        counter: 116,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        add_type: "S",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STATION_2",
+        dest_sta: "DESTINATION_STATION_2",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(changed)
+      Entities.apply_changes(%{changed | origin_sta: nil, dest_sta: nil})
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: "ORIGIN_STATION_2",
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DESTINATION_STATION_2"
              } = queried
     end
 
@@ -208,11 +403,142 @@ defmodule Orbit.Ocs.EntitiesTest do
                service_date: @test_service_date,
                uid: "TRIP_UID",
                rail_line: :red,
-               destination_station: "DESTINATION_STATION_2",
+               # The scheduled destination is preserved; the dispatcher's
+               # updated destination goes to destination_station_updated
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DESTINATION_STATION_2",
                route: "ROUTE_2",
                scheduled_arrival: ^timestamp_utc,
                # Check that other fields still exist
                offset: 0
+             } = queried_trip
+    end
+
+    test "TSCH_DST with the scheduled destination leaves updated column null" do
+      message = %Message.TschDstMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        dest_sta: "DESTINATION_STATION",
+        ocs_route_id: "ROUTE_2",
+        sched_arr: @test_datetime
+      }
+
+      Entities.apply_changes(message)
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: nil
+             } = queried_trip
+    end
+
+    test "TSCH_DST reverting to the scheduled destination clears updated column" do
+      message = %Message.TschDstMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        dest_sta: "DESTINATION_STATION_2",
+        ocs_route_id: "ROUTE_2",
+        sched_arr: @test_datetime
+      }
+
+      Entities.apply_changes(message)
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{destination_station_updated: "DESTINATION_STATION_2"} = queried_trip
+
+      Entities.apply_changes(%{message | dest_sta: "DESTINATION_STATION"})
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: nil
+             } = queried_trip
+    end
+
+    test "TSCH_DST for a new trip records the destination as scheduled" do
+      message = %Message.TschDstMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "NEW_TRIP_UID",
+        dest_sta: "DEST_STA",
+        ocs_route_id: "ROUTE",
+        sched_arr: @test_datetime
+      }
+
+      Entities.apply_changes(message)
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "NEW_TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               destination_station: "DEST_STA",
+               destination_station_updated: nil
+             } = queried_trip
+    end
+
+    test "TSCH_DST sets scheduled destination on existing trip if not yet set" do
+      # TSCH_NEW omits the destination station (which does happen for "add_type: A" messages)
+      message = %Message.TschNewMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "NEW_TRIP_UID"
+      }
+
+      Entities.apply_changes(message)
+
+      message = %Message.TschDstMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "NEW_TRIP_UID",
+        dest_sta: "DEST_STA_2"
+      }
+
+      Entities.apply_changes(message)
+
+      queried_trip =
+        Repo.get_by!(
+          Trip,
+          uid: "NEW_TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               destination_station: "DEST_STA_2",
+               destination_station_updated: nil
              } = queried_trip
     end
 

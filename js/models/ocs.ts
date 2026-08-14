@@ -12,6 +12,8 @@ export const OCSTripData = z.object({
   offset: z.number().nullable(),
   origin_station: z.string().nullable(),
   destination_station: z.string().nullable(),
+  origin_station_updated: z.string().nullable(),
+  destination_station_updated: z.string().nullable(),
   deleted: z.boolean().nullable(),
   updated_at: z.string(),
 });
@@ -27,6 +29,8 @@ export type OCSTrip = {
   offset: number | null;
   originStation: string | null;
   destinationStation: string | null;
+  originStationUpdated: string | null;
+  destinationStationUpdated: string | null;
   deleted: boolean | null;
   updatedAt: DateTime;
 };
@@ -44,6 +48,8 @@ export const ocsTripFromData = (data: OCSTripData): OCSTrip => ({
   offset: data.offset,
   originStation: data.origin_station,
   destinationStation: data.destination_station,
+  originStationUpdated: data.origin_station_updated ?? null,
+  destinationStationUpdated: data.destination_station_updated ?? null,
   deleted: data.deleted,
   updatedAt: dateTimeFromISO(data.updated_at),
 });

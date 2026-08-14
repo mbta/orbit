@@ -16,6 +16,8 @@ describe("ocsTripFromData", () => {
         offset: 0,
         deleted: false,
         updated_at: "2025-04-29T21:44:00.000Z",
+        origin_station_updated: null,
+        destination_station_updated: null,
       }),
     ).toEqual({
       uid: "11111111",
@@ -26,9 +28,38 @@ describe("ocsTripFromData", () => {
       scheduledArrival: dateTimeFromISO("2025-04-29T22:24:00.000Z"),
       originStation: "place-asmnl",
       destinationStation: "place-alfcl",
+      originStationUpdated: null,
+      destinationStationUpdated: null,
       offset: 0,
       deleted: false,
       updatedAt: dateTimeFromISO("2025-04-29T21:44:00.000Z"),
     });
+  });
+
+  test("maps updated station fields when present", () => {
+    expect(
+      ocsTripFromData({
+        uid: "22222222",
+        next_uid: null,
+        scheduled_departure: "2025-04-29T21:41:00.000Z",
+        departed: true,
+        actual_departure: "2025-04-29T21:43:00.000Z",
+        scheduled_arrival: "2025-04-29T22:24:00.000Z",
+        origin_station: "place-asmnl",
+        destination_station: "place-alfcl",
+        origin_station_updated: "place-jfk",
+        destination_station_updated: null,
+        offset: 0,
+        deleted: false,
+        updated_at: "2025-04-29T21:44:00.000Z",
+      }),
+    ).toEqual(
+      expect.objectContaining({
+        originStation: "place-asmnl",
+        destinationStation: "place-alfcl",
+        originStationUpdated: "place-jfk",
+        destinationStationUpdated: null,
+      }),
+    );
   });
 });

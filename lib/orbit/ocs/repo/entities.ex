@@ -45,6 +45,13 @@ defmodule Orbit.Ocs.Entities do
     #
     # Since OCS messages are generally considered idempotent, we assume there is no harm
     # in allowing TSCH_NEW messages to replay and replace prior rows.
+    #
+    # The endpoint columns are the exception: origin_station/destination_station
+    # always hold the originally-scheduled endpoints (the first values seen for
+    # the trip), while origin_station_updated/destination_station_updated record
+    # a dispatcher's updated endpoints only when they differ from the scheduled
+    # ones (NULL = unchanged). Every TSCH_NEW is authoritative for the current
+    # endpoints, so replaying a window of messages still converges correctly.
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -60,7 +67,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict: :replace_all,
+      on_conflict: tsch_new_on_conflict(),
       conflict_target: [:service_date, :uid, :rail_line]
     )
     |> List.wrap()
@@ -108,6 +115,10 @@ defmodule Orbit.Ocs.Entities do
   # TODO: RTR has a lot of logic around this particular message.
   # Confirm that we understand how OCS works here.
   def apply_changes(%TschDstMessage{} = message) do
+    # TSCH_DST carries a dispatcher-updated destination. The scheduled
+    # destination stays in destination_station (first value seen wins);
+    # destination_station_updated records the new destination only when it
+    # differs from the scheduled one (NULL = unchanged).
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -119,14 +130,7 @@ defmodule Orbit.Ocs.Entities do
     }
     |> Trip.changeset()
     |> Repo.insert(
-      on_conflict:
-        {:replace,
-         [
-           :destination_station,
-           :route,
-           :scheduled_arrival,
-           :updated_at
-         ]},
+      on_conflict: tsch_dst_on_conflict(),
       conflict_target: [:service_date, :rail_line, :uid]
     )
     |> List.wrap()
@@ -243,5 +247,90 @@ defmodule Orbit.Ocs.Entities do
   @spec service_date(DateTime.t()) :: Date.t()
   defp service_date(date_time) do
     DateTime.to_date(date_time)
+  end
+
+  # On conflict, a re-sent TSCH_NEW replaces the same fields `:replace_all`
+  # used to (so replays remain harmless), except for the endpoint columns,
+  # which follow the scheduled/updated semantics described above.
+  @spec tsch_new_on_conflict() :: Ecto.Query.t()
+  defp tsch_new_on_conflict do
+    from(trip in Trip,
+      update: [
+        set: [
+          train_uid: fragment("EXCLUDED.train_uid"),
+          assigned_at: fragment("EXCLUDED.assigned_at"),
+          prev_uid: fragment("EXCLUDED.prev_uid"),
+          next_uid: fragment("EXCLUDED.next_uid"),
+          route: fragment("EXCLUDED.route"),
+          trip_type: fragment("EXCLUDED.trip_type"),
+          scheduled_departure: fragment("EXCLUDED.scheduled_departure"),
+          scheduled_arrival: fragment("EXCLUDED.scheduled_arrival"),
+          offset: fragment("EXCLUDED.offset"),
+          deleted: fragment("EXCLUDED.deleted"),
+          origin_station: fragment("COALESCE(?, EXCLUDED.origin_station)", trip.origin_station),
+          origin_station_updated:
+            fragment(
+              """
+              CASE
+              WHEN ? IS NULL THEN NULL
+              WHEN EXCLUDED.origin_station IS NULL THEN ?
+              WHEN ? = EXCLUDED.origin_station THEN NULL
+              ELSE EXCLUDED.origin_station END
+              """,
+              trip.origin_station,
+              trip.origin_station_updated,
+              trip.origin_station
+            ),
+          destination_station:
+            fragment("COALESCE(?, EXCLUDED.destination_station)", trip.destination_station),
+          destination_station_updated:
+            fragment(
+              """
+              CASE
+              WHEN ? IS NULL THEN NULL
+              WHEN EXCLUDED.destination_station IS NULL THEN ?
+              WHEN ? = EXCLUDED.destination_station THEN NULL
+              ELSE EXCLUDED.destination_station END
+              """,
+              trip.destination_station,
+              trip.destination_station_updated,
+              trip.destination_station
+            ),
+          updated_at: fragment("EXCLUDED.updated_at")
+        ]
+      ]
+    )
+  end
+
+  # TSCH_DST carries a dispatcher-updated destination. route and
+  # scheduled_arrival continue to be replaced so they correspond to the
+  # updated destination; only the destination columns get the
+  # scheduled/updated treatment.
+  @spec tsch_dst_on_conflict() :: Ecto.Query.t()
+  defp tsch_dst_on_conflict do
+    from(trip in Trip,
+      update: [
+        set: [
+          destination_station:
+            fragment("COALESCE(?, EXCLUDED.destination_station)", trip.destination_station),
+          destination_station_updated:
+            fragment(
+              """
+              CASE
+              WHEN ? IS NULL THEN NULL
+              WHEN EXCLUDED.destination_station IS NULL THEN ?
+              WHEN ? = EXCLUDED.destination_station THEN NULL
+              ELSE EXCLUDED.destination_station END
+              """,
+              trip.destination_station,
+              trip.destination_station_updated,
+              trip.destination_station
+            ),
+          route: fragment("EXCLUDED.route"),
+          scheduled_arrival: fragment("EXCLUDED.scheduled_arrival"),
+          updated_at: fragment("EXCLUDED.updated_at")
+        ]
+      ]
+    )
   end
 end
