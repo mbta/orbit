@@ -175,7 +175,6 @@ describe("sidebar", () => {
       });
     });
 
-    // TODO: this is changed now to be in the sidebar header
     describe("Offset", () => {
       test("positive nonzero", () => {
         const view = render(
@@ -263,169 +262,6 @@ describe("sidebar", () => {
     });
 
     describe("Late box", () => {
-      test("shows if departed 5 minutes early", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:36:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
-      });
-
-      test("shows if departed 5 minutes late", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:46:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
-      });
-
-      test("shows if departed 6 minutes late (but really 5 because of the offset)", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 1,
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:47:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
-      });
-
-      test("does not show if departed 4 minutes late", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:45:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/^4 min late/)).not.toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than scheduled", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:29:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes earlier than scheduled (but also left late)", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 1,
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:47:00.000Z",
-                    ),
-                  }),
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:19:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min earlier/)).toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than scheduled, but also left 5 min early", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:36:00.000Z",
-                    ),
-                  }),
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:29:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
-        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
-      });
-
       test("does not show if destination stations mismatch", () => {
         const view = render(
           <SideBar
@@ -449,29 +285,7 @@ describe("sidebar", () => {
         expect(view.queryByText(/^ min later/)).not.toBeInTheDocument();
       });
 
-      test("does not show if arriving 4 minutes later than scheduled", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:28:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than next trip's scheduled departure", () => {
+      test("shows if arriving 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -492,7 +306,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:50:00.000Z",
+                        "2025-04-29T22:46:00.000Z",
                       ),
                     }),
                   ],
@@ -502,10 +316,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^1 min later/)).toBeInTheDocument();
       });
 
-      test("does not show if arriving 4 minutes later than next trip's scheduled departure", () => {
+      test("does not show if arriving less than 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -523,7 +337,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:49:00.000Z",
+                        "2025-04-29T22:45:30.000Z",
                       ),
                     }),
                   ],
@@ -533,10 +347,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
+        expect(view.queryByText(/^min later/)).not.toBeInTheDocument();
       });
 
-      test("does not show if arriving 6 minutes earlier than next trip's scheduled departure", () => {
+      test("does not show if arriving earlier than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -554,7 +368,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:39:00.000Z",
+                        "2025-04-29T22:44:59.000Z",
                       ),
                     }),
                   ],
@@ -567,6 +381,37 @@ describe("sidebar", () => {
         expect(view.queryByText(/earlier/)).not.toBeInTheDocument();
       });
 
+      test("does not show if arriving ON next trip's scheduled departure", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  next: [
+                    ocsTripFactory.build({
+                      scheduledDeparture: dateTimeFromISO(
+                        "2025-04-29T22:45:00.000Z",
+                      ),
+                    }),
+                  ],
+                },
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T22:45:00.000Z",
+                      ),
+                    }),
+                  ],
+                }),
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(view.queryByText(/than next trip's departure time./)).not.toBeInTheDocument();
+      });
+
       test("everything all at once", () => {
         const view = render(
           <SideBar
@@ -576,6 +421,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
                     actualDeparture: dateTimeFromISO(
+                      // Current Trip/actual dep no longer has adherence warning
                       "2025-04-29T21:48:00.000Z",
                     ),
                   }),
@@ -591,6 +437,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
+                        // est arrival 5 mins later than next trip's scheduled departure
                         "2025-04-29T22:50:00.000Z",
                       ),
                     }),
@@ -601,8 +448,6 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/^7 min late/)).toBeInTheDocument();
-        expect(view.getByText(/^26 min later/)).toBeInTheDocument();
         expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
     });
