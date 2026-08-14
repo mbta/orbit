@@ -66,19 +66,6 @@ describe("sidebar", () => {
     expect(view.getByText("Next Trip")).toBeInTheDocument();
   });
 
-  test('renders "None" for Next Trip next trip is explicitly unset', () => {
-    const view = render(
-      <SideBar
-        selection={{
-          vehicle: vehicleFactory.build(),
-        }}
-        close={() => {}}
-      />,
-    );
-    expect(view.getByText("Next Trip")).toBeInTheDocument();
-    expect(view.getByText("None")).toBeInTheDocument();
-  });
-
   describe("Trips", () => {
     // TODO: might need to remove entire scheduled section?
     describe("scheduled", () => {
@@ -91,7 +78,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
                     originStation: "ALEWIFE",
-                    destinationStation: "BRAINTREE",
+                    destinationStation: "JFK/ UMASS ASH",
                   }),
                   next: [
                     // not realistic for a trip, but using known station names we want to reformat for the sidebar
@@ -108,7 +95,7 @@ describe("sidebar", () => {
         );
         // current trip
         expect(view.getByText("Departed Alewife")).toBeInTheDocument();
-        expect(view.getByText("Arriving at Braintree")).toBeInTheDocument();
+        expect(view.getByText("Arriving at JFK")).toBeInTheDocument();
 
         // next trip
         const nextSection = view.getByTestId("next-trip-section");
@@ -126,6 +113,7 @@ describe("sidebar", () => {
                 ocsTrips: {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
+                    destinationStation: "ASHMONT",
                   }),
                   next: [
                     ocsTripFactory.build({
@@ -714,8 +702,39 @@ describe("sidebar", () => {
   });
   // TODO: add a describe block for Next Trip section
   describe("Next Trip section", () => {
-    test("tests something", () => {
-      //something
+    test('renders "None" for Next Trip next trip is explicitly unset', () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build(),
+          }}
+          close={() => {}}
+        />,
+      );
+      expect(view.getByText("Next Trip")).toBeInTheDocument();
+      expect(view.getByText("None")).toBeInTheDocument();
+    });
+
+    test("displays '--' when destination stations mismatch", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({ stationId: "place-davis" }),
+                ],
+              }),
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "22222222" }),
+                next: [ocsTripFactory.build({ uid: "22222222" })],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+      expect(view.getAllByText("--")).toHaveLength(2);
     });
   });
 });

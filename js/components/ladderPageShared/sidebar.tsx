@@ -249,6 +249,9 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 };
 
 const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
+  const stationsMatch =
+    vehicle.ocsTrips.current?.destinationStation ===
+    vehicle.ocsTrips.next[0]?.originStation;
   const current = vehicle.ocsTrips.current;
 
   const next =
@@ -268,21 +271,23 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
             <h2 className="mx-3 text-xs">Next Trip</h2>
           </div>
 
-          <div className="pb-3 light:bg-card-background-light dark:bg-card-background-dark">
+          <div className="light:bg-card-background-light dark:bg-card-background-dark">
             <div className="flex pt-1">
               <div className="flex flex-col mx-3 mb-2 justify-between">
                 {current && !current.nextUid ?
                   <span>None</span>
                 : <>
                     <span className="mb-1">
-                      {formatStationName(next?.originStation) ?? "---"} to{" "}
-                      {formatStationName(next?.destinationStation) ?? "---"}
+                      {!stationsMatch ?
+                        "--"
+                      : `${formatStationName(next?.originStation) ?? "--"} to ${formatStationName(next?.destinationStation) ?? "--"}`}
                     </span>
                     <span>
-                      {next?.scheduledDeparture ?
-                        dateTimeFormat(next.scheduledDeparture, "service")
-                      : "---"}
-                      {" Sched"}
+                      {!stationsMatch ?
+                        "--"
+                      : next?.scheduledDeparture ?
+                        `${dateTimeFormat(next.scheduledDeparture, "service")} Sched`
+                      : "--"}
                     </span>
                   </>
                 }
