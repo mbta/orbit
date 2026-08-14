@@ -80,6 +80,7 @@ describe("sidebar", () => {
   });
 
   describe("Trips", () => {
+    // TODO: might need to remove entire scheduled section?
     describe("scheduled", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
@@ -174,6 +175,7 @@ describe("sidebar", () => {
       });
     });
 
+    // TODO: this is changed now to be in the sidebar header
     describe("Offset", () => {
       test("positive nonzero", () => {
         const view = render(
@@ -192,8 +194,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        // only displays offsets for current scheduled dep time in header
         expect(view.getByText(/\(\+2\)/)).toBeInTheDocument();
-        expect(view.getByText(/\(\+3\)/)).toBeInTheDocument();
+        expect(view.queryByText(/\(\+3\)/)).not.toBeInTheDocument();
       });
 
       test("negative nonzero", () => {
@@ -213,8 +216,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        // only displays offsets for current scheduled dep time in header
         expect(view.getByText(/\(-2\)/)).toBeInTheDocument();
-        expect(view.getByText(/\(-3\)/)).toBeInTheDocument();
+        expect(view.queryByText(/\(-3\)/)).not.toBeInTheDocument();
       });
 
       test("zero", () => {
@@ -868,4 +872,5 @@ describe("sidebar", () => {
     expect(updatedAsScheduled).not.toHaveClass("line-through");
     expect(updatedAsScheduled).toBeInTheDocument();
   });
+  // TODO: add a describe block for Next Trip section
 });
