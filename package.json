@@ -7,7 +7,7 @@
     "test:eslint": "eslint .",
     "test:format": "prettier . --check",
     "test:jest": "jest",
-    "test:e2e": "npx playwright test -c ./playwright.config.ts",
+    "test:e2e": "mix seed_e2e && npx playwright test -c ./playwright.config.ts",
     "test:tsc": "tsc -p tsconfig.json",
     "test": "npm run test:tsc && npm run test:jest && npm run test:eslint && npm run test:format"
   },
