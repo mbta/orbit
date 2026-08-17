@@ -102,7 +102,7 @@ const Header = ({ vehicle }: { vehicle: Vehicle }) => {
         <div>
           {current?.scheduledDeparture ?
             dateTimeFormat(current.scheduledDeparture, "service")
-          : "---"}{" "}
+          : "--"}{" "}
           <Offset value={vehicle.ocsTrips.current?.offset} />
           Sched
         </div>
@@ -180,7 +180,7 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
           : "Next stop"}
           &nbsp;
           <span className="font-bold">
-            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "---"}
+            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "--"}
           </span>
         </div>
       </div>
@@ -201,7 +201,7 @@ const StationDisplay = ({
         <span className="line-through">{scheduledFormatted}</span>{" "}
         <span>{updatedFormatted}</span>
       </span>
-    : <span>{scheduledFormatted ?? updatedFormatted ?? "---"}</span>;
+    : <span>{scheduledFormatted ?? updatedFormatted ?? "--"}</span>;
 };
 
 const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
@@ -217,7 +217,6 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
       <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between pt-1.5 pb-1.5">
         <div className="flex flex-col justify-between mx-2">
           <span>
-            {/* Departed {formatStationName(current?.originStation) ?? "---"} */}
             Departed{" "}
             <StationDisplay
               scheduled={current?.originStation ?? null}
@@ -226,7 +225,6 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           </span>
           <span className="mt-2">
             Arriving at{" "}
-            {/* {formatStationName(current?.destinationStation) ?? "---"} */}
             <StationDisplay
               scheduled={current?.destinationStation ?? null}
               updated={current?.destinationStationUpdated}
@@ -237,10 +235,10 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
           <span>
             {current?.actualDeparture ?
               dateTimeFormat(current.actualDeparture, "service")
-            : "---"}
+            : "--"}
           </span>
           <span>
-            {estArrival ? dateTimeFormat(estArrival, "service") : "---"}
+            {estArrival ? dateTimeFormat(estArrival, "service") : "--"}
           </span>
         </div>
       </div>
@@ -260,6 +258,10 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
   const nextDepMin = lateForNext(vehicle);
   const showLateBox = nextDepMin !== null && nextDepMin >= 1;
 
+  const nextTripOrig =
+    next?.originStationUpdated ?? next?.originStation ?? null;
+  const nextTripDest =
+    next?.destinationStationUpdated ?? next?.destinationStation ?? null;
   return (
     <div className="mt-4 border-t-2 light:border-drawer-border-light dark:border-drawer-border-dark">
       <section
@@ -278,14 +280,23 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
                   <span>None</span>
                 : <>
                     <span className="mb-1">
-                      {!stationsMatch ?
+                      {nextTripOrig === null && nextTripDest === null ?
                         "--"
-                      : `${formatStationName(next?.originStation) ?? "--"} to ${formatStationName(next?.destinationStation) ?? "--"}`}
+                      : <>
+                          <StationDisplay
+                            scheduled={next?.originStation ?? null}
+                            updated={next?.originStationUpdated}
+                          />{" "}
+                          to{" "}
+                          <StationDisplay
+                            scheduled={next?.destinationStation ?? null}
+                            updated={next?.destinationStationUpdated}
+                          />
+                        </>
+                      }
                     </span>
                     <span>
-                      {!stationsMatch ?
-                        "--"
-                      : next?.scheduledDeparture ?
+                      {next?.scheduledDeparture ?
                         `${dateTimeFormat(next.scheduledDeparture, "service")} Sched`
                       : "--"}
                     </span>
@@ -293,12 +304,14 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
                 }
               </div>
             </div>
-            {showLateBox && (
-              <Late
-                departedLate={null}
-                arrivingLate={nextDepMin}
-                arrivingLateText={"next trip's departure time."}
-              />
+            {showLateBox && stationsMatch && (
+              <div className="pb-2">
+                <Late
+                  departedLate={null}
+                  arrivingLate={nextDepMin}
+                  arrivingLateText={"next trip's departure time."}
+                />
+              </div>
             )}
           </div>
         </div>
