@@ -15,7 +15,7 @@ defmodule Mix.Tasks.SeedE2e do
     employee_query =
       from(employee in Employee, where: employee.email == "teste2eemployee@example.com")
 
-    if(!Repo.exists?(employee_query)) do
+    if !Repo.exists?(employee_query) do
       %Employee{
         first_name: "Test",
         preferred_first: "Test",
