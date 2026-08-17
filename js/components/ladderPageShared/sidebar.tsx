@@ -307,7 +307,6 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
             {showLateBox && stationsMatch && (
               <div className="pb-2">
                 <Late
-                  departedLate={null}
                   arrivingLate={nextDepMin}
                   arrivingLateText={"next trip's departure time."}
                 />
@@ -329,12 +328,9 @@ const Offset = ({ value }: { value: number | null | undefined }) => {
 };
 
 const Late = ({
-  // TODO: refactor out if no longer used
-  departedLate,
   arrivingLate,
   arrivingLateText,
 }: {
-  departedLate: number | null;
   arrivingLate: number | null;
   arrivingLateText: string | null;
 }) => {
@@ -348,16 +344,6 @@ const Late = ({
           />
         </div>
         <div className="flex-1">
-          {departedLate && (
-            <p>
-              Departed{" "}
-              <span className="font-bold">
-                {formatDelta(departedLate)} min{" "}
-                {departedLate >= 0 ? "late" : "early"}
-              </span>
-              .
-            </p>
-          )}
           {arrivingLate && (
             <p>
               Arriving{" "}
