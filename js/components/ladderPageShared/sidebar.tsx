@@ -247,21 +247,21 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 };
 
 const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
-  const stationsMatch =
-    vehicle.ocsTrips.current?.destinationStation ===
-    vehicle.ocsTrips.next[0]?.originStation;
   const current = vehicle.ocsTrips.current;
+  const currTripDest =
+    current?.destinationStationUpdated ?? current?.destinationStation ?? null;
 
   const next =
     vehicle.ocsTrips.next.length === 0 ? null : vehicle.ocsTrips.next[0];
-
-  const nextDepMin = lateForNext(vehicle);
-  const showLateBox = nextDepMin !== null && nextDepMin >= 1;
-
   const nextTripOrig =
     next?.originStationUpdated ?? next?.originStation ?? null;
   const nextTripDest =
     next?.destinationStationUpdated ?? next?.destinationStation ?? null;
+
+  const stationsMatch = currTripDest === nextTripOrig;
+  const nextDepMin = lateForNext(vehicle);
+  const showLateBox = nextDepMin !== null && nextDepMin >= 1;
+
   return (
     <div className="mt-4 border-t-2 light:border-drawer-border-light dark:border-drawer-border-dark">
       <section

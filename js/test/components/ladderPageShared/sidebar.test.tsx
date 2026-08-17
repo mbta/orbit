@@ -67,7 +67,6 @@ describe("sidebar", () => {
   });
 
   describe("Trips", () => {
-    // TODO: might need to remove entire scheduled section?
     describe("scheduled", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
@@ -736,7 +735,7 @@ describe("sidebar", () => {
   });
 
   describe("Next Trip section", () => {
-    test('renders "None" for Next Trip next trip is explicitly unset', () => {
+    test("renders 'None' for Next Trip next trip is explicitly unset", () => {
       const view = render(
         <SideBar
           selection={{
@@ -747,6 +746,107 @@ describe("sidebar", () => {
       );
       expect(view.getByText("Next Trip")).toBeInTheDocument();
       expect(view.getByText("None")).toBeInTheDocument();
+    });
+
+    test("displays '--' when scheduled departure time not available", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: null,
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(
+        scoped.getByText(
+          (_, element) => element?.textContent === "Alewife to Ashmont",
+        ),
+      ).toBeInTheDocument();
+      expect(scoped.getAllByText("--")).toHaveLength(1);
+    });
+
+    test("displays '--' when next trip stations unavailable", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: null,
+                    destinationStation: null,
+                    scheduledDeparture: dateTimeFromISO(
+                      // next scheduled dep is 2:10pm
+                      "2025-07-07T18:10:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(scoped.getAllByText("--")).toHaveLength(1);
+      expect(scoped.getByText(/2:10p Sched/)).toBeInTheDocument();
+    });
+
+    test("displays '--' when individual next trip station unavailable", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: null,
+                    scheduledDeparture: dateTimeFromISO(
+                      // next scheduled dep is 2:10pm
+                      "2025-07-07T18:10:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(
+        scoped.getByText(
+          (_, element) => element?.textContent === "Alewife to --",
+        ),
+      ).toBeInTheDocument();
+      expect(scoped.getByText(/2:10p Sched/)).toBeInTheDocument();
     });
   });
 });
