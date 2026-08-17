@@ -1,6 +1,6 @@
 import { ColorSchemeSetting } from "./colorScheme";
 
-export type LocalStorageKey = "COLOR-SCHEME"
+export type LocalStorageKey = "COLOR-SCHEME";
 
 type LocalStorageTypes = {
   "COLOR-SCHEME": ColorSchemeSetting;
