@@ -145,9 +145,9 @@ describe("Ladder", () => {
         );
 
         expect(view.getByText("1888")).toBeInTheDocument();
-        expect(view.getByText("1888")).toHaveClass("border-gray-300");
+        expect(view.getByText("1888")).toHaveClass("border-glides-gray-400");
         expect(view.getByText("1889")).toBeInTheDocument();
-        expect(view.getByText("1889")).toHaveClass("border-gray-300");
+        expect(view.getByText("1889")).toHaveClass("border-glides-gray-400");
       });
 
       test("renders revenue trains with pill color based on route pattern", () => {
@@ -188,9 +188,11 @@ describe("Ladder", () => {
         );
 
         expect(view.getByText("1888")).toBeInTheDocument();
-        expect(view.getByText("1888")).toHaveClass("border-tangerine");
+        expect(view.getByText("1888")).toHaveClass("border-heavy-rail-ashmont");
         expect(view.getByText("1889")).toBeInTheDocument();
-        expect(view.getByText("1889")).toHaveClass("border-crimson");
+        expect(view.getByText("1889")).toHaveClass(
+          "border-heavy-rail-braintree",
+        );
       });
     });
 
@@ -273,19 +275,27 @@ describe("Ladder", () => {
 
         // Ashmont defaults to orange
         expect(view.getByText("1888")).toBeInTheDocument();
-        expect(view.getByText("1888")).toHaveClass("border-tangerine");
+        expect(view.getByText("1888")).toHaveClass("border-heavy-rail-ashmont");
         expect(view.getByText("1889")).toBeInTheDocument();
-        expect(view.getByText("1889")).toHaveClass("border-tangerine");
+        expect(view.getByText("1889")).toHaveClass("border-heavy-rail-ashmont");
 
         // Braintree and Alewife default to red
         expect(view.getByText("1890")).toBeInTheDocument();
-        expect(view.getByText("1890")).toHaveClass("border-crimson");
+        expect(view.getByText("1890")).toHaveClass(
+          "border-heavy-rail-braintree",
+        );
         expect(view.getByText("1891")).toBeInTheDocument();
-        expect(view.getByText("1891")).toHaveClass("border-crimson");
+        expect(view.getByText("1891")).toHaveClass(
+          "border-heavy-rail-braintree",
+        );
         expect(view.getByText("1892")).toBeInTheDocument();
-        expect(view.getByText("1892")).toHaveClass("border-crimson");
+        expect(view.getByText("1892")).toHaveClass(
+          "border-heavy-rail-braintree",
+        );
         expect(view.getByText("1893")).toBeInTheDocument();
-        expect(view.getByText("1893")).toHaveClass("border-crimson");
+        expect(view.getByText("1893")).toHaveClass(
+          "border-heavy-rail-braintree",
+        );
       });
     });
   });

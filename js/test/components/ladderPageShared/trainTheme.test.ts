@@ -4,21 +4,21 @@ import {
 } from "../../../components/ladderPageShared/trainTheme";
 
 describe("trainThemesByRoutePattern", () => {
-  test("returns tangerine theme for expected Ashmont pattern IDs", () => {
+  test("returns ashmont theme for expected Ashmont pattern IDs", () => {
     expect(trainThemesByRoutePattern.get("Red-1-0")).toEqual(
-      TrainThemes.tangerine,
+      TrainThemes.ashmont,
     );
     expect(trainThemesByRoutePattern.get("Red-1-1")).toEqual(
-      TrainThemes.tangerine,
+      TrainThemes.ashmont,
     );
   });
 
-  test("returns crimson theme for expected Braintree pattern IDs", () => {
+  test("returns braintree theme for expected Braintree pattern IDs", () => {
     expect(trainThemesByRoutePattern.get("Red-3-0")).toEqual(
-      TrainThemes.crimson,
+      TrainThemes.braintree,
     );
     expect(trainThemesByRoutePattern.get("Red-3-1")).toEqual(
-      TrainThemes.crimson,
+      TrainThemes.braintree,
     );
   });
 

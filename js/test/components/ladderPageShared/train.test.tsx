@@ -15,7 +15,7 @@ describe("Train", () => {
   test("shows label", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
         labelOffset={null}
@@ -28,7 +28,7 @@ describe("Train", () => {
   test("accepts additional properties", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         selected={true}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
@@ -64,7 +64,7 @@ describe("Train", () => {
   test("renders at an angle when labelOffset provided", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         vehicle={vehicleFactory.build()}
         forceDirection={1}
         labelOffset={42}
@@ -89,7 +89,7 @@ describe("Train", () => {
 
     render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         vehicle={vehicleFactory.build()}
         forceDirection={1}
         labelOffset={null}

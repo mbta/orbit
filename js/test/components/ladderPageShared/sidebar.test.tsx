@@ -94,15 +94,27 @@ describe("sidebar", () => {
           />,
         );
         // current trip
-        expect(view.getByText("Departed Alewife")).toBeInTheDocument();
-        expect(view.getByText("Arriving at JFK")).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Departed Alewife",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Arriving at JFK",
+          ),
+        ).toBeInTheDocument();
 
         // next trip
         const nextSection = view.getByTestId("next-trip-section");
         const scoped = within(nextSection);
 
         expect(scoped.getByText(/Next Trip/i)).toBeInTheDocument();
-        expect(scoped.getByText(/JFK to Kendall/i)).toBeInTheDocument();
+        expect(
+          scoped.getByText(
+            (_, element) => element?.textContent === "JFK to Kendall",
+          ),
+        ).toBeInTheDocument();
       });
 
       test("shows next scheduled departure if present", () => {
@@ -133,7 +145,11 @@ describe("sidebar", () => {
         // only uses actualDeparture and predictedArrivalTime, no scheduled times.
 
         //next trip
-        expect(view.getByText(/Ashmont to Alewife/)).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Ashmont to Alewife",
+          ),
+        ).toBeInTheDocument();
         expect(view.getByText(/2:10p Sched/)).toBeInTheDocument();
       });
 
@@ -275,6 +291,8 @@ describe("sidebar", () => {
                   }),
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -306,6 +324,8 @@ describe("sidebar", () => {
                 ocsTrips: {
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -337,6 +357,8 @@ describe("sidebar", () => {
                 ocsTrips: {
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -368,6 +390,8 @@ describe("sidebar", () => {
                 ocsTrips: {
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -408,6 +432,8 @@ describe("sidebar", () => {
                   }),
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -537,7 +563,7 @@ describe("sidebar", () => {
       );
       const scoped = within(currentLocationSection);
 
-      expect(scoped.getByText("---")).toBeInTheDocument();
+      expect(scoped.getByText("--")).toBeInTheDocument();
     });
   });
 
@@ -550,7 +576,11 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText("Arriving at Alewife")).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Arriving at Alewife",
+          ),
+        ).toBeInTheDocument();
         expect(view.getByText("5:51p")).toBeInTheDocument();
       });
 
@@ -591,8 +621,8 @@ describe("sidebar", () => {
       });
 
       // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
-      // for "---" placeholders into one test mocking missing data for all fields
-      test("displays '---' when unavailable", () => {
+      // for "--" placeholders into one test mocking missing data for all fields
+      test("displays '--' when unavailable", () => {
         const view = render(
           <SideBar
             selection={{
@@ -607,10 +637,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getAllByText("---")).toHaveLength(1);
+        expect(view.getAllByText("--")).toHaveLength(1);
       });
 
-      test("displays '---' when destination stations mismatch", () => {
+      test("displays '--' when destination stations mismatch", () => {
         const view = render(
           <SideBar
             selection={{
@@ -629,7 +659,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getAllByText("---")).toHaveLength(1);
+        expect(view.getAllByText("--")).toHaveLength(1);
       });
     });
 
@@ -641,7 +671,11 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText("Departed Ashmont")).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Departed Ashmont",
+          ),
+        ).toBeInTheDocument();
         expect(view.getByText("5:43p")).toBeInTheDocument();
       });
     });
@@ -700,7 +734,7 @@ describe("sidebar", () => {
     expect(updatedAsScheduled).not.toHaveClass("line-through");
     expect(updatedAsScheduled).toBeInTheDocument();
   });
-  // TODO: add a describe block for Next Trip section
+
   describe("Next Trip section", () => {
     test('renders "None" for Next Trip next trip is explicitly unset', () => {
       const view = render(
@@ -713,28 +747,6 @@ describe("sidebar", () => {
       );
       expect(view.getByText("Next Trip")).toBeInTheDocument();
       expect(view.getByText("None")).toBeInTheDocument();
-    });
-
-    test("displays '--' when destination stations mismatch", () => {
-      const view = render(
-        <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              tripUpdate: tripUpdateFactory.build({
-                stopTimeUpdates: [
-                  stopTimeUpdateFactory.build({ stationId: "place-davis" }),
-                ],
-              }),
-              ocsTrips: {
-                current: ocsTripFactory.build({ nextUid: "22222222" }),
-                next: [ocsTripFactory.build({ uid: "22222222" })],
-              },
-            }),
-          }}
-          close={() => {}}
-        />,
-      );
-      expect(view.getAllByText("--")).toHaveLength(2);
     });
   });
 });
