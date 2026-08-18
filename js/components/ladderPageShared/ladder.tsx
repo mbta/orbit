@@ -223,23 +223,21 @@ const StationList = ({
   );
 };
 
-export const themeForVehicleRoute = (vehicle: Vehicle): TrainTheme | null => {
-  if (!vehicle.vehiclePosition.revenue) {
-    return TrainThemes.gray;
-  }
-  const routePatternId = vehicle.tripUpdate?.routePatternId;
-  return routePatternId != null ?
-      (trainThemesByRoutePattern.get(routePatternId) ?? null)
-    : null;
-};
-
 const themeForVehicleOnLadder = (
   vehicle: Vehicle,
   ladderConfig: LadderConfig,
 ): TrainTheme => {
-  const theme = themeForVehicleRoute(vehicle);
-  if (theme) {
-    return theme;
+  if (!vehicle.vehiclePosition.revenue) {
+    return TrainThemes.gray;
+  }
+
+  const routePatternId = vehicle.tripUpdate?.routePatternId;
+  const themeFromRoute =
+    routePatternId != null ?
+      trainThemesByRoutePattern.get(routePatternId)
+    : null;
+  if (themeFromRoute) {
+    return themeFromRoute;
   }
 
   // Route pattern is missing or unfamiliar. Guess colors based on current

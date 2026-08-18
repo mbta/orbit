@@ -95,7 +95,7 @@ describe("LadderPage SideBar", () => {
       await user.click(view.getByRole("button", { name: "Search for car" }));
 
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
-      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+      expect(view.getByText("1876")).toHaveClass("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700");
 
       await user.click(view.getByRole("button", { name: "×" }));
       expect(input).toHaveValue("");
@@ -140,12 +140,12 @@ describe("LadderPage SideBar", () => {
       const input = view.getByPlaceholderText("Car #");
       await user.type(input, "1876{Enter}");
       expect(input).toHaveValue("1876");
-      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+      expect(view.getByText("1876")).toHaveClass("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700");
 
       await user.click(view.getByRole("button", { name: "1877" }));
 
       expect(input).toHaveValue("1876");
-      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+      expect(view.getByText("1876")).toHaveClass("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700");
     });
 
     test("backspacing from a successful search to unsuccessful closes sidebar", async () => {
@@ -191,7 +191,7 @@ describe("LadderPage SideBar", () => {
 
       const input = view.getByPlaceholderText("Car #");
       await user.type(input, "1876{Enter}");
-      expect(view.getByText("1876")).toHaveClass("bg-[#ffdb00]");
+      expect(view.getByText("1876")).toHaveClass("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700");
 
       await user.clear(input);
       await user.type(input, "9999{Enter}");
@@ -223,7 +223,7 @@ describe("LadderPage SideBar", () => {
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       const firstHighlighted2520 = view
         .getAllByText("2520")
-        .find((element) => element.className.includes("bg-[#ffdb00]"));
+        .find((element) => element.className.includes("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700"));
       expect(firstHighlighted2520).toBeDefined();
 
       await user.click(view.getByRole("button", { name: "Close" }));
@@ -233,7 +233,7 @@ describe("LadderPage SideBar", () => {
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       const secondHighlighted2520 = view
         .getAllByText("2520")
-        .find((element) => element.className.includes("bg-[#ffdb00]"));
+        .find((element) => element.className.includes("light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700"));
       expect(secondHighlighted2520).toBeDefined();
     });
 

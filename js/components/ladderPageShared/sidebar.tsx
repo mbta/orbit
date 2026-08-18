@@ -163,7 +163,8 @@ const Consist = ({
                   "mr-1",
                   isLeadCar ? "font-bold text-2xl" : "pt-1.5",
                   isSearchMatch ?
-                    "light:bg-[#ffdb00] dark:bg-glides-green-two"
+                    // TODO: use ladder search result theming when design tokens from Figma are available
+                    "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700"
                   : "",
                 ])}
               >
