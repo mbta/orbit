@@ -8,7 +8,6 @@ import { getColorSchemeSetting } from "../../util/colorScheme";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
-import { themeForVehicleRoute } from "./ladder";
 import { TrainThemes } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
@@ -76,14 +75,39 @@ const processVehicleConsist = (
   return { consist, processedConsist, leadCarIndex };
 };
 
+const headerSymbol = (vehicle: Vehicle) => {
+  const routePatternId = vehicle.tripUpdate?.routePatternId;
+  if (routePatternId) {
+    if (["Red-1-0", "Red-1-1"].includes(routePatternId)) return "A";
+    if (["Red-3-0", "Red-3-1"].includes(routePatternId)) return "B";
+  }
+  // Fallback if routePatternId is not recognized; check for Ashmont stationId's
+  return (
+      [
+        "70085",
+        "70086",
+        "70087",
+        "70088",
+        "70089",
+        "70090",
+        "70091",
+        "70092",
+        "70093",
+        "70094",
+      ].includes(vehicle.vehiclePosition.stopId ?? "")
+    ) ?
+      "A"
+    : "B";
+};
+
 const Header = ({ vehicle }: { vehicle: Vehicle }) => {
   const { processedConsist, leadCarIndex } = processVehicleConsist(vehicle);
   const current = vehicle.ocsTrips.current;
-
-  // TODO: fallbacks to braintree theme... better alternative?
-  // somehow provide ladderConfig to perform full themeForVehicleOnLadder() with fallbacks?
-  // extract the branch/route from just the vehicle above?
-  const theme = themeForVehicleRoute(vehicle) ?? TrainThemes.braintree;
+  const symbol = headerSymbol(vehicle);
+  const theme =
+    !vehicle.vehiclePosition.revenue ? TrainThemes.gray
+    : symbol === "A" ? TrainThemes.ashmont
+    : TrainThemes.braintree;
   return (
     <section className="pb-3 border-b-2 light:border-drawer-border-light dark:border-drawer-border-dark">
       <div className={className([theme.backgroundColor, "h-2 w-full"])} />
@@ -95,7 +119,7 @@ const Header = ({ vehicle }: { vehicle: Vehicle }) => {
               theme.backgroundColor,
             ])}
           >
-            {theme === TrainThemes.ashmont ? "A" : "B"}
+            {symbol}
           </span>
           <div>{processedConsist[leadCarIndex]}</div>
         </div>
@@ -138,7 +162,9 @@ const Consist = ({
                 className={className([
                   "mr-1",
                   isLeadCar ? "font-bold text-2xl" : "pt-1.5",
-                  isSearchMatch ? "light:bg-[#ffdb00] dark:bg-glides-green-two" : "",
+                  isSearchMatch ?
+                    "light:bg-[#ffdb00] dark:bg-glides-green-two"
+                  : "",
                 ])}
               >
                 {label}
