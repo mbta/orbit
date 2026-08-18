@@ -159,6 +159,7 @@ export const Train = ({
 
       {/* train label */}
       <button
+        data-testid={`train-pill-${displayLabel}`}
         className={className([
           "pointer-events-auto m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
           highlight ? "border-[3px]" : "border",

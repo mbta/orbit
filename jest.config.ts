@@ -160,6 +160,7 @@ const config: JestConfigWithTsJest = {
   //   "**/__tests__/**/*.[jt]s?(x)",
   //   "**/?(*.)+(spec|test).[tj]s?(x)"
   // ],
+  testRegex: "js/test/.*\\.test\\.tsx?$",
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
