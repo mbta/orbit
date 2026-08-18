@@ -64,7 +64,7 @@ defmodule Orbit.MixProject do
       {:ex_machina, "2.8.2", only: :test},
       {:finch, "0.23.0"},
       {:floki, "0.38.4", only: :test},
-      {:guardian, "2.4.1"},
+      {:guardian, "== 2.5.0"},
       {:guardian_phoenix, "2.0.1"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
