@@ -138,7 +138,7 @@ const Consist = ({
                 className={className([
                   "mr-1",
                   isLeadCar ? "font-bold text-2xl" : "pt-1.5",
-                  isSearchMatch ? "bg-[#ffdb00]" : "",
+                  isSearchMatch ? "light:bg-[#ffdb00] dark:bg-glides-green-two" : "",
                 ])}
               >
                 {label}
