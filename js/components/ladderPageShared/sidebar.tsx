@@ -1,4 +1,8 @@
-import { formatStationName, gtfsIdToDisplayName } from "../../data/stations";
+import {
+  formatStationName,
+  gtfsIdToDisplayName,
+  Stations,
+} from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
 import { estimatedArrival } from "../../models/tripUpdate";
@@ -81,23 +85,13 @@ const headerSymbol = (vehicle: Vehicle) => {
     if (["Red-1-0", "Red-1-1"].includes(routePatternId)) return "A";
     if (["Red-3-0", "Red-3-1"].includes(routePatternId)) return "B";
   }
-  // Fallback if routePatternId is not recognized; check for Ashmont stationId's
-  return (
-      [
-        "70085",
-        "70086",
-        "70087",
-        "70088",
-        "70089",
-        "70090",
-        "70091",
-        "70092",
-        "70093",
-        "70094",
-      ].includes(vehicle.vehiclePosition.stopId ?? "")
-    ) ?
-      "A"
-    : "B";
+  // Check for Ashmont stopId's. Fall back to Braintree if routePatternId is not recognized;
+  for (const station of Stations.Red[1]) {
+    if (station.stop_ids.includes(vehicle.vehiclePosition.stopId ?? "")) {
+      return "A";
+    }
+  }
+  return "B";
 };
 
 const SideBarHeader = ({ vehicle }: { vehicle: Vehicle }) => {
