@@ -7,34 +7,31 @@ Asana Task: [Title](link)
 -->
 
 Description goes here.
-Include screenshots if relevant.
+
+<!-- Include screenshots if relevant. -->
 
 Checklist
 
-<!-- check one from each section with (x) -->
+<!-- check relevant items from each section with (x) -->
 
 - Appearance:
-  - `( )` Light & dark mode
-  - `( )` Desktop & mobile sizes
+  - [ ] Light & dark mode
+  - [ ] Desktop & mobile sizes
 - Browsers:
-  - `( )` Chromium
-  - `( )` Firefox
-  - `( )` Safari
+  - [ ] Chromium
+  - [ ] Firefox
+  - [ ] Safari
 - Privacy:
-  - `( )` Commits free of internal data
-  - `( )` PR description free of internal data
-  - `( )` Logging free of internal data
+  - [ ] Commits free of internal data
+  - [ ] PR description free of internal data
+  - [ ] Logging free of internal data
 - Tests:
-  - `( )` Has tests
-  - `( )` Doesn't need tests
-  - `( )` Tests deferred (with justification)
-- Product/Design sign off:
-  - `( )` Okayed the plan for the feature (e.g. the design files, or the Asana task)
-  - `( )` Reviewed the feature as implemented (e.g. on dev-green, or saw screenshots)
-  - `( )` No review needed
+  - [ ] Has tests
+  - [ ] Doesn't need tests
+  - [ ] Tests deferred (with justification)
 
 <!--
-* Should this PR be deployed to dev-green for review? If so, add the `deploy-to-dev-green` label.
+* Should this PR be deployed to dev-green or dev-orange for review? If so, add the `deploy-to-dev-*` label.
 * Does this review need to be prioritized? If so, add the `important` label.
 -->
 
@@ -51,6 +48,6 @@ Prompts for followup tasks:
 
 <!--
 Keep Asana up to date.
-* After this PR is open, add a link to it from its Asana task and move the task to "Under Review".
-* After it's merged, mark the Asana task complete.
+* After this PR is open, add a link to it from its Asana task and move the task to "Dev Review."
+* After it's merged, set the Asana state to "Merged/Not Deployed."
 -->
