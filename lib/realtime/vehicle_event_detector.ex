@@ -153,6 +153,7 @@ defmodule Realtime.VehicleEventDetector do
           StationEvent.t()
         ]
   defp vehicle_events_for_one_train({old_vp, new_vp}, service_date) do
+    log_vehicle_change({old_vp, new_vp})
     station_events = station_events_for_one_train({old_vp, new_vp})
 
     vehicle_id =
@@ -394,10 +395,22 @@ defmodule Realtime.VehicleEventDetector do
 
   # Exposed for testing
   def log_new_event(vehicle_event) do
-    consist = vehicle_event.cars && Enum.join(vehicle_event.cars, "-")
-
     Logger.info(
-      "vehicle_event_detector new_event service_date=#{vehicle_event.service_date} cars=#{consist} station_id=#{vehicle_event.station_id} vehicle_id=#{vehicle_event.vehicle_id} direction_id=#{vehicle_event.direction_id} rail_line=#{vehicle_event.rail_line} arrival_departure=#{vehicle_event.arrival_departure}"
+      "vehicle_event_detector new_event service_date=#{vehicle_event.service_date} cars=#{consist_as_string(vehicle_event)} station_id=#{vehicle_event.station_id} vehicle_id=#{vehicle_event.vehicle_id} direction_id=#{vehicle_event.direction_id} rail_line=#{vehicle_event.rail_line} arrival_departure=#{vehicle_event.arrival_departure}"
     )
+  end
+
+  def log_vehicle_change({old_vp, nil}), do: log_vehicle_change_event(old_vp, "deleted")
+  def log_vehicle_change({nil, new_vp}), do: log_vehicle_change_event(new_vp, "created")
+  def log_vehicle_change({_old_vp, new_vp}), do: log_vehicle_change_event(new_vp, "updated")
+
+  defp log_vehicle_change_event(vp, change_type) do
+    Logger.info(
+      "vehicle_position_change change_type=#{change_type} vehicle_id=#{vp.vehicle_id} consist=#{consist_as_string(vp)} direction=#{vp.direction} current_status=#{vp.current_status} station_id=#{vp.station_id} route_id=#{vp.route_id} trip_id=#{vp.trip_id}"
+    )
+  end
+
+  defp consist_as_string(vehicle_event) do
+    vehicle_event.cars && Enum.join(vehicle_event.cars, "-")
   end
 end
