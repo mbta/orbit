@@ -96,7 +96,7 @@ describe("LadderPage SideBar", () => {
 
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       expect(view.getByText("1876")).toHaveClass(
-        "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+        "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
       await user.click(view.getByRole("button", { name: "×" }));
@@ -143,14 +143,14 @@ describe("LadderPage SideBar", () => {
       await user.type(input, "1876{Enter}");
       expect(input).toHaveValue("1876");
       expect(view.getByText("1876")).toHaveClass(
-        "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+        "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
       await user.click(view.getByRole("button", { name: "1877" }));
 
       expect(input).toHaveValue("1876");
       expect(view.getByText("1876")).toHaveClass(
-        "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+        "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
     });
 
@@ -198,7 +198,7 @@ describe("LadderPage SideBar", () => {
       const input = view.getByPlaceholderText("Car #");
       await user.type(input, "1876{Enter}");
       expect(view.getByText("1876")).toHaveClass(
-        "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+        "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
       await user.clear(input);
@@ -233,7 +233,7 @@ describe("LadderPage SideBar", () => {
         .getAllByText("2520")
         .find((element) =>
           element.className.includes(
-            "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+            "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
           ),
         );
       expect(firstHighlighted2520).toBeDefined();
@@ -247,7 +247,7 @@ describe("LadderPage SideBar", () => {
         .getAllByText("2520")
         .find((element) =>
           element.className.includes(
-            "light:bg-slate-700 light:text-slate-200 dark:bg-slate-200 dark:text-slate-700",
+            "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
           ),
         );
       expect(secondHighlighted2520).toBeDefined();
