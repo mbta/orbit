@@ -31,7 +31,7 @@ Checklist
   - [ ] Tests deferred (with justification)
 
 <!--
-* Should this PR be deployed to dev-green or dev-orange for review? If so, add the `deploy-to-dev-*` label.
+* Should this PR be deployed to orbit-sandbox for review? If so, add the `deploy-to-sandbox` label.
 * Does this review need to be prioritized? If so, add the `important` label.
 -->
 
