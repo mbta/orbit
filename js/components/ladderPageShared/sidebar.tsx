@@ -28,7 +28,7 @@ export const SideBar = ({
 
   return (
     <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
-      <Header vehicle={selection.vehicle} />
+      <SideBarHeader vehicle={selection.vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
@@ -100,7 +100,7 @@ const headerSymbol = (vehicle: Vehicle) => {
     : "B";
 };
 
-const Header = ({ vehicle }: { vehicle: Vehicle }) => {
+const SideBarHeader = ({ vehicle }: { vehicle: Vehicle }) => {
   const { processedConsist, leadCarIndex } = processVehicleConsist(vehicle);
   const current = vehicle.ocsTrips.current;
   const symbol = headerSymbol(vehicle);
@@ -135,6 +135,14 @@ const Header = ({ vehicle }: { vehicle: Vehicle }) => {
   );
 };
 
+const SectionHeader = ({ title }: { title: string }) => {
+  return (
+    <div className="light:bg-card-header-light dark:bg-card-header-dark">
+      <h2 className="mx-3 text-xs">{title}</h2>
+    </div>
+  );
+};
+
 const Consist = ({
   vehicle,
   searchedCar,
@@ -146,9 +154,7 @@ const Consist = ({
     processVehicleConsist(vehicle);
   return (
     <section className="mt-3 mx-2 flex flex-col rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
-      <div className="light:bg-card-header-light dark:bg-card-header-dark">
-        <h2 className="mx-3 text-xs">Cars</h2>
-      </div>
+      <SectionHeader title="Cars" />
       <div className="light:bg-card-background-light dark:bg-card-background-dark">
         <div className="mt-1 px-3 flex">
           {processedConsist.map((label, index) => {
@@ -196,10 +202,7 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
       className="mt-3 mx-2 rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark"
       data-testid="current-location-section"
     >
-      <div className="light:bg-card-header-light dark:bg-card-header-dark">
-        <h2 className="mx-3 text-xs">Current Location</h2>
-      </div>
-
+      <SectionHeader title="Current Location" />
       <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between">
         <div className="flex justify-between mx-3 text-base pt-2 pb-2">
           {vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt ?
@@ -237,10 +240,7 @@ const CurrentTrip = ({ vehicle }: { vehicle: Vehicle }) => {
 
   return (
     <section className="mt-3 mx-2 rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
-      <div className="light:bg-card-header-light dark:bg-card-header-dark">
-        <h2 className="mx-3 text-xs">Current Trip</h2>
-      </div>
-
+      <SectionHeader title="Current Trip" />
       <div className="light:bg-card-background-light dark:bg-card-background-dark flex justify-between pt-1.5 pb-1.5">
         <div className="flex flex-col justify-between mx-2">
           <span>
@@ -296,10 +296,7 @@ const NextTrip = ({ vehicle }: { vehicle: Vehicle }) => {
         data-testid="next-trip-section"
       >
         <div className="">
-          <div className="light:bg-card-header-light dark:bg-card-header-dark">
-            <h2 className="mx-3 text-xs">Next Trip</h2>
-          </div>
-
+          <SectionHeader title="Next Trip" />
           <div className="light:bg-card-background-light dark:bg-card-background-dark">
             <div className="flex pt-1">
               <div className="flex flex-col mx-3 mb-2 justify-between">
