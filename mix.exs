@@ -43,13 +43,13 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "1.12.4"},
+      {:bandit, "== 1.12.5"},
       {
         :broadway_kinesis,
         github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
       },
       # used by ex_aws to parse AWS CLI settings/credentials
-      {:configparser_ex, "5.0.0", only: :dev},
+      {:configparser_ex, "== 5.0.1", only: :dev},
       # Needed by laboratory for prod build
       {:cowboy, "2.18.0"},
       {:credo, "1.7.19", only: [:dev, :test], runtime: false},
@@ -87,12 +87,12 @@ defmodule Orbit.MixProject do
       # meck 1.x fixes it and stays API-compatible for mock's usage; override the pin.
       {:meck, "1.2.0", only: :test, override: true},
       {:oban, "2.23.1"},
-      {:phoenix, "1.8.10"},
+      {:phoenix, "== 1.8.12"},
       {:phoenix_ecto, "4.7.0"},
       {:phoenix_html, "4.3.0"},
       {:phoenix_live_dashboard, "0.8.7"},
       {:phoenix_live_reload, "1.7.0", only: :dev},
-      {:phoenix_live_view, "1.2.9"},
+      {:phoenix_live_view, "== 1.2.10"},
       {:postgrex, "0.22.4"},
       {:req, "0.6.3"},
       {:sentry, "13.4.2"},
