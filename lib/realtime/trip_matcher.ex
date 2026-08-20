@@ -150,8 +150,11 @@ defmodule Realtime.TripMatcher do
 
         ignore_next_trip = current_trip && current_trip.next_uid == nil
 
+        # The current trip's actual departure time is expected to be missing if it (1) has not
+        # departed, or (2) originates from a nonrevenue location.
         ignore_actual_departure? =
-          current_trip && !current_trip.departed
+          current_trip &&
+            (!current_trip.departed or nonrevenue_origin?(current_trip))
 
         checks = %{
           missing_current_departure_station:
@@ -234,11 +237,19 @@ defmodule Realtime.TripMatcher do
     Enum.map(vehicles, fn vehicle ->
       %{ocs_trips: %{current: current}} = vehicle
 
-      origin_station = Stations.ocs_to_gtfs(current && Trip.get_origin_station(current))
+      origin_station = current && Trip.get_origin_station(current)
 
-      if origin_station != nil and not at_station?(vehicle, origin_station) do
+      # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
+      # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
+      # or else we would not have gotten a vehicle position from GTFS realtime.
+      departed? =
+        origin_station != nil and
+          not (Stations.revenue?(origin_station) and
+                 at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
+
+      if departed? do
         actual_departure =
-          Map.get(events, {current.train_uid, origin_station})
+          Map.get(events, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
 
         vehicle = put_in(vehicle.ocs_trips.current.departed, true)
         put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
@@ -246,6 +257,12 @@ defmodule Realtime.TripMatcher do
         vehicle
       end
     end)
+  end
+
+  @spec nonrevenue_origin?(Trip.t()) :: boolean()
+  defp nonrevenue_origin?(trip) do
+    origin_station = Trip.get_origin_station(trip)
+    origin_station != nil and not Stations.revenue?(origin_station)
   end
 
   @spec at_station?(Vehicle.t(), String.t()) :: boolean()
