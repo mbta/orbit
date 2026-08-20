@@ -138,6 +138,8 @@ defmodule Realtime.TripMatcher do
       vehicles,
       %{},
       fn vehicle, acc ->
+        current_trip = get_in(vehicle.ocs_trips.current)
+
         next_trip =
           case get_in(vehicle.ocs_trips.next) do
             [trip] -> trip
@@ -146,28 +148,29 @@ defmodule Realtime.TripMatcher do
             nil -> nil
           end
 
-        ignore_next_trip = vehicle.ocs_trips.current && vehicle.ocs_trips.current.next_uid == nil
+        ignore_next_trip = current_trip && current_trip.next_uid == nil
 
         ignore_actual_departure? =
-          vehicle.ocs_trips.current && !vehicle.ocs_trips.current.departed
+          current_trip && !current_trip.departed
 
         checks = %{
-          missing_current_departure_station: get_in(vehicle.ocs_trips.current.origin_station),
+          missing_current_departure_station:
+            current_trip && Trip.get_origin_station(vehicle.ocs_trips.current),
           missing_current_scheduled_departure_time:
-            get_in(vehicle.ocs_trips.current.scheduled_departure),
+            current_trip && current_trip.scheduled_departure,
           missing_current_actual_departure_time:
-            ignore_actual_departure? || get_in(vehicle.ocs_trips.current.actual_departure),
-          missing_current_arrival_station: get_in(vehicle.ocs_trips.current.destination_station),
-          missing_current_scheduled_arrival_time:
-            get_in(vehicle.ocs_trips.current.scheduled_arrival),
+            ignore_actual_departure? || (current_trip && current_trip.actual_departure),
+          missing_current_arrival_station:
+            current_trip && Trip.get_destination_station(current_trip),
+          missing_current_scheduled_arrival_time: current_trip && current_trip.scheduled_arrival,
           missing_current_estimated_arrival_time:
             TripUpdate.last_arrival_time(get_in(vehicle.trip_update)),
           missing_next_departure_station:
-            ignore_next_trip || (next_trip && next_trip.origin_station),
+            ignore_next_trip || (next_trip && Trip.get_origin_station(next_trip)),
           missing_next_scheduled_departure_time:
             ignore_next_trip || (next_trip && next_trip.scheduled_departure),
           missing_next_arrival_station:
-            ignore_next_trip || (next_trip && next_trip.destination_station),
+            ignore_next_trip || (next_trip && Trip.get_destination_station(next_trip)),
           missing_next_scheduled_arrival_time:
             ignore_next_trip || (next_trip && next_trip.scheduled_arrival)
         }
@@ -203,7 +206,9 @@ defmodule Realtime.TripMatcher do
     search_stations =
       vehicles
       |> Enum.map(
-        &Stations.ocs_to_gtfs(&1.ocs_trips.current && &1.ocs_trips.current.origin_station)
+        &Stations.ocs_to_gtfs(
+          &1.ocs_trips.current && Trip.get_origin_station(&1.ocs_trips.current)
+        )
       )
       |> Enum.uniq()
 
@@ -229,9 +234,11 @@ defmodule Realtime.TripMatcher do
     Enum.map(vehicles, fn vehicle ->
       %{ocs_trips: %{current: current}} = vehicle
 
-      if current != nil and !at_scheduled_origin(vehicle) do
-        origin_station = Stations.ocs_to_gtfs(current.origin_station)
-        actual_departure = Map.get(events, {current.train_uid, origin_station})
+      origin_station = Stations.ocs_to_gtfs(current && Trip.get_origin_station(current))
+
+      if origin_station != nil and not at_station?(vehicle, origin_station) do
+        actual_departure =
+          Map.get(events, {current.train_uid, origin_station})
 
         vehicle = put_in(vehicle.ocs_trips.current.departed, true)
         put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
@@ -241,8 +248,8 @@ defmodule Realtime.TripMatcher do
     end)
   end
 
-  @spec at_scheduled_origin(Vehicle.t()) :: boolean()
-  defp at_scheduled_origin(vehicle) do
+  @spec at_station?(Vehicle.t(), String.t()) :: boolean()
+  defp at_station?(vehicle, station) do
     # NB pm: Ashmont exception
     #   Vehicles turning around south of Ashmont are IN_TRANSIT_TO Ashmont, but for the purposes of
     #   determining whether we should show an Actual Departure, they are stopped there.
@@ -251,8 +258,6 @@ defmodule Realtime.TripMatcher do
         (vehicle.position.station_id == "place-asmnl" and vehicle.position.direction == 1)
 
     # Check if stopped at the OCS origin_station
-    stopped and
-      vehicle.position.station_id ==
-        Stations.ocs_to_gtfs(vehicle.ocs_trips.current.origin_station)
+    stopped and vehicle.position.station_id == station
   end
 end

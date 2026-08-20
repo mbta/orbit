@@ -668,6 +668,21 @@ defmodule Realtime.TripMatcherTest do
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
     end
 
+    test "uses the updated origin if specified" do
+      ocs_trip =
+        insert(:ocs_trip,
+          train_uid: "5484208E",
+          origin_station: "SHAWMUT",
+          origin_station_updated: "ASHMONT"
+        )
+
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
+
     test "can handle multiple" do
       ocs_trip = insert(:ocs_trip, uid: "trip1", train_uid: "5484208E")
       ocs_trip2 = insert(:ocs_trip, uid: "trip2", train_uid: "5484208F")

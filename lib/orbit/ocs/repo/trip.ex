@@ -91,4 +91,14 @@ defmodule Orbit.Ocs.Trip do
   def unique_constraint_keys do
     [:service_date, :uid, :rail_line]
   end
+
+  @spec get_origin_station(t()) :: String.t() | nil
+  def get_origin_station(trip) do
+    trip.origin_station_updated || trip.origin_station
+  end
+
+  @spec get_destination_station(t()) :: String.t() | nil
+  def get_destination_station(trip) do
+    trip.destination_station_updated || trip.destination_station
+  end
 end
