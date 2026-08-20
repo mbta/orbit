@@ -9,6 +9,14 @@ import formsPlugin from "@tailwindcss/forms";
 import railTechUITheme from "rail-tech-ui/dist/src/tailwind.config";
 import plugin from "tailwindcss/plugin";
 
+const lightModePlugin = plugin(({ addVariant }) => {
+  addVariant("light", ":where(html.light) &");
+  addVariant("dark", [
+    ":where(html.dark) &",
+    ":where(html:not(.light):not(.dark)) &",
+  ]);
+});
+
 export default {
   ...railTechUITheme,
   content: [
@@ -18,7 +26,7 @@ export default {
     "./lib/orbit_web.ex",
     "./lib/orbit_web/**/*.*ex",
   ],
-  darkMode: ["class", '[data-mode="dark"]'],
+  darkMode: null as unknown as "media" | "class",
   theme: {
     extend: {
       ...railTechUITheme.theme.extend,
@@ -67,6 +75,7 @@ export default {
     },
   },
   plugins: [
+    lightModePlugin,
     formsPlugin,
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:

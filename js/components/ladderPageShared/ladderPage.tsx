@@ -93,7 +93,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       : null}
       <div
         className={className([
-          "flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
+          "relative flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
         ])}
         // Close sidebar when clicking anywhere in the background
         onClick={close}
