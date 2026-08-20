@@ -175,7 +175,17 @@ defmodule Realtime.TripMatcher do
           missing_next_arrival_station:
             ignore_next_trip || (next_trip && Trip.get_destination_station(next_trip)),
           missing_next_scheduled_arrival_time:
-            ignore_next_trip || (next_trip && next_trip.scheduled_arrival)
+            ignore_next_trip || (next_trip && next_trip.scheduled_arrival),
+          large_delta_between_scheduled_actual_departures:
+            case vehicle.ocs_trips.current do
+              %{actual_departure: actual, scheduled_departure: scheduled}
+              when not is_nil(actual) and not is_nil(scheduled) ->
+                # checks are inverted, return nil if delta >=45 so that vehicle_id is reported
+                if abs(DateTime.diff(actual, scheduled, :minute)) >= 45, do: nil, else: true
+
+              _ ->
+                true
+            end
         }
 
         checks
