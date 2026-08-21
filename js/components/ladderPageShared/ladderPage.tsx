@@ -9,7 +9,7 @@ import { BranchPicker, BranchPickerSelection } from "./branchPicker";
 import { Ladders } from "./ladder";
 import { SearchBar, VehicleSearchMatch } from "./search";
 import { SideBar, SideBarSelection } from "./sidebar";
-import { ReactElement, useCallback, useEffect, useState } from "react";
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
@@ -21,6 +21,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const [branchPickerSelection, setBranchPickerSelection] =
     useState<BranchPickerSelection>("Alewife");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const openSideBar = useCallback(
     (selection: SideBarSelection | null) => {
@@ -54,6 +56,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       document.removeEventListener("keydown", onEscape, false);
     };
   }, [onEscape]);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const check = () => {
+      setIsOverflowing(el.scrollWidth > el.clientWidth);
+    };
+    check();
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("resize", check);
+    };
+  }, []);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
@@ -96,8 +111,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           <SideBar selection={sideBarSelection} close={close} />
         : null}
         <div
+          ref={scrollContainerRef}
           className={className([
-            "flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
+            "flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",
           ])}
           // Close sidebar when clicking anywhere in the background
           onClick={close}
@@ -117,8 +133,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           />
         </div>
       </main>
-      <BranchPicker setBranchPickerSelection={setBranchPickerSelection} />
-      {branchPickerSelection}
+      {isOverflowing && (
+        <BranchPicker setBranchPickerSelection={setBranchPickerSelection} />
+      )}
     </>
   );
 };
