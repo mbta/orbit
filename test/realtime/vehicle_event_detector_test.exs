@@ -229,7 +229,27 @@ defmodule Realtime.VehicleEventDetectorTest do
              )
     end
 
-    test "logs vehicle updated", %{vehicle_position: vehicle_position} do
+    test "does not log vehicle updated if no relevant properties changed", %{
+      vehicle_position: vehicle_position
+    } do
+      updated = Map.put(vehicle_position, :timestamp, DateTime.utc_now())
+
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({vehicle_position, updated})
+        end
+
+      assert nil ==
+               Enum.find(
+                 logs,
+                 &match?(
+                   "[info] vehicle_position_change change_type=updated vehicle_id=vehicle_id" <> _,
+                   &1
+                 )
+               )
+    end
+
+    test "logs vehicle updated if properties have changed", %{vehicle_position: vehicle_position} do
       updated = Map.put(vehicle_position, :current_status, :STOPPED_AT)
 
       logs =

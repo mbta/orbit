@@ -402,7 +402,14 @@ defmodule Realtime.VehicleEventDetector do
 
   def log_vehicle_change({old_vp, nil}), do: log_vehicle_change_event(old_vp, "deleted")
   def log_vehicle_change({nil, new_vp}), do: log_vehicle_change_event(new_vp, "created")
-  def log_vehicle_change({_old_vp, new_vp}), do: log_vehicle_change_event(new_vp, "updated")
+
+  def log_vehicle_change({old_vp, new_vp}) do
+    props_to_compare = [:direction, :cars, :station_id, :current_status, :vehicle_id, :trip_id]
+
+    if Map.take(old_vp, props_to_compare) != Map.take(new_vp, props_to_compare) do
+      log_vehicle_change_event(new_vp, "updated")
+    end
+  end
 
   defp log_vehicle_change_event(vp, change_type) do
     Logger.info(
