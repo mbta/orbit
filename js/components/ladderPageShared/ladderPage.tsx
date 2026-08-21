@@ -129,6 +129,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
             routeId={routeId}
             vehicles={vehicles}
             setSideBarSelection={openSideBarFromLadder}
+            setBranchPickerSelection={setBranchPickerSelection}
             sideBarSelection={sideBarSelection}
           />
         </div>

@@ -29,7 +29,7 @@ describe("Ladder", () => {
     const view = render(
       <Ladders
         routeId={"Red"}
-        setSideBarSelection={jest.fn()}
+        setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
         sideBarSelection={null}
         vehicles={useVehicles() ?? []}
       />,
@@ -75,7 +75,7 @@ describe("Ladder", () => {
     const view = render(
       <Ladders
         routeId="Red"
-        setSideBarSelection={jest.fn()}
+        setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
         sideBarSelection={null}
         vehicles={useVehicles() ?? []}
       />,
@@ -138,7 +138,7 @@ describe("Ladder", () => {
         const view = render(
           <Ladders
             routeId="Red"
-            setSideBarSelection={jest.fn()}
+            setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
             sideBarSelection={null}
             vehicles={useVehicles() ?? []}
           />,
@@ -181,7 +181,7 @@ describe("Ladder", () => {
         const view = render(
           <Ladders
             routeId="Red"
-            setSideBarSelection={jest.fn()}
+            setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
             sideBarSelection={null}
             vehicles={useVehicles() ?? []}
           />,
@@ -267,7 +267,7 @@ describe("Ladder", () => {
         const view = render(
           <Ladders
             routeId="Red"
-            setSideBarSelection={jest.fn()}
+            setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
             sideBarSelection={null}
             vehicles={useVehicles() ?? []}
           />,
@@ -317,7 +317,7 @@ describe("Ladder", () => {
       const view = render(
         <Ladders
           routeId="Red"
-          setSideBarSelection={jest.fn()}
+          setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
           sideBarSelection={{
             vehicle: vehicleFactory.build({
               vehiclePosition: vehiclePositionFactory.build({
@@ -349,7 +349,7 @@ describe("Ladder", () => {
       const view = render(
         <Ladders
           routeId="Red"
-          setSideBarSelection={jest.fn()}
+          setSideBarSelection={jest.fn()} setBranchPickerSelection={jest.fn()}
           sideBarSelection={null}
           vehicles={useVehicles() ?? []}
         />,

@@ -4,6 +4,7 @@ import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { className } from "../../util/dom";
 import { height } from "./height";
+import { BranchPickerSelection } from "./branchPicker";
 import { SideBarSelection } from "./sidebar";
 import { avoidLabelOverlaps, Train } from "./train";
 import {
@@ -13,15 +14,23 @@ import {
 } from "./trainTheme";
 import { ReactElement } from "react";
 
+const branchForLadder = (ladderConfig: LadderConfig): BranchPickerSelection => {
+  if (ladderConfig.some((s) => s.id === "place-asmnl")) return "Ashmont";
+  if (ladderConfig.some((s) => s.id === "place-brntn")) return "Braintree";
+  return "Alewife";
+};
+
 export const Ladders = ({
   routeId,
   sideBarSelection,
   setSideBarSelection,
+  setBranchPickerSelection,
   vehicles,
 }: {
   routeId: RouteId;
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
+  setBranchPickerSelection: (selection: BranchPickerSelection) => void;
   vehicles: Vehicle[];
 }): ReactElement => {
   const stationLists = Stations[routeId];
@@ -58,6 +67,7 @@ export const Ladders = ({
             vehicles={vehicles}
             sideBarSelection={sideBarSelection}
             setSideBarSelection={setSideBarSelection}
+            setBranchPickerSelection={setBranchPickerSelection}
           />
         ),
       )}
@@ -80,12 +90,23 @@ const TrainsAndStations = ({
   vehicles,
   sideBarSelection,
   setSideBarSelection,
+  setBranchPickerSelection,
 }: {
   ladderConfig: LadderConfig;
   vehicles: Vehicle[];
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
+  setBranchPickerSelection: (selection: BranchPickerSelection) => void;
 }): ReactElement => {
+  const branch = branchForLadder(ladderConfig);
+  const setSideBarSelectionAndBranch = (
+    selection: SideBarSelection | null,
+  ) => {
+    if (selection !== null) {
+      setBranchPickerSelection(branch);
+    }
+    setSideBarSelection(selection);
+  };
   const vehiclesWithHeights: VehicleWithHeight[] = vehicles.map((vehicle) => {
     const { vehiclePosition: vp } = vehicle;
     // should still be able to render trains that are StoppedAt a station,
@@ -168,7 +189,7 @@ const TrainsAndStations = ({
               labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
               selected={selected}
               scrollIntoView={shouldScrollIntoView}
-              setSideBarSelection={setSideBarSelection}
+              setSideBarSelection={setSideBarSelectionAndBranch}
             />
           </div>
         );
