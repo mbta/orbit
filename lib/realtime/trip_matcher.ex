@@ -180,8 +180,8 @@ defmodule Realtime.TripMatcher do
             case vehicle.ocs_trips.current do
               %{actual_departure: actual, scheduled_departure: scheduled}
               when not is_nil(actual) and not is_nil(scheduled) ->
-                # checks are inverted, return nil if delta >=90 so that vehicle_id is reported
-                if abs(DateTime.diff(actual, scheduled, :minute)) >= 90, do: nil, else: true
+                # checks are inverted, return nil if delta >=45 so that vehicle_id is reported
+                if abs(DateTime.diff(actual, scheduled, :minute)) >= 45, do: nil, else: true
 
               _ ->
                 true
