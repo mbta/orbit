@@ -37,7 +37,7 @@ const BranchButton = ({
 
   return (
     <button
-      className={`flex flex-col justify-center items-center grow ${buttonBg} rounded`}
+      className={`flex flex-col justify-center items-center grow ${buttonBg} rounded-t`}
       onClick={onClick}
     >
       <div className={labelText}>{branch}</div>
@@ -54,7 +54,7 @@ export const BranchPicker = ({
   setBranchPickerSelection: (selection: BranchPickerSelection) => void;
 }) => {
   return (
-    <div className="flex h-14 justify-center max-w-96 self-center gap-1 w-80">
+    <div className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]">
       {(["Alewife", "Ashmont", "Braintree"] as const).map((branch) => (
         <BranchButton
           key={branch}
