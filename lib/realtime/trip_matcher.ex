@@ -191,6 +191,8 @@ defmodule Realtime.TripMatcher do
         checks
         |> Map.new(fn {name, value} ->
           {name, (value != nil && []) || [vehicle.position.vehicle_id]}
+          # TODO: just for ease-of-search on ladder. REMOVE BEFORE MERGE
+          # {name, (value != nil && []) || [List.first(vehicle.position.cars)]}
         end)
         |> Map.merge(acc, fn _k, current, new ->
           current ++ new
