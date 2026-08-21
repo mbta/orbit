@@ -5,6 +5,7 @@ import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
+import { BranchPicker, BranchPickerSelection } from "./branchPicker";
 import { Ladders } from "./ladder";
 import { SearchBar, VehicleSearchMatch } from "./search";
 import { SideBar, SideBarSelection } from "./sidebar";
@@ -17,6 +18,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SideBarSelection | null>(null);
+  const [branchPickerSelection, setBranchPickerSelection] =
+    useState<BranchPickerSelection>("Alewife");
   const [searchQuery, setSearchQuery] = useState("");
 
   const openSideBar = useCallback(
@@ -87,31 +90,35 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   return (
-    <main className="flex overflow-y-auto overflow-x-hidden justify-center">
-      {sideBarSelection !== null ?
-        <SideBar selection={sideBarSelection} close={close} />
-      : null}
-      <div
-        className={className([
-          "relative flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
-        ])}
-        // Close sidebar when clicking anywhere in the background
-        onClick={close}
-      >
-        <SearchBar
-          vehicles={vehicles}
-          query={searchQuery}
-          onSearchMatch={onSearchMatch}
-          onSearchCleared={onSearchCleared}
-          onQueryChange={onQueryChange}
-        />
-        <Ladders
-          routeId={routeId}
-          vehicles={vehicles}
-          setSideBarSelection={openSideBarFromLadder}
-          sideBarSelection={sideBarSelection}
-        />
-      </div>
-    </main>
+    <>
+      <main className="flex overflow-y-auto overflow-x-hidden justify-center">
+        {sideBarSelection !== null ?
+          <SideBar selection={sideBarSelection} close={close} />
+        : null}
+        <div
+          className={className([
+            "flex transition-all duration-300 ease-in-out overflow-x-auto w-full",
+          ])}
+          // Close sidebar when clicking anywhere in the background
+          onClick={close}
+        >
+          <SearchBar
+            vehicles={vehicles}
+            query={searchQuery}
+            onSearchMatch={onSearchMatch}
+            onSearchCleared={onSearchCleared}
+            onQueryChange={onQueryChange}
+          />
+          <Ladders
+            routeId={routeId}
+            vehicles={vehicles}
+            setSideBarSelection={openSideBarFromLadder}
+            sideBarSelection={sideBarSelection}
+          />
+        </div>
+      </main>
+      <BranchPicker setBranchPickerSelection={setBranchPickerSelection} />
+      {branchPickerSelection}
+    </>
   );
 };
