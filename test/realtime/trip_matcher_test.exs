@@ -516,6 +516,22 @@ defmodule Realtime.TripMatcherTest do
                ])
     end
 
+    test "missing_current_actual_departure_time (not logged if trip has nonrev origin)" do
+      assert %{
+               missing_current_actual_departure_time: []
+             } =
+               TripMatcher.statistics([
+                 %Vehicle{
+                   trip_update: build(:trip_update),
+                   position: build(:vehicle_position),
+                   ocs_trips: %{
+                     current: build(:ocs_trip, origin_station: "CABOT YARD", departed: true),
+                     next: []
+                   }
+                 }
+               ])
+    end
+
     test "missing_current_arrival_station" do
       assert %{
                missing_current_arrival_station: []
@@ -665,6 +681,21 @@ defmodule Realtime.TripMatcherTest do
       insert(:vehicle_event, vehicle_id: "5484208E", timestamp: ~U[2025-07-08 16:25:24Z])
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:25:24Z]}}}] =
+               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+    end
+
+    test "uses the updated origin if specified" do
+      ocs_trip =
+        insert(:ocs_trip,
+          train_uid: "5484208E",
+          origin_station: "SHAWMUT",
+          origin_station_updated: "ASHMONT"
+        )
+
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      insert(:vehicle_event, vehicle_id: "5484208E")
+
+      assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
                TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
     end
 
