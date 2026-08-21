@@ -493,6 +493,9 @@ export const stationSidebarNames = new Map([
   ["JFK/ UMASS ASH", "JFK"],
   ["JFK/ UMASS BRT", "JFK"],
   ["KENDALL/MIT", "Kendall"],
+  ["CHARLES/MGH", "Charles"],
+  ["PARK STREET [R]", "Park Street"],
+  ["DOWNTOWN CROSSING R", "Downtown Crossing"],
 ]);
 
 export const formatStationName = (station: string | null | undefined) => {

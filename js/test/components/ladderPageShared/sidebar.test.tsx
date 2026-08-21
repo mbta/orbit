@@ -20,7 +20,13 @@ describe("sidebar", () => {
         close={() => {}}
       />,
     );
-    expect(view.getByText("1877")).toHaveClass("font-bold text-2xl");
+
+    // lead car is now in sidebar header so it appears twice now
+    expect(
+      view
+        .getAllByText("1877")
+        .some((car) => car.classList.contains("font-bold")),
+    ).toBe(true);
     expect(view.getByText("1814")).toBeInTheDocument();
   });
 
@@ -60,19 +66,6 @@ describe("sidebar", () => {
     expect(view.getByText("Next Trip")).toBeInTheDocument();
   });
 
-  test('renders "next trip none" header if next trip is explicitly unset', () => {
-    const view = render(
-      <SideBar
-        selection={{
-          vehicle: vehicleFactory.build(),
-        }}
-        close={() => {}}
-      />,
-    );
-    expect(view.queryByText("Next Trip")).not.toBeInTheDocument();
-    expect(view.getByText("NEXT TRIP - none")).toBeInTheDocument();
-  });
-
   describe("Trips", () => {
     describe("scheduled", () => {
       test("shows origin and destination stations if present", () => {
@@ -84,7 +77,7 @@ describe("sidebar", () => {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
                     originStation: "ALEWIFE",
-                    destinationStation: "BRAINTREE",
+                    destinationStation: "JFK/ UMASS ASH",
                   }),
                   next: [
                     // not realistic for a trip, but using known station names we want to reformat for the sidebar
@@ -100,18 +93,30 @@ describe("sidebar", () => {
           />,
         );
         // current trip
-        expect(view.getByText("Alewife")).toBeInTheDocument();
-        expect(view.getByText("Braintree")).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Departed Alewife",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Arriving at JFK",
+          ),
+        ).toBeInTheDocument();
 
         // next trip
         const nextSection = view.getByTestId("next-trip-section");
         const scoped = within(nextSection);
 
         expect(scoped.getByText(/Next Trip/i)).toBeInTheDocument();
-        expect(scoped.getByText(/JFK/i)).toBeInTheDocument();
+        expect(
+          scoped.getByText(
+            (_, element) => element?.textContent === "JFK to Kendall",
+          ),
+        ).toBeInTheDocument();
       });
 
-      test("shows scheduled departure and arrival times if present", () => {
+      test("shows next scheduled departure if present", () => {
         const view = render(
           <SideBar
             selection={{
@@ -119,20 +124,13 @@ describe("sidebar", () => {
                 ocsTrips: {
                   current: ocsTripFactory.build({
                     nextUid: "22222222",
-                    scheduledDeparture: dateTimeFromISO(
-                      "2025-07-07T17:05:00.000Z",
-                    ),
-                    scheduledArrival: dateTimeFromISO(
-                      "2025-07-07T18:05:00.000Z",
-                    ),
+                    destinationStation: "ASHMONT",
                   }),
                   next: [
                     ocsTripFactory.build({
                       scheduledDeparture: dateTimeFromISO(
+                        // next scheduled dep is 2:10pm
                         "2025-07-07T18:10:00.000Z",
-                      ),
-                      scheduledArrival: dateTimeFromISO(
-                        "2025-07-07T19:10:00.000Z",
                       ),
                     }),
                   ],
@@ -143,12 +141,15 @@ describe("sidebar", () => {
           />,
         );
         // current trip
-        expect(view.getByText(/1:05p/)).toBeInTheDocument();
-        expect(view.getByText(/2:05p/)).toBeInTheDocument();
+        // only uses actualDeparture and predictedArrivalTime, no scheduled times.
 
         //next trip
-        expect(view.getByText(/2:10p/)).toBeInTheDocument();
-        expect(view.getByText(/3:10p/)).toBeInTheDocument();
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Ashmont to Alewife",
+          ),
+        ).toBeInTheDocument();
+        expect(view.getByText(/2:10p Sched/)).toBeInTheDocument();
       });
 
       test('shows "last updated from OCS" timestamp (in local wall time) if present', () => {
@@ -186,8 +187,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        // only displays offsets for current scheduled dep time in header
         expect(view.getByText(/\(\+2\)/)).toBeInTheDocument();
-        expect(view.getByText(/\(\+3\)/)).toBeInTheDocument();
+        expect(view.queryByText(/\(\+3\)/)).not.toBeInTheDocument();
       });
 
       test("negative nonzero", () => {
@@ -207,8 +209,9 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        // only displays offsets for current scheduled dep time in header
         expect(view.getByText(/\(-2\)/)).toBeInTheDocument();
-        expect(view.getByText(/\(-3\)/)).toBeInTheDocument();
+        expect(view.queryByText(/\(-3\)/)).not.toBeInTheDocument();
       });
 
       test("zero", () => {
@@ -253,169 +256,6 @@ describe("sidebar", () => {
     });
 
     describe("Late box", () => {
-      test("shows if departed 5 minutes early", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:36:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
-      });
-
-      test("shows if departed 5 minutes late", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:46:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
-      });
-
-      test("shows if departed 6 minutes late (but really 5 because of the offset)", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 1,
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:47:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min late/)).toBeInTheDocument();
-      });
-
-      test("does not show if departed 4 minutes late", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:45:00.000Z",
-                    ),
-                  }),
-                },
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/^4 min late/)).not.toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than scheduled", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:29:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes earlier than scheduled (but also left late)", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 1,
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:47:00.000Z",
-                    ),
-                  }),
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:19:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min earlier/)).toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than scheduled, but also left 5 min early", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:36:00.000Z",
-                    ),
-                  }),
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:29:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
-        expect(view.getByText(/^5 min early/)).toBeInTheDocument();
-      });
-
       test("does not show if destination stations mismatch", () => {
         const view = render(
           <SideBar
@@ -439,29 +279,7 @@ describe("sidebar", () => {
         expect(view.queryByText(/^ min later/)).not.toBeInTheDocument();
       });
 
-      test("does not show if arriving 4 minutes later than scheduled", () => {
-        const view = render(
-          <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:28:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
-              }),
-            }}
-            close={() => {}}
-          />,
-        );
-        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
-      });
-
-      test("shows if arriving 5 minutes later than next trip's scheduled departure", () => {
+      test("shows if arriving 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -472,6 +290,8 @@ describe("sidebar", () => {
                   }),
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -482,7 +302,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:50:00.000Z",
+                        "2025-04-29T22:46:00.000Z",
                       ),
                     }),
                   ],
@@ -492,10 +312,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/^5 min later/)).toBeInTheDocument();
+        expect(view.getByText(/^1 min later/)).toBeInTheDocument();
       });
 
-      test("does not show if arriving 4 minutes later than next trip's scheduled departure", () => {
+      test("does not show if arriving less than 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -503,6 +323,8 @@ describe("sidebar", () => {
                 ocsTrips: {
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -513,7 +335,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:49:00.000Z",
+                        "2025-04-29T22:45:30.000Z",
                       ),
                     }),
                   ],
@@ -523,10 +345,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.queryByText(/^4 min later/)).not.toBeInTheDocument();
+        expect(view.queryByText(/^min later/)).not.toBeInTheDocument();
       });
 
-      test("does not show if arriving 6 minutes earlier than next trip's scheduled departure", () => {
+      test("does not show if arriving earlier than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
@@ -534,6 +356,8 @@ describe("sidebar", () => {
                 ocsTrips: {
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -544,7 +368,7 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:39:00.000Z",
+                        "2025-04-29T22:44:59.000Z",
                       ),
                     }),
                   ],
@@ -557,20 +381,16 @@ describe("sidebar", () => {
         expect(view.queryByText(/earlier/)).not.toBeInTheDocument();
       });
 
-      test("everything all at once", () => {
+      test("does not show if arriving ON next trip's scheduled departure", () => {
         const view = render(
           <SideBar
             selection={{
               vehicle: vehicleFactory.build({
                 ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    actualDeparture: dateTimeFromISO(
-                      "2025-04-29T21:48:00.000Z",
-                    ),
-                  }),
                   next: [
                     ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
                       scheduledDeparture: dateTimeFromISO(
                         "2025-04-29T22:45:00.000Z",
                       ),
@@ -581,6 +401,49 @@ describe("sidebar", () => {
                   stopTimeUpdates: [
                     stopTimeUpdateFactory.build({
                       predictedArrivalTime: dateTimeFromISO(
+                        "2025-04-29T22:45:00.000Z",
+                      ),
+                    }),
+                  ],
+                }),
+              }),
+            }}
+            close={() => {}}
+          />,
+        );
+        expect(
+          view.queryByText(/than next trip's departure time./),
+        ).not.toBeInTheDocument();
+      });
+
+      test("everything all at once", () => {
+        const view = render(
+          <SideBar
+            selection={{
+              vehicle: vehicleFactory.build({
+                ocsTrips: {
+                  current: ocsTripFactory.build({
+                    nextUid: "22222222",
+                    actualDeparture: dateTimeFromISO(
+                      // Current Trip/actual dep no longer has adherence warning
+                      "2025-04-29T21:48:00.000Z",
+                    ),
+                  }),
+                  next: [
+                    ocsTripFactory.build({
+                      originStation: "ALEWIFE",
+                      destinationStation: "ASHMONT",
+                      scheduledDeparture: dateTimeFromISO(
+                        "2025-04-29T22:45:00.000Z",
+                      ),
+                    }),
+                  ],
+                },
+                tripUpdate: tripUpdateFactory.build({
+                  stopTimeUpdates: [
+                    stopTimeUpdateFactory.build({
+                      predictedArrivalTime: dateTimeFromISO(
+                        // est arrival 5 mins later than next trip's scheduled departure
                         "2025-04-29T22:50:00.000Z",
                       ),
                     }),
@@ -591,8 +454,6 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getByText(/^7 min late/)).toBeInTheDocument();
-        expect(view.getByText(/^26 min later/)).toBeInTheDocument();
         expect(view.getByText(/^5 min later/)).toBeInTheDocument();
       });
     });
@@ -701,7 +562,7 @@ describe("sidebar", () => {
       );
       const scoped = within(currentLocationSection);
 
-      expect(scoped.getByText("---")).toBeInTheDocument();
+      expect(scoped.getByText("--")).toBeInTheDocument();
     });
   });
 
@@ -714,6 +575,11 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Arriving at Alewife",
+          ),
+        ).toBeInTheDocument();
         expect(view.getByText("5:51p")).toBeInTheDocument();
       });
 
@@ -754,8 +620,8 @@ describe("sidebar", () => {
       });
 
       // NOTE: when other sidebar fields are hooked up, perhaps consolidate testing
-      // for "---" placeholders into one test mocking missing data for all fields
-      test("displays '---' when unavailable", () => {
+      // for "--" placeholders into one test mocking missing data for all fields
+      test("displays '--' when unavailable", () => {
         const view = render(
           <SideBar
             selection={{
@@ -770,10 +636,10 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getAllByText("---")).toHaveLength(1);
+        expect(view.getAllByText("--")).toHaveLength(1);
       });
 
-      test("displays '---' when destination stations mismatch", () => {
+      test("displays '--' when destination stations mismatch", () => {
         const view = render(
           <SideBar
             selection={{
@@ -792,7 +658,7 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
-        expect(view.getAllByText("---")).toHaveLength(1);
+        expect(view.getAllByText("--")).toHaveLength(1);
       });
     });
 
@@ -804,6 +670,11 @@ describe("sidebar", () => {
             close={() => {}}
           />,
         );
+        expect(
+          view.getByText(
+            (_, element) => element?.textContent === "Departed Ashmont",
+          ),
+        ).toBeInTheDocument();
         expect(view.getByText("5:43p")).toBeInTheDocument();
       });
     });
@@ -861,5 +732,121 @@ describe("sidebar", () => {
     const updatedAsScheduled = view.getByText("JFK");
     expect(updatedAsScheduled).not.toHaveClass("line-through");
     expect(updatedAsScheduled).toBeInTheDocument();
+  });
+
+  describe("Next Trip section", () => {
+    test("renders 'None' for Next Trip next trip is explicitly unset", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build(),
+          }}
+          close={() => {}}
+        />,
+      );
+      expect(view.getByText("Next Trip")).toBeInTheDocument();
+      expect(view.getByText("None")).toBeInTheDocument();
+    });
+
+    test("displays '--' when scheduled departure time not available", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: null,
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(
+        scoped.getByText(
+          (_, element) => element?.textContent === "Alewife to Ashmont",
+        ),
+      ).toBeInTheDocument();
+      expect(scoped.getAllByText("--")).toHaveLength(1);
+    });
+
+    test("displays '--' when next trip stations unavailable", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: null,
+                    destinationStation: null,
+                    scheduledDeparture: dateTimeFromISO(
+                      // next scheduled dep is 2:10pm
+                      "2025-07-07T18:10:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(scoped.getAllByText("--")).toHaveLength(1);
+      expect(scoped.getByText(/2:10p Sched/)).toBeInTheDocument();
+    });
+
+    test("displays '--' when individual next trip station unavailable", () => {
+      const view = render(
+        <SideBar
+          selection={{
+            vehicle: vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({ nextUid: "222222" }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: null,
+                    scheduledDeparture: dateTimeFromISO(
+                      // next scheduled dep is 2:10pm
+                      "2025-07-07T18:10:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+            }),
+          }}
+          close={() => {}}
+        />,
+      );
+
+      const nextSection = view.getByTestId("next-trip-section");
+      const scoped = within(nextSection);
+
+      expect(scoped.getByText("Next Trip")).toBeInTheDocument();
+      expect(
+        scoped.getByText(
+          (_, element) => element?.textContent === "Alewife to --",
+        ),
+      ).toBeInTheDocument();
+      expect(scoped.getByText(/2:10p Sched/)).toBeInTheDocument();
+    });
   });
 });

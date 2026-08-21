@@ -331,6 +331,7 @@ defmodule Realtime.TripMatcherTest do
                missing_next_departure_station: [],
                missing_next_scheduled_arrival_time: [],
                missing_next_scheduled_departure_time: [],
+               large_delta_between_scheduled_actual_departures: [],
                total: 1
              } ==
                TripMatcher.statistics([
@@ -340,7 +341,8 @@ defmodule Realtime.TripMatcherTest do
                        build(
                          :ocs_trip,
                          departed: true,
-                         actual_departure: ~U[2025-06-06 12:00:00Z]
+                         actual_departure: ~U[2026-08-21 12:00:00Z],
+                         scheduled_departure: ~U[2026-08-21 11:30:00Z]
                        ),
                      next: [
                        build(:ocs_trip)
@@ -365,6 +367,7 @@ defmodule Realtime.TripMatcherTest do
                missing_next_departure_station: [],
                missing_next_scheduled_arrival_time: [],
                missing_next_scheduled_departure_time: [],
+               large_delta_between_scheduled_actual_departures: [],
                total: 1
              } ==
                TripMatcher.statistics([
@@ -375,7 +378,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          next_uid: nil,
                          departed: true,
-                         actual_departure: ~U[2025-06-06 12:00:00Z]
+                         actual_departure: ~U[2026-08-21 12:00:00Z],
+                         scheduled_departure: ~U[2026-08-21 11:30:00Z]
                        ),
                      next: []
                    },
@@ -398,6 +402,7 @@ defmodule Realtime.TripMatcherTest do
                missing_next_departure_station: ["VEHICLE_ID"],
                missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
                missing_next_scheduled_departure_time: ["VEHICLE_ID"],
+               large_delta_between_scheduled_actual_departures: ["VEHICLE_ID"],
                total: 1
              } ==
                TripMatcher.statistics([
@@ -425,12 +430,19 @@ defmodule Realtime.TripMatcherTest do
                missing_next_departure_station: ["VEHICLE_ID"],
                missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
                missing_next_scheduled_departure_time: ["VEHICLE_ID"],
+               large_delta_between_scheduled_actual_departures: [],
                total: 1
              } ==
                TripMatcher.statistics([
                  build(:vehicle,
                    ocs_trips: %{
-                     current: build(:ocs_trip, next_uid: "23456789"),
+                     current:
+                       build(:ocs_trip,
+                         next_uid: "23456789",
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:00:00Z],
+                         scheduled_departure: ~U[2026-08-21 11:30:00Z]
+                       ),
                      next: []
                    },
                    position: %VehiclePosition{
@@ -649,6 +661,45 @@ defmodule Realtime.TripMatcherTest do
                      next: [build(:ocs_trip, scheduled_arrival: ~U[2025-06-06 13:00:00Z])]
                    }
                  }
+               ])
+    end
+
+    test "large_delta_between_scheduled_actual_departures reports vehicles with departure delta at least 90 minutes" do
+      assert %{
+               large_delta_between_scheduled_actual_departures: ["VEHICLE_OVER_90"]
+             } =
+               TripMatcher.statistics([
+                build(:vehicle,
+                  ocs_trips: %{
+                    current:
+                      build(:ocs_trip,
+                        departed: true,
+                        actual_departure: ~U[2026-08-21 13:30:00Z],
+                        scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                      ),
+                    next: []
+                  },
+                  position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_90"}
+                ),
+                build(:vehicle,
+                  ocs_trips: %{
+                    current:
+                      build(:ocs_trip,
+                        departed: true,
+                        actual_departure: ~U[2026-08-21 12:30:00Z],
+                        scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                      ),
+                    next: []
+                  },
+                  position: %VehiclePosition{vehicle_id: "VEHICLE_UNDER_90"}
+                ),
+                build(:vehicle,
+                  ocs_trips: %{
+                    current: build(:ocs_trip, departed: true, scheduled_departure: ~U[2026-08-21 12:00:00Z]),
+                    next: []
+                  },
+                  position: %VehiclePosition{vehicle_id: "VEHICLE_WITH_NO_ACTUAL"}
+                )
                ])
     end
 
