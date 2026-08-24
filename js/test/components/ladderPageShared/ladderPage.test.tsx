@@ -131,7 +131,7 @@ describe("LadderPage SideBar", () => {
       await user.type(input, "1877{Enter}");
       expect(input).toHaveValue("1877");
 
-      await user.click(view.getByRole("button", { name: "1888" }));
+      await user.click(view.getByRole("button", { name: "A 1888" }));
       expect(input).toHaveValue("");
     });
 
@@ -146,8 +146,7 @@ describe("LadderPage SideBar", () => {
         "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
-      await user.click(view.getByRole("button", { name: "1877" }));
-
+      await user.click(view.getByRole("button", { name: "A 1877" }));
       expect(input).toHaveValue("1876");
       expect(view.getByText("1876")).toHaveClass(
         "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",

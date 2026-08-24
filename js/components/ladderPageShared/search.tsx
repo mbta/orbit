@@ -147,7 +147,7 @@ export const SearchBar = ({
       </form>
 
       {errorMessage !== null ?
-        <p className="mt-1 rounded bg-white px-2 py-1 text-sm text-red-600">
+        <p className="mt-1 rounded px-2 py-1 text-sm text-red-300">
           {errorMessage}
         </p>
       : null}

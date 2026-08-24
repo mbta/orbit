@@ -80,14 +80,16 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   const openSideBarFromLadder = useCallback(
     (selection: SideBarSelection | null) => {
-      setSearchQuery("");
+      if (!selection?.vehicle.vehiclePosition.cars.includes(searchQuery)) {
+        setSearchQuery("");
+      }
       openSideBar(selection);
     },
-    [openSideBar, setSearchQuery],
+    [openSideBar, setSearchQuery, searchQuery],
   );
 
   return (
-    <main className="flex overflow-y-auto overflow-x-hidden justify-center">
+    <main className="bg-glides-blue-700 flex overflow-y-auto overflow-x-hidden justify-center">
       {sideBarSelection !== null ?
         <SideBar selection={sideBarSelection} close={close} />
       : null}

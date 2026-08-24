@@ -1,17 +1,98 @@
 import { LadderConfig, Stations } from "../../data/stations";
-import { RouteId } from "../../models/common";
-import { Vehicle } from "../../models/vehicle";
-import { StopStatus } from "../../models/vehiclePosition";
-import { className } from "../../util/dom";
-import { height } from "./height";
-import { SideBarSelection } from "./sidebar";
-import { avoidLabelOverlaps, Train } from "./train";
 import {
-  TrainTheme,
-  TrainThemes,
-  trainThemesByRoutePattern,
-} from "./trainTheme";
+  ORBIT_HR_DISPATCHERS,
+  ORBIT_HR_STAKEHOLDERS,
+  ORBIT_RL_CHIEF_INSPECTORS,
+  ORBIT_RL_INSPECTORS,
+  ORBIT_RL_TRAINSTARTERS,
+  ORBIT_RL_YARDMASTERS,
+  ORBIT_TID_STAFF,
+  userHasOneOf,
+} from "../../groups";
+import { RouteId } from "../../models/common";
+import { Station } from "../../models/station";
+import { Vehicle } from "../../models/vehicle";
+import { consistsEqual } from "../../util/consist";
+import { SideBarSelection } from "./sidebar";
+import { Ladder } from "rail-tech-ui";
+import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
+import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
+import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement } from "react";
+
+const ROUTE_PATTERN_CONFIG: Readonly<
+  Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
+> = {
+  Red: {
+    "Red-1-0": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
+    },
+    "Red-1-1": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
+    },
+    "Red-3-0": {
+      color: "branch-color-heavy-rail-braintree",
+      letter: "B",
+    },
+    "Red-3-1": {
+      color: "branch-color-heavy-rail-braintree",
+      letter: "B",
+    },
+  },
+};
+
+const ROUTE_DEFAULTS: Readonly<
+  Record<RouteId, { color: string; letter: string }>
+> = {
+  Red: {
+    color: "branch-color-heavy-rail-braintree",
+    letter: "-",
+  },
+};
+
+type TrainHeight = {
+  dotHeight: number | null;
+  labelOffset?: number | null;
+};
+
+// Re-exported for consumers (height.ts, train.tsx and their tests) that still
+// operate on vehicles annotated with a height
+export type VehicleWithHeight = {
+  vehicle: Vehicle;
+  heights: TrainHeight;
+};
+
+// Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
+// LadderStation shape (`latLng`, requires `shortName`).
+// TODO: After we remove the old ladder, this can be simplified
+const toLadderStation = (station: Station) => ({
+  id: station.id,
+  name: station.name,
+  shortName: station.name,
+  latLng: station.location,
+  spacingRatio: station.spacingRatio,
+});
+
+// Transform an Orbit `Vehicle` to a TrainLoc that rail-tech-ui & Glides use
+// TODO: After we remove the old ladder, we may be able to standardize on TrainLoc
+const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
+  const vp = vehicle.vehiclePosition;
+  return {
+    consist: vp.cars,
+    routeId: vp.routeId,
+    directionId: vp.directionId,
+    ab: vp.cars.map(() => null),
+    routePatternId: vehicle.tripUpdate?.routePatternId ?? undefined,
+    stationId: vp.stationId,
+    stopStatus: vp.stopStatus,
+    latLng: vp.position,
+    heading: vp.heading,
+    timestamp: vp.timestamp,
+    trip: { scheduled: { revenue: vp.revenue }, manual: null },
+  };
+};
 
 export const Ladders = ({
   routeId,
@@ -48,202 +129,79 @@ export const Ladders = ({
     ),
   );
 
+  const onVehicleSelection = (selection: VehicleSelection) => {
+    const match = vehicles.find((vehicle) =>
+      consistsEqual(
+        vehicle.vehiclePosition.cars,
+        selection.consist as string[],
+      ),
+    );
+    if (match) {
+      const sameVehicle =
+        sideBarSelection !== null &&
+        consistsEqual(
+          sideBarSelection.vehicle.vehiclePosition.cars,
+          selection.consist as string[],
+        );
+      setSideBarSelection({
+        vehicle: match,
+        searchedCar: sameVehicle ? sideBarSelection.searchedCar : undefined,
+      });
+    }
+  };
+
+  // Scroll into view only when the user found the vehicle via search; keeps
+  // parity with the previous scrollIntoView behavior.
+  const scrollToConsist =
+    sideBarSelection?.searchedCar != null ?
+      sideBarSelection.vehicle.vehiclePosition.cars
+    : null;
+
   return (
-    <div className="relative flex w-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
+    <div className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
       {Array.from(vehiclesByBranch.entries()).map(
-        ([stationList, vehicles], index) => (
-          <TrainsAndStations
-            key={index}
-            ladderConfig={stationList}
-            vehicles={vehicles}
-            sideBarSelection={sideBarSelection}
-            setSideBarSelection={setSideBarSelection}
-          />
+        ([stationList, branchVehicles], index) => (
+          <div key={index} className="h-full mx-40 mt-20">
+            <Ladder
+              trainsClickable={userHasOneOf([
+                ORBIT_HR_DISPATCHERS,
+                ORBIT_HR_STAKEHOLDERS,
+                ORBIT_RL_CHIEF_INSPECTORS,
+                ORBIT_RL_INSPECTORS,
+                ORBIT_RL_TRAINSTARTERS,
+                ORBIT_RL_YARDMASTERS,
+                ORBIT_TID_STAFF,
+              ])}
+              zoom={70}
+              labelMode="lead"
+              trainLocs={branchVehicles.map(vehicleToTrainLoc)}
+              stationSelection={null}
+              scrollToConsist={scrollToConsist}
+              onVehicleSelection={onVehicleSelection}
+              setStationSelection={() => undefined}
+              eastToWestStations={stationList.map(toLadderStation)}
+              letterFn={(routeId: RouteId, routePatternId?: RoutePatternId) => {
+                if (routePatternId !== undefined) {
+                  return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
+                }
+
+                return ROUTE_DEFAULTS[routeId].letter;
+              }}
+              routeColorFn={(
+                routeId: RouteId,
+                routePatternId?: RoutePatternId,
+              ) => {
+                if (routePatternId !== undefined) {
+                  return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
+                }
+
+                return ROUTE_DEFAULTS[routeId].color;
+              }}
+              getInitialPredictionsDirection={() => 0}
+            />
+          </div>
         ),
       )}
     </div>
   );
-};
-
-type TrainHeight = {
-  dotHeight: number | null;
-  labelOffset?: number | null;
-};
-
-export type VehicleWithHeight = {
-  vehicle: Vehicle;
-  heights: TrainHeight;
-};
-
-const TrainsAndStations = ({
-  ladderConfig,
-  vehicles,
-  sideBarSelection,
-  setSideBarSelection,
-}: {
-  ladderConfig: LadderConfig;
-  vehicles: Vehicle[];
-  sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
-}): ReactElement => {
-  const vehiclesWithHeights: VehicleWithHeight[] = vehicles.map((vehicle) => {
-    const { vehiclePosition: vp } = vehicle;
-    // should still be able to render trains that are StoppedAt a station,
-    // even if they have a null position
-    if (vp.position == null && vp.stopStatus !== StopStatus.StoppedAt) {
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    }
-
-    const trainHeight = height(vp, ladderConfig);
-    if (trainHeight === -1) {
-      console.error(
-        `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
-      );
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    } else if (trainHeight === null) {
-      console.error(
-        `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
-      );
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    }
-    // add 80 for top margin above the station list borders
-    return { vehicle: vehicle, heights: { dotHeight: trainHeight + 80 } };
-  });
-
-  const sortedVehiclesByHeight = [
-    ...vehiclesWithHeights.filter(
-      (vehicle) => vehicle.heights.dotHeight !== null,
-    ),
-  ].sort((v1, v2) => {
-    const v1DotHeight = v1.heights.dotHeight;
-    const v2DotHeight = v2.heights.dotHeight;
-    return v1DotHeight && v2DotHeight ? v1DotHeight - v2DotHeight : 0;
-  });
-
-  const processedSortedVehicles = avoidLabelOverlaps(sortedVehiclesByHeight);
-
-  return (
-    <div className="relative flex snap-center snap-always">
-      <StationList stations={ladderConfig} />
-
-      {processedSortedVehicles.map((vehicleWithHeight) => {
-        const vp = vehicleWithHeight.vehicle.vehiclePosition;
-
-        const trainTheme = themeForVehicleOnLadder(
-          vehicleWithHeight.vehicle,
-          ladderConfig,
-        );
-
-        const station = ladderConfig.find((station) =>
-          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
-        );
-
-        const direction =
-          vp.stopId !== null ?
-            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
-          : vp.directionId;
-
-        const selected =
-          vp.label === sideBarSelection?.vehicle.vehiclePosition.label;
-        const shouldScrollIntoView =
-          sideBarSelection?.searchedCar != null &&
-          vp.label === sideBarSelection.vehicle.vehiclePosition.label;
-
-        return (
-          <div
-            key={vp.vehicleId}
-            style={{
-              position: "absolute",
-              top: `${vehicleWithHeight.heights.dotHeight}px`,
-            }}
-            className={className([
-              "pointer-events-none",
-              direction === 0 ? "left-[24px]" : "right-[24px]",
-            ])}
-          >
-            <Train
-              theme={trainTheme}
-              vehicle={vehicleWithHeight.vehicle}
-              forceDirection={direction}
-              labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
-              selected={selected}
-              scrollIntoView={shouldScrollIntoView}
-              setSideBarSelection={setSideBarSelection}
-            />
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const StationList = ({
-  stations,
-}: {
-  stations: LadderConfig;
-}): ReactElement => {
-  return (
-    <div className="mt-20 mb-20">
-      <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
-        {/* northbound arrow on top right */}
-        <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300" />
-        {/* southbound arrow on bottom left */}
-        <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300" />
-
-        {stations.map((station) => {
-          const stationId = station.id;
-          return (
-            <li
-              key={stationId}
-              style={{ marginBottom: station.spacingRatio * 32 }}
-              className={
-                stationId == "place-alfcl" ? "pt-20"
-                : stationId == "place-andrw" ?
-                  "pb-20"
-                : stationId == "place-jfk" ?
-                  "pt-20"
-                : stationId == "place-asmnl" ?
-                  "pb-20"
-                : stationId == "place-brntn" ?
-                  "pb-20"
-                : ""
-              }
-            >
-              {/* station dots on left and right */}
-              <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="absolute bg-white mt-0.5 right-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="text-center mx-auto text-wrap w-24">
-                {station.name}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
-
-const themeForVehicleOnLadder = (
-  vehicle: Vehicle,
-  ladderConfig: LadderConfig,
-): TrainTheme => {
-  if (!vehicle.vehiclePosition.revenue) {
-    return TrainThemes.gray;
-  }
-
-  const routePatternId = vehicle.tripUpdate?.routePatternId;
-  const themeFromRoute =
-    routePatternId != null ?
-      trainThemesByRoutePattern.get(routePatternId)
-    : null;
-  if (themeFromRoute) {
-    return themeFromRoute;
-  }
-
-  // Route pattern is missing or unfamiliar. Guess colors based on current
-  // ladder segment, with Braintree colors as fallback.
-  const isAshmontLadder = ladderConfig.some(
-    (station) => station.id === "place-asmnl",
-  );
-  return isAshmontLadder ? TrainThemes.ashmont : TrainThemes.braintree;
 };

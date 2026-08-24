@@ -2,7 +2,7 @@
   "name": "orbit",
   "scripts": {
     "build:css": "tailwindcss -i css/app.css -o priv/static/assets/app.css",
-    "build:js": "NODE_PATH=deps/ esbuild js/app.tsx --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
+    "build:js": "NODE_PATH=deps/ esbuild js/app.tsx --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/* --alias:react=./node_modules/react --alias:react-dom=./node_modules/react-dom",
     "format": "prettier . --write",
     "test:eslint": "eslint .",
     "test:format": "prettier . --check",

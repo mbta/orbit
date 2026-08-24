@@ -1,5 +1,8 @@
 import { CarId, DirectionId, RouteId } from "../models/common";
 
+export const consistsEqual = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every((car, index) => car === b[index]);
+
 export const remapLabel = (car: CarId, routeId: RouteId) => {
   return routeId === "Red" && car.startsWith("15") ? "2" + car.slice(1) : car;
 };
