@@ -112,6 +112,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         : null}
         <div
           ref={scrollContainerRef}
+          data-testid="scroll-container"
           className={className([
             "flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",
           ])}

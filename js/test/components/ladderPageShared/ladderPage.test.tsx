@@ -4,7 +4,7 @@ import { useVehicles } from "../../../hooks/useVehicles";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../hooks/useVehicles", () => ({
@@ -314,5 +314,76 @@ describe("LadderPage SideBar", () => {
         view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("LadderPage BranchPicker visibility", () => {
+  beforeEach(() => {
+    mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
+    mockGetMetaContent.mockReturnValue(null);
+  });
+
+  test("BranchPicker is hidden by default (no overflow in jsdom)", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    // Buttons named by branch only exist in BranchPicker (station names are in <li>, not <button>)
+    expect(
+      view.queryByRole("button", { name: /Alewife/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      view.queryByRole("button", { name: /Ashmont/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      view.queryByRole("button", { name: /Braintree/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("BranchPicker is shown when scroll container overflows horizontally", () => {
+    const { getByTestId, getByRole } = render(<LadderPage routeId="Red" />);
+
+    const scrollContainer = getByTestId("scroll-container");
+
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(scrollContainer, "scrollWidth", {
+      get: () => 1000,
+      configurable: true,
+    });
+
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    expect(getByRole("button", { name: /Alewife/i })).toBeInTheDocument();
+    expect(getByRole("button", { name: /Ashmont/i })).toBeInTheDocument();
+    expect(getByRole("button", { name: /Braintree/i })).toBeInTheDocument();
+  });
+
+  test("BranchPicker is hidden again when overflow is resolved", () => {
+    const { getByTestId, queryByRole } = render(<LadderPage routeId="Red" />);
+
+    const scrollContainer = getByTestId("scroll-container");
+
+    // first simulate overflow
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(scrollContainer, "scrollWidth", {
+      get: () => 1000,
+      configurable: true,
+    });
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    // then resolve overflow
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(scrollContainer, "scrollWidth", {
+      get: () => 0,
+      configurable: true,
+    });
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    expect(
+      queryByRole("button", { name: /Alewife/i }),
+    ).not.toBeInTheDocument();
   });
 });

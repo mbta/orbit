@@ -1,18 +1,28 @@
 import { Ladders } from "../../../components/ladderPageShared/ladder";
+import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { StopStatus } from "../../../models/vehiclePosition";
+import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import {
   tripUpdateFactory,
   vehicleFactory,
   vehiclePositionFactory,
 } from "../../helpers/factory";
 import { render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../hooks/useVehicles", () => ({
   __esModule: true,
   useVehicles: jest.fn(),
 }));
 const mockUseVehicles = useVehicles as jest.MockedFunction<typeof useVehicles>;
+
+jest.mock("../../../util/metadata", () => ({
+  getMetaContent: jest.fn(),
+}));
+const mockGetMetaContent = getMetaContent as jest.MockedFunction<
+  typeof getMetaContent
+>;
 
 // Vehicle IDs get used as React component keys, so make sure we
 // use a different ID for each mock vehicle, or render will complain
@@ -356,6 +366,105 @@ describe("Ladder", () => {
       );
       expect(view.getByText("1888")).toBeInTheDocument();
       expect(view.getByText("1888")).not.toHaveClass("border-[3px]");
+    });
+  });
+
+  describe("branch selection on train click", () => {
+    beforeAll(() => {
+      mockGetMetaContent.mockImplementation((field: MetaDataKey) => {
+        if (field === "userGroups") return ORBIT_RL_TRAINSTARTERS;
+        return null;
+      });
+    });
+
+    test("clicking a train on the Ashmont ladder calls setBranchPickerSelection with Ashmont", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1999",
+            stationId: "place-asmnl",
+            stopId: "70094",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: "1999" }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Ashmont");
+    });
+
+    test("clicking a train on the Braintree ladder calls setBranchPickerSelection with Braintree", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "2001",
+            stationId: "place-brntn",
+            stopId: "70105",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: "2001" }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Braintree");
+    });
+
+    test("clicking a train on the Alewife trunk ladder calls setBranchPickerSelection with Alewife", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1888",
+            stationId: "place-davis",
+            stopId: "70064",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: "1888" }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Alewife");
     });
   });
 });
