@@ -37,11 +37,16 @@ const BranchButton = ({
 
   return (
     <button
-      className={`flex flex-col justify-center items-center grow ${buttonBg} rounded-t`}
+      className={`flex flex-col justify-center items-center grow ${buttonBg} rounded-t text-center font-semibold h-16 p-4 gap-1`}
       onClick={onClick}
     >
-      <div className={labelText} data-testid="branch-label">{branch}</div>
-      <div className={`w-2 h-2 rounded-full bg-current ${dotColor}`} data-testid="branch-dot" />
+      <div className={labelText} data-testid="branch-label">
+        {branch}
+      </div>
+      <div
+        className={`w-2 min-h-2 rounded-full bg-current ${dotColor}`}
+        data-testid="branch-dot"
+      />
     </button>
   );
 };

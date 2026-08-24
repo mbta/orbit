@@ -105,8 +105,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   return (
-    <>
-      <main className="flex overflow-y-auto overflow-x-hidden justify-center">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <main className="flex flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center">
         {sideBarSelection !== null ?
           <SideBar selection={sideBarSelection} close={close} />
         : null}
@@ -143,6 +143,6 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
