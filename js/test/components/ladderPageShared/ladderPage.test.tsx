@@ -382,8 +382,6 @@ describe("LadderPage BranchPicker visibility", () => {
       window.dispatchEvent(new Event("resize"));
     });
 
-    expect(
-      queryByRole("button", { name: /Alewife/i }),
-    ).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: /Alewife/i })).not.toBeInTheDocument();
   });
 });

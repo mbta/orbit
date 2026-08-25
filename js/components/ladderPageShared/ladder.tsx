@@ -3,8 +3,8 @@ import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { className } from "../../util/dom";
-import { height } from "./height";
 import { BranchPickerSelection } from "./branchPicker";
+import { height } from "./height";
 import { SideBarSelection } from "./sidebar";
 import { avoidLabelOverlaps, Train } from "./train";
 import {
@@ -99,9 +99,7 @@ const TrainsAndStations = ({
   setBranchPickerSelection: (selection: BranchPickerSelection) => void;
 }): ReactElement => {
   const branch = branchForLadder(ladderConfig);
-  const setSideBarSelectionAndBranch = (
-    selection: SideBarSelection | null,
-  ) => {
+  const setSideBarSelectionAndBranch = (selection: SideBarSelection | null) => {
     if (selection !== null) {
       setBranchPickerSelection(branch);
     }
