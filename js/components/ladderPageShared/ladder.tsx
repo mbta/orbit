@@ -161,7 +161,10 @@ export const Ladders = ({
     <div className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
       {Array.from(vehiclesByBranch.entries()).map(
         ([stationList, branchVehicles], index) => (
-          <div key={index} className="h-full mx-40 mt-20">
+          <div
+            key={index}
+            className="h-full mx-40 mt-20 snap-center snap-always"
+          >
             <Ladder
               trainsClickable={userHasOneOf([
                 ORBIT_HR_DISPATCHERS,
