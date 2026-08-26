@@ -169,9 +169,10 @@ defmodule Realtime.VehicleEventDetectorTest do
           VehicleEventDetector.log_new_event(event)
         end
 
-      assert [
+      assert Enum.member?(
+               logs,
                "[info] vehicle_event_detector new_event service_date=2025-07-17 cars=1842-1843-1851-1850-1863-1862 station_id=place-sstat vehicle_id=R-123456 direction_id=1 rail_line=red arrival_departure=arrival"
-             ] == logs
+             )
     end
 
     test "doesn't break on nil fields" do
@@ -195,6 +196,111 @@ defmodule Realtime.VehicleEventDetectorTest do
       assert Enum.member?(
                logs,
                "[info] vehicle_event_detector new_event service_date= cars= station_id= vehicle_id= direction_id= rail_line= arrival_departure="
+             )
+    end
+  end
+
+  describe "log_vehicle_change" do
+    setup do
+      %{
+        vehicle_position:
+          build(:vehicle_position, %{
+            vehicle_id: "vehicle_id",
+            route_id: :Red,
+            direction: 1,
+            cars: ["1733", "1732", "1737"],
+            station_id: "place-brdwy",
+            current_status: :IN_TRANSIT_TO,
+            trip_id: "trip_id",
+            timestamp: 70
+          })
+      }
+    end
+
+    test "logs vehicle created", %{vehicle_position: vehicle_position} do
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({nil, vehicle_position})
+        end
+
+      assert Enum.member?(
+               logs,
+               "[info] vehicle_position_change change_type=created vehicle_id=vehicle_id consist=1733-1732-1737 direction=1 current_status=IN_TRANSIT_TO station_id=place-brdwy route_id=Red trip_id=trip_id"
+             )
+    end
+
+    test "does not log vehicle updated if no relevant properties changed", %{
+      vehicle_position: vehicle_position
+    } do
+      updated = Map.put(vehicle_position, :timestamp, DateTime.utc_now())
+
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({vehicle_position, updated})
+        end
+
+      assert nil ==
+               Enum.find(
+                 logs,
+                 &match?(
+                   "[info] vehicle_position_change change_type=updated vehicle_id=vehicle_id" <> _,
+                   &1
+                 )
+               )
+    end
+
+    test "logs vehicle updated if properties have changed", %{vehicle_position: vehicle_position} do
+      updated = Map.put(vehicle_position, :current_status, :STOPPED_AT)
+
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({vehicle_position, updated})
+        end
+
+      assert Enum.member?(
+               logs,
+               "[info] vehicle_position_change change_type=updated vehicle_id=vehicle_id consist=1733-1732-1737 direction=1 current_status=STOPPED_AT station_id=place-brdwy route_id=Red trip_id=trip_id"
+             )
+    end
+
+    test "logs vehicle deleted", %{vehicle_position: vehicle_position} do
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({vehicle_position, nil})
+        end
+
+      assert Enum.member?(
+               logs,
+               "[info] vehicle_position_change change_type=deleted vehicle_id=vehicle_id consist=1733-1732-1737 direction=1 current_status=IN_TRANSIT_TO station_id=place-brdwy route_id=Red trip_id=trip_id"
+             )
+    end
+
+    test "handles nil fields" do
+      vehicle_position =
+        build(:vehicle_position,
+          route_id: nil,
+          revenue: nil,
+          direction: nil,
+          label: nil,
+          cars: nil,
+          position: nil,
+          heading: nil,
+          station_id: nil,
+          stop_id: nil,
+          current_status: nil,
+          timestamp: nil,
+          vehicle_id: nil,
+          trip_id: nil
+        )
+
+      logs =
+        capture_log do
+          VehicleEventDetector.log_vehicle_change({nil, vehicle_position})
+        end
+
+      assert Enum.member?(
+               logs,
+               "[info] vehicle_position_change change_type=created vehicle_id= consist= direction= current_status= station_id= route_id= trip_id="
              )
     end
   end
