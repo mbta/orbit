@@ -19,8 +19,9 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
           ["Alewife-01", 1],
           ["Alewife-02", 0],
         ]),
+        // TODO: replace with OCS IP (see https://app.asana.com/1/15492006741476/project/1200882337457260/task/1217805793628210)
         externalUrl:
-          "http://10.198.0.231/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE",
+          "http://example.com/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE",
       },
       {
         id: "place-davis",
@@ -152,8 +153,9 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         ocs_station_name: "ASHMONT",
         spacingRatio: 0,
         location: { latitude: 42.28452, longitude: -71.063777 },
+        // TODO: replace with OCS IP (see https://app.asana.com/1/15492006741476/project/1200882337457260/task/1217805793628210)
         externalUrl:
-          "http://10.198.0.231/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT",
+          "http://example.com/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT",
       },
     ],
     // JFK <-> Braintree
@@ -209,8 +211,9 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
           ["Braintree-01", 1],
           ["Braintree-02", 0],
         ]),
+        // TODO: replace with OCS IP (see https://app.asana.com/1/15492006741476/project/1200882337457260/task/1217805793628210)
         externalUrl:
-          "http://10.198.0.231/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE",
+          "http://example.com/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE",
       },
     ],
   ],
