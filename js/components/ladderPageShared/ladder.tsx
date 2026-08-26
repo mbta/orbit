@@ -9,10 +9,10 @@ import {
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
-import { RouteId } from "../../models/common";
+import { CarId, RouteId } from "../../models/common";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
-import { consistsEqual } from "../../util/consist";
+import { consistsEqual, remapLabel } from "../../util/consist";
 import { SideBarSelection } from "./sidebar";
 import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
@@ -174,6 +174,9 @@ export const Ladders = ({
               ])}
               zoom={70}
               labelMode="lead"
+              labelRemap={(car: CarId) => {
+                return remapLabel(car, routeId);
+              }}
               trainLocs={branchVehicles.map(vehicleToTrainLoc)}
               stationSelection={null}
               scrollToConsist={scrollToConsist}
