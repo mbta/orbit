@@ -664,11 +664,65 @@ defmodule Realtime.TripMatcherTest do
                ])
     end
 
-    test "large_delta_between_scheduled_actual_departures reports vehicles with departure delta at least 45 minutes" do
+    test "large_delta_between_scheduled_actual_departures reports mid-trip vehicles with departure delta at least 45 minutes" do
       assert %{
                large_delta_between_scheduled_actual_departures: ["VEHICLE_OVER_45"]
              } =
                TripMatcher.statistics([
+                 # just departed Alewife -- filtered out
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(:ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:46:00Z],
+                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_APPROACHING_DAVIS",
+                     current_status: :IN_TRANSIT_TO,
+                     station_id: "place-davis",
+                     direction: 0
+                   }
+                 ),
+                 # just departed Ashmont -- filtered out
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(:ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:46:00Z],
+                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_APPROACHING_SHAWMUT",
+                     current_status: :IN_TRANSIT_TO,
+                     station_id: "place-smmnl",
+                     direction: 1
+                   }
+                 ),
+                 # just departed Braintree -- filtered out
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(:ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:46:00Z],
+                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_APPROACHING_QUINCY_ADAMS",
+                     current_status: :IN_TRANSIT_TO,
+                     station_id: "place-qamnl",
+                     direction: 1
+                   }
+                 ),
                  build(:vehicle,
                    ocs_trips: %{
                      current:
@@ -692,17 +746,6 @@ defmodule Realtime.TripMatcherTest do
                      next: []
                    },
                    position: %VehiclePosition{vehicle_id: "VEHICLE_UNDER_45"}
-                 ),
-                 build(:vehicle,
-                   ocs_trips: %{
-                     current:
-                       build(:ocs_trip,
-                         departed: true,
-                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
-                       ),
-                     next: []
-                   },
-                   position: %VehiclePosition{vehicle_id: "VEHICLE_WITH_NO_ACTUAL"}
                  )
                ])
     end

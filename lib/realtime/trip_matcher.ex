@@ -132,6 +132,20 @@ defmodule Realtime.TripMatcher do
     end
   end
 
+  @spec is_mid_trip(Vehicle.t()) :: boolean()
+  def is_mid_trip(vehicle) do
+    pos = vehicle.position
+
+    # checking that the vehicle has not ONLY departed its origin station
+    # i.e it's likely further along down the line, mid-trip
+    not (pos.current_status == :IN_TRANSIT_TO and
+           ((pos.station_id == "place-davis" and pos.direction == 0) or
+              (pos.station_id == "place-smmnl" and
+                 pos.direction == 1) or
+              (pos.station_id == "place-qamnl" and
+                 pos.direction == 1)))
+  end
+
   @spec statistics([Vehicle.t()]) :: map()
   def statistics(vehicles) do
     Enum.reduce(
@@ -180,8 +194,10 @@ defmodule Realtime.TripMatcher do
             case vehicle.ocs_trips.current do
               %{actual_departure: actual, scheduled_departure: scheduled}
               when not is_nil(actual) and not is_nil(scheduled) ->
-                # checks are inverted, return nil if delta >=110 so that vehicle_id is reported
-                if abs(DateTime.diff(actual, scheduled, :minute)) >= 110, do: nil, else: true
+                if is_mid_trip(vehicle) and
+                     abs(DateTime.diff(actual, scheduled, :minute)) >= 45,
+                   do: nil,
+                   else: true
 
               _ ->
                 true
