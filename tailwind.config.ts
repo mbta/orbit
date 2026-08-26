@@ -6,7 +6,8 @@
 import fs from "fs";
 import path from "path";
 import formsPlugin from "@tailwindcss/forms";
-import railTechUITheme from "rail-tech-ui/dist/src/tailwind.config";
+import { railTechUITheme } from "rail-tech-ui";
+import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 import plugin from "tailwindcss/plugin";
 
 const lightModePlugin = plugin(({ addVariant }) => {
@@ -17,23 +18,86 @@ const lightModePlugin = plugin(({ addVariant }) => {
   ]);
 });
 
+const branchColorPlugin = plugin(
+  ({ matchUtilities, theme }) => {
+    // https://v3.tailwindcss.com/docs/customizing-colors#using-css-variables
+    const rewriteColor = (colorValue: string) => {
+      // intercept tokens from rail-tech-ui formatted: "rgb(var(--some-var) / <alpha-value>)"
+      const rgbMatch =
+        /^rgb\((var\(--[a-zA-Z0-9-]+\))\s*\/\s*<alpha-value>\)$/.exec(
+          colorValue,
+        );
+      if (rgbMatch) {
+        // return just "var(--some-var)"
+        return rgbMatch[1];
+      }
+
+      // intercept custom colors that have a alpha-value opacity modification
+      // built-in. see "glides-mustard-sheer" in rail-tech-ui
+      const noAlphaVarMatch = /^(var\(--[a-zA-Z0-9-]+\))$/.exec(colorValue);
+      if (noAlphaVarMatch) {
+        return noAlphaVarMatch[1];
+      }
+
+      // continue to parse hex codes (native tailwind) as fallback
+      const hexParseResult = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/.exec(
+        colorValue,
+      );
+      if (hexParseResult === null) {
+        return null;
+      }
+      const [, rHex, gHex, bHex] = hexParseResult;
+      const r = parseInt(rHex, 16);
+      const g = parseInt(gHex, 16);
+      const b = parseInt(bHex, 16);
+      return `${r} ${g} ${b}`;
+    };
+    const colorValues: Record<string, string> = {};
+    const themeColors = flattenColorPalette(theme("colors"));
+    for (const colorKey of Object.keys(themeColors)) {
+      const originalColor = themeColors[colorKey];
+      const rewrittenColor = rewriteColor(originalColor);
+      if (rewrittenColor !== null) {
+        colorValues[colorKey] = rewrittenColor;
+      }
+    }
+    matchUtilities(
+      {
+        "branch-color": (value) => ({ "--color-branch": value }),
+      },
+      { values: colorValues, type: ["color"] },
+    );
+  },
+  {
+    theme: {
+      extend: {
+        colors: {
+          "glides-branch": "rgb(var(--color-branch) / <alpha-value>)",
+        },
+      },
+    },
+  },
+);
+
 export default {
-  ...railTechUITheme,
+  presets: [railTechUITheme],
   content: [
     "./js/**/*.js",
     "./js/**/*.ts",
     "./js/**/*.tsx",
     "./lib/orbit_web.ex",
     "./lib/orbit_web/**/*.*ex",
+    "./node_modules/rail-tech-ui/src/**/*.{js,ts,tsx}",
   ],
-  darkMode: null as unknown as "media" | "class",
+  darkMode: null,
   theme: {
     extend: {
-      ...railTechUITheme.theme.extend,
+      borderRadius: {
+        "4xl": "2rem",
+      },
       // Orbit-specific color overrides merged with rail-tech-ui's tokens.
       // Orbit values only override shades they explicitly define; glides-*, heavy-rail-*, etc. are preserved.
       colors: {
-        ...railTechUITheme.theme.extend.colors,
         crimson: "#960018",
         tangerine: "#CF8300",
         blue: { DEFAULT: "#003DA5" },
@@ -76,6 +140,7 @@ export default {
   },
   plugins: [
     lightModePlugin,
+    branchColorPlugin,
     formsPlugin,
     // Allows prefixing tailwind classes with LiveView classes to add rules
     // only when LiveView classes are applied, for example:

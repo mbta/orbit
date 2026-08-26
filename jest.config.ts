@@ -91,7 +91,17 @@ const config: JestConfigWithTsJest = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+
+  // Force a single copy of react / react-dom, even when a linked dependency
+  // (e.g. npm linked `rail-tech-ui`) has its own copy in its `node_modules`
+  //
+  // (FYI: this mirrors the `--alias:react=... --alias:react-dom=...` esbuild flags in package.json)
+  moduleNameMapper: {
+    "^react$": "<rootDir>/node_modules/react",
+    "^react/(.*)$": "<rootDir>/node_modules/react/$1",
+    "^react-dom$": "<rootDir>/node_modules/react-dom",
+    "^react-dom/(.*)$": "<rootDir>/node_modules/react-dom/$1",
+  },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -178,7 +188,7 @@ const config: JestConfigWithTsJest = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    "^.+\\.tsx?$": [
+    "^.+\\.[jt]sx?$": [
       "ts-jest",
       {
         // ts-jest configuration goes here
@@ -187,10 +197,10 @@ const config: JestConfigWithTsJest = {
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  // transformIgnorePatterns: [
-  //   "/node_modules/",
-  //   "\\.pnp\\.[^\\/]+$"
-  // ],
+  transformIgnorePatterns: [
+    "node_modules/(?!(rail-tech-ui)/)",
+    "\\.pnp\\.[^\\/]+$",
+  ],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,
