@@ -1,77 +1,93 @@
 defmodule Orbit.Ocs.Utilities.Stations do
+  @type station_definition :: %{gtfs_id: String.t() | nil, revenue: boolean()}
+  @stations %{
+    # RL
+    "ALEWIFE YARD" => %{gtfs_id: nil, revenue: false},
+    "ALEWIFE" => %{gtfs_id: "place-alfcl", revenue: true},
+    "DAVIS SQUARE" => %{gtfs_id: "place-davis", revenue: true},
+    "PORTER SQUARE" => %{gtfs_id: "place-portr", revenue: true},
+    "HARVARD SQUARE" => %{gtfs_id: "place-harsq", revenue: true},
+    "CENTRAL SQUARE" => %{gtfs_id: "place-cntsq", revenue: true},
+    "KENDALL/MIT" => %{gtfs_id: "place-knncl", revenue: true},
+    "CHARLES/MGH" => %{gtfs_id: "place-chmnl", revenue: true},
+    "PARK STREET [R]" => %{gtfs_id: "place-pktrm", revenue: true},
+    "DOWNTOWN CROSSING R" => %{gtfs_id: "place-dwnxg", revenue: true},
+    "SOUTH STATION" => %{gtfs_id: "place-sstat", revenue: true},
+    "BROADWAY" => %{gtfs_id: "place-brdwy", revenue: true},
+    "ANDREW SQUARE" => %{gtfs_id: "place-andrw", revenue: true},
+    "CABOT YARD" => %{gtfs_id: nil, revenue: false},
+    "JFK/ UMASS ASH" => %{gtfs_id: "place-jfk", revenue: true},
+    "SAVIN HILL" => %{gtfs_id: "place-shmnl", revenue: true},
+    "FIELDS CORNER" => %{gtfs_id: "place-fldcr", revenue: true},
+    "SHAWMUT" => %{gtfs_id: "place-smmnl", revenue: true},
+    "ASHMONT" => %{gtfs_id: "place-asmnl", revenue: true},
+    "CODMAN YARD" => %{gtfs_id: nil, revenue: false},
+    "JFK/ UMASS BRT" => %{gtfs_id: "place-jfk", revenue: true},
+    "NORTH QUINCY" => %{gtfs_id: "place-nqncy", revenue: true},
+    "WOLLASTON" => %{gtfs_id: "place-wlsta", revenue: true},
+    "QUINCY CENTER" => %{gtfs_id: "place-qnctr", revenue: true},
+    "QUINCY ADAMS" => %{gtfs_id: "place-qamnl", revenue: true},
+    "BRAINTREE" => %{gtfs_id: "place-brntn", revenue: true},
+    "BRAINTREE STORAGE" => %{gtfs_id: nil, revenue: false},
+    "CADDIGAN YARD" => %{gtfs_id: nil, revenue: false},
+
+    # OL
+    "OAK GROVE STORAGE" => %{gtfs_id: nil, revenue: false},
+    "OAK GROVE" => %{gtfs_id: "place-ogmnl", revenue: true},
+    "MALDEN CENTER" => %{gtfs_id: "place-mlmnl", revenue: true},
+    "WELL YARD N" => %{gtfs_id: nil, revenue: false},
+    "WELLINGTON" => %{gtfs_id: "place-welln", revenue: true},
+    "WELL YARD S" => %{gtfs_id: nil, revenue: false},
+    "ASSEMBLY" => %{gtfs_id: "place-astao", revenue: true},
+    "SULLIVAN SQUARE" => %{gtfs_id: "place-sull", revenue: true},
+    "COMMUNITY COLLEGE" => %{gtfs_id: "place-ccmnl", revenue: true},
+    "NORTH STATION" => %{gtfs_id: "place-north", revenue: true},
+    "HAYMARKET" => %{gtfs_id: "place-haecl", revenue: true},
+    "STATE STREET" => %{gtfs_id: "place-state", revenue: true},
+    "DOWNTOWN CROSSING" => %{gtfs_id: "place-dwnxg", revenue: true},
+    "CHINATOWN" => %{gtfs_id: "place-chncl", revenue: true},
+    "TUFTS MEDICAL CTR" => %{gtfs_id: "place-tumnl", revenue: true},
+    "BACK BAY/SOUTH END" => %{gtfs_id: "place-bbsta", revenue: true},
+    "MASS AVE" => %{gtfs_id: "place-masta", revenue: true},
+    "RUGGLES" => %{gtfs_id: "place-rugg", revenue: true},
+    "ROXBURY CROSSING" => %{gtfs_id: "place-rcmnl", revenue: true},
+    "JACKSON SQUARE" => %{gtfs_id: "place-jaksn", revenue: true},
+    "STONY BROOK" => %{gtfs_id: "place-sbmnl", revenue: true},
+    "GREEN STREET" => %{gtfs_id: "place-grnst", revenue: true},
+    "FOREST HILLS" => %{gtfs_id: "place-forhl", revenue: true},
+    "FOREST HILLS YARD" => %{gtfs_id: nil, revenue: false},
+
+    # BL
+    "WONDERLAND YARD" => %{gtfs_id: nil, revenue: false},
+    "WONDERLAND" => %{gtfs_id: "place-wondl", revenue: true},
+    "REVERE BEACH" => %{gtfs_id: "place-rbmnl", revenue: true},
+    "BEACHMONT" => %{gtfs_id: "place-bmmnl", revenue: true},
+    "SUFFOLK DOWNS" => %{gtfs_id: "place-sdmnl", revenue: true},
+    "ORIENT HEIGHTS YARD" => %{gtfs_id: nil, revenue: false},
+    "ORIENT HEIGHTS" => %{gtfs_id: "place-orhte", revenue: true},
+    "WOOD ISLAND" => %{gtfs_id: "place-wimnl", revenue: true},
+    "AIRPORT" => %{gtfs_id: "place-aport", revenue: true},
+    "MAVERICK SQUARE" => %{gtfs_id: "place-mvbcl", revenue: true},
+    "AQUARIUM" => %{gtfs_id: "place-aqucl", revenue: true},
+    "STATE STREET [B]" => %{gtfs_id: "place-state", revenue: true},
+    "GOVERNMENT CENTER" => %{gtfs_id: "place-gover", revenue: true},
+    "BOWDOIN" => %{gtfs_id: "place-bomnl", revenue: true},
+    "BOWDOIN STORAGE" => %{gtfs_id: nil, revenue: false}
+  }
+
+  defp stations, do: @stations
+
   @spec ocs_to_gtfs(String.t() | nil) :: String.t() | nil
+  def ocs_to_gtfs(nil), do: nil
 
-  # RL
-  # def ocs_to_gtfs("ALEWIFE YARD"), do: ""
-  def ocs_to_gtfs("ALEWIFE"), do: "place-alfcl"
-  def ocs_to_gtfs("DAVIS SQUARE"), do: "place-davis"
-  def ocs_to_gtfs("PORTER SQUARE"), do: "place-portr"
-  def ocs_to_gtfs("HARVARD SQUARE"), do: "place-harsq"
-  def ocs_to_gtfs("CENTRAL SQUARE"), do: "place-cntsq"
-  def ocs_to_gtfs("KENDALL/MIT"), do: "place-knncl"
-  def ocs_to_gtfs("CHARLES/MGH"), do: "place-chmnl"
-  def ocs_to_gtfs("PARK STREET [R]"), do: "place-pktrm"
-  def ocs_to_gtfs("DOWNTOWN CROSSING R"), do: "place-dwnxg"
-  def ocs_to_gtfs("SOUTH STATION"), do: "place-sstat"
-  def ocs_to_gtfs("BROADWAY"), do: "place-brdwy"
-  def ocs_to_gtfs("ANDREW SQUARE"), do: "place-andrw"
-  # def ocs_to_gtfs("CABOT YARD"), do: ""
-  def ocs_to_gtfs("JFK/ UMASS ASH"), do: "place-jfk"
-  def ocs_to_gtfs("SAVIN HILL"), do: "place-shmnl"
-  def ocs_to_gtfs("FIELDS CORNER"), do: "place-fldcr"
-  def ocs_to_gtfs("SHAWMUT"), do: "place-smmnl"
-  def ocs_to_gtfs("ASHMONT"), do: "place-asmnl"
-  # def ocs_to_gtfs("CODMAN YARD"), do: ""
-  def ocs_to_gtfs("JFK/ UMASS BRT"), do: "place-jfk"
-  def ocs_to_gtfs("NORTH QUINCY"), do: "place-nqncy"
-  def ocs_to_gtfs("WOLLASTON"), do: "place-wlsta"
-  def ocs_to_gtfs("QUINCY CENTER"), do: "place-qnctr"
-  def ocs_to_gtfs("QUINCY ADAMS"), do: "place-qamnl"
-  def ocs_to_gtfs("BRAINTREE"), do: "place-brntn"
-  # def ocs_to_gtfs("BRAINTREE STORAGE"), do: ""
-  # def ocs_to_gtfs("CADDIGAN YARD"), do: ""
+  def ocs_to_gtfs(ocs_station_id) do
+    get_in(stations(), [ocs_station_id, :gtfs_id])
+  end
 
-  # OL
-  # def ocs_to_gtfs("OAK GROVE STORAGE"), do: ""
-  def ocs_to_gtfs("OAK GROVE"), do: "place-ogmnl"
-  def ocs_to_gtfs("MALDEN CENTER"), do: "place-mlmnl"
-  # def ocs_to_gtfs("WELL YARD N"), do: ""
-  def ocs_to_gtfs("WELLINGTON"), do: "place-welln"
-  # def ocs_to_gtfs("WELL YARD S"), do: ""
-  def ocs_to_gtfs("ASSEMBLY"), do: "place-astao"
-  def ocs_to_gtfs("SULLIVAN SQUARE"), do: "place-sull"
-  def ocs_to_gtfs("COMMUNITY COLLEGE"), do: "place-ccmnl"
-  def ocs_to_gtfs("NORTH STATION"), do: "place-north"
-  def ocs_to_gtfs("HAYMARKET"), do: "place-haecl"
-  def ocs_to_gtfs("STATE STREET"), do: "place-state"
-  def ocs_to_gtfs("DOWNTOWN CROSSING"), do: "place-dwnxg"
-  def ocs_to_gtfs("CHINATOWN"), do: "place-chncl"
-  def ocs_to_gtfs("TUFTS MEDICAL CTR"), do: "place-tumnl"
-  def ocs_to_gtfs("BACK BAY/SOUTH END"), do: "place-bbsta"
-  def ocs_to_gtfs("MASS AVE"), do: "place-masta"
-  def ocs_to_gtfs("RUGGLES"), do: "place-rugg"
-  def ocs_to_gtfs("ROXBURY CROSSING"), do: "place-rcmnl"
-  def ocs_to_gtfs("JACKSON SQUARE"), do: "place-jaksn"
-  def ocs_to_gtfs("STONY BROOK"), do: "place-sbmnl"
-  def ocs_to_gtfs("GREEN STREET"), do: "place-grnst"
-  def ocs_to_gtfs("FOREST HILLS"), do: "place-forhl"
-  # def ocs_to_gtfs("FOREST HILLS YARD"), do: ""
+  @spec revenue?(String.t() | nil) :: boolean()
+  def revenue?(nil), do: false
 
-  # BL
-  # def ocs_to_gtfs("WONDERLAND YARD"), do: ""
-  def ocs_to_gtfs("WONDERLAND"), do: "place-wondl"
-  def ocs_to_gtfs("REVERE BEACH"), do: "place-rbmnl"
-  def ocs_to_gtfs("BEACHMONT"), do: "place-bmmnl"
-  def ocs_to_gtfs("SUFFOLK DOWNS"), do: "place-sdmnl"
-  # def ocs_to_gtfs("ORIENT HEIGHTS YARD"), do: ""
-  def ocs_to_gtfs("ORIENT HEIGHTS"), do: "place-orhte"
-  def ocs_to_gtfs("WOOD ISLAND"), do: "place-wimnl"
-  def ocs_to_gtfs("AIRPORT"), do: "place-aport"
-  def ocs_to_gtfs("MAVERICK SQUARE"), do: "place-mvbcl"
-  def ocs_to_gtfs("AQUARIUM"), do: "place-aqucl"
-  def ocs_to_gtfs("STATE STREET [B]"), do: "place-state"
-  def ocs_to_gtfs("GOVERNMENT CENTER"), do: "place-gover"
-  def ocs_to_gtfs("BOWDOIN"), do: "place-bomnl"
-  # def ocs_to_gtfs("BOWDOIN STORAGE"), do: ""
-  def ocs_to_gtfs(_), do: nil
+  def revenue?(ocs_station_id) do
+    get_in(stations(), [ocs_station_id, :revenue])
+  end
 end
