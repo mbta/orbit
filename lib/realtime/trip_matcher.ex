@@ -132,8 +132,8 @@ defmodule Realtime.TripMatcher do
     end
   end
 
-  @spec is_mid_trip(Vehicle.t()) :: boolean()
-  def is_mid_trip(vehicle) do
+  @spec mid_trip?(Vehicle.t()) :: boolean()
+  def mid_trip?(vehicle) do
     pos = vehicle.position
 
     # checking that the vehicle has not ONLY departed its origin station
@@ -194,7 +194,7 @@ defmodule Realtime.TripMatcher do
             case vehicle.ocs_trips.current do
               %{actual_departure: actual, scheduled_departure: scheduled}
               when not is_nil(actual) and not is_nil(scheduled) ->
-                if is_mid_trip(vehicle) and
+                if mid_trip?(vehicle) and
                      abs(DateTime.diff(actual, scheduled, :minute)) >= 45,
                    do: nil,
                    else: true
