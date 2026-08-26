@@ -133,22 +133,22 @@ defmodule Realtime.TripMatcher do
   end
 
   @spec mid_trip?(Vehicle.t()) :: boolean()
-  def mid_trip?(vehicle) do
-    pos = vehicle.position
-
-    at_origin? =
+  def mid_trip?(%Vehicle{position: pos}) do
+    at_terminal? =
       pos.current_status == :STOPPED_AT and
         pos.station_id in ["place-alfcl", "place-asmnl", "place-brntn"]
 
     approaching_first_stop? =
-      pos.current_status in [:IN_TRANSIT_TO, :INCOMING_AT] and
-        ((pos.station_id == "place-davis" and pos.direction == 0) or
-           (pos.station_id == "place-smmnl" and pos.direction == 1) or
-           (pos.station_id == "place-qamnl" and pos.direction == 1))
+      case {pos.station_id, pos.direction} do
+        {"place-davis", 0} -> true
+        {"place-smmnl", 1} -> true
+        {"place-qamnl", 1} -> true
+        _ -> false
+      end
 
-    # checking that the vehicle has not ONLY departed its origin station
-    # i.e it's likely further along down the line, mid-trip
-    not at_origin? and not approaching_first_stop?
+    # checking that the vehicle is likely mid-trip down the line
+    # i.e it's not waiting at the terminal and not still approaching the first stop
+    not at_terminal? and not approaching_first_stop?
   end
 
   @spec statistics([Vehicle.t()]) :: map()
