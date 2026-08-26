@@ -402,7 +402,7 @@ defmodule Realtime.TripMatcherTest do
                missing_next_departure_station: ["VEHICLE_ID"],
                missing_next_scheduled_arrival_time: ["VEHICLE_ID"],
                missing_next_scheduled_departure_time: ["VEHICLE_ID"],
-               large_delta_between_scheduled_actual_departures: ["VEHICLE_ID"],
+               large_delta_between_scheduled_actual_departures: [],
                total: 1
              } ==
                TripMatcher.statistics([
