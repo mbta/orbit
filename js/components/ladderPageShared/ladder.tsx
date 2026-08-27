@@ -9,10 +9,10 @@ import {
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
-import { RouteId } from "../../models/common";
+import { CarId, RouteId } from "../../models/common";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
-import { consistsEqual } from "../../util/consist";
+import { consistsEqual, remapLabel } from "../../util/consist";
 import { SideBarSelection } from "./sidebar";
 import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
@@ -200,6 +200,7 @@ export const Ladders = ({
 
                 return ROUTE_DEFAULTS[routeId].color;
               }}
+              labelRemap={(car: CarId) => remapLabel(car, routeId)}
               getInitialPredictionsDirection={() => 0}
             />
           </div>

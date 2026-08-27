@@ -1,6 +1,7 @@
 import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
+import { StopStatus } from "../../../models/vehiclePosition";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
@@ -12,7 +13,6 @@ jest.mock("../../../hooks/useVehicles", () => ({
   useVehicles: jest.fn(),
 }));
 const mockUseVehicles = useVehicles as jest.MockedFunction<typeof useVehicles>;
-mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
 
 jest.mock("../../../util/metadata", () => ({
   getMetaContent: jest.fn(),
@@ -30,7 +30,28 @@ const mockTrackSideBarOpened = trackSideBarOpened as jest.MockedFunction<
 
 describe("LadderPage SideBar", () => {
   beforeEach(() => {
-    mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
+    mockUseVehicles.mockReturnValue([
+      vehicleFactory.build(),
+      vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          cars: ["1514", "1500", "1716", "1717", "1757", "1758"],
+          directionId: 1,
+          heading: 330,
+          label: "1514",
+          position: {
+            latitude: 42.37468909487066,
+            longitude: -71.11860365011671,
+          },
+          routeId: "Red",
+          revenue: true,
+          stationId: "place-harsq",
+          stopId: "70068",
+          stopStatus: StopStatus.InTransitTo,
+          vehicleId: "R-BBBBBB",
+          tripId: "68077972",
+        }),
+      }),
+    ]);
     mockTrackSideBarOpened.mockClear();
   });
 
@@ -52,6 +73,11 @@ describe("LadderPage SideBar", () => {
       expect(mockTrackSideBarOpened).toHaveBeenCalledWith({
         vehicle: vehicleFactory.build(),
       });
+    });
+
+    test("15xx RL train labels are remapped", () => {
+      const view = render(<LadderPage routeId="Red" />);
+      expect(view.getByText("2514")).toBeInTheDocument();
     });
 
     test("can close SideBar with close button", async () => {
