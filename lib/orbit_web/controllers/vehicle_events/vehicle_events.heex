@@ -18,7 +18,7 @@
         <td>{ve.timestamp}</td>
         <td>{ve.id}</td>
         <td>{ve.vehicle_id}</td>
-        <td>{Enum.join(ve.cars, "-")}</td>
+        <td>{Enum.join(ve.cars || [], "-")}</td>
         <td>{ve.station_id}</td>
         <td>{ve.direction_id}</td>
         <td>{ve.arrival_departure}</td>
