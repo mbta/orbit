@@ -13,16 +13,15 @@ defmodule OrbitWeb.VehicleEventsController do
     service_date = parse_param(params, :service_date) || Util.Time.current_service_date()
 
     filters =
-      [
-        :vehicle_id,
-        :station_id,
-        :direction_id,
-        :arrival_departure
-      ]
-      |> Enum.map(fn key -> {key, parse_param(params, key)} end)
-      |> Enum.reject(fn {_key, value} -> value == nil end)
-
-    filters = [service_date: service_date] ++ filters
+      ([
+         :vehicle_id,
+         :station_id,
+         :direction_id,
+         :arrival_departure
+       ]
+       |> Enum.map(fn key -> {key, parse_param(params, key)} end)
+       |> Enum.reject(fn {_key, value} -> value == nil end)) ++
+        [service_date: service_date]
 
     render(conn, :vehicle_events,
       service_date: service_date,
