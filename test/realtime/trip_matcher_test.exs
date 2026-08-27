@@ -723,6 +723,24 @@ defmodule Realtime.TripMatcherTest do
                      direction: 1
                    }
                  ),
+                 # near Braintree -- filtered out
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(:ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:46:00Z],
+                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_APPROACHING_QUINCY_ADAMS",
+                     current_status: :IN_TRANSIT_TO,
+                     station_id: "place-brntn",
+                     direction: 1
+                   }
+                 ),
                  build(:vehicle,
                    ocs_trips: %{
                      current:
