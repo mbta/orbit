@@ -1,16 +1,20 @@
 export type BranchPickerSelection = "Alewife" | "Ashmont" | "Braintree";
 
 const defaultBg =
-  "bg-[rgb(var(--ladder-branch-picker-background-dark))] light:bg-[rgb(var(--ladder-branch-picker-background-light))]";
+  "bg-ladder-branch-picker-inactive-bg-dark light:bg-ladder-branch-picker-inactive-bg-light";
 
 const activeText =
-  "text-[rgb(var(--ladder-branch-picker-background-dark))] light:text-[rgb(var(--ladder-branch-picker-background-light))]";
+  "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
 const branchColors: Record<
   BranchPickerSelection,
   { bg: string; dotText: string }
 > = {
-  Alewife: { bg: "bg-glides-gray-400", dotText: "text-glides-gray-400" },
+  Alewife: {
+    bg: "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
+    dotText:
+      "text-ladder-branch-picker-alewife-dot-dark light:text-ladder-branch-picker-alewife-dot-light",
+  },
   Ashmont: {
     bg: "bg-heavy-rail-ashmont",
     dotText: "text-heavy-rail-ashmont",

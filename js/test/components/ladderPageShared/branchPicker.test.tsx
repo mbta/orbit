@@ -6,20 +6,22 @@ import { render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const defaultBg =
-  "bg-[rgb(var(--ladder-branch-picker-background-dark))] light:bg-[rgb(var(--ladder-branch-picker-background-light))]";
+  "bg-ladder-branch-picker-inactive-bg-dark light:bg-ladder-branch-picker-inactive-bg-light";
 const activeText =
-  "text-[rgb(var(--ladder-branch-picker-background-dark))] light:text-[rgb(var(--ladder-branch-picker-background-light))]";
+  "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
 const branches: BranchPickerSelection[] = ["Alewife", "Ashmont", "Braintree"];
 
 const activeBg: Record<BranchPickerSelection, string> = {
-  Alewife: "bg-glides-gray-400",
+  Alewife:
+    "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
   Ashmont: "bg-heavy-rail-ashmont",
   Braintree: "bg-heavy-rail-braintree",
 };
 
 const inactiveDotText: Record<BranchPickerSelection, string> = {
-  Alewife: "text-glides-gray-400",
+  Alewife:
+    "text-ladder-branch-picker-alewife-dot-dark light:text-ladder-branch-picker-alewife-dot-light",
   Ashmont: "text-heavy-rail-ashmont",
   Braintree: "text-heavy-rail-braintree",
 };
