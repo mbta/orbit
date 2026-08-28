@@ -351,8 +351,6 @@ describe("LadderPage BranchPicker visibility", () => {
 
   test("BranchPicker is hidden by default (no overflow in jsdom)", () => {
     const view = render(<LadderPage routeId="Red" />);
-    // Station names are buttons rendered by rail-tech-ui, so scope to the
-    // BranchPicker container rather than matching by branch name alone
     expect(view.queryByTestId("branch-picker")).not.toBeInTheDocument();
   });
 
