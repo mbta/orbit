@@ -363,10 +363,10 @@ describe("LadderPage BranchPicker visibility", () => {
   test("BranchPicker is shown when scroll container overflows horizontally", () => {
     const { getByTestId } = render(<LadderPage routeId="Red" />);
 
-    const scrollContainer = getByTestId("scroll-container");
+    const laddersScrollContainer = getByTestId("ladders-scroll-container");
 
     // eslint-disable-next-line better-mutation/no-mutating-functions
-    Object.defineProperty(scrollContainer, "scrollWidth", {
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
       get: () => 1000,
       configurable: true,
     });
@@ -390,11 +390,11 @@ describe("LadderPage BranchPicker visibility", () => {
   test("BranchPicker is hidden again when overflow is resolved", () => {
     const { getByTestId, queryByTestId } = render(<LadderPage routeId="Red" />);
 
-    const scrollContainer = getByTestId("scroll-container");
+    const laddersScrollContainer = getByTestId("ladders-scroll-container");
 
     // first simulate overflow
     // eslint-disable-next-line better-mutation/no-mutating-functions
-    Object.defineProperty(scrollContainer, "scrollWidth", {
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
       get: () => 1000,
       configurable: true,
     });
@@ -404,7 +404,7 @@ describe("LadderPage BranchPicker visibility", () => {
 
     // then resolve overflow
     // eslint-disable-next-line better-mutation/no-mutating-functions
-    Object.defineProperty(scrollContainer, "scrollWidth", {
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
       get: () => 0,
       configurable: true,
     });
