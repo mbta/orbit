@@ -22,7 +22,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     useState<BranchPickerSelection>("Ashmont");
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const laddersRef = useRef<HTMLDivElement>(null);
 
   const openSideBar = useCallback(
     (selection: SideBarSelection | null) => {
@@ -58,7 +58,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   }, [onEscape]);
 
   useEffect(() => {
-    const el = scrollContainerRef.current;
+    const el = laddersRef.current;
     if (!el) return;
     const check = () => {
       setIsOverflowing(el.scrollWidth > el.clientWidth);
@@ -113,10 +113,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           <SideBar selection={sideBarSelection} close={close} />
         : null}
         <div
-          ref={scrollContainerRef}
           data-testid="scroll-container"
           className={className([
-            "flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",
+            "relative flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",
           ])}
           // Close sidebar when clicking anywhere in the background
           onClick={close}
@@ -129,6 +128,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
             onQueryChange={onQueryChange}
           />
           <Ladders
+            ref={laddersRef}
             routeId={routeId}
             vehicles={vehicles}
             setSideBarSelection={openSideBarFromLadder}

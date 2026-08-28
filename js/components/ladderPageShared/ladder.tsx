@@ -19,7 +19,7 @@ import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
-import { ReactElement } from "react";
+import { ReactElement, Ref } from "react";
 
 const ROUTE_PATTERN_CONFIG: Readonly<
   Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
@@ -107,12 +107,14 @@ export const Ladders = ({
   setSideBarSelection,
   setBranchPickerSelection,
   vehicles,
+  ref,
 }: {
   routeId: RouteId;
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
   setBranchPickerSelection: (selection: BranchPickerSelection) => void;
   vehicles: Vehicle[];
+  ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
@@ -179,7 +181,11 @@ export const Ladders = ({
     : null;
 
   return (
-    <div className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
+    <div
+      ref={ref}
+      data-testid="ladders-scroll-container"
+      className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory"
+    >
       {Array.from(vehiclesByBranch.entries()).map(
         ([stationList, branchVehicles], index) => (
           <div
