@@ -234,7 +234,7 @@ defmodule Realtime.TripMatcher do
   end
 
   @type departure_lookup :: %{
-          {vehicle_id :: String.t(), station_id :: String.t()} => DateTime.t()
+          {vehicle_id :: String.t(), station_id :: String.t()} => VehicleEvent.t()
         }
   @spec fetch_departure_lookup([Vehicle.t()], DateTime.t()) :: departure_lookup()
   defp fetch_departure_lookup(vehicles, now) do
@@ -258,17 +258,22 @@ defmodule Realtime.TripMatcher do
         where:
           event.service_date == ^service_date and event.arrival_departure == :departure and
             event.station_id in ^search_stations and event.timestamp > ^search_cutoff,
-        group_by: [event.vehicle_id, event.station_id],
+        group_by: [event.vehicle_id, event.station_id, event.direction_id],
         select: %{
           vehicle_id: event.vehicle_id,
           station_id: event.station_id,
+          direction_id: event.direction_id,
           timestamp: max(event.timestamp)
-        }
+        },
+        # For a given vehicle/station pair, the group_by will return potentially two events, one per direction.
+        # We are only interested in the more recent event. Sorting in ascending order here by timestamp will
+        # mean that the later event is kept by Enum.into/3 below.
+        order_by: max(event.timestamp)
       )
     )
     # NB pm: Should be possible for Repo.all to return a map, I think?
     # But I couldn't quickly figure it out, hence the group_by above followed by this
-    |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1.timestamp})
+    |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1})
   end
 
   @spec populate_actual_departure(Vehicle.t(), departure_lookup()) :: Vehicle.t()
@@ -290,7 +295,11 @@ defmodule Realtime.TripMatcher do
         Map.get(departures, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
 
       vehicle = put_in(vehicle.ocs_trips.current.departed, true)
-      put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
+
+      put_in(
+        vehicle.ocs_trips.current.actual_departure,
+        actual_departure && actual_departure.timestamp
+      )
     else
       vehicle
     end
