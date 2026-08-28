@@ -276,7 +276,7 @@ defmodule Realtime.TripMatcher do
 
   @spec populate_actual_departure(Vehicle.t(), departure_lookup()) :: Vehicle.t()
   defp populate_actual_departure(vehicle, departures) do
-    %{ocs_trips: %{current: current}} = vehicle
+    %{ocs_trips: %{current: current, past: past}} = vehicle
 
     origin_station = current && Trip.get_origin_station(current)
 
@@ -289,15 +289,21 @@ defmodule Realtime.TripMatcher do
                at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
 
     if departed? do
+      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
+
       actual_departure =
         Map.get(departures, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
 
-      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
+      # Check that this departure isn't actually for a prior trip, which could happen if the current
+      # trip's departure has not been detected
+      best_trip =
+        actual_departure && best_matching_trip_for_departure([current | past], actual_departure)
 
-      put_in(
-        vehicle.ocs_trips.current.actual_departure,
-        actual_departure && actual_departure.timestamp
-      )
+      if best_trip == current do
+        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure.timestamp)
+      else
+        vehicle
+      end
     else
       vehicle
     end
@@ -320,5 +326,44 @@ defmodule Realtime.TripMatcher do
 
     # Check if stopped at the OCS origin_station
     stopped and vehicle.position.station_id == station
+  end
+
+  @spec best_matching_trip_for_departure([Trip.t()], VehicleEvent.t()) :: Trip.t() | nil
+  defp best_matching_trip_for_departure(trips, event) do
+    {best_trip, _} =
+      trips
+      |> Enum.map(fn trip -> {trip, match_departure?(trip, event)} end)
+      |> Enum.reject(fn {_trip, {result, _}} -> result == :no_match end)
+      |> Enum.min_by(fn {_trip, {:match, offset}} -> offset end, fn -> {nil, nil} end)
+
+    best_trip
+  end
+
+  @spec match_departure?(Trip.t(), VehicleEvent.t()) :: {:match, integer()} | {:no_match, any()}
+  defp match_departure?(ocs_trip, vehicle_event) do
+    origin_station = Trip.get_origin_station(ocs_trip) |> Stations.ocs_to_gtfs()
+    dest_station = Trip.get_destination_station(ocs_trip) |> Stations.ocs_to_gtfs()
+    trip_direction = Realtime.Data.Stations.direction_from_stations(origin_station, dest_station)
+
+    matches_direction? =
+      trip_direction == :ambiguous or trip_direction == vehicle_event.direction_id
+
+    cond do
+      not matches_direction? ->
+        {:no_match, :wrong_direction}
+
+      origin_station != vehicle_event.station_id ->
+        {:no_match, :wrong_station}
+
+      ocs_trip.scheduled_departure == nil and ocs_trip.assigned_at == nil ->
+        {:no_match, :missing_departure_time}
+
+      true ->
+        expected_departure_time =
+          DateTime.add(ocs_trip.scheduled_departure || ocs_trip.assigned_at, ocs_trip.offset || 0)
+
+        variance = DateTime.diff(vehicle_event.timestamp, expected_departure_time)
+        {:match, abs(variance)}
+    end
   end
 end
