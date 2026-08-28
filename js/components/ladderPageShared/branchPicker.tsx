@@ -63,7 +63,10 @@ export const BranchPicker = ({
   setBranchPickerSelection: (selection: BranchPickerSelection) => void;
 }) => {
   return (
-    <div className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]">
+    <div
+      className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
+      data-testid="branch-picker"
+    >
       {(["Alewife", "Ashmont", "Braintree"] as const).map((branch) => (
         <BranchButton
           key={branch}

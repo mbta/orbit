@@ -2,7 +2,7 @@
   "name": "orbit",
   "scripts": {
     "build:css": "tailwindcss -i css/app.css -o priv/static/assets/app.css",
-    "build:js": "NODE_PATH=deps/ esbuild js/app.tsx --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/*",
+    "build:js": "NODE_PATH=deps/ esbuild js/app.tsx --bundle --tsconfig=tsconfig.json --outdir=priv/static/assets --external:/fonts/* --external:/images/* --alias:react=./node_modules/react --alias:react-dom=./node_modules/react-dom",
     "format": "prettier . --write",
     "test:eslint": "eslint .",
     "test:format": "prettier . --check",
@@ -15,11 +15,11 @@
     "@fullstory/browser": "2.0.8",
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "5.0.0",
-    "@sentry/react": "10.70.0",
+    "@sentry/react": "10.71.0",
     "@tailwindcss/forms": "0.5.11",
     "esbuild": "0.28.2",
     "luxon": "3.7.2",
-    "rail-tech-ui": "github:mbta/rail-tech-ui",
+    "rail-tech-ui": "github:mbta/rail-tech-ui#0964a7018297adcaaa05131daf26149ccde9e760",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router": "7.18.2",
@@ -60,7 +60,7 @@
     "ts-jest": "29.4.6",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.67.0",
+    "typescript-eslint": "8.68.0",
     "typescript-language-server": "6.0.0"
   }
 }

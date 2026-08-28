@@ -1,0 +1,30 @@
+<section class="m-2">
+  <p>Vehicle Events for {@service_date}</p>
+  {length(@vehicle_events)} record{(length(@vehicle_events) != 1 && "s") || ""}
+  <table class="mt-3 border border-black [&_th]:px-2 [&_th]:border [&_th]:border-black [&_td]:border-x [&_td]:border-black [&_td]:px-2">
+    <tr>
+      <th>timestamp</th>
+      <th>id</th>
+      <th>vehicle_id</th>
+      <th>consist</th>
+      <th>station_id</th>
+      <th>direction_id</th>
+      <th>arr_dep</th>
+      <th>rail_line</th>
+      <th>inserted_at</th>
+    </tr>
+    <%= for ve <- @vehicle_events do %>
+      <tr>
+        <td>{ve.timestamp}</td>
+        <td>{ve.id}</td>
+        <td>{ve.vehicle_id}</td>
+        <td>{Enum.join(ve.cars || [], "-")}</td>
+        <td>{ve.station_id}</td>
+        <td>{ve.direction_id}</td>
+        <td>{ve.arrival_departure}</td>
+        <td>{ve.rail_line}</td>
+        <td>{ve.inserted_at}</td>
+      </tr>
+    <% end %>
+  </table>
+</section>

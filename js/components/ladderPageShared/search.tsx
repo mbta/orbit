@@ -116,7 +116,7 @@ export const SearchBar = ({
         </button>
         <input
           ref={inputRef}
-          className="h-9 w-full rounded pl-8 border border-gray-300 px-2 pr-14 text-sm text-black"
+          className="h-9 w-full rounded-lg pl-8 dark:bg-inputField-search-background-dark light:bg-inputField-search-background-light border border-inputField-search-border-dark px-2 pr-14 text-sm text-white placeholder:text-white"
           placeholder="Car #"
           type="text"
           maxLength={4}
@@ -147,7 +147,7 @@ export const SearchBar = ({
       </form>
 
       {errorMessage !== null ?
-        <p className="mt-1 rounded bg-white px-2 py-1 text-sm text-red-600">
+        <p className="mt-1 rounded px-2 py-1 text-sm text-red-300">
           {errorMessage}
         </p>
       : null}

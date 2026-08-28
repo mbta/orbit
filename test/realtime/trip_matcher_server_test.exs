@@ -155,6 +155,7 @@ defmodule Realtime.TripMatcherServerTest do
       |> Enum.sort()
 
     assert fields == [
+             ~s(large_delta_between_scheduled_actual_departures=""),
              ~s(missing_current_actual_departure_time="R-12345678"),
              ~s(missing_current_arrival_station="R-12345678"),
              ~s(missing_current_departure_station="R-12345678"),

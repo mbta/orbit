@@ -132,6 +132,23 @@ defmodule Realtime.TripMatcher do
     end
   end
 
+  @spec mid_trip?(Vehicle.t()) :: boolean()
+  def mid_trip?(%Vehicle{position: pos}) do
+    near_terminal? = pos.station_id in ["place-alfcl", "place-asmnl", "place-brntn"]
+
+    approaching_first_stop? =
+      case {pos.station_id, pos.direction} do
+        {"place-davis", 0} -> true
+        {"place-smmnl", 1} -> true
+        {"place-qamnl", 1} -> true
+        _ -> false
+      end
+
+    # checking that the vehicle is likely mid-trip down the line
+    # i.e it's not near a terminal and not still approaching the first stop
+    not near_terminal? and not approaching_first_stop?
+  end
+
   @spec statistics([Vehicle.t()]) :: map()
   def statistics(vehicles) do
     Enum.reduce(
@@ -175,7 +192,19 @@ defmodule Realtime.TripMatcher do
           missing_next_arrival_station:
             ignore_next_trip || (next_trip && Trip.get_destination_station(next_trip)),
           missing_next_scheduled_arrival_time:
-            ignore_next_trip || (next_trip && next_trip.scheduled_arrival)
+            ignore_next_trip || (next_trip && next_trip.scheduled_arrival),
+          large_delta_between_scheduled_actual_departures:
+            case vehicle.ocs_trips.current do
+              %{actual_departure: actual, scheduled_departure: scheduled}
+              when not is_nil(actual) and not is_nil(scheduled) ->
+                if mid_trip?(vehicle) and
+                     abs(DateTime.diff(actual, scheduled, :minute)) >= 45,
+                   do: nil,
+                   else: true
+
+              _ ->
+                true
+            end
         }
 
         checks

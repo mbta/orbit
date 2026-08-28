@@ -130,6 +130,7 @@ defmodule OrbitWeb.Router do
 
     get "/ocs/trips", OcsController, :trips
     get "/ocs/trains", OcsController, :trains
+    get "/vehicle-events", VehicleEventsController, :vehicle_events
   end
 
   scope "/", OrbitWeb do
