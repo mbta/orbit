@@ -9,4 +9,7 @@ export type Station = {
   location: LatLng;
   // track-level stopIds which are specfic to one side of the station
   forcedDirections?: Map<string, number>;
+
+  // set on terminals to provide a link to the trainsheet
+  externalUrl?: string;
 };

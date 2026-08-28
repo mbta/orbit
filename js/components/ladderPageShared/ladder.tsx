@@ -73,6 +73,7 @@ const toLadderStation = (station: Station) => ({
   shortName: station.name,
   latLng: station.location,
   spacingRatio: station.spacingRatio,
+  externalUrl: station.externalUrl,
 });
 
 // Transform an Orbit `Vehicle` to a TrainLoc that rail-tech-ui & Glides use
