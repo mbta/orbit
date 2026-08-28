@@ -24,21 +24,19 @@ defmodule Realtime.TripMatcher do
       vehicle_id = Realtime.Data.unprefixed_vehicle_id(vp.vehicle_id)
 
       # Find OCS trip: the most recently assigned trip for this train
-      current_trip =
+      sorted_trips =
         Enum.filter(ocs_trips, fn trip ->
           trip.train_uid == vehicle_id && trip.assigned_at != nil
         end)
-        |> Enum.max_by(
-          fn trip -> trip.assigned_at end,
-          # Use default compare function provided by DateTime
-          DateTime,
-          # If there are no assigned trips (empty list), current trip should be nil
-          fn -> nil end
-        )
+        |> Enum.sort_by(fn trip -> DateTime.to_unix(trip.assigned_at) end, :desc)
 
-      next = next_trip_chain(ocs_trips_by_uid, vehicle_id, current_trip)
+      {current_trip, past_trips} =
+        case sorted_trips do
+          [current_trip | past_trips] -> {current_trip, past_trips}
+          [] -> {nil, []}
+        end
 
-      ocs_current_and_next = %{current: current_trip, next: next}
+      next_trips = next_trip_chain(ocs_trips_by_uid, vehicle_id, current_trip)
 
       # Find TripUpdate
       trip_update =
@@ -49,7 +47,7 @@ defmodule Realtime.TripMatcher do
       %Vehicle{
         position: vp,
         trip_update: trip_update,
-        ocs_trips: ocs_current_and_next
+        ocs_trips: %{current: current_trip, next: next_trips, past: past_trips}
       }
     end)
     |> populate_actual_departures(DateTime.utc_now())
