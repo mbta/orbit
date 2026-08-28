@@ -229,6 +229,15 @@ defmodule Realtime.TripMatcher do
 
   @spec populate_actual_departures([Vehicle.t()], DateTime.t()) :: [Vehicle.t()]
   def populate_actual_departures(vehicles, now) do
+    departures = fetch_departure_lookup(vehicles, now)
+    Enum.map(vehicles, &populate_actual_departure(&1, departures))
+  end
+
+  @type departure_lookup :: %{
+          {vehicle_id :: String.t(), station_id :: String.t()} => DateTime.t()
+        }
+  @spec fetch_departure_lookup([Vehicle.t()], DateTime.t()) :: departure_lookup()
+  defp fetch_departure_lookup(vehicles, now) do
     service_date = Util.Time.service_date_for_utc_datetime(now)
 
     search_cutoff = DateTime.add(now, @event_search_cutoff_m, :minute)
@@ -244,48 +253,47 @@ defmodule Realtime.TripMatcher do
       )
       |> Enum.uniq()
 
-    # Get relevant events from the database
-    events =
-      Repo.all(
-        from(event in VehicleEvent,
-          where:
-            event.service_date == ^service_date and event.arrival_departure == :departure and
-              event.station_id in ^search_stations and event.timestamp > ^search_cutoff,
-          group_by: [event.vehicle_id, event.station_id],
-          select: %{
-            vehicle_id: event.vehicle_id,
-            station_id: event.station_id,
-            timestamp: max(event.timestamp)
-          }
-        )
+    Repo.all(
+      from(event in VehicleEvent,
+        where:
+          event.service_date == ^service_date and event.arrival_departure == :departure and
+            event.station_id in ^search_stations and event.timestamp > ^search_cutoff,
+        group_by: [event.vehicle_id, event.station_id],
+        select: %{
+          vehicle_id: event.vehicle_id,
+          station_id: event.station_id,
+          timestamp: max(event.timestamp)
+        }
       )
-      # NB pm: Should be possible for Repo.all to return a map, I think?
-      # But I couldn't quickly figure it out, hence the group_by above followed by this
-      |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1.timestamp})
+    )
+    # NB pm: Should be possible for Repo.all to return a map, I think?
+    # But I couldn't quickly figure it out, hence the group_by above followed by this
+    |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1.timestamp})
+  end
 
-    Enum.map(vehicles, fn vehicle ->
-      %{ocs_trips: %{current: current}} = vehicle
+  @spec populate_actual_departure(Vehicle.t(), departure_lookup()) :: Vehicle.t()
+  defp populate_actual_departure(vehicle, departures) do
+    %{ocs_trips: %{current: current}} = vehicle
 
-      origin_station = current && Trip.get_origin_station(current)
+    origin_station = current && Trip.get_origin_station(current)
 
-      # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
-      # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
-      # or else we would not have gotten a vehicle position from GTFS realtime.
-      departed? =
-        origin_station != nil and
-          not (Stations.revenue?(origin_station) and
-                 at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
+    # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
+    # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
+    # or else we would not have gotten a vehicle position from GTFS realtime.
+    departed? =
+      origin_station != nil and
+        not (Stations.revenue?(origin_station) and
+               at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
 
-      if departed? do
-        actual_departure =
-          Map.get(events, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
+    if departed? do
+      actual_departure =
+        Map.get(departures, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
 
-        vehicle = put_in(vehicle.ocs_trips.current.departed, true)
-        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
-      else
-        vehicle
-      end
-    end)
+      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
+      put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
+    else
+      vehicle
+    end
   end
 
   @spec nonrevenue_origin?(Trip.t()) :: boolean()
