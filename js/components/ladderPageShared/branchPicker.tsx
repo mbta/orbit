@@ -56,11 +56,11 @@ const BranchButton = ({
 };
 
 export const BranchPicker = ({
-  branchPickerSelection,
-  setBranchPickerSelection,
+  selection,
+  setSelection,
 }: {
-  branchPickerSelection: BranchPickerSelection;
-  setBranchPickerSelection: (selection: BranchPickerSelection) => void;
+  selection: BranchPickerSelection;
+  setSelection: (selection: BranchPickerSelection) => void;
 }) => {
   return (
     <div
@@ -71,9 +71,9 @@ export const BranchPicker = ({
         <BranchButton
           key={branch}
           branch={branch}
-          isActive={branchPickerSelection === branch}
+          isActive={selection === branch}
           onClick={() => {
-            setBranchPickerSelection(branch);
+            setSelection(branch);
           }}
         />
       ))}
