@@ -1,4 +1,5 @@
-export type BranchPickerSelection = "Alewife" | "Ashmont" | "Braintree";
+const branches = ["Alewife", "Ashmont", "Braintree"] as const;
+export type BranchPickerSelection = (typeof branches)[number];
 
 const defaultBg =
   "bg-ladder-branch-picker-inactive-bg-dark light:bg-ladder-branch-picker-inactive-bg-light";
@@ -67,7 +68,7 @@ export const BranchPicker = ({
       className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
       data-testid="branch-picker"
     >
-      {(["Alewife", "Ashmont", "Braintree"] as const).map((branch) => (
+      {branches.map((branch) => (
         <BranchButton
           key={branch}
           branch={branch}
