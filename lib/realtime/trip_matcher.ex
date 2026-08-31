@@ -360,7 +360,11 @@ defmodule Realtime.TripMatcher do
 
       true ->
         expected_departure_time =
-          DateTime.add(ocs_trip.scheduled_departure || ocs_trip.assigned_at, ocs_trip.offset || 0)
+          if ocs_trip.scheduled_departure != nil do
+            DateTime.add(ocs_trip.scheduled_departure, ocs_trip.offset || 0)
+          else
+            ocs_trip.assigned_at
+          end
 
         variance = DateTime.diff(vehicle_event.timestamp, expected_departure_time)
         {:match, abs(variance)}
