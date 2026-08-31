@@ -334,12 +334,13 @@ defmodule Realtime.TripMatcher do
       trips
       |> Enum.map(fn trip -> {trip, match_departure?(trip, event)} end)
       |> Enum.reject(fn {_trip, {result, _}} -> result == :no_match end)
-      |> Enum.min_by(fn {_trip, {:match, offset}} -> offset end, fn -> {nil, nil} end)
+      |> Enum.min_by(fn {_trip, {:match, penalty}} -> penalty end, fn -> {nil, nil} end)
 
     best_trip
   end
 
-  @spec match_departure?(Trip.t(), VehicleEvent.t()) :: {:match, integer()} | {:no_match, any()}
+  @spec match_departure?(Trip.t(), VehicleEvent.t()) ::
+          {:match, penalty :: integer()} | {:no_match, :wrong_station | :missing_departure_time}
   defp match_departure?(ocs_trip, vehicle_event) do
     origin_station = Trip.get_origin_station(ocs_trip) |> Stations.ocs_to_gtfs()
     dest_station = Trip.get_destination_station(ocs_trip) |> Stations.ocs_to_gtfs()
@@ -366,8 +367,8 @@ defmodule Realtime.TripMatcher do
             ocs_trip.assigned_at
           end
 
-        variance = DateTime.diff(vehicle_event.timestamp, expected_departure_time)
-        {:match, abs(variance)}
+        difference = DateTime.diff(vehicle_event.timestamp, expected_departure_time)
+        {:match, abs(difference)}
     end
   end
 end
