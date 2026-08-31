@@ -265,17 +265,17 @@ jobs:
       - name: Run DB migrations
         run: mix ecto.migrate
         env:
-          GLIDES_DB_USERNAME: ${{env.DATABASE_USER}}
-          GLIDES_DB_PASSWORD: ${{env.DATABASE_PASSWORD}}
-          GLIDES_DB_HOSTNAME: ${{env.DATABASE_HOST}}
-          GLIDES_DB_DATABASE_NAME: ${{env.DATABASE_NAME}}
+          DATABASE_USERNAME: ${{env.DATABASE_USER}}
+          DATABASE_PASSWORD: ${{env.DATABASE_PASSWORD}}
+          DATABASE_HOST: ${{env.DATABASE_HOST}}
+          DATABASE_NAME: ${{env.DATABASE_NAME}}
       - name: Run Playwright tests
         run: npm run test:e2e
         env:
-          GLIDES_DB_USERNAME: ${{env.DATABASE_USER}}
-          GLIDES_DB_PASSWORD: ${{env.DATABASE_PASSWORD}}
-          GLIDES_DB_HOSTNAME: ${{env.DATABASE_HOST}}
-          GLIDES_DB_DATABASE_NAME: ${{env.DATABASE_NAME}}
+          DATABASE_USERNAME: ${{env.DATABASE_USER}}
+          DATABASE_PASSWORD: ${{env.DATABASE_PASSWORD}}
+          DATABASE_HOST: ${{env.DATABASE_HOST}}
+          DATABASE_NAME: ${{env.DATABASE_NAME}}
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
