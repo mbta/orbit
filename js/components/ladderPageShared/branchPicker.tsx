@@ -9,13 +9,7 @@ const defaultBg =
 const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
-const branchColors: Pick<
-  Record<
-    RouteId,
-    Record<BranchPickerSelection, { bg: string; dotText: string }>
-  >,
-  "Red"
-> = {
+const branchColors = {
   Red: {
     Alewife: {
       bg: "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
@@ -31,7 +25,12 @@ const branchColors: Pick<
       dotText: "text-heavy-rail-braintree",
     },
   },
-};
+} satisfies Partial<
+  Record<
+    RouteId,
+    Record<BranchPickerSelection, { bg: string; dotText: string }>
+  >
+>;
 
 const BranchButton = ({
   branch,
