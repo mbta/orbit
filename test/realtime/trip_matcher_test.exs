@@ -764,7 +764,10 @@ defmodule Realtime.TripMatcherTest do
                        ),
                      next: []
                    },
-                   position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_45", station_id: "place-jfk"}
+                   position: %VehiclePosition{
+                     vehicle_id: "VEHICLE_OVER_45",
+                     station_id: "place-jfk"
+                   }
                  ),
                  build(:vehicle,
                    ocs_trips: %{
