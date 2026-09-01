@@ -741,6 +741,7 @@ defmodule Realtime.TripMatcherTest do
                      direction: 1
                    }
                  ),
+                 # no station_id -- filtered out
                  build(:vehicle,
                    ocs_trips: %{
                      current:
@@ -751,7 +752,19 @@ defmodule Realtime.TripMatcherTest do
                        ),
                      next: []
                    },
-                   position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_45"}
+                   position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_45_NO_STATION"}
+                 ),
+                 build(:vehicle,
+                   ocs_trips: %{
+                     current:
+                       build(:ocs_trip,
+                         departed: true,
+                         actual_departure: ~U[2026-08-21 12:46:00Z],
+                         scheduled_departure: ~U[2026-08-21 12:00:00Z]
+                       ),
+                     next: []
+                   },
+                   position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_45", station_id: "place-jfk"}
                  ),
                  build(:vehicle,
                    ocs_trips: %{
