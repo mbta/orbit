@@ -146,7 +146,7 @@ defmodule Realtime.TripMatcher do
 
     # checking that the vehicle is likely mid-trip down the line
     # i.e it's not near a terminal and not still approaching the first stop
-    not near_terminal? and not approaching_first_stop?
+    not near_terminal? and not approaching_first_stop? and !is_nil(pos.station_id)
   end
 
   @spec statistics([Vehicle.t()]) :: map()
