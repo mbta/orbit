@@ -1,3 +1,5 @@
+export type Route = "Red" | "Orange" | "Blue";
+
 const branches = ["Alewife", "Ashmont", "Braintree"] as const;
 export type BranchPickerSelection = (typeof branches)[number];
 
@@ -7,22 +9,24 @@ const defaultBg =
 const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
-const branchColors: Record<
-  BranchPickerSelection,
-  { bg: string; dotText: string }
+const branchColors: Pick<
+  Record<Route, Record<BranchPickerSelection, { bg: string; dotText: string }>>,
+  "Red"
 > = {
-  Alewife: {
-    bg: "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
-    dotText:
-      "text-ladder-branch-picker-alewife-dot-dark light:text-ladder-branch-picker-alewife-dot-light",
-  },
-  Ashmont: {
-    bg: "bg-heavy-rail-ashmont",
-    dotText: "text-heavy-rail-ashmont",
-  },
-  Braintree: {
-    bg: "bg-heavy-rail-braintree",
-    dotText: "text-heavy-rail-braintree",
+  Red: {
+    Alewife: {
+      bg: "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
+      dotText:
+        "text-ladder-branch-picker-alewife-dot-dark light:text-ladder-branch-picker-alewife-dot-light",
+    },
+    Ashmont: {
+      bg: "bg-heavy-rail-ashmont",
+      dotText: "text-heavy-rail-ashmont",
+    },
+    Braintree: {
+      bg: "bg-heavy-rail-braintree",
+      dotText: "text-heavy-rail-braintree",
+    },
   },
 };
 
@@ -35,7 +39,7 @@ const BranchButton = ({
   isActive: boolean;
   onClick: () => void;
 }) => {
-  const { bg, dotText } = branchColors[branch];
+  const { bg, dotText } = branchColors.Red[branch];
   const buttonBg = isActive ? bg : defaultBg;
   const labelText = isActive ? activeText : "text-white";
   const dotColor = isActive ? activeText : dotText;
