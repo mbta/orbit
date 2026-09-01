@@ -1,4 +1,4 @@
-export type Route = "Red" | "Orange" | "Blue";
+import { RouteId } from "../../models/common";
 
 const branches = ["Alewife", "Ashmont", "Braintree"] as const;
 export type BranchPickerSelection = (typeof branches)[number];
@@ -10,7 +10,10 @@ const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
 const branchColors: Pick<
-  Record<Route, Record<BranchPickerSelection, { bg: string; dotText: string }>>,
+  Record<
+    RouteId,
+    Record<BranchPickerSelection, { bg: string; dotText: string }>
+  >,
   "Red"
 > = {
   Red: {
