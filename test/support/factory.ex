@@ -131,7 +131,8 @@ defmodule Orbit.Factory do
       trip_update: build(:trip_update),
       ocs_trips: %{
         current: nil,
-        next: []
+        next: [],
+        past: []
       }
     }
   end
