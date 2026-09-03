@@ -161,6 +161,15 @@ describe("LadderPage SideBar", () => {
       expect(input).toHaveValue("");
     });
 
+    test("clicking a train highlights it", async () => {
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByRole("button", { name: "A 1877" }));
+      expect(view.getByRole("button", { name: "A 1877" })).toHaveClass(
+        "z-object",
+      );
+    });
+
     test("clicking the same train keeps query and searched-car highlight", async () => {
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);

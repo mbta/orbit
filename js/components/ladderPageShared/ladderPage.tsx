@@ -89,7 +89,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   return (
-    <main className="bg-glides-blue-700 flex overflow-y-auto overflow-x-hidden justify-center">
+    <main className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex overflow-y-auto overflow-x-hidden justify-center">
       {sideBarSelection !== null ?
         <SideBar selection={sideBarSelection} close={close} />
       : null}

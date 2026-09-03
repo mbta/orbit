@@ -151,10 +151,9 @@ export const Ladders = ({
     }
   };
 
-  // Scroll into view only when the user found the vehicle via search; keeps
-  // parity with the previous scrollIntoView behavior.
-  const scrollToConsist =
-    sideBarSelection?.searchedCar != null ?
+  // Highlight the pill any time the sidebar is showing
+  const selected =
+    sideBarSelection !== null ?
       sideBarSelection.vehicle.vehiclePosition.cars
     : null;
 
@@ -180,7 +179,8 @@ export const Ladders = ({
               labelMode="lead"
               trainLocs={branchVehicles.map(vehicleToTrainLoc)}
               stationSelection={null}
-              scrollToConsist={scrollToConsist}
+              // TODO: split scrolling to a train and highlighting a train in rail-tech-ui
+              scrollToConsist={selected}
               onVehicleSelection={onVehicleSelection}
               setStationSelection={() => undefined}
               eastToWestStations={stationList.map(toLadderStation)}
