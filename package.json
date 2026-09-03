@@ -22,7 +22,7 @@
     "rail-tech-ui": "github:mbta/rail-tech-ui#v2.2.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-router": "7.18.2",
+    "react-router": "8.3.1",
     "tailwindcss": "3.4.19",
     "zod": "4.4.3"
   },
