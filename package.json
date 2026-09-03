@@ -12,7 +12,7 @@
     "test": "npm run test:tsc && npm run test:jest && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
-    "@fullstory/browser": "2.0.8",
+    "@fullstory/browser": "2.1.0",
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "5.0.0",
     "@sentry/react": "10.71.0",
