@@ -1,3 +1,4 @@
+import { Ladders } from "../../../components/ladderPageShared/ladder";
 import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
@@ -5,7 +6,7 @@ import { StopStatus } from "../../../models/vehiclePosition";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import { act, render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../hooks/useVehicles", () => ({
@@ -338,6 +339,200 @@ describe("LadderPage SideBar", () => {
       expect(
         view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("LadderPage BranchPicker visibility", () => {
+  beforeEach(() => {
+    mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
+    mockGetMetaContent.mockReturnValue(null);
+  });
+
+  test("BranchPicker is hidden by default (no overflow in jsdom)", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    expect(view.queryByTestId("branch-picker")).not.toBeInTheDocument();
+  });
+
+  test("BranchPicker is shown when scroll container overflows horizontally", () => {
+    const { getByTestId } = render(<LadderPage routeId="Red" />);
+
+    const laddersScrollContainer = getByTestId("ladders-scroll-container");
+
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
+      get: () => 1000,
+      configurable: true,
+    });
+
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    const branchPicker = getByTestId("branch-picker");
+    expect(
+      within(branchPicker).getByRole("button", { name: "Alewife" }),
+    ).toBeInTheDocument();
+    expect(
+      within(branchPicker).getByRole("button", { name: "Ashmont" }),
+    ).toBeInTheDocument();
+    expect(
+      within(branchPicker).getByRole("button", { name: "Braintree" }),
+    ).toBeInTheDocument();
+  });
+
+  test("BranchPicker is hidden again when overflow is resolved", () => {
+    const { getByTestId, queryByTestId } = render(<LadderPage routeId="Red" />);
+
+    const laddersScrollContainer = getByTestId("ladders-scroll-container");
+
+    // first simulate overflow
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
+      get: () => 1000,
+      configurable: true,
+    });
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    // then resolve overflow
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(laddersScrollContainer, "scrollWidth", {
+      get: () => 0,
+      configurable: true,
+    });
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    expect(queryByTestId("branch-picker")).not.toBeInTheDocument();
+  });
+});
+
+const nextVehicleId = (() => {
+  let mockVehicleId = 0;
+  return () => `mock-id-${mockVehicleId++}`;
+})();
+
+describe("Ladder", () => {
+  test("shows station names", () => {
+    mockUseVehicles.mockReturnValue([]);
+
+    const view = render(
+      <Ladders
+        routeId="Red"
+        setSideBarSelection={jest.fn()}
+        setBranchPickerSelection={jest.fn()}
+        sideBarSelection={null}
+        vehicles={useVehicles() ?? []}
+      />,
+    );
+
+    expect(view.getByText("Alewife")).toBeInTheDocument();
+    expect(view.getByText("Ashmont")).toBeInTheDocument();
+    expect(view.getByText("Braintree")).toBeInTheDocument();
+  });
+
+  describe("branch selection on train click", () => {
+    beforeAll(() => {
+      mockGetMetaContent.mockImplementation((field: MetaDataKey) => {
+        if (field === "userGroups") return ORBIT_RL_TRAINSTARTERS;
+        return null;
+      });
+    });
+
+    test("clicking a train on the Ashmont ladder calls setBranchPickerSelection with Ashmont", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1999",
+            cars: ["1999", "1876", "1807", "1806", "1815", "1814"],
+            stationId: "place-asmnl",
+            stopId: "70094",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: /1999/ }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Ashmont");
+    });
+
+    test("clicking a train on the Braintree ladder calls setBranchPickerSelection with Braintree", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "2001",
+            cars: ["2001", "1876", "1807", "1806", "1815", "1814"],
+            stationId: "place-brntn",
+            stopId: "70105",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: /2001/ }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Braintree");
+    });
+
+    test("clicking a train on the Alewife trunk ladder calls setBranchPickerSelection with Alewife", async () => {
+      const mockSetBranch = jest.fn();
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: nextVehicleId(),
+            label: "1888",
+            cars: ["1888", "1876", "1807", "1806", "1815", "1814"],
+            stationId: "place-davis",
+            stopId: "70064",
+            stopStatus: StopStatus.StoppedAt,
+            position: null,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={mockSetBranch}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      await user.click(view.getByRole("button", { name: /1888/ }));
+      expect(mockSetBranch).toHaveBeenCalledWith("Alewife");
     });
   });
 });

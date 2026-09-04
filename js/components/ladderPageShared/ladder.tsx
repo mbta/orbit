@@ -13,12 +13,13 @@ import { CarId, RouteId } from "../../models/common";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { consistsEqual, remapLabel } from "../../util/consist";
+import { BranchPickerSelection } from "./branchPicker";
 import { SideBarSelection } from "./sidebar";
 import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
-import { ReactElement } from "react";
+import { ReactElement, Ref } from "react";
 
 const ROUTE_PATTERN_CONFIG: Readonly<
   Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
@@ -64,6 +65,12 @@ export type VehicleWithHeight = {
   heights: TrainHeight;
 };
 
+const branchForLadder = (ladderConfig: LadderConfig): BranchPickerSelection => {
+  if (ladderConfig.some((s) => s.id === "place-asmnl")) return "Ashmont";
+  if (ladderConfig.some((s) => s.id === "place-brntn")) return "Braintree";
+  return "Alewife";
+};
+
 // Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
 // LadderStation shape (`latLng`, requires `shortName`).
 // TODO: After we remove the old ladder, this can be simplified
@@ -99,12 +106,16 @@ export const Ladders = ({
   routeId,
   sideBarSelection,
   setSideBarSelection,
+  setBranchPickerSelection,
   vehicles,
+  ref,
 }: {
   routeId: RouteId;
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
+  setBranchPickerSelection: (selection: BranchPickerSelection) => void;
   vehicles: Vehicle[];
+  ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
@@ -138,6 +149,18 @@ export const Ladders = ({
       ),
     );
     if (match) {
+      // update branch picker to reflect the branch the clicked train is on
+      const matchingStationList = stationLists.find((stations) =>
+        stations.some((station) =>
+          station.stop_ids.some(
+            (stopId) => stopId === match.vehiclePosition.stopId,
+          ),
+        ),
+      );
+      if (matchingStationList) {
+        setBranchPickerSelection(branchForLadder(matchingStationList));
+      }
+
       const sameVehicle =
         sideBarSelection !== null &&
         consistsEqual(
@@ -159,7 +182,11 @@ export const Ladders = ({
     : null;
 
   return (
-    <div className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
+    <div
+      ref={ref}
+      data-testid="ladders-scroll-container"
+      className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory"
+    >
       {Array.from(vehiclesByBranch.entries()).map(
         ([stationList, branchVehicles], index) => (
           <div
