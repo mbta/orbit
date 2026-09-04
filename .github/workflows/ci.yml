@@ -183,8 +183,8 @@ jobs:
       - name: npm ci
         if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: npm ci
-      - name: npm test
-        run: npm test
+      - name: npm run test:jest
+        run: npm run test:jest
 
   docker:
     name: Check that the Docker container will build and run
