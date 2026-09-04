@@ -179,8 +179,7 @@ export const Ladders = ({
               labelMode="lead"
               trainLocs={branchVehicles.map(vehicleToTrainLoc)}
               stationSelection={null}
-              // TODO: split scrolling to a train and highlighting a train in rail-tech-ui
-              scrollToConsist={selected}
+              scrollToConsist={null}
               onVehicleSelection={onVehicleSelection}
               setStationSelection={() => undefined}
               eastToWestStations={stationList.map(toLadderStation)}
@@ -203,6 +202,7 @@ export const Ladders = ({
               }}
               labelRemap={(car: CarId) => remapLabel(car, routeId)}
               getInitialPredictionsDirection={() => 0}
+              highlight={selected}
             />
           </div>
         ),
