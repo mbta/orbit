@@ -21,7 +21,7 @@ RUN mix deps.compile
 # due to an ECS issue (see: https://stitchworkflow.com/blog/aws-ecs-alpine-changes/)
 # but since we're just using this image for building the static
 # frontend assets we think a mismatch is fine.
-FROM node:24.19.0-alpine3.24 AS node
+FROM node:24.20.0-alpine3.24 AS node
 
 # npm deps
 ENV NODE_ENV=production
