@@ -1,6 +1,6 @@
 # Orbit 🪐
 
-[Glides](https://github.com/mbta/glides) for Heavy Rail
+[Glides](https://github.com/mbta/glides) for Heavy Rail.
 
 ## Pre-reqs
 
