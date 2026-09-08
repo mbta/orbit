@@ -6,13 +6,20 @@ defmodule Orbit.Vehicle do
   @type t :: %__MODULE__{
           position: VehiclePosition.t(),
           trip_update: TripUpdate.t() | nil,
-          ocs_trips: %{current: Trip.t(), next: [Trip.t()]}
+          ocs_trips: %{current: Trip.t(), next: [Trip.t()], past: [Trip.t()]}
         }
 
-  @derive Jason.Encoder
   defstruct [
     :position,
     :trip_update,
     :ocs_trips
   ]
+end
+
+defimpl Jason.Encoder, for: Orbit.Vehicle do
+  def encode(value, opts) do
+    # Omit the past trips for now, since the frontend does not expect or care about it
+    {_, value} = pop_in(value, [Access.key(:ocs_trips), :past])
+    Jason.Encode.map(value, opts)
+  end
 end

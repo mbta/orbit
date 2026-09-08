@@ -9,17 +9,17 @@
     "test:jest": "jest",
     "test:e2e": "mix seed_e2e && npx playwright test -c ./playwright.config.ts",
     "test:tsc": "tsc -p tsconfig.json",
-    "test": "npm run test:tsc && npm run test:jest && npm run test:eslint && npm run test:format"
+    "test": "npm run test:tsc && npm run test:jest && npm run test:e2e && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
-    "@fullstory/browser": "2.0.8",
+    "@fullstory/browser": "2.1.0",
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "5.0.0",
     "@sentry/react": "10.71.0",
     "@tailwindcss/forms": "0.5.11",
     "esbuild": "0.28.2",
     "luxon": "3.7.2",
-    "rail-tech-ui": "github:mbta/rail-tech-ui#0964a7018297adcaaa05131daf26149ccde9e760",
+    "rail-tech-ui": "github:mbta/rail-tech-ui#v2.2.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router": "7.18.2",
@@ -60,7 +60,7 @@
     "ts-jest": "29.4.6",
     "ts-node": "10.9.2",
     "typescript": "5.7.3",
-    "typescript-eslint": "8.68.0",
+    "typescript-eslint": "8.69.0",
     "typescript-language-server": "6.0.0"
   }
 }
