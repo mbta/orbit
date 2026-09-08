@@ -140,7 +140,10 @@ export const Ladders = ({
     ),
   );
 
-  const onVehicleSelection = (selection: VehicleSelection) => {
+  const onVehicleSelection = (
+    selection: VehicleSelection,
+    branch: BranchPickerSelection,
+  ) => {
     const match = vehicles.find((vehicle) =>
       consistsEqual(
         vehicle.vehiclePosition.cars,
@@ -148,17 +151,7 @@ export const Ladders = ({
       ),
     );
     if (match) {
-      // update branch picker to reflect the branch the clicked train is on
-      const matchingStationList = stationLists.find((stations) =>
-        stations.some((station) =>
-          station.stop_ids.some(
-            (stopId) => stopId === match.vehiclePosition.stopId,
-          ),
-        ),
-      );
-      if (matchingStationList) {
-        setBranchPickerSelection(branchForLadder(matchingStationList));
-      }
+      setBranchPickerSelection(branch);
 
       const sameVehicle =
         sideBarSelection !== null &&
@@ -187,51 +180,60 @@ export const Ladders = ({
       className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory"
     >
       {Array.from(vehiclesByBranch.entries()).map(
-        ([stationList, branchVehicles], index) => (
-          <div
-            key={index}
-            className="h-full mx-40 mt-20 snap-center snap-always"
-          >
-            <Ladder
-              trainsClickable={userHasOneOf([
-                ORBIT_HR_DISPATCHERS,
-                ORBIT_HR_STAKEHOLDERS,
-                ORBIT_RL_CHIEF_INSPECTORS,
-                ORBIT_RL_INSPECTORS,
-                ORBIT_RL_TRAINSTARTERS,
-                ORBIT_RL_YARDMASTERS,
-                ORBIT_TID_STAFF,
-              ])}
-              zoom={70}
-              labelMode="lead"
-              trainLocs={branchVehicles.map(vehicleToTrainLoc)}
-              stationSelection={null}
-              scrollToConsist={scrollToConsist}
-              onVehicleSelection={onVehicleSelection}
-              setStationSelection={() => undefined}
-              eastToWestStations={stationList.map(toLadderStation)}
-              letterFn={(routeId: RouteId, routePatternId?: RoutePatternId) => {
-                if (routePatternId !== undefined) {
-                  return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
-                }
+        ([stationList, branchVehicles], index) => {
+          const branch = branchForLadder(stationList);
 
-                return ROUTE_DEFAULTS[routeId].letter;
-              }}
-              routeColorFn={(
-                routeId: RouteId,
-                routePatternId?: RoutePatternId,
-              ) => {
-                if (routePatternId !== undefined) {
-                  return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
-                }
+          return (
+            <div
+              key={index}
+              className="h-full mx-40 mt-20 snap-center snap-always"
+            >
+              <Ladder
+                trainsClickable={userHasOneOf([
+                  ORBIT_HR_DISPATCHERS,
+                  ORBIT_HR_STAKEHOLDERS,
+                  ORBIT_RL_CHIEF_INSPECTORS,
+                  ORBIT_RL_INSPECTORS,
+                  ORBIT_RL_TRAINSTARTERS,
+                  ORBIT_RL_YARDMASTERS,
+                  ORBIT_TID_STAFF,
+                ])}
+                zoom={70}
+                labelMode="lead"
+                trainLocs={branchVehicles.map(vehicleToTrainLoc)}
+                stationSelection={null}
+                scrollToConsist={scrollToConsist}
+                onVehicleSelection={(selection) => {
+                  onVehicleSelection(selection, branch);
+                }}
+                setStationSelection={() => undefined}
+                eastToWestStations={stationList.map(toLadderStation)}
+                letterFn={(
+                  routeId: RouteId,
+                  routePatternId?: RoutePatternId,
+                ) => {
+                  if (routePatternId !== undefined) {
+                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
+                  }
 
-                return ROUTE_DEFAULTS[routeId].color;
-              }}
-              labelRemap={(car: CarId) => remapLabel(car, routeId)}
-              getInitialPredictionsDirection={() => 0}
-            />
-          </div>
-        ),
+                  return ROUTE_DEFAULTS[routeId].letter;
+                }}
+                routeColorFn={(
+                  routeId: RouteId,
+                  routePatternId?: RoutePatternId,
+                ) => {
+                  if (routePatternId !== undefined) {
+                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
+                  }
+
+                  return ROUTE_DEFAULTS[routeId].color;
+                }}
+                labelRemap={(car: CarId) => remapLabel(car, routeId)}
+                getInitialPredictionsDirection={() => 0}
+              />
+            </div>
+          );
+        },
       )}
     </div>
   );
