@@ -1,7 +1,13 @@
 import { RouteId } from "../../models/common";
+import { Route } from "@playwright/test";
 
-const branches = ["Alewife", "Ashmont", "Braintree"] as const;
-export type BranchPickerSelection = (typeof branches)[number];
+// make route-agnostic
+// const branches = ["Alewife", "Ashmont", "Braintree"] as const;
+const routeBranches = {
+  Red: ["Alewife", "Ashmont", "Braintree"] as const,
+};
+// export type BranchPickerSelection = (typeof branches)[number];
+export type BranchPickerSelection = string;
 
 const defaultBg =
   "bg-ladder-branch-picker-inactive-bg-dark light:bg-ladder-branch-picker-inactive-bg-light";
@@ -9,7 +15,12 @@ const defaultBg =
 const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
-const branchColors = {
+const branchColors: Readonly<
+  Record<
+    RouteId,
+    Record<BranchPickerSelection, { bg: string; dotText: string }>
+  >
+> = {
   Red: {
     Alewife: {
       bg: "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
@@ -25,12 +36,7 @@ const branchColors = {
       dotText: "text-heavy-rail-braintree",
     },
   },
-} satisfies Partial<
-  Record<
-    RouteId,
-    Record<BranchPickerSelection, { bg: string; dotText: string }>
-  >
->;
+};
 
 const BranchButton = ({
   branch,
@@ -74,7 +80,7 @@ export const BranchPicker = ({
       className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
       data-testid="branch-picker"
     >
-      {branches.map((branch) => (
+      {routeBranches.Red.map((branch) => (
         <BranchButton
           key={branch}
           branch={branch}
