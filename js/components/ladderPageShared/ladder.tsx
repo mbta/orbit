@@ -65,10 +65,14 @@ export type VehicleWithHeight = {
   heights: TrainHeight;
 };
 
-const branchForLadder = (ladderConfig: LadderConfig): BranchPickerSelection => {
-  if (ladderConfig.some((s) => s.id === "place-asmnl")) return "Ashmont";
-  if (ladderConfig.some((s) => s.id === "place-brntn")) return "Braintree";
-  return "Alewife";
+const branchForLadder = (
+  routeId: RouteId,
+  ladderConfig: LadderConfig,
+): BranchPickerSelection => {
+  return ladderConfig[
+    // First ladder is Alewife, for other branches use name of last station
+    Stations[routeId].indexOf(ladderConfig) === 0 ? 0 : ladderConfig.length - 1
+  ].name;
 };
 
 // Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
@@ -181,7 +185,7 @@ export const Ladders = ({
     >
       {Array.from(vehiclesByBranch.entries()).map(
         ([stationList, branchVehicles], index) => {
-          const branch = branchForLadder(stationList);
+          const branch = branchForLadder(routeId, stationList);
 
           return (
             <div

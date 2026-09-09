@@ -29,7 +29,7 @@ const inactiveDotText: Record<BranchPickerSelection, string> = {
 describe("BranchPicker", () => {
   test("renders all three branch buttons", () => {
     const view = render(
-      <BranchPicker selection="Alewife" setSelection={jest.fn()} />,
+      <BranchPicker route="Red" selection="Alewife" setSelection={jest.fn()} />,
     );
     expect(view.getByRole("button", { name: /Alewife/i })).toBeInTheDocument();
     expect(view.getByRole("button", { name: /Ashmont/i })).toBeInTheDocument();
@@ -41,7 +41,11 @@ describe("BranchPicker", () => {
   describe.each(branches)("when %s is selected", (activeBranch) => {
     test("active button has branch-specific background", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       expect(
         view.getByRole("button", { name: new RegExp(activeBranch, "i") }),
@@ -50,7 +54,11 @@ describe("BranchPicker", () => {
 
     test("inactive buttons have default background", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       branches
         .filter((b) => b !== activeBranch)
@@ -63,7 +71,11 @@ describe("BranchPicker", () => {
 
     test("active button label has dark-blue text", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       const button = view.getByRole("button", {
         name: new RegExp(activeBranch, "i"),
@@ -75,7 +87,11 @@ describe("BranchPicker", () => {
 
     test("inactive button labels have white text", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       branches
         .filter((b) => b !== activeBranch)
@@ -91,7 +107,11 @@ describe("BranchPicker", () => {
 
     test("inactive button dots have branch-specific color", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       branches
         .filter((b) => b !== activeBranch)
@@ -107,7 +127,11 @@ describe("BranchPicker", () => {
 
     test("active button dot has dark-blue text", () => {
       const view = render(
-        <BranchPicker selection={activeBranch} setSelection={jest.fn()} />,
+        <BranchPicker
+          route="Red"
+          selection={activeBranch}
+          setSelection={jest.fn()}
+        />,
       );
       const button = view.getByRole("button", {
         name: new RegExp(activeBranch, "i"),
@@ -123,7 +147,11 @@ describe("BranchPicker", () => {
         const mockSet = jest.fn();
         const user = userEvent.setup();
         const view = render(
-          <BranchPicker selection="Alewife" setSelection={mockSet} />,
+          <BranchPicker
+            route="Red"
+            selection="Alewife"
+            setSelection={mockSet}
+          />,
         );
         await user.click(
           view.getByRole("button", { name: new RegExp(branch, "i") }),

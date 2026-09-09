@@ -1,12 +1,10 @@
 import { RouteId } from "../../models/common";
-import { Route } from "@playwright/test";
 
-// make route-agnostic
-// const branches = ["Alewife", "Ashmont", "Braintree"] as const;
-const routeBranches = {
+const routeBranches: Readonly<
+  Record<RouteId, readonly BranchPickerSelection[]>
+> = {
   Red: ["Alewife", "Ashmont", "Braintree"] as const,
 };
-// export type BranchPickerSelection = (typeof branches)[number];
 export type BranchPickerSelection = string;
 
 const defaultBg =
@@ -39,15 +37,17 @@ const branchColors: Readonly<
 };
 
 const BranchButton = ({
+  route,
   branch,
   isActive,
   onClick,
 }: {
+  route: RouteId;
   branch: BranchPickerSelection;
   isActive: boolean;
   onClick: () => void;
 }) => {
-  const { bg, dotText } = branchColors.Red[branch];
+  const { bg, dotText } = branchColors[route][branch];
   const buttonBg = isActive ? bg : defaultBg;
   const labelText = isActive ? activeText : "text-white";
   const dotColor = isActive ? activeText : dotText;
@@ -69,9 +69,11 @@ const BranchButton = ({
 };
 
 export const BranchPicker = ({
+  route,
   selection,
   setSelection,
 }: {
+  route: RouteId;
   selection: BranchPickerSelection;
   setSelection: (selection: BranchPickerSelection) => void;
 }) => {
@@ -80,9 +82,10 @@ export const BranchPicker = ({
       className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
       data-testid="branch-picker"
     >
-      {routeBranches.Red.map((branch) => (
+      {routeBranches[route].map((branch) => (
         <BranchButton
           key={branch}
+          route={route}
           branch={branch}
           isActive={selection === branch}
           onClick={() => {
