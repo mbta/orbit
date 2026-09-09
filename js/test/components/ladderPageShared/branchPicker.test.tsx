@@ -2,6 +2,7 @@ import {
   BranchPicker,
   BranchPickerSelection,
 } from "../../../components/ladderPageShared/branchPicker";
+import { RouteId } from "../../../models/common";
 import { render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -10,13 +11,19 @@ const defaultBg =
 const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
-const branches: BranchPickerSelection[] = ["Alewife", "Ashmont", "Braintree"];
+const branches: Readonly<Record<RouteId, readonly BranchPickerSelection[]>> = {
+  Red: ["Alewife", "Ashmont", "Braintree"],
+};
 
-const activeBg: Record<BranchPickerSelection, string> = {
-  Alewife:
-    "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
-  Ashmont: "bg-heavy-rail-ashmont",
-  Braintree: "bg-heavy-rail-braintree",
+const activeBg: Readonly<
+  Record<RouteId, Record<BranchPickerSelection, string>>
+> = {
+  Red: {
+    Alewife:
+      "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
+    Ashmont: "bg-heavy-rail-ashmont",
+    Braintree: "bg-heavy-rail-braintree",
+  },
 };
 
 const inactiveDotText: Record<BranchPickerSelection, string> = {
@@ -38,7 +45,7 @@ describe("BranchPicker", () => {
     ).toBeInTheDocument();
   });
 
-  describe.each(branches)("when %s is selected", (activeBranch) => {
+  describe.each(branches.Red)("when %s is selected", (activeBranch) => {
     test("active button has branch-specific background", () => {
       const view = render(
         <BranchPicker
@@ -49,7 +56,7 @@ describe("BranchPicker", () => {
       );
       expect(
         view.getByRole("button", { name: new RegExp(activeBranch, "i") }),
-      ).toHaveClass(activeBg[activeBranch]);
+      ).toHaveClass(activeBg.Red[activeBranch]);
     });
 
     test("inactive buttons have default background", () => {
@@ -60,13 +67,11 @@ describe("BranchPicker", () => {
           setSelection={jest.fn()}
         />,
       );
-      branches
-        .filter((b) => b !== activeBranch)
-        .forEach((branch) => {
-          expect(
-            view.getByRole("button", { name: new RegExp(branch, "i") }),
-          ).toHaveClass(defaultBg);
-        });
+      branches.Red.filter((b) => b !== activeBranch).forEach((branch) => {
+        expect(
+          view.getByRole("button", { name: new RegExp(branch, "i") }),
+        ).toHaveClass(defaultBg);
+      });
     });
 
     test("active button label has dark-blue text", () => {
@@ -93,16 +98,14 @@ describe("BranchPicker", () => {
           setSelection={jest.fn()}
         />,
       );
-      branches
-        .filter((b) => b !== activeBranch)
-        .forEach((branch) => {
-          const button = view.getByRole("button", {
-            name: new RegExp(branch, "i"),
-          });
-          expect(within(button).getByTestId("branch-label")).toHaveClass(
-            "text-white",
-          );
+      branches.Red.filter((b) => b !== activeBranch).forEach((branch) => {
+        const button = view.getByRole("button", {
+          name: new RegExp(branch, "i"),
         });
+        expect(within(button).getByTestId("branch-label")).toHaveClass(
+          "text-white",
+        );
+      });
     });
 
     test("inactive button dots have branch-specific color", () => {
@@ -113,16 +116,14 @@ describe("BranchPicker", () => {
           setSelection={jest.fn()}
         />,
       );
-      branches
-        .filter((b) => b !== activeBranch)
-        .forEach((branch) => {
-          const button = view.getByRole("button", {
-            name: new RegExp(branch, "i"),
-          });
-          expect(within(button).getByTestId("branch-dot")).toHaveClass(
-            inactiveDotText[branch],
-          );
+      branches.Red.filter((b) => b !== activeBranch).forEach((branch) => {
+        const button = view.getByRole("button", {
+          name: new RegExp(branch, "i"),
         });
+        expect(within(button).getByTestId("branch-dot")).toHaveClass(
+          inactiveDotText[branch],
+        );
+      });
     });
 
     test("active button dot has dark-blue text", () => {
@@ -141,7 +142,7 @@ describe("BranchPicker", () => {
   });
 
   describe("clicking buttons", () => {
-    test.each(branches)(
+    test.each(branches.Red)(
       "clicking %s calls setSelection with correct value",
       async (branch) => {
         const mockSet = jest.fn();
