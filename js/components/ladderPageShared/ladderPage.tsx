@@ -22,6 +22,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     useState<BranchPickerSelection>("Ashmont");
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [resizeTimeout, setResizeTimeout] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const laddersRef = useRef<HTMLDivElement>(null);
 
   const openSideBar = useCallback(
@@ -63,12 +66,31 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     const check = () => {
       setIsOverflowing(el.scrollWidth > el.clientWidth);
     };
-    check();
-    window.addEventListener("resize", check);
-    return () => {
-      window.removeEventListener("resize", check);
+
+    const onResize = () => {
+      setResizeTimeout((currentTimeout) => {
+        if (currentTimeout !== null) {
+          clearTimeout(currentTimeout);
+        }
+        return setTimeout(check, 100);
+      });
     };
-  }, []);
+
+    check();
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, [setResizeTimeout]);
+
+  useEffect(() => {
+    return () => {
+      if (resizeTimeout !== null) {
+        clearTimeout(resizeTimeout);
+      }
+    };
+  }, [resizeTimeout]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {

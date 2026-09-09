@@ -354,8 +354,13 @@ describe("LadderPage SideBar", () => {
 
 describe("LadderPage BranchPicker visibility", () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     mockUseVehicles.mockReturnValue([vehicleFactory.build()]);
     mockGetMetaContent.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   test("BranchPicker is hidden by default (no overflow in jsdom)", () => {
@@ -376,6 +381,9 @@ describe("LadderPage BranchPicker visibility", () => {
 
     act(() => {
       window.dispatchEvent(new Event("resize"));
+    });
+    act(() => {
+      jest.advanceTimersByTime(150);
     });
 
     const branchPicker = getByTestId("branch-picker");
@@ -404,6 +412,9 @@ describe("LadderPage BranchPicker visibility", () => {
     act(() => {
       window.dispatchEvent(new Event("resize"));
     });
+    act(() => {
+      jest.advanceTimersByTime(150);
+    });
 
     // then resolve overflow
     // eslint-disable-next-line better-mutation/no-mutating-functions
@@ -413,6 +424,9 @@ describe("LadderPage BranchPicker visibility", () => {
     });
     act(() => {
       window.dispatchEvent(new Event("resize"));
+    });
+    act(() => {
+      jest.advanceTimersByTime(150);
     });
 
     expect(queryByTestId("branch-picker")).not.toBeInTheDocument();
