@@ -19,7 +19,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const [sideBarSelection, setSideBarSelection] =
     useState<SideBarSelection | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
-    useState<BranchPickerSelection>("Ashmont");
+    useState<BranchPickerSelection>(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [resizeTimeout, setResizeTimeout] = useState<ReturnType<

@@ -1,11 +1,12 @@
 import { RouteId } from "../../models/common";
 
-const routeBranches: Readonly<
-  Record<RouteId, readonly BranchPickerSelection[]>
-> = {
+// Use index from LadderConfig sub-array (Stations[routeId])
+// i.e. 0 for Alewife, 1 for Ashmont, 2 for Braintree
+export type BranchPickerSelection = number;
+
+const routeBranchLabels: Readonly<Record<RouteId, readonly string[]>> = {
   Red: ["Alewife", "Ashmont", "Braintree"] as const,
 };
-export type BranchPickerSelection = string;
 
 const defaultBg =
   "bg-ladder-branch-picker-inactive-bg-dark light:bg-ladder-branch-picker-inactive-bg-light";
@@ -14,10 +15,7 @@ const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
 const branchColors: Readonly<
-  Record<
-    RouteId,
-    Record<BranchPickerSelection, { bg: string; dotText: string }>
-  >
+  Record<RouteId, Record<string, { bg: string; dotText: string }>>
 > = {
   Red: {
     Alewife: {
@@ -47,7 +45,8 @@ const BranchButton = ({
   isActive: boolean;
   onClick: () => void;
 }) => {
-  const { bg, dotText } = branchColors[route][branch];
+  const label = routeBranchLabels[route][branch];
+  const { bg, dotText } = branchColors[route][label];
   const buttonBg = isActive ? bg : defaultBg;
   const labelText = isActive ? activeText : "text-white";
   const dotColor = isActive ? activeText : dotText;
@@ -58,7 +57,7 @@ const BranchButton = ({
       onClick={onClick}
     >
       <div className={labelText} data-testid="branch-label">
-        {branch}
+        {label}
       </div>
       <div
         className={`w-2 min-h-2 rounded-full bg-current ${dotColor}`}
@@ -82,7 +81,7 @@ export const BranchPicker = ({
       className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
       data-testid="branch-picker"
     >
-      {routeBranches[route].map((branch) => (
+      {routeBranchLabels[route].map((_label, branch) => (
         <BranchButton
           key={branch}
           route={route}

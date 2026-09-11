@@ -493,7 +493,7 @@ describe("Ladder", () => {
       );
 
       await user.click(view.getByRole("button", { name: /1999/ }));
-      expect(mockSetBranch).toHaveBeenCalledWith("Ashmont");
+      expect(mockSetBranch).toHaveBeenCalledWith(1);
     });
 
     test("clicking a train on the Braintree ladder calls setBranchPickerSelection with Braintree", async () => {
@@ -524,7 +524,7 @@ describe("Ladder", () => {
       );
 
       await user.click(view.getByRole("button", { name: /2001/ }));
-      expect(mockSetBranch).toHaveBeenCalledWith("Braintree");
+      expect(mockSetBranch).toHaveBeenCalledWith(2);
     });
 
     test("clicking a train on the Alewife trunk ladder calls setBranchPickerSelection with Alewife", async () => {
@@ -555,7 +555,7 @@ describe("Ladder", () => {
       );
 
       await user.click(view.getByRole("button", { name: /1888/ }));
-      expect(mockSetBranch).toHaveBeenCalledWith("Alewife");
+      expect(mockSetBranch).toHaveBeenCalledWith(0);
     });
   });
 });

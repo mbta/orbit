@@ -11,13 +11,19 @@ const defaultBg =
 const activeText =
   "text-ladder-branch-picker-active-dot-dark light:text-ladder-branch-picker-active-dot-light";
 
-const branches: Readonly<Record<RouteId, readonly BranchPickerSelection[]>> = {
+const branches: Readonly<Record<RouteId, readonly string[]>> = {
   Red: ["Alewife", "Ashmont", "Braintree"],
 };
 
-const activeBg: Readonly<
-  Record<RouteId, Record<BranchPickerSelection, string>>
-> = {
+// Maps branch label to its BranchPickerSelection index
+// (0 = Alewife, 1 = Ashmont, 2 = Braintree)
+const branchIndex: Record<string, BranchPickerSelection> = {
+  Alewife: 0,
+  Ashmont: 1,
+  Braintree: 2,
+};
+
+const activeBg: Readonly<Record<RouteId, Record<string, string>>> = {
   Red: {
     Alewife:
       "bg-ladder-branch-picker-alewife-dot-dark light:bg-ladder-branch-picker-alewife-dot-light",
@@ -26,7 +32,7 @@ const activeBg: Readonly<
   },
 };
 
-const inactiveDotText: Record<BranchPickerSelection, string> = {
+const inactiveDotText: Record<string, string> = {
   Alewife:
     "text-ladder-branch-picker-alewife-dot-dark light:text-ladder-branch-picker-alewife-dot-light",
   Ashmont: "text-heavy-rail-ashmont",
@@ -36,7 +42,11 @@ const inactiveDotText: Record<BranchPickerSelection, string> = {
 describe("BranchPicker", () => {
   test("renders all three branch buttons", () => {
     const view = render(
-      <BranchPicker route="Red" selection="Alewife" setSelection={jest.fn()} />,
+      <BranchPicker
+        route="Red"
+        selection={branchIndex.Alewife}
+        setSelection={jest.fn()}
+      />,
     );
     expect(view.getByRole("button", { name: /Alewife/i })).toBeInTheDocument();
     expect(view.getByRole("button", { name: /Ashmont/i })).toBeInTheDocument();
@@ -50,7 +60,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -63,7 +73,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -78,7 +88,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -94,7 +104,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -112,7 +122,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -130,7 +140,7 @@ describe("BranchPicker", () => {
       const view = render(
         <BranchPicker
           route="Red"
-          selection={activeBranch}
+          selection={branchIndex[activeBranch]}
           setSelection={jest.fn()}
         />,
       );
@@ -150,14 +160,14 @@ describe("BranchPicker", () => {
         const view = render(
           <BranchPicker
             route="Red"
-            selection="Alewife"
+            selection={branchIndex.Alewife}
             setSelection={mockSet}
           />,
         );
         await user.click(
           view.getByRole("button", { name: new RegExp(branch, "i") }),
         );
-        expect(mockSet).toHaveBeenCalledWith(branch);
+        expect(mockSet).toHaveBeenCalledWith(branchIndex[branch]);
       },
     );
   });
