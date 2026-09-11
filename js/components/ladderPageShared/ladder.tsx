@@ -180,7 +180,7 @@ export const Ladders = ({
           return (
             <div
               key={index}
-              className="h-full mx-40 mt-20 snap-center snap-always"
+              className="h-full mx-40 mt-28 snap-center snap-always"
             >
               <Ladder
                 trainsClickable={userHasOneOf([
@@ -192,7 +192,7 @@ export const Ladders = ({
                   ORBIT_RL_YARDMASTERS,
                   ORBIT_TID_STAFF,
                 ])}
-                zoom={70}
+                zoom={47}
                 labelMode="lead"
                 trainLocs={branchVehicles.map(vehicleToTrainLoc)}
                 stationSelection={null}
@@ -225,6 +225,7 @@ export const Ladders = ({
                 }}
                 labelRemap={(car: CarId) => remapLabel(car, routeId)}
                 getInitialPredictionsDirection={() => 0}
+                highlight={selected}
               />
             </div>
           );
