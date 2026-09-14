@@ -4,6 +4,7 @@ import { RouteId } from "../../models/common";
 // i.e. 0 for Alewife, 1 for Ashmont, 2 for Braintree
 export type BranchPickerSelection = number;
 
+// These names correspond to the labels that show up on the branch picker buttons
 const routeBranchLabels: Readonly<Record<RouteId, readonly string[]>> = {
   Red: ["Alewife", "Ashmont", "Braintree"] as const,
 };
