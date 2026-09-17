@@ -41,6 +41,9 @@
     <%= if @conn.assigns[:laboratory_features] do %>
       <meta name="laboratoryFeatures" content={Jason.encode!(@laboratory_features)} />
     <% end %>
+    <%= if @conn.assigns[:ocs_host] do %>
+      <meta name="ocsHost" content={@ocs_host} />
+    <% end %>
 
     <title>{assigns[:page_title] || "Orbit"}</title>
     <link rel="stylesheet" href={~p"/assets/app.css"} />

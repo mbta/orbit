@@ -24,6 +24,10 @@ import Config
 # config :orbit,
 #   full_story_org_id: ""
 
+# OCS Host
+# config :orbit,
+#   ocs_host: "<ocs-host>"
+
 # Sentry
 # Only turn this on if you're testing sending events to Sentry, not for regular use.
 # The DSN comes from https://mbtace.sentry.io/settings/projects/glides/keys/

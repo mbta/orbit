@@ -13,7 +13,8 @@ if config_env() == :prod do
     allow_test_data?: System.get_env("ALLOW_TEST_DATA", "") == "yes",
     appcues_id: System.get_env("APPCUES_ID"),
     environment: System.get_env("ENVIRONMENT"),
-    full_story_org_id: System.get_env("FULLSTORY_ORG_ID")
+    full_story_org_id: System.get_env("FULLSTORY_ORG_ID"),
+    ocs_host: System.get_env("OCS_HOST")
 
   with {:ok, stream_name} <- System.fetch_env("OCS_KINESIS_STREAM_NAME"),
        {:ok, consumer_arn} <- System.fetch_env("OCS_KINESIS_CONSUMER_ARN") do

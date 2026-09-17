@@ -15,6 +15,7 @@ import { isFeatureEnabled } from "../../util/featureFlags";
 import { TrainThemes } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
+import { getMetaContent } from "../../util/metadata";
 
 export type SideBarSelection = {
   vehicle: Vehicle;
@@ -146,6 +147,8 @@ const Consist = ({
 }) => {
   const { consist, processedConsist, leadCarIndex } =
     processVehicleConsist(vehicle);
+  const ocsHost = getMetaContent("ocsHost");
+
   return (
     <section className="mt-3 mx-2 flex flex-col rounded-lg overflow-hidden border light:border-card-border-light dark:border-card-border-dark">
       <SectionHeader title="Cars" />
@@ -173,18 +176,20 @@ const Consist = ({
             );
           })}
         </div>
-        <a
-          href={`http://10.198.0.231/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
-          className="hidden mt-1 mb-4 w-fit px-6 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
-        >
-          <span
-            aria-hidden="true"
-            className="h-4 w-4 shrink-0 light:bg-button-tertiary-text-light dark:bg-button-tertiary-text-dark [mask-image:url('/images/network.svg')] [-webkit-mask-image:url('/images/network.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
-          />
-          <span className="light:text-button-tertiary-text-light dark:text-button-tertiary-text-dark text-xs font-bold">
-            See Cars&rsquo; History
-          </span>
-        </a>
+        {ocsHost &&
+          <a
+            href={`http://${ocsHost}/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
+            className="hidden mt-1 mb-4 w-fit px-6 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
+          >
+            <span
+              aria-hidden="true"
+              className="h-4 w-4 shrink-0 light:bg-button-tertiary-text-light dark:bg-button-tertiary-text-dark [mask-image:url('/images/network.svg')] [-webkit-mask-image:url('/images/network.svg')] [mask-position:center] [-webkit-mask-position:center] [mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat] [mask-size:contain] [-webkit-mask-size:contain]"
+            />
+            <span className="light:text-button-tertiary-text-light dark:text-button-tertiary-text-dark text-xs font-bold">
+              See Cars&rsquo; History
+            </span>
+          </a>
+        }
       </div>
     </section>
   );
