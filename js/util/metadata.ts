@@ -5,6 +5,7 @@ export type MetaDataKey =
   | "fullStoryOrgId"
   | "guardianToken"
   | "laboratoryFeatures"
+  | "ocsHost"
   | "release"
   | "sentryDsn"
   | "userEmail"

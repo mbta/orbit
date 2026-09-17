@@ -47,6 +47,12 @@ To run the Docker container locally, run `docker compose up --build`.
 Find what port the server is using with `docker compose ps`,
 and then visit `localhost:<port>`.
 
+## Set up Links to OCS
+
+For UI elements to appear that point to OCS, the `ocs_host` value needs to be populated. 
+
+In higher environments, this is done through environment variable configs. Locally, this can be done by copying the `OCS Host` section of `dev.secret.example.exs` to the `dev.secret.exs` file, uncommenting it and filling in the OCS host. 
+
 ## Receiving messages from OCS
 
 In order to know about schedule changes, Orbit streams messages from OCS via AWS Kinesis, using the BroadwayKinesis library. We must provide the Kinesis stream name and consumer ARN. In production, these values are set from environment variables. By default, streaming is disabled for all other build types.

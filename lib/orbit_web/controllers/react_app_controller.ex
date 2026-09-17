@@ -13,7 +13,8 @@ defmodule OrbitWeb.ReactAppController do
       full_story_org_id: Application.get_env(:orbit, :full_story_org_id),
       guardian_token: Guardian.Plug.current_token(conn),
       laboratory_features: laboratory_features(conn),
-      sentry_dsn: Application.get_env(:sentry, :dsn)
+      sentry_dsn: Application.get_env(:sentry, :dsn),
+      ocs_host: Application.get_env(:orbit, :ocs_host)
     )
   end
 
