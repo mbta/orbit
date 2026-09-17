@@ -150,22 +150,23 @@ export const Ladders = ({
 
       const sameVehicle =
         sideBarSelection !== null &&
-        consistsEqual(
-          sideBarSelection.vehicle.vehiclePosition.cars,
-          selection.consist as string[],
-        );
+        sideBarSelection.vehicleId !== null &&
+        sideBarSelection.vehicleId === match.vehiclePosition.vehicleId;
       setSideBarSelection({
-        vehicle: match,
+        vehicleId: match.vehiclePosition.vehicleId,
         searchedCar: sameVehicle ? sideBarSelection.searchedCar : undefined,
       });
     }
   };
 
   // Highlight the pill any time the sidebar is showing
-  const selected =
+  const selectedVehicle =
     sideBarSelection !== null ?
-      sideBarSelection.vehicle.vehiclePosition.cars
+      vehicles.find(
+        (vehicle) => vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
+      ) ?? null
     : null;
+  const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
   return (
     <div

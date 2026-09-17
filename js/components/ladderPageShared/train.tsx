@@ -196,7 +196,7 @@ export const Train = ({
           if (selected) {
             return;
           }
-          setSideBarSelection({ vehicle });
+          setSideBarSelection({ vehicleId: vehicle.vehiclePosition.vehicleId });
         }}
         disabled={
           !userHasOneOf([

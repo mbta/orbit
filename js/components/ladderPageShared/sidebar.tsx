@@ -17,22 +17,24 @@ import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
 export type SideBarSelection = {
-  vehicle: Vehicle;
+  vehicleId: string | null;
   searchedCar?: CarId | null;
 };
 
 export const SideBar = ({
   selection,
+  vehicle,
   close,
 }: {
   selection: SideBarSelection;
+  vehicle: Vehicle;
   close: () => void;
 }): ReactElement => {
   const colorScheme = getColorSchemeSetting();
 
   return (
     <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
-      <SideBarHeader vehicle={selection.vehicle} />
+      <SideBarHeader vehicle={vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
         onClick={close}
@@ -46,21 +48,18 @@ export const SideBar = ({
         />
       </button>
       <div className="h-full w-screen sm:w-auto">
-        <CurrentLocation vehicle={selection.vehicle} />
-        <CurrentTrip vehicle={selection.vehicle} />
-        <Consist
-          vehicle={selection.vehicle}
-          searchedCar={selection.searchedCar ?? null}
-        />
-        <NextTrip vehicle={selection.vehicle} />
+        <CurrentLocation vehicle={vehicle} />
+        <CurrentTrip vehicle={vehicle} />
+        <Consist vehicle={vehicle} searchedCar={selection.searchedCar ?? null} />
+        <NextTrip vehicle={vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
           <VehicleCopyButton
-            key={selection.vehicle.vehiclePosition.vehicleId}
-            vehicle={selection.vehicle}
+            key={vehicle.vehiclePosition.vehicleId}
+            vehicle={vehicle}
           />
         : null}
       </div>
-      <LastOcsUpdated vehicle={selection.vehicle} />
+      <LastOcsUpdated vehicle={vehicle} />
     </aside>
   );
 };

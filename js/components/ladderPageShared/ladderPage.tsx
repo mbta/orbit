@@ -27,14 +27,25 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   > | null>(null);
   const laddersRef = useRef<HTMLDivElement>(null);
 
+  const findVehicle = useCallback(
+    (vehicleId: string | null): Vehicle | null =>
+      vehicles.find(
+        (vehicle) => vehicle.vehiclePosition.vehicleId === vehicleId,
+      ) ?? null,
+    [vehicles],
+  );
+
   const openSideBar = useCallback(
     (selection: SideBarSelection | null) => {
       if (selection !== null) {
-        trackSideBarOpened(selection);
+        const vehicle = findVehicle(selection.vehicleId);
+        if (vehicle !== null) {
+          trackSideBarOpened({ vehicle });
+        }
       }
       setSideBarSelection(selection);
     },
-    [setSideBarSelection],
+    [findVehicle, setSideBarSelection],
   );
 
   const close = useCallback(() => {
@@ -94,7 +105,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
-      openSideBar({ vehicle: match.vehicle, searchedCar: match.matchedCar });
+      openSideBar({
+        vehicleId: match.vehicle.vehiclePosition.vehicleId,
+        searchedCar: match.matchedCar,
+      });
       return true;
     },
     [openSideBar],
@@ -106,7 +120,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         return selection;
       }
 
-      return { vehicle: selection.vehicle };
+      return { vehicleId: selection.vehicleId };
     });
   }, [setSideBarSelection]);
 
@@ -120,19 +134,30 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   const openSideBarFromLadder = useCallback(
     (selection: SideBarSelection | null) => {
-      if (!selection?.vehicle.vehiclePosition.cars.includes(searchQuery)) {
+      const selectedVehicle =
+        selection === null ? null : findVehicle(selection.vehicleId);
+      if (!selectedVehicle?.vehiclePosition.cars.includes(searchQuery)) {
         setSearchQuery("");
       }
       openSideBar(selection);
     },
-    [openSideBar, setSearchQuery, searchQuery],
+    [openSideBar, setSearchQuery, searchQuery, findVehicle],
   );
+
+  const sideBarVehicle =
+    sideBarSelection === null ? null : (
+      findVehicle(sideBarSelection.vehicleId)
+    );
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <main className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center">
-        {sideBarSelection !== null ?
-          <SideBar selection={sideBarSelection} close={close} />
+        {sideBarSelection !== null && sideBarVehicle !== null ?
+          <SideBar
+            selection={sideBarSelection}
+            vehicle={sideBarVehicle}
+            close={close}
+          />
         : null}
         <div
           data-testid="scroll-container"
