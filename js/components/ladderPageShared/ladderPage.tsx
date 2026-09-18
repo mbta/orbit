@@ -145,9 +145,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   const sideBarVehicle =
-    sideBarSelection === null ? null : (
-      findVehicle(sideBarSelection.vehicleId)
-    );
+    sideBarSelection === null ? null : findVehicle(sideBarSelection.vehicleId);
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">

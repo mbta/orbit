@@ -162,9 +162,10 @@ export const Ladders = ({
   // Highlight the pill any time the sidebar is showing
   const selectedVehicle =
     sideBarSelection !== null ?
-      vehicles.find(
-        (vehicle) => vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
-      ) ?? null
+      (vehicles.find(
+        (vehicle) =>
+          vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
+      ) ?? null)
     : null;
   const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 

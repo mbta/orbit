@@ -16,7 +16,8 @@ describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
     const view = render(
       <SideBar
-        selection={{ vehicle: vehicleFactory.build() }}
+        selection={{ vehicleId: null }}
+        vehicle={vehicleFactory.build()}
         close={() => {}}
       />,
     );
@@ -33,15 +34,14 @@ describe("sidebar", () => {
   test("renders current and next trip headers", () => {
     const view = render(
       <SideBar
-        selection={{
-          vehicle: vehicleFactory.build({
-            ocsTrips: {
-              current: ocsTripFactory.build({
-                nextUid: "22222222",
-              }),
-            },
-          }),
-        }}
+        selection={{ vehicleId: null }}
+        vehicle={vehicleFactory.build({
+          ocsTrips: {
+            current: ocsTripFactory.build({
+              nextUid: "22222222",
+            }),
+          },
+        })}
         close={() => {}}
       />,
     );
@@ -52,13 +52,12 @@ describe("sidebar", () => {
   test("renders current and next trip sections event when current trip is missing", () => {
     const view = render(
       <SideBar
-        selection={{
-          vehicle: vehicleFactory.build({
-            ocsTrips: {
-              current: null,
-            },
-          }),
-        }}
+        selection={{ vehicleId: null }}
+        vehicle={vehicleFactory.build({
+          ocsTrips: {
+            current: null,
+          },
+        })}
         close={() => {}}
       />,
     );
@@ -71,24 +70,23 @@ describe("sidebar", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    originStation: "ALEWIFE",
-                    destinationStation: "JFK/ UMASS ASH",
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
+                  originStation: "ALEWIFE",
+                  destinationStation: "JFK/ UMASS ASH",
+                }),
+                next: [
+                  // not realistic for a trip, but using known station names we want to reformat for the sidebar
+                  ocsTripFactory.build({
+                    originStation: "JFK/ UMASS ASH",
+                    destinationStation: "KENDALL/MIT",
                   }),
-                  next: [
-                    // not realistic for a trip, but using known station names we want to reformat for the sidebar
-                    ocsTripFactory.build({
-                      originStation: "JFK/ UMASS ASH",
-                      destinationStation: "KENDALL/MIT",
-                    }),
-                  ],
-                },
-              }),
-            }}
+                ],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -119,24 +117,23 @@ describe("sidebar", () => {
       test("shows next scheduled departure if present", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    destinationStation: "ASHMONT",
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
+                  destinationStation: "ASHMONT",
+                }),
+                next: [
+                  ocsTripFactory.build({
+                    scheduledDeparture: dateTimeFromISO(
+                      // next scheduled dep is 2:10pm
+                      "2025-07-07T18:10:00.000Z",
+                    ),
                   }),
-                  next: [
-                    ocsTripFactory.build({
-                      scheduledDeparture: dateTimeFromISO(
-                        // next scheduled dep is 2:10pm
-                        "2025-07-07T18:10:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-              }),
-            }}
+                ],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -155,9 +152,8 @@ describe("sidebar", () => {
       test('shows "last updated from OCS" timestamp (in local wall time) if present', () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build(),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
         );
@@ -173,17 +169,16 @@ describe("sidebar", () => {
       test("positive nonzero", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    offset: 2,
-                  }),
-                  next: [ocsTripFactory.build({ offset: 3 })],
-                },
-              }),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
+                  offset: 2,
+                }),
+                next: [ocsTripFactory.build({ offset: 3 })],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -195,17 +190,16 @@ describe("sidebar", () => {
       test("negative nonzero", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    offset: -2,
-                  }),
-                  next: [ocsTripFactory.build({ offset: -3 })],
-                },
-              }),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
+                  offset: -2,
+                }),
+                next: [ocsTripFactory.build({ offset: -3 })],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -217,16 +211,15 @@ describe("sidebar", () => {
       test("zero", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: 0,
-                  }),
-                  next: [ocsTripFactory.build({ offset: 0 })],
-                },
-              }),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  offset: 0,
+                }),
+                next: [ocsTripFactory.build({ offset: 0 })],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -237,16 +230,15 @@ describe("sidebar", () => {
       test("null", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    offset: null,
-                  }),
-                  next: [ocsTripFactory.build({ offset: null })],
-                },
-              }),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  offset: null,
+                }),
+                next: [ocsTripFactory.build({ offset: null })],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -259,20 +251,19 @@ describe("sidebar", () => {
       test("does not show if destination stations mismatch", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:29:00.000Z",
-                      ),
-                      stationId: "place-brdwy",
-                    }),
-                  ],
-                }),
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T22:29:00.000Z",
+                    ),
+                    stationId: "place-brdwy",
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -282,33 +273,32 @@ describe("sidebar", () => {
       test("shows if arriving 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                  }),
-                  next: [
-                    ocsTripFactory.build({
-                      originStation: "ALEWIFE",
-                      destinationStation: "ASHMONT",
-                      scheduledDeparture: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:46:00.000Z",
-                      ),
-                    }),
-                  ],
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
                 }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T22:46:00.000Z",
+                    ),
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -318,30 +308,29 @@ describe("sidebar", () => {
       test("does not show if arriving less than 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  next: [
-                    ocsTripFactory.build({
-                      originStation: "ALEWIFE",
-                      destinationStation: "ASHMONT",
-                      scheduledDeparture: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:45:30.000Z",
-                      ),
-                    }),
-                  ],
-                }),
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T22:45:30.000Z",
+                    ),
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -351,30 +340,29 @@ describe("sidebar", () => {
       test("does not show if arriving earlier than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  next: [
-                    ocsTripFactory.build({
-                      originStation: "ALEWIFE",
-                      destinationStation: "ASHMONT",
-                      scheduledDeparture: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:44:59.000Z",
-                      ),
-                    }),
-                  ],
-                }),
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T22:44:59.000Z",
+                    ),
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -384,30 +372,29 @@ describe("sidebar", () => {
       test("does not show if arriving ON next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  next: [
-                    ocsTripFactory.build({
-                      originStation: "ALEWIFE",
-                      destinationStation: "ASHMONT",
-                      scheduledDeparture: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
+                    ),
+                  }),
+                ],
+              },
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
+                    ),
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -419,38 +406,37 @@ describe("sidebar", () => {
       test("everything all at once", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    nextUid: "22222222",
-                    actualDeparture: dateTimeFromISO(
-                      // Current Trip/actual dep no longer has adherence warning
-                      "2025-04-29T21:48:00.000Z",
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  nextUid: "22222222",
+                  actualDeparture: dateTimeFromISO(
+                    // Current Trip/actual dep no longer has adherence warning
+                    "2025-04-29T21:48:00.000Z",
+                  ),
+                }),
+                next: [
+                  ocsTripFactory.build({
+                    originStation: "ALEWIFE",
+                    destinationStation: "ASHMONT",
+                    scheduledDeparture: dateTimeFromISO(
+                      "2025-04-29T22:45:00.000Z",
                     ),
                   }),
-                  next: [
-                    ocsTripFactory.build({
-                      originStation: "ALEWIFE",
-                      destinationStation: "ASHMONT",
-                      scheduledDeparture: dateTimeFromISO(
-                        "2025-04-29T22:45:00.000Z",
-                      ),
-                    }),
-                  ],
-                },
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        // est arrival 5 mins later than next trip's scheduled departure
-                        "2025-04-29T22:50:00.000Z",
-                      ),
-                    }),
-                  ],
-                }),
+                ],
+              },
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      // est arrival 5 mins later than next trip's scheduled departure
+                      "2025-04-29T22:50:00.000Z",
+                    ),
+                  }),
+                ],
               }),
-            }}
+            })}
             close={() => {}}
           />,
         );
@@ -463,9 +449,8 @@ describe("sidebar", () => {
     test("by default, does not render export button", () => {
       const view = render(
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build(),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build()}
           close={() => {}}
         />,
       );
@@ -482,7 +467,12 @@ describe("sidebar", () => {
       const view = render(
         // Must wrap sidebar in router to allow Link elements
         <MemoryRouter>
-          <SideBar selection={{ vehicle }} close={() => {}} />,
+          <SideBar
+            selection={{ vehicleId: null }}
+            vehicle={vehicle}
+            close={() => {}}
+          />
+          ,
         </MemoryRouter>,
       );
 
@@ -503,7 +493,11 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar selection={{ vehicle }} close={() => {}} />
+          <SideBar
+            selection={{ vehicleId: null }}
+            vehicle={vehicle}
+            close={() => {}}
+          />
         </MemoryRouter>,
       );
 
@@ -528,7 +522,11 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar selection={{ vehicle }} close={() => {}} />
+          <SideBar
+            selection={{ vehicleId: null }}
+            vehicle={vehicle}
+            close={() => {}}
+          />
         </MemoryRouter>,
       );
 
@@ -553,7 +551,11 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar selection={{ vehicle }} close={() => {}} />
+          <SideBar
+            selection={{ vehicleId: null }}
+            vehicle={vehicle}
+            close={() => {}}
+          />
         </MemoryRouter>,
       );
 
@@ -571,7 +573,8 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicle: vehicleFactory.build() }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
         );
@@ -586,33 +589,32 @@ describe("sidebar", () => {
       test("is arrival prediction for OCS provided destination even if RTR provides additional STUs", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T21:51:38Z",
-                      ),
-                      stationId: "place-brdwy",
-                    }),
-                    stopTimeUpdateFactory.build({
-                      predictedArrivalTime: dateTimeFromISO(
-                        "2025-04-29T21:53:38Z",
-                      ),
-                      stationId: "place-asmnl",
-                    }),
-                  ],
-                }),
-                ocsTrips: {
-                  current: ocsTripFactory.build({
-                    originStation: "ALEWIFE",
-                    destinationStation: "BROADWAY",
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T21:51:38Z",
+                    ),
+                    stationId: "place-brdwy",
                   }),
-                  next: [ocsTripFactory.build()],
-                },
+                  stopTimeUpdateFactory.build({
+                    predictedArrivalTime: dateTimeFromISO(
+                      "2025-04-29T21:53:38Z",
+                    ),
+                    stationId: "place-asmnl",
+                  }),
+                ],
               }),
-            }}
+              ocsTrips: {
+                current: ocsTripFactory.build({
+                  originStation: "ALEWIFE",
+                  destinationStation: "BROADWAY",
+                }),
+                next: [ocsTripFactory.build()],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -624,15 +626,14 @@ describe("sidebar", () => {
       test("displays '--' when unavailable", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
-                ocsTrips: {
-                  current: ocsTripFactory.build(),
-                  next: [ocsTripFactory.build()],
-                },
-              }),
-            }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
+              ocsTrips: {
+                current: ocsTripFactory.build(),
+                next: [ocsTripFactory.build()],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -642,19 +643,18 @@ describe("sidebar", () => {
       test("displays '--' when destination stations mismatch", () => {
         const view = render(
           <SideBar
-            selection={{
-              vehicle: vehicleFactory.build({
-                tripUpdate: tripUpdateFactory.build({
-                  stopTimeUpdates: [
-                    stopTimeUpdateFactory.build({ stationId: "place-davis" }),
-                  ],
-                }),
-                ocsTrips: {
-                  current: ocsTripFactory.build(),
-                  next: [ocsTripFactory.build()],
-                },
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build({
+              tripUpdate: tripUpdateFactory.build({
+                stopTimeUpdates: [
+                  stopTimeUpdateFactory.build({ stationId: "place-davis" }),
+                ],
               }),
-            }}
+              ocsTrips: {
+                current: ocsTripFactory.build(),
+                next: [ocsTripFactory.build()],
+              },
+            })}
             close={() => {}}
           />,
         );
@@ -666,7 +666,8 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicle: vehicleFactory.build() }}
+            selection={{ vehicleId: null }}
+            vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
         );
@@ -684,18 +685,17 @@ describe("sidebar", () => {
     const view = render(
       <MemoryRouter>
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              ocsTrips: {
-                current: ocsTripFactory.build({
-                  originStation: "ASHMONT",
-                  originStationUpdated: "JFK",
-                  nextUid: null,
-                }),
-                next: [],
-              },
-            }),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({
+                originStation: "ASHMONT",
+                originStationUpdated: "JFK",
+                nextUid: null,
+              }),
+              next: [],
+            },
+          })}
           close={() => {}}
         />
       </MemoryRouter>,
@@ -712,18 +712,17 @@ describe("sidebar", () => {
     const view = render(
       <MemoryRouter>
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              ocsTrips: {
-                current: ocsTripFactory.build({
-                  originStation: null,
-                  originStationUpdated: "JFK",
-                  nextUid: null,
-                }),
-                next: [],
-              },
-            }),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({
+                originStation: null,
+                originStationUpdated: "JFK",
+                nextUid: null,
+              }),
+              next: [],
+            },
+          })}
           close={() => {}}
         />
       </MemoryRouter>,
@@ -738,9 +737,8 @@ describe("sidebar", () => {
     test("renders 'None' for Next Trip next trip is explicitly unset", () => {
       const view = render(
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build(),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build()}
           close={() => {}}
         />,
       );
@@ -751,20 +749,19 @@ describe("sidebar", () => {
     test("displays '--' when scheduled departure time not available", () => {
       const view = render(
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              ocsTrips: {
-                current: ocsTripFactory.build({ nextUid: "222222" }),
-                next: [
-                  ocsTripFactory.build({
-                    originStation: "ALEWIFE",
-                    destinationStation: "ASHMONT",
-                    scheduledDeparture: null,
-                  }),
-                ],
-              },
-            }),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({ nextUid: "222222" }),
+              next: [
+                ocsTripFactory.build({
+                  originStation: "ALEWIFE",
+                  destinationStation: "ASHMONT",
+                  scheduledDeparture: null,
+                }),
+              ],
+            },
+          })}
           close={() => {}}
         />,
       );
@@ -784,23 +781,22 @@ describe("sidebar", () => {
     test("displays '--' when next trip stations unavailable", () => {
       const view = render(
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              ocsTrips: {
-                current: ocsTripFactory.build({ nextUid: "222222" }),
-                next: [
-                  ocsTripFactory.build({
-                    originStation: null,
-                    destinationStation: null,
-                    scheduledDeparture: dateTimeFromISO(
-                      // next scheduled dep is 2:10pm
-                      "2025-07-07T18:10:00.000Z",
-                    ),
-                  }),
-                ],
-              },
-            }),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({ nextUid: "222222" }),
+              next: [
+                ocsTripFactory.build({
+                  originStation: null,
+                  destinationStation: null,
+                  scheduledDeparture: dateTimeFromISO(
+                    // next scheduled dep is 2:10pm
+                    "2025-07-07T18:10:00.000Z",
+                  ),
+                }),
+              ],
+            },
+          })}
           close={() => {}}
         />,
       );
@@ -816,23 +812,22 @@ describe("sidebar", () => {
     test("displays '--' when individual next trip station unavailable", () => {
       const view = render(
         <SideBar
-          selection={{
-            vehicle: vehicleFactory.build({
-              ocsTrips: {
-                current: ocsTripFactory.build({ nextUid: "222222" }),
-                next: [
-                  ocsTripFactory.build({
-                    originStation: "ALEWIFE",
-                    destinationStation: null,
-                    scheduledDeparture: dateTimeFromISO(
-                      // next scheduled dep is 2:10pm
-                      "2025-07-07T18:10:00.000Z",
-                    ),
-                  }),
-                ],
-              },
-            }),
-          }}
+          selection={{ vehicleId: null }}
+          vehicle={vehicleFactory.build({
+            ocsTrips: {
+              current: ocsTripFactory.build({ nextUid: "222222" }),
+              next: [
+                ocsTripFactory.build({
+                  originStation: "ALEWIFE",
+                  destinationStation: null,
+                  scheduledDeparture: dateTimeFromISO(
+                    // next scheduled dep is 2:10pm
+                    "2025-07-07T18:10:00.000Z",
+                  ),
+                }),
+              ],
+            },
+          })}
           close={() => {}}
         />,
       );

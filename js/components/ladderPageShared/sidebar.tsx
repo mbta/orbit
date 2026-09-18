@@ -50,7 +50,10 @@ export const SideBar = ({
       <div className="h-full w-screen sm:w-auto">
         <CurrentLocation vehicle={vehicle} />
         <CurrentTrip vehicle={vehicle} />
-        <Consist vehicle={vehicle} searchedCar={selection.searchedCar ?? null} />
+        <Consist
+          vehicle={vehicle}
+          searchedCar={selection.searchedCar ?? null}
+        />
         <NextTrip vehicle={vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
           <VehicleCopyButton
