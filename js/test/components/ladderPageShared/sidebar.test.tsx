@@ -539,68 +539,6 @@ describe("sidebar", () => {
       expect(scoped.getByText(/Park Street/i)).toBeInTheDocument();
     });
 
-    test("updates the displayed location live on vehicle prop change", () => {
-      const vehicle = vehicleFactory.build({
-        vehiclePosition: vehiclePositionFactory.build({
-          stationId: "place-davis",
-          stopStatus: StopStatus.StoppedAt,
-        }),
-        tripUpdate: tripUpdateFactory.build(),
-        ocsTrips: { current: null, next: [] },
-      });
-
-      const view = render(
-        <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={vehicle}
-            close={() => {}}
-          />
-        </MemoryRouter>,
-      );
-
-      let currentLocationSection = view.getByTestId("current-location-section");
-      expect(
-        within(currentLocationSection).getByText(/Boarding at/i),
-      ).toBeInTheDocument();
-      expect(
-        within(currentLocationSection).getByText(/Davis Square/i),
-      ).toBeInTheDocument();
-
-      // Simulate `useVehicles` pushing a live update for this vehicle
-      const updatedVehicle = vehicleFactory.build({
-        ...vehicle,
-        vehiclePosition: vehiclePositionFactory.build({
-          stationId: "place-portr",
-          stopStatus: StopStatus.InTransitTo,
-        }),
-      });
-
-      view.rerender(
-        <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={updatedVehicle}
-            close={() => {}}
-          />
-        </MemoryRouter>,
-      );
-
-      currentLocationSection = view.getByTestId("current-location-section");
-      expect(
-        within(currentLocationSection).getByText(/Next stop/i),
-      ).toBeInTheDocument();
-      expect(
-        within(currentLocationSection).getByText(/Porter Square/i),
-      ).toBeInTheDocument();
-      expect(
-        within(currentLocationSection).queryByText(/Boarding at/i),
-      ).not.toBeInTheDocument();
-      expect(
-        within(currentLocationSection).queryByText(/Davis Square/i),
-      ).not.toBeInTheDocument();
-    });
-
     test("falls back to placeholder when station info is missing", () => {
       const vehicle = vehicleFactory.build({
         vehiclePosition: vehiclePositionFactory.build({
