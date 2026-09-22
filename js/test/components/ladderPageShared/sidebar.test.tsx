@@ -16,7 +16,7 @@ describe("sidebar", () => {
   test("contains consist with bolded lead car", () => {
     const view = render(
       <SideBar
-        selection={{ vehicleId: null }}
+        searchedCar={null}
         vehicle={vehicleFactory.build()}
         close={() => {}}
       />,
@@ -34,7 +34,7 @@ describe("sidebar", () => {
   test("renders current and next trip headers", () => {
     const view = render(
       <SideBar
-        selection={{ vehicleId: null }}
+        searchedCar={null}
         vehicle={vehicleFactory.build({
           ocsTrips: {
             current: ocsTripFactory.build({
@@ -52,7 +52,7 @@ describe("sidebar", () => {
   test("renders current and next trip sections event when current trip is missing", () => {
     const view = render(
       <SideBar
-        selection={{ vehicleId: null }}
+        searchedCar={null}
         vehicle={vehicleFactory.build({
           ocsTrips: {
             current: null,
@@ -70,7 +70,7 @@ describe("sidebar", () => {
       test("shows origin and destination stations if present", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -117,7 +117,7 @@ describe("sidebar", () => {
       test("shows next scheduled departure if present", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -152,7 +152,7 @@ describe("sidebar", () => {
       test('shows "last updated from OCS" timestamp (in local wall time) if present', () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
@@ -169,7 +169,7 @@ describe("sidebar", () => {
       test("positive nonzero", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -190,7 +190,7 @@ describe("sidebar", () => {
       test("negative nonzero", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -211,7 +211,7 @@ describe("sidebar", () => {
       test("zero", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -230,7 +230,7 @@ describe("sidebar", () => {
       test("null", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -251,7 +251,7 @@ describe("sidebar", () => {
       test("does not show if destination stations mismatch", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               tripUpdate: tripUpdateFactory.build({
                 stopTimeUpdates: [
@@ -273,7 +273,7 @@ describe("sidebar", () => {
       test("shows if arriving 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -308,7 +308,7 @@ describe("sidebar", () => {
       test("does not show if arriving less than 1 minute later than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 next: [
@@ -340,7 +340,7 @@ describe("sidebar", () => {
       test("does not show if arriving earlier than next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 next: [
@@ -372,7 +372,7 @@ describe("sidebar", () => {
       test("does not show if arriving ON next trip's scheduled departure", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 next: [
@@ -406,7 +406,7 @@ describe("sidebar", () => {
       test("everything all at once", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               ocsTrips: {
                 current: ocsTripFactory.build({
@@ -449,7 +449,7 @@ describe("sidebar", () => {
     test("by default, does not render export button", () => {
       const view = render(
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build()}
           close={() => {}}
         />,
@@ -467,12 +467,7 @@ describe("sidebar", () => {
       const view = render(
         // Must wrap sidebar in router to allow Link elements
         <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={vehicle}
-            close={() => {}}
-          />
-          ,
+          <SideBar searchedCar={null} vehicle={vehicle} close={() => {}} />
         </MemoryRouter>,
       );
 
@@ -493,11 +488,7 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={vehicle}
-            close={() => {}}
-          />
+          <SideBar searchedCar={null} vehicle={vehicle} close={() => {}} />
         </MemoryRouter>,
       );
 
@@ -522,11 +513,7 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={vehicle}
-            close={() => {}}
-          />
+          <SideBar searchedCar={null} vehicle={vehicle} close={() => {}} />
         </MemoryRouter>,
       );
 
@@ -551,11 +538,7 @@ describe("sidebar", () => {
 
       const view = render(
         <MemoryRouter>
-          <SideBar
-            selection={{ vehicleId: null }}
-            vehicle={vehicle}
-            close={() => {}}
-          />
+          <SideBar searchedCar={null} vehicle={vehicle} close={() => {}} />
         </MemoryRouter>,
       );
 
@@ -573,7 +556,7 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
@@ -589,7 +572,7 @@ describe("sidebar", () => {
       test("is arrival prediction for OCS provided destination even if RTR provides additional STUs", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               tripUpdate: tripUpdateFactory.build({
                 stopTimeUpdates: [
@@ -626,7 +609,7 @@ describe("sidebar", () => {
       test("displays '--' when unavailable", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               tripUpdate: tripUpdateFactory.build({ stopTimeUpdates: [] }),
               ocsTrips: {
@@ -643,7 +626,7 @@ describe("sidebar", () => {
       test("displays '--' when destination stations mismatch", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build({
               tripUpdate: tripUpdateFactory.build({
                 stopTimeUpdates: [
@@ -666,7 +649,7 @@ describe("sidebar", () => {
       test("is displayed if available", () => {
         const view = render(
           <SideBar
-            selection={{ vehicleId: null }}
+            searchedCar={null}
             vehicle={vehicleFactory.build()}
             close={() => {}}
           />,
@@ -685,7 +668,7 @@ describe("sidebar", () => {
     const view = render(
       <MemoryRouter>
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build({
             ocsTrips: {
               current: ocsTripFactory.build({
@@ -712,7 +695,7 @@ describe("sidebar", () => {
     const view = render(
       <MemoryRouter>
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build({
             ocsTrips: {
               current: ocsTripFactory.build({
@@ -737,7 +720,7 @@ describe("sidebar", () => {
     test("renders 'None' for Next Trip next trip is explicitly unset", () => {
       const view = render(
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build()}
           close={() => {}}
         />,
@@ -749,7 +732,7 @@ describe("sidebar", () => {
     test("displays '--' when scheduled departure time not available", () => {
       const view = render(
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build({
             ocsTrips: {
               current: ocsTripFactory.build({ nextUid: "222222" }),
@@ -781,7 +764,7 @@ describe("sidebar", () => {
     test("displays '--' when next trip stations unavailable", () => {
       const view = render(
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build({
             ocsTrips: {
               current: ocsTripFactory.build({ nextUid: "222222" }),
@@ -812,7 +795,7 @@ describe("sidebar", () => {
     test("displays '--' when individual next trip station unavailable", () => {
       const view = render(
         <SideBar
-          selection={{ vehicleId: null }}
+          searchedCar={null}
           vehicle={vehicleFactory.build({
             ocsTrips: {
               current: ocsTripFactory.build({ nextUid: "222222" }),

@@ -14,8 +14,7 @@ import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { vehicleHeightDiff } from "./height";
-import { VehicleWithHeight } from "./ladder";
-import { SideBarSelection } from "./sidebar";
+import { SelectedVehicle, VehicleWithHeight } from "./ladder";
 import { TrainTheme } from "./trainTheme";
 import { ReactElement, useEffect, useRef } from "react";
 
@@ -125,7 +124,7 @@ export const Train = ({
   selected?: boolean;
   scrollIntoView?: boolean;
   className?: string;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
+  setSideBarSelection: (selection: SelectedVehicle | null) => void;
 }): ReactElement => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const orientation = forceDirection == 0 ? "right-0" : "left-0";

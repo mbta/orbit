@@ -6,9 +6,9 @@ import { Vehicle } from "../../models/vehicle";
 import { trackSideBarOpened } from "../../telemetry/trackingEvents";
 import { className } from "../../util/dom";
 import { BranchPicker, BranchPickerSelection } from "./branchPicker";
-import { Ladders } from "./ladder";
+import { Ladders, SelectedVehicle } from "./ladder";
 import { SearchBar, VehicleSearchMatch } from "./search";
-import { SideBar, SideBarSelection } from "./sidebar";
+import { SideBar } from "./sidebar";
 import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
@@ -17,7 +17,7 @@ const NO_VEHICLES: Vehicle[] = [];
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
-    useState<SideBarSelection | null>(null);
+    useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
     useState<BranchPickerSelection>(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +36,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   const openSideBar = useCallback(
-    (selection: SideBarSelection | null) => {
+    (selection: SelectedVehicle | null) => {
       if (selection !== null) {
         const vehicle = findVehicle(selection.vehicleId);
         if (vehicle !== null) {
@@ -133,7 +133,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   );
 
   const openSideBarFromLadder = useCallback(
-    (selection: SideBarSelection | null) => {
+    (selection: SelectedVehicle | null) => {
       const selectedVehicle =
         selection === null ? null : findVehicle(selection.vehicleId);
       if (!selectedVehicle?.vehiclePosition.cars.includes(searchQuery)) {
@@ -152,7 +152,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       <main className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center">
         {sideBarSelection !== null && sideBarVehicle !== null ?
           <SideBar
-            selection={sideBarSelection}
+            searchedCar={sideBarSelection.searchedCar}
             vehicle={sideBarVehicle}
             close={close}
           />

@@ -16,17 +16,12 @@ import { TrainThemes } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
 
-export type SideBarSelection = {
-  vehicleId: string | null;
-  searchedCar?: CarId | null;
-};
-
 export const SideBar = ({
-  selection,
+  searchedCar,
   vehicle,
   close,
 }: {
-  selection: SideBarSelection;
+  searchedCar?: CarId | null;
   vehicle: Vehicle;
   close: () => void;
 }): ReactElement => {
@@ -50,10 +45,7 @@ export const SideBar = ({
       <div className="h-full w-screen sm:w-auto">
         <CurrentLocation vehicle={vehicle} />
         <CurrentTrip vehicle={vehicle} />
-        <Consist
-          vehicle={vehicle}
-          searchedCar={selection.searchedCar ?? null}
-        />
+        <Consist vehicle={vehicle} searchedCar={searchedCar ?? null} />
         <NextTrip vehicle={vehicle} />
         {isFeatureEnabled("ladder_sidebar_export") ?
           <VehicleCopyButton
