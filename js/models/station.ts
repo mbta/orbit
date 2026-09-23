@@ -12,4 +12,9 @@ export type Station = {
 
   // set on terminals to provide a link to the trainsheet
   externalUrl?: string;
+
+  showName?: boolean;
+  showDots?: boolean;
+  arrowLeft?: "up" | "down";
+  arrowRight?: "up" | "down";
 };
