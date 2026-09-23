@@ -23,7 +23,9 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
           ["Alewife-02", 0],
         ]),
         externalUrl:
-          OCS_HOST ? `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE` : "",
+          OCS_HOST ?
+            `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE`
+          : "",
       },
       {
         id: "place-davis",
@@ -110,8 +112,20 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         stop_ids: ["70083", "70084"],
         name: "Andrew",
         ocs_station_name: "ANDREW SQUARE",
-        spacingRatio: 0,
+        spacingRatio: 2.5,
         location: { latitude: 42.330154, longitude: -71.057655 },
+      },
+      {
+        id: "place-jfk2",
+        stop_ids: ["70085", "70086"],
+        name: "JFK2",
+        ocs_station_name: "JFK2",
+        spacingRatio: 1.5,
+        location: { latitude: 42.320685, longitude: -71.052391 },
+
+        showName: false,
+        showDots: false,
+        arrowLeft: "down",
       },
     ],
     // JFK <-> Ashmont
@@ -155,7 +169,10 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         ocs_station_name: "ASHMONT",
         spacingRatio: 0,
         location: { latitude: 42.28452, longitude: -71.063777 },
-        externalUrl: OCS_HOST ? `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT` : "",
+        externalUrl:
+          OCS_HOST ?
+            `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT`
+          : "",
       },
     ],
     // JFK <-> Braintree
@@ -211,7 +228,10 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
           ["Braintree-01", 1],
           ["Braintree-02", 0],
         ]),
-        externalUrl: OCS_HOST ? `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE` : "",
+        externalUrl:
+          OCS_HOST ?
+            `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE`
+          : "",
       },
     ],
   ],
