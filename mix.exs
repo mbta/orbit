@@ -86,7 +86,7 @@ defmodule Orbit.MixProject do
       # (deprecated `catch` expression, escalated by meck's warnings_as_errors).
       # meck 1.x fixes it and stays API-compatible for mock's usage; override the pin.
       {:meck, "1.2.0", only: :test, override: true},
-      {:oban, "2.23.1"},
+      {:oban, "== 2.24.1"},
       {:phoenix, "== 1.8.13"},
       {:phoenix_ecto, "4.7.0"},
       {:phoenix_html, "4.3.0"},
