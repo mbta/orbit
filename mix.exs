@@ -51,7 +51,7 @@ defmodule Orbit.MixProject do
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "== 5.0.1", only: :dev},
       # Needed by laboratory for prod build
-      {:cowboy, "2.18.0"},
+      {:cowboy, "== 2.19.0"},
       {:credo, "1.7.19", only: [:dev, :test], runtime: false},
       {:csv, "3.2.2"},
       {:dialyxir, "1.4.7", only: [:dev, :test], runtime: false},
