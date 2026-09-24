@@ -76,6 +76,61 @@ describe("LadderPage SideBar", () => {
       });
     });
 
+    test("sidebar current location updates live when the vehicles feed updates, without closing/reopening", async () => {
+      const vehicleId = "R-5482CAAA"; // default vehicleFactory vehicleId
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId,
+            stationId: "place-davis",
+            stopId: "70064",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+
+      await user.click(view.getByText("1877"));
+
+      let currentLocationSection = view.getByTestId("current-location-section");
+      expect(
+        within(currentLocationSection).getByText(/Boarding at/i),
+      ).toBeInTheDocument();
+      expect(
+        within(currentLocationSection).getByText(/Davis Square/i),
+      ).toBeInTheDocument();
+
+      // Simulate the live vehicles feed (`useVehicles`) pushing an update for
+      // the still-selected vehicle, without the sidebar being closed/reopened.
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId,
+            stationId: "place-portr",
+            stopId: "70066",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        }),
+      ]);
+      view.rerender(<LadderPage routeId="Red" />);
+
+      currentLocationSection = view.getByTestId("current-location-section");
+      expect(
+        within(currentLocationSection).getByText(/Next stop/i),
+      ).toBeInTheDocument();
+      expect(
+        within(currentLocationSection).getByText(/Porter Square/i),
+      ).toBeInTheDocument();
+      expect(
+        within(currentLocationSection).queryByText(/Boarding at/i),
+      ).not.toBeInTheDocument();
+      expect(
+        within(currentLocationSection).queryByText(/Davis Square/i),
+      ).not.toBeInTheDocument();
+    });
+
     test("15xx RL train labels are remapped", () => {
       const view = render(<LadderPage routeId="Red" />);
       expect(view.getByText("2514")).toBeInTheDocument();

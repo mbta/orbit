@@ -14,7 +14,6 @@ import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { consistsEqual, remapLabel } from "../../util/consist";
 import { BranchPickerSelection } from "./branchPicker";
-import { SideBarSelection } from "./sidebar";
 import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
@@ -96,6 +95,12 @@ const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
   };
 };
 
+// Tracks which vehicle is selected and which car within its consist was searched for
+export type SelectedVehicle = {
+  vehicleId: string | null;
+  searchedCar?: CarId | null;
+};
+
 export const Ladders = ({
   routeId,
   sideBarSelection,
@@ -105,8 +110,8 @@ export const Ladders = ({
   ref,
 }: {
   routeId: RouteId;
-  sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
+  sideBarSelection: SelectedVehicle | null;
+  setSideBarSelection: (selection: SelectedVehicle | null) => void;
   setBranchPickerSelection: (selection: BranchPickerSelection) => void;
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
@@ -150,22 +155,24 @@ export const Ladders = ({
 
       const sameVehicle =
         sideBarSelection !== null &&
-        consistsEqual(
-          sideBarSelection.vehicle.vehiclePosition.cars,
-          selection.consist as string[],
-        );
+        sideBarSelection.vehicleId !== null &&
+        sideBarSelection.vehicleId === match.vehiclePosition.vehicleId;
       setSideBarSelection({
-        vehicle: match,
+        vehicleId: match.vehiclePosition.vehicleId,
         searchedCar: sameVehicle ? sideBarSelection.searchedCar : undefined,
       });
     }
   };
 
   // Highlight the pill any time the sidebar is showing
-  const selected =
+  const selectedVehicle =
     sideBarSelection !== null ?
-      sideBarSelection.vehicle.vehiclePosition.cars
+      (vehicles.find(
+        (vehicle) =>
+          vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
+      ) ?? null)
     : null;
+  const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
   return (
     <div
