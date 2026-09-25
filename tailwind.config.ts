@@ -125,8 +125,22 @@ export default {
         "dash-spin-ccw": "dashoffset-spin 2s linear infinite",
         "dash-spin-cw": "dashoffset-spin 3s linear infinite reverse",
         "slide-in-from-left": "slide-in-from-left 0.25s",
+        "train-label-search-result":
+          "train-label-search-result 1s ease-in-out infinite alternate",
+        "train-label-search-result-branch":
+          "train-label-search-result-branch 1s ease-in-out infinite alternate",
+        "train-label-search-result-car-id":
+          "train-label-search-result-car-id 1s ease-in-out infinite alternate",
+        "train-label-search-result-light":
+          "train-label-search-result-light 1s ease-in-out infinite alternate",
+        "train-label-search-result-light-branch":
+          "train-label-search-result-light-branch 1s ease-in-out infinite alternate",
       },
-      keyframes: {
+      keyframes: ({
+        theme,
+      }: {
+        theme: (key: `colors.${string}`) => string;
+      }) => ({
         "dashoffset-spin": {
           "0%": { "stroke-dashoffset": "0" },
           "100%": { "stroke-dashoffset": "1" },
@@ -135,7 +149,39 @@ export default {
           "0%": { transform: "translateX(-100vh)" },
           "100%": { transform: "translateX(0)" },
         },
-      },
+        "train-label-search-result": {
+          "0%": { "background-color": "rgb(var(--color-branch))" },
+          "100%": { "background-color": theme("colors.glides-blue.900") },
+        },
+        "train-label-search-result-branch": {
+          "0%": {
+            "background-color": theme("colors.glides-blue.700"),
+            color: "rgb(var(--color-branch))",
+          },
+          "100%": {
+            "background-color": "rgb(var(--color-branch))",
+            color: theme("colors.glides-blue.900"),
+          },
+        },
+        "train-label-search-result-car-id": {
+          "0%": { color: theme("colors.glides-blue.700") },
+          "100%": { color: "rgb(var(--color-branch))" },
+        },
+        "train-label-search-result-light": {
+          "0%": { "background-color": "rgb(var(--color-branch))" },
+          "100%": { "background-color": theme("colors.white") },
+        },
+        "train-label-search-result-light-branch": {
+          "0%": {
+            "background-color": theme("colors.slate.800"),
+            color: "rgb(var(--color-branch))",
+          },
+          "100%": {
+            "background-color": "rgb(var(--color-branch))",
+            color: theme("colors.slate.800"),
+          },
+        },
+      }),
     },
   },
   plugins: [
