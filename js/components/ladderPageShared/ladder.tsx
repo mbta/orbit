@@ -1,4 +1,4 @@
-import { LadderConfig, Stations } from "../../data/stations";
+import { LadderConfig, StationRungs } from "../../data/stations";
 import {
   ORBIT_HR_DISPATCHERS,
   ORBIT_HR_STAKEHOLDERS,
@@ -120,7 +120,7 @@ export const Ladders = ({
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
-  const stationLists = Stations[routeId];
+  const stationLists = StationRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       // find which StationList contains a Station whose id matches the VehiclePosition's station
