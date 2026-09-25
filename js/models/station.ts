@@ -1,10 +1,10 @@
 import { LatLng } from "./latlng";
 
 export type Station = {
-  id: string;
-  stop_ids: string[];
-  name: string;
-  ocs_station_name: string;
+  id?: string;
+  stop_ids?: string[];
+  name?: string;
+  ocs_station_name?: string;
   spacingRatio: number;
   location: LatLng;
   // track-level stopIds which are specfic to one side of the station
@@ -12,4 +12,9 @@ export type Station = {
 
   // set on terminals to provide a link to the trainsheet
   externalUrl?: string;
+
+  showName?: boolean;
+  showDots?: boolean;
+  arrowLeft?: "up" | "down";
+  arrowRight?: "up" | "down";
 };

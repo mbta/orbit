@@ -1,4 +1,4 @@
-import { LadderConfig, Stations } from "../../data/stations";
+import { LadderConfig, StationRungs } from "../../data/stations";
 import {
   ORBIT_HR_DISPATCHERS,
   ORBIT_HR_STAKEHOLDERS,
@@ -74,6 +74,10 @@ const toLadderStation = (station: Station) => ({
   latLng: station.location,
   spacingRatio: station.spacingRatio,
   externalUrl: station.externalUrl,
+  showDots: station.showDots,
+  showName: station.showName,
+  arrowLeft: station.arrowLeft,
+  arrowRight: station.arrowRight,
 });
 
 // Transform an Orbit `Vehicle` to a TrainLoc that rail-tech-ui & Glides use
@@ -116,17 +120,19 @@ export const Ladders = ({
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
-  const stationLists = Stations[routeId];
+  const stationLists = StationRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       // find which StationList contains a Station whose id matches the VehiclePosition's station
       const matchingStationList = stationLists.find((stations) =>
         // check if any station within the current stations array includes the VehiclePosition's stopId
-        stations.some((station) =>
-          station.stop_ids.some(
-            (stopId) => stopId === vehicle.vehiclePosition.stopId,
-          ),
-        ),
+        stations.some((station) => {
+          if (station.stop_ids !== undefined) {
+            return station.stop_ids.some(
+              (stopId) => stopId === vehicle.vehiclePosition.stopId,
+            );
+          }
+        }),
       );
       if (matchingStationList) {
         const vehiclesForStationList = accumulator.get(matchingStationList);
