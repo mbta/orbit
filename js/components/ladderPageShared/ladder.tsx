@@ -126,11 +126,13 @@ export const Ladders = ({
       // find which StationList contains a Station whose id matches the VehiclePosition's station
       const matchingStationList = stationLists.find((stations) =>
         // check if any station within the current stations array includes the VehiclePosition's stopId
-        stations.some((station) =>
-          station.stop_ids.some(
-            (stopId) => stopId === vehicle.vehiclePosition.stopId,
-          ),
-        ),
+        stations.some((station) => {
+          if (station.stop_ids !== undefined) {
+            return station.stop_ids.some(
+              (stopId) => stopId === vehicle.vehiclePosition.stopId,
+            );
+          }
+        }),
       );
       if (matchingStationList) {
         const vehiclesForStationList = accumulator.get(matchingStationList);

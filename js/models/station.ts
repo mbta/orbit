@@ -1,10 +1,10 @@
 import { LatLng } from "./latlng";
 
 export type Station = {
-  id: string;
-  stop_ids: string[];
-  name: string;
-  ocs_station_name: string;
+  id?: string;
+  stop_ids?: string[];
+  name?: string;
+  ocs_station_name?: string;
   spacingRatio: number;
   location: LatLng;
   // track-level stopIds which are specfic to one side of the station
