@@ -2,6 +2,7 @@ import { Ladders } from "../../../components/ladderPageShared/ladder";
 import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
+import { Vehicle } from "../../../models/vehicle";
 import { StopStatus } from "../../../models/vehiclePosition";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
@@ -611,6 +612,471 @@ describe("Ladder", () => {
 
       await user.click(view.getByRole("button", { name: /1888/ }));
       expect(mockSetBranch).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe("plots trains on correct side of ladder", () => {
+    // Assumes order of ladders by index is Alewife, Ashmont, then Braintree
+    // TODO: Find a better way to label the specific ladders for testing
+    const ladderToIndex = {
+      alewife: 0,
+      ashmont: 1,
+      braintree: 2,
+    } as const;
+
+    const setupDirectionTest = (
+      vehicles: Vehicle[],
+      ladder: keyof typeof ladderToIndex,
+    ) => {
+      mockUseVehicles.mockReturnValue(vehicles);
+
+      const view = render(
+        <Ladders
+          routeId="Red"
+          setSideBarSelection={jest.fn()}
+          setBranchPickerSelection={jest.fn()}
+          sideBarSelection={null}
+          vehicles={useVehicles() ?? []}
+        />,
+      );
+
+      const ladderIndex = ladderToIndex[ladder];
+      const northboundContainer =
+        view.getAllByLabelText("Trains Eastbound")[ladderIndex];
+      expect(northboundContainer).toBeInTheDocument();
+
+      const southboundContainer =
+        view.getAllByLabelText("Trains Westbound")[ladderIndex];
+      expect(southboundContainer).toBeInTheDocument();
+
+      return {
+        view,
+        northboundContainer,
+        southboundContainer,
+      };
+    };
+
+    test("plots trains based on vehicle direction", async () => {
+      const { northboundContainer, southboundContainer } = setupDirectionTest(
+        [
+          // Northbound ("Eastbound") train stopped at Davis
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: "vehicle1",
+              directionId: 1,
+              label: "1999",
+              cars: ["1999", "1998", "1997", "1996", "1995", "1994"],
+              stationId: "place-davis",
+              stopId: "70063",
+              stopStatus: StopStatus.StoppedAt,
+              position: { latitude: 42.39674, longitude: -71.121815 },
+            }),
+          }),
+          // Southbound ("Westbound) train stopped at Davis
+          vehicleFactory.build({
+            vehiclePosition: vehiclePositionFactory.build({
+              vehicleId: "vehicle2",
+              directionId: 0,
+              label: "1898",
+              cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
+              stationId: "place-davis",
+              stopId: "70063",
+              stopStatus: StopStatus.StoppedAt,
+              position: { latitude: 42.39674, longitude: -71.121815 },
+            }),
+          }),
+        ],
+        "alewife",
+      );
+
+      expect(within(northboundContainer).getByText("1999")).toBeInTheDocument();
+      expect(within(southboundContainer).getByText("1899")).toBeInTheDocument();
+    });
+
+    describe("handles direction overrides for Alewife stops", () => {
+      const mockTrain = ({
+        stopId,
+        stopStatus,
+        directionId,
+      }: {
+        stopId: string;
+        stopStatus: StopStatus;
+        directionId: number;
+      }) => {
+        return vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: "vehicle1",
+            directionId,
+            label: "1901",
+            cars: ["1901"],
+            stationId: "place-alfcl",
+            stopId,
+            stopStatus,
+            position: { latitude: 42.39583, longitude: -71.141287 },
+          }),
+        });
+      };
+
+      const setupTest = (vehicles: Vehicle[]) =>
+        setupDirectionTest(vehicles, "alewife");
+
+      // Alewife 70061 : No directional overrides
+      test("NB train IN_TRANSIT_TO Alewife 70061 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "70061",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Alewife 70061 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "70061",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Alewife 70061 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "70061",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Alewife 70061 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "70061",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      // Alewife-01 : Overrides to Northbound
+      test("NB train IN_TRANSIT_TO Alewife-01 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Alewife-01 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Alewife-01 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Alewife-01 shows as NB (override)", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Alewife-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      // Alewife-02 : Overrides to Southbound
+      test("NB train IN_TRANSIT_TO Alewife-02 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Alewife-02",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Alewife-02 shows as SB (override)", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Alewife-02",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Alewife-02 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Alewife-02",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Alewife-02 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Alewife-02",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    describe("handles direction overrides for Braintree stops", () => {
+      const mockTrain = ({
+        stopId,
+        stopStatus,
+        directionId,
+      }: {
+        stopId: string;
+        stopStatus: StopStatus;
+        directionId: number;
+      }) => {
+        return vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            vehicleId: "vehicle1",
+            directionId,
+            label: "1901",
+            cars: ["1901"],
+            stationId: "place-brntn",
+            stopId,
+            stopStatus,
+            position: { latitude: 42.207854, longitude: -71.001138 },
+          }),
+        });
+      };
+
+      const setupTest = (vehicles: Vehicle[]) =>
+        setupDirectionTest(vehicles, "braintree");
+
+      // Braintree 70105 : No directional overrides
+      test("NB train IN_TRANSIT_TO Braintree 70105 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "70105",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Braintree 70105 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "70105",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Braintree 70105 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "70105",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Braintree-01 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "70105",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      // Braintree-01 : Overrides to Northbound
+      test("NB train IN_TRANSIT_TO Braintree-01 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Braintree-01",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Braintree-01 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Braintree-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Braintree-01 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Braintree-01",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Braintree-01 shows as NB (override)", async () => {
+        const { northboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Braintree-01",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      // Braintree-02 : Overrides to Southbound
+      test("NB train IN_TRANSIT_TO Braintree-02 does not render", async () => {
+        const { view } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Braintree-02",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(view.queryByText("1901")).not.toBeInTheDocument();
+      });
+
+      test("NB train STOPPED_AT Braintree-02 shows as SB (override)", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 1,
+            stopId: "Braintree-02",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train IN_TRANSIT_TO Braintree-02 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Braintree-02",
+            stopStatus: StopStatus.InTransitTo,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
+
+      test("SB train STOPPED_AT Braintree-02 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
+          mockTrain({
+            directionId: 0,
+            stopId: "Braintree-02",
+            stopStatus: StopStatus.StoppedAt,
+          }),
+        ]);
+
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
+      });
     });
   });
 });
