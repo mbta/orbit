@@ -362,7 +362,7 @@ defmodule Realtime.TripMatcher do
       true ->
         expected_departure_time =
           if ocs_trip.scheduled_departure != nil do
-            DateTime.add(ocs_trip.scheduled_departure, ocs_trip.offset || 0)
+            DateTime.add(ocs_trip.scheduled_departure, ocs_trip.offset || 0, :minute)
           else
             ocs_trip.assigned_at
           end
