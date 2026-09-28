@@ -351,15 +351,12 @@ defmodule Realtime.TripMatcher do
 
     cond do
       not matches_direction? ->
-        Logger.info("No Match: wrong_direction")
         {:no_match, :wrong_direction}
 
       origin_station != vehicle_event.station_id ->
-        Logger.info("No Match: wrong_station")
         {:no_match, :wrong_station}
 
       ocs_trip.scheduled_departure == nil and ocs_trip.assigned_at == nil ->
-        Logger.info("No Match: missing_departure_time")
         {:no_match, :missing_departure_time}
 
       true ->
