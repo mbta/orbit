@@ -13,8 +13,12 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
+        id: "arrow",
         spacingRatio: 2.0,
         location: { latitude: 42.396192, longitude: -71.142230 },
+        // TODO: in the future, for `Implement location interpolation between ladders`
+        //   we probably want this to be:
+        // threshold: 0.6,
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -125,12 +129,9 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
+        id: "arrow",
         spacingRatio: 0.0,
         location: { latitude: 42.325166, longitude: -71.055402 },
-        // TODO: in the future, for `Implement location interpolation between ladders`
-        //   we probably want this to be:
-        // threshold: 0.6,
-
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -140,6 +141,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
+        id: "arrow",
         spacingRatio: 2.0,
         location: { latitude: 42.325166, longitude: -71.055402 },
         showName: false,
@@ -192,6 +194,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
+        id: "arrow",
         spacingRatio: 0.0,
         location: { latitude: 42.28107, longitude: -71.06378 },
         showName: false,
@@ -203,6 +206,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
+        id: "arrow",
         spacingRatio: 2.0,
         location: { latitude: 42.28107, longitude: -71.06378 },
         showName: false,
@@ -267,6 +271,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
+        id: "arrow",
         spacingRatio: 0,
         location: { latitude: 42.204572, longitude: -71.002080 },
         showName: false,
