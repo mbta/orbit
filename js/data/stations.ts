@@ -120,7 +120,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
         stop_ids: ["70083", "70084"],
         name: "Andrew",
         ocs_station_name: "ANDREW SQUARE",
-        spacingRatio: 2.5,
+        spacingRatio: 2.0,
         location: { latitude: 42.330154, longitude: -71.057655 },
       },
       {
@@ -183,7 +183,7 @@ export const StationRungs: Record<RouteId, LadderConfig[]> = {
         stop_ids: ["70093", "70094"],
         name: "Ashmont",
         ocs_station_name: "ASHMONT",
-        spacingRatio: 1.9,
+        spacingRatio: 2.0,
         location: { latitude: 42.28452, longitude: -71.063777 },
         externalUrl:
           OCS_HOST ?
