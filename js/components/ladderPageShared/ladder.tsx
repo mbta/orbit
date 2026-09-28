@@ -1,4 +1,8 @@
-import { LadderConfig, Stations } from "../../data/stations";
+import {
+  DirectionalStopIds,
+  LadderConfig,
+  Stations,
+} from "../../data/stations";
 import {
   ORBIT_HR_DISPATCHERS,
   ORBIT_HR_STAKEHOLDERS,
@@ -9,9 +13,10 @@ import {
   ORBIT_TID_STAFF,
   userHasOneOf,
 } from "../../groups";
-import { CarId, RouteId } from "../../models/common";
+import { CarId, DirectionId, RouteId } from "../../models/common";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
+import { StopStatus } from "../../models/vehiclePosition";
 import { consistsEqual, remapLabel } from "../../util/consist";
 import { BranchPickerSelection } from "./branchPicker";
 import { Ladder } from "rail-tech-ui";
@@ -83,7 +88,7 @@ const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
   return {
     consist: vp.cars,
     routeId: vp.routeId,
-    directionId: vp.directionId,
+    directionId: directionIdFromVehicle(vehicle),
     ab: vp.cars.map(() => null),
     routePatternId: vehicle.tripUpdate?.routePatternId ?? undefined,
     stationId: vp.stationId,
@@ -93,6 +98,18 @@ const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
     timestamp: vp.timestamp,
     trip: { scheduled: { revenue: vp.revenue }, manual: null },
   };
+};
+
+const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
+  const stopId = vehicle.vehiclePosition.stopId;
+  const fixedDirectionForStop =
+    (
+      stopId !== null &&
+      vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt
+    ) ?
+      DirectionalStopIds.get(stopId)
+    : null;
+  return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
 };
 
 // Tracks which vehicle is selected and which car within its consist was searched for
