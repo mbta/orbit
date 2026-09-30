@@ -749,8 +749,8 @@ describe("Ladder", () => {
         ).toBeInTheDocument();
       });
 
-      test("SB train IN_TRANSIT_TO Alewife 70061 does not render", async () => {
-        const { view } = setupTest([
+      test("SB train IN_TRANSIT_TO Alewife 70061 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
           mockTrain({
             directionId: 0,
             stopId: "70061",
@@ -758,7 +758,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("SB train STOPPED_AT Alewife 70061 shows as SB", async () => {
@@ -804,8 +806,8 @@ describe("Ladder", () => {
         ).toBeInTheDocument();
       });
 
-      test("SB train IN_TRANSIT_TO Alewife-01 does not render", async () => {
-        const { view } = setupTest([
+      test("SB train IN_TRANSIT_TO Alewife-01 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
           mockTrain({
             directionId: 0,
             stopId: "Alewife-01",
@@ -813,7 +815,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("SB train STOPPED_AT Alewife-01 shows as NB (override)", async () => {
@@ -859,8 +863,8 @@ describe("Ladder", () => {
         ).toBeInTheDocument();
       });
 
-      test("SB train IN_TRANSIT_TO Alewife-02 does not render", async () => {
-        const { view } = setupTest([
+      test("SB train IN_TRANSIT_TO Alewife-02 shows as SB", async () => {
+        const { southboundContainer } = setupTest([
           mockTrain({
             directionId: 0,
             stopId: "Alewife-02",
@@ -868,7 +872,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(southboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("SB train STOPPED_AT Alewife-02 shows as SB", async () => {
@@ -914,8 +920,8 @@ describe("Ladder", () => {
         setupDirectionTest(vehicles, "braintree");
 
       // Braintree 70105 : No directional overrides
-      test("NB train IN_TRANSIT_TO Braintree 70105 does not render", async () => {
-        const { view } = setupTest([
+      test("NB train IN_TRANSIT_TO Braintree 70105 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
           mockTrain({
             directionId: 1,
             stopId: "70105",
@@ -923,7 +929,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("NB train STOPPED_AT Braintree 70105 shows as NB", async () => {
@@ -969,8 +977,8 @@ describe("Ladder", () => {
       });
 
       // Braintree-01 : Overrides to Northbound
-      test("NB train IN_TRANSIT_TO Braintree-01 does not render", async () => {
-        const { view } = setupTest([
+      test("NB train IN_TRANSIT_TO Braintree-01 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
           mockTrain({
             directionId: 1,
             stopId: "Braintree-01",
@@ -978,7 +986,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("NB train STOPPED_AT Braintree-01 shows as NB", async () => {
@@ -1024,8 +1034,8 @@ describe("Ladder", () => {
       });
 
       // Braintree-02 : Overrides to Southbound
-      test("NB train IN_TRANSIT_TO Braintree-02 does not render", async () => {
-        const { view } = setupTest([
+      test("NB train IN_TRANSIT_TO Braintree-02 shows as NB", async () => {
+        const { northboundContainer } = setupTest([
           mockTrain({
             directionId: 1,
             stopId: "Braintree-02",
@@ -1033,7 +1043,9 @@ describe("Ladder", () => {
           }),
         ]);
 
-        expect(view.queryByText("1901")).not.toBeInTheDocument();
+        expect(
+          within(northboundContainer).getByText("1901"),
+        ).toBeInTheDocument();
       });
 
       test("NB train STOPPED_AT Braintree-02 shows as SB (override)", async () => {

@@ -82,7 +82,7 @@ const headerSymbol = (vehicle: Vehicle) => {
   }
   // Check for Ashmont stopId's. Fall back to Braintree if routePatternId is not recognized;
   for (const station of Stations.Red[1]) {
-    if (station.stop_ids.includes(vehicle.vehiclePosition.stopId ?? "")) {
+    if (station.stop_ids?.includes(vehicle.vehiclePosition.stopId ?? "")) {
       return "A";
     }
   }
