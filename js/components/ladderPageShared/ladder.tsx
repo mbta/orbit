@@ -137,11 +137,11 @@ export const Ladders = ({
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
-  const ladderRungs = LadderRungs[routeId];
+  const ladderRungsForRoute = LadderRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
-      const matchingLadderRung = ladderRungs.find((rung) =>
+      const matchingLadderRungs = ladderRungsForRoute.find((rung) =>
         // check if any station within the current rung array includes the VehiclePosition's stopId
         rung.some((station) => {
           if (station.stop_ids !== undefined) {
@@ -151,15 +151,15 @@ export const Ladders = ({
           }
         }),
       );
-      if (matchingLadderRung) {
-        const vehiclesForLadderRung = accumulator.get(matchingLadderRung);
-        vehiclesForLadderRung?.push(vehicle);
+      if (matchingLadderRungs) {
+        const vehiclesForLadderRungs = accumulator.get(matchingLadderRungs);
+        vehiclesForLadderRungs?.push(vehicle);
       }
       return accumulator;
     },
     // initial map of {[rungs on the ladder]: VehiclePositions[]}
     new Map<LadderConfig, Vehicle[]>(
-      ladderRungs.map((ladderRung) => [ladderRung, []]),
+      ladderRungsForRoute.map((ladderRungs) => [ladderRungs, []]),
     ),
   );
 
@@ -204,7 +204,7 @@ export const Ladders = ({
       className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory"
     >
       {Array.from(vehiclesByBranch.entries()).map(
-        ([stationList, branchVehicles], index) => {
+        ([ladderRungs, branchVehicles], index) => {
           const branch: BranchPickerSelection = index;
 
           return (
@@ -232,7 +232,7 @@ export const Ladders = ({
                   onVehicleSelection(selection, branch);
                 }}
                 setStationSelection={() => undefined}
-                eastToWestStations={stationList.map(toLadderStation)}
+                eastToWestStations={ladderRungs.map(toLadderStation)}
                 letterFn={(
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
