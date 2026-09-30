@@ -14,6 +14,24 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
+// Horizontal scroll offset that centers `branch` within the visible width of
+// `container`, clamped to the container's scrollable range. `container.clientWidth`
+// already excludes the sidebar, since the sidebar shrinks the scroll area rather
+// than overlaying it.
+export const centeredScrollLeft = (
+  container: HTMLElement,
+  branch: HTMLElement,
+): number => {
+  const branchOffset = branch.offsetLeft - container.offsetLeft;
+  const target =
+    branchOffset + branch.offsetWidth / 2 - container.clientWidth / 2;
+  const maxScrollLeft = Math.max(
+    0,
+    container.scrollWidth - container.clientWidth,
+  );
+  return Math.min(Math.max(target, 0), maxScrollLeft);
+};
+
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
@@ -102,6 +120,24 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       }
     };
   }, [resizeTimeout]);
+
+  // Center the selected branch's ladder whenever the selection changes
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!container) return;
+    const branch = container.querySelector<HTMLElement>(
+      `[data-branch="${branchPickerSelection}"]`,
+    );
+    if (!branch) return;
+
+    const left = centeredScrollLeft(container, branch);
+    if (typeof container.scrollTo === "function") {
+      container.scrollTo({ left, behavior: "auto" });
+    } else {
+      // eslint-disable-next-line better-mutation/no-mutation
+      container.scrollLeft = left;
+    }
+  }, [branchPickerSelection]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
