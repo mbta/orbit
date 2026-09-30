@@ -7,7 +7,7 @@ export type LadderConfig = Station[];
 
 const OCS_HOST = getMetaContent("ocsHost");
 
-export const StationRungs: Record<RouteId, LadderConfig[]> = {
+export const LadderRungs: Record<RouteId, LadderConfig[]> = {
   Red: [
     // Alewife <-> Andrew
     [

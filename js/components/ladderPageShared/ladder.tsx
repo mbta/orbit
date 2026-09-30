@@ -1,7 +1,7 @@
 import {
   DirectionalStopIds,
   LadderConfig,
-  StationRungs,
+  LadderRungs,
 } from "../../data/stations";
 import {
   ORBIT_HR_DISPATCHERS,
@@ -137,13 +137,13 @@ export const Ladders = ({
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
-  const stationLists = StationRungs[routeId];
+  const ladderRungs = LadderRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
-      // find which StationList contains a Station whose id matches the VehiclePosition's station
-      const matchingStationList = stationLists.find((stations) =>
-        // check if any station within the current stations array includes the VehiclePosition's stopId
-        stations.some((station) => {
+      // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
+      const matchingLadderRung = ladderRungs.find((rung) =>
+        // check if any station within the current rung array includes the VehiclePosition's stopId
+        rung.some((station) => {
           if (station.stop_ids !== undefined) {
             return station.stop_ids.some(
               (stopId) => stopId === vehicle.vehiclePosition.stopId,
@@ -151,15 +151,15 @@ export const Ladders = ({
           }
         }),
       );
-      if (matchingStationList) {
-        const vehiclesForStationList = accumulator.get(matchingStationList);
-        vehiclesForStationList?.push(vehicle);
+      if (matchingLadderRung) {
+        const vehiclesForLadderRung = accumulator.get(matchingLadderRung);
+        vehiclesForLadderRung?.push(vehicle);
       }
       return accumulator;
     },
-    // initial map of {[stations on the ladder]: VehiclePositions[]}
+    // initial map of {[rungs on the ladder]: VehiclePositions[]}
     new Map<LadderConfig, Vehicle[]>(
-      stationLists.map((stationList) => [stationList, []]),
+      ladderRungs.map((ladderRung) => [ladderRung, []]),
     ),
   );
 
