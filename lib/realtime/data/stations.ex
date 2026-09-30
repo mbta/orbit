@@ -110,4 +110,68 @@ defmodule Realtime.Data.Stations do
       _ -> []
     end
   end
+
+  @spec direction_from_stations(String.t(), String.t()) :: :ambiguous | 0 | 1
+  def direction_from_stations(origin, dest) do
+    case {station_segment_and_ordinal(origin), station_segment_and_ordinal(dest)} do
+      {{:red_alewife, _}, {:red_braintree, _}} ->
+        0
+
+      {{:red_alewife, _}, {:red_ashmont, _}} ->
+        0
+
+      {{:red_braintree, _}, {:red_alewife, _}} ->
+        1
+
+      {{:red_ashmont, _}, {:red_alewife, _}} ->
+        1
+
+      # To go from Ashmont segment to Braintree segment, or vice versa, must first go north
+      {{:red_ashmont, _}, {:red_braintree, _}} ->
+        1
+
+      {{:red_braintree, _}, {:red_ashmont, _}} ->
+        1
+
+      # Same segment, compare ordinals
+      {{segment, ordinal_1}, {segment, ordinal_2}} when ordinal_1 != ordinal_2 ->
+        if ordinal_1 < ordinal_2 do
+          0
+        else
+          1
+        end
+
+      _ ->
+        :ambiguous
+    end
+  end
+
+  @type segment :: :red_alewife | :red_braintree | :red_ashmont
+  defp station_segment_and_ordinal(station_id) do
+    case station_id do
+      "place-alfcl" -> {:red_alewife, 0}
+      "place-davis" -> {:red_alewife, 1}
+      "place-portr" -> {:red_alewife, 2}
+      "place-harsq" -> {:red_alewife, 3}
+      "place-cntsq" -> {:red_alewife, 4}
+      "place-knncl" -> {:red_alewife, 5}
+      "place-chmnl" -> {:red_alewife, 6}
+      "place-pktrm" -> {:red_alewife, 7}
+      "place-dwnxg" -> {:red_alewife, 8}
+      "place-sstat" -> {:red_alewife, 9}
+      "place-brdwy" -> {:red_alewife, 10}
+      "place-andrw" -> {:red_alewife, 11}
+      "place-jfk" -> {:red_alewife, 12}
+      "place-shmnl" -> {:red_ashmont, 0}
+      "place-fldcr" -> {:red_ashmont, 1}
+      "place-smmnl" -> {:red_ashmont, 2}
+      "place-asmnl" -> {:red_ashmont, 3}
+      "place-nqncy" -> {:red_braintree, 0}
+      "place-wlsta" -> {:red_braintree, 1}
+      "place-qnctr" -> {:red_braintree, 2}
+      "place-qamnl" -> {:red_braintree, 3}
+      "place-brntn" -> {:red_braintree, 4}
+      _ -> nil
+    end
+  end
 end
