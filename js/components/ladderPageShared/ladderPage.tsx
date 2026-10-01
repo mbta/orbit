@@ -14,21 +14,23 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
-// Horizontal scroll offset that centers `branch` within the visible width of
-// `container`, clamped to the container's scrollable range. `container.clientWidth`
-// already excludes the sidebar, since the sidebar shrinks the scroll area rather
-// than overlaying it.
+// Determine horitonzal scroll offset to center branch
 export const centeredScrollLeft = (
   container: HTMLElement,
   branch: HTMLElement,
 ): number => {
+  // how far specified branch is from left edge
   const branchOffset = branch.offsetLeft - container.offsetLeft;
+  // where center of branch should be located in viewport
   const target =
     branchOffset + branch.offsetWidth / 2 - container.clientWidth / 2;
+  // maxium available space to shift left
+  // (zero if all ladders fit within visible area)
   const maxScrollLeft = Math.max(
     0,
     container.scrollWidth - container.clientWidth,
   );
+  // number of pixels to scroll ladders container horizontally
   return Math.min(Math.max(target, 0), maxScrollLeft);
 };
 
