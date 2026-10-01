@@ -31,7 +31,7 @@ export const Ladders = ({
       const matchingStationList = stationLists.find((stations) =>
         // check if any station within the current stations array includes the VehiclePosition's stopId
         stations.some((station) =>
-          station.stop_ids.some(
+          station.stop_ids?.some(
             (stopId) => stopId === vehicle.vehiclePosition.stopId,
           ),
         ),
@@ -135,7 +135,7 @@ const TrainsAndStations = ({
         );
 
         const station = ladderConfig.find((station) =>
-          station.stop_ids.some((stop_id) => stop_id === vp.stopId),
+          station.stop_ids?.some((stop_id) => stop_id === vp.stopId),
         );
 
         const direction =
