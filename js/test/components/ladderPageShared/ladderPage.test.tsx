@@ -446,6 +446,7 @@ describe("LadderPage BranchPicker visibility", () => {
     });
 
     const branchPicker = getByTestId("branch-picker");
+    expect(getByTestId("branch-picker-container")).toHaveClass("shrink-0");
     expect(
       within(branchPicker).getByRole("button", { name: "Alewife" }),
     ).toBeInTheDocument();

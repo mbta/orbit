@@ -79,7 +79,7 @@ export const BranchPicker = ({
 }) => {
   return (
     <div
-      className="flex justify-between h-14 self-center gap-1 w-full max-w-[371px]"
+      className="flex justify-between h-16 self-center gap-1 w-full max-w-[371px]"
       data-testid="branch-picker"
     >
       {routeBranchLabels[route].map((_label, branch) => (
