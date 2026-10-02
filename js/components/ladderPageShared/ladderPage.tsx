@@ -143,10 +143,12 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
     const left = centeredScrollLeft(container, branch);
     if (typeof container.scrollTo === "function") {
-      container.scrollTo({ left, behavior: "auto" });
+      container.scrollTo({ left, top: 0, behavior: "auto" });
     } else {
       // eslint-disable-next-line better-mutation/no-mutation
       container.scrollLeft = left;
+      // eslint-disable-next-line better-mutation/no-mutation
+      container.scrollTop = 0;
     }
   }, [branchPickerSelection]);
 

@@ -676,6 +676,30 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(2),
+      top: 0,
+      behavior: "auto",
+    });
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+  });
+
+  test("changing branches scrolls the page to the top", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    container.scrollTop = 400;
+    const scrollTo = watchScrollTo(container);
+
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Braintree",
+      }),
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      left: expectedLeft(2),
+      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -696,6 +720,7 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(0),
+      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -723,6 +748,7 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(1, narrowedWidth),
+      top: 0,
       behavior: "auto",
     });
     expect(expectedLeft(1, narrowedWidth)).not.toEqual(expectedLeft(1));
@@ -739,6 +765,7 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(2),
+      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
