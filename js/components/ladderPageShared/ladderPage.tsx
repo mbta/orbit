@@ -14,6 +14,26 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
+// Determine horitonzal scroll offset to center branch
+export const centeredScrollLeft = (
+  container: HTMLElement,
+  branch: HTMLElement,
+): number => {
+  // how far specified branch is from left edge
+  const branchOffset = branch.offsetLeft - container.offsetLeft;
+  // where center of branch should be located in viewport
+  const target =
+    branchOffset + branch.offsetWidth / 2 - container.clientWidth / 2;
+  // maxium available space to shift left
+  // (zero if all ladders fit within visible area)
+  const maxScrollLeft = Math.max(
+    0,
+    container.scrollWidth - container.clientWidth,
+  );
+  // number of pixels to scroll ladders container horizontally
+  return Math.min(Math.max(target, 0), maxScrollLeft);
+};
+
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
@@ -63,6 +83,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     [close],
   );
 
+  // Close sidebar on branch picker click
+  const onBranchPickerSelection = useCallback(
+    (selection: BranchPickerSelection) => {
+      close();
+      if (laddersRef.current) {
+        // eslint-disable-next-line better-mutation/no-mutation
+        laddersRef.current.scrollTop = 0;
+      }
+      setBranchPickerSelection(selection);
+    },
+    [close],
+  );
+
   useEffect(() => {
     document.addEventListener("keydown", onEscape, false);
 
@@ -102,6 +135,24 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       }
     };
   }, [resizeTimeout]);
+
+  // Center the selected branch's ladder whenever the selection changes
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!container) return;
+    const branch = container.querySelector<HTMLElement>(
+      `[data-branch="${branchPickerSelection}"]`,
+    );
+    if (!branch) return;
+
+    const left = centeredScrollLeft(container, branch);
+    if (typeof container.scrollTo === "function") {
+      container.scrollTo({ left, behavior: "auto" });
+    } else {
+      // eslint-disable-next-line better-mutation/no-mutation
+      container.scrollLeft = left;
+    }
+  }, [branchPickerSelection]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
@@ -183,11 +234,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         </div>
       </main>
       {isOverflowing && (
-        <div className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex justify-center w-full">
+        <div
+          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center w-full"
+          data-testid="branch-picker-container"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              close();
+            }
+          }}
+        >
           <BranchPicker
             route={routeId}
             selection={branchPickerSelection}
-            setSelection={setBranchPickerSelection}
+            setSelection={onBranchPickerSelection}
           />
         </div>
       )}

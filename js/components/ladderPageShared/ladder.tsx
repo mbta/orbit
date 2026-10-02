@@ -210,6 +210,8 @@ export const Ladders = ({
           return (
             <div
               key={index}
+              data-branch={branch}
+              data-testid={`ladder-branch-${branch}`}
               className="h-full mx-40 mt-28 snap-center snap-always"
             >
               <Ladder
