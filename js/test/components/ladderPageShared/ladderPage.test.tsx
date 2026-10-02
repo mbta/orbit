@@ -764,6 +764,26 @@ describe("LadderPage branch centering", () => {
   test("does not throw when rendering without faked layout metrics", () => {
     expect(() => render(<LadderPage routeId="Red" />)).not.toThrow();
   });
+
+  test("clicking a branch selection button closes the sidebar", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    await user.click(view.getByRole("button", { name: /2001/ }));
+    expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    );
+
+    expect(
+      view.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe("Ladder", () => {

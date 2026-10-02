@@ -83,6 +83,15 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     [close],
   );
 
+  // Close sidebar on branch picker click
+  const onBranchPickerSelection = useCallback(
+    (selection: BranchPickerSelection) => {
+      close();
+      setBranchPickerSelection(selection);
+    },
+    [close],
+  );
+
   useEffect(() => {
     document.addEventListener("keydown", onEscape, false);
 
@@ -225,7 +234,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           <BranchPicker
             route={routeId}
             selection={branchPickerSelection}
-            setSelection={setBranchPickerSelection}
+            setSelection={onBranchPickerSelection}
           />
         </div>
       )}
