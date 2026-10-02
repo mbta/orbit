@@ -87,6 +87,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const onBranchPickerSelection = useCallback(
     (selection: BranchPickerSelection) => {
       close();
+      if (laddersRef.current) {
+        // eslint-disable-next-line better-mutation/no-mutation
+        laddersRef.current.scrollTop = 0;
+      }
       setBranchPickerSelection(selection);
     },
     [close],
@@ -143,12 +147,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
     const left = centeredScrollLeft(container, branch);
     if (typeof container.scrollTo === "function") {
-      container.scrollTo({ left, top: 0, behavior: "auto" });
+      container.scrollTo({ left, behavior: "auto" });
     } else {
       // eslint-disable-next-line better-mutation/no-mutation
       container.scrollLeft = left;
-      // eslint-disable-next-line better-mutation/no-mutation
-      container.scrollTop = 0;
     }
   }, [branchPickerSelection]);
 

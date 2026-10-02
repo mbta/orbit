@@ -676,7 +676,6 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(2),
-      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -699,10 +698,10 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(2),
-      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(container.scrollTop).toBe(0);
   });
 
   test("clicking the Alewife branch button centers the Alewife ladder", async () => {
@@ -720,7 +719,6 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(0),
-      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -748,27 +746,30 @@ describe("LadderPage branch centering", () => {
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(1, narrowedWidth),
-      top: 0,
       behavior: "auto",
     });
     expect(expectedLeft(1, narrowedWidth)).not.toEqual(expectedLeft(1));
   });
 
-  test("clicking a train on the Braintree ladder centers the Braintree ladder", async () => {
+  test("clicking a train centers the Braintree ladder without resetting vertical scroll", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const view = render(<LadderPage routeId="Red" />);
     const container = fakeLayout(view);
     showBranchPicker();
 
+    container.scrollTop = 400;
+    const pageScroller = view.getByRole("main");
+    pageScroller.scrollTop = 300;
     const scrollTo = watchScrollTo(container);
     await user.click(view.getByRole("button", { name: /2001/ }));
 
     expect(scrollTo).toHaveBeenCalledWith({
       left: expectedLeft(2),
-      top: 0,
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(container.scrollTop).toBe(400);
+    expect(pageScroller.scrollTop).toBe(300);
   });
 
   test("re-selecting the already selected branch does not scroll again", async () => {
