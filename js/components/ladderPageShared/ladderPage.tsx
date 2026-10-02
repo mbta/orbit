@@ -230,7 +230,15 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         </div>
       </main>
       {isOverflowing && (
-        <div className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex justify-center w-full">
+        <div
+          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex justify-center w-full"
+          data-testid="branch-picker-container"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              close();
+            }
+          }}
+        >
           <BranchPicker
             route={routeId}
             selection={branchPickerSelection}
