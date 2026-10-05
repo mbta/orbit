@@ -14,26 +14,6 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
-// Determine horitonzal scroll offset to center branch
-export const centeredScrollLeft = (
-  container: HTMLElement,
-  branch: HTMLElement,
-): number => {
-  // how far specified branch is from left edge
-  const branchOffset = branch.offsetLeft - container.offsetLeft;
-  // where center of branch should be located in viewport
-  const target =
-    branchOffset + branch.offsetWidth / 2 - container.clientWidth / 2;
-  // maxium available space to shift left
-  // (zero if all ladders fit within visible area)
-  const maxScrollLeft = Math.max(
-    0,
-    container.scrollWidth - container.clientWidth,
-  );
-  // number of pixels to scroll ladders container horizontally
-  return Math.min(Math.max(target, 0), maxScrollLeft);
-};
-
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
@@ -46,6 +26,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     typeof setTimeout
   > | null>(null);
   const laddersRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const resetVerticalScrollRef = useRef(false);
+  const [branchPickerClick, setBranchPickerClick] = useState(0);
 
   const findVehicle = useCallback(
     (vehicleId: string | null): Vehicle | null =>
@@ -87,11 +71,11 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const onBranchPickerSelection = useCallback(
     (selection: BranchPickerSelection) => {
       close();
-      if (laddersRef.current) {
-        // eslint-disable-next-line better-mutation/no-mutation
-        laddersRef.current.scrollTop = 0;
-      }
+      // eslint-disable-next-line better-mutation/no-mutation
+      resetVerticalScrollRef.current = true;
       setBranchPickerSelection(selection);
+      // increment to signal we should scroll to top
+      setBranchPickerClick((click) => click + 1);
     },
     [close],
   );
@@ -145,14 +129,24 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     );
     if (!branch) return;
 
-    const left = centeredScrollLeft(container, branch);
-    if (typeof container.scrollTo === "function") {
-      container.scrollTo({ left, behavior: "auto" });
-    } else {
+    branch.scrollIntoView({
+      behavior: "auto",
+      inline: "center",
+      block: resetVerticalScrollRef.current ? "start" : "nearest",
+    });
+    if (resetVerticalScrollRef.current) {
+      [mainRef.current, scrollContainerRef.current, container].forEach(
+        (scroller) => {
+          if (scroller) {
+            // eslint-disable-next-line better-mutation/no-mutation
+            scroller.scrollTop = 0;
+          }
+        },
+      );
       // eslint-disable-next-line better-mutation/no-mutation
-      container.scrollLeft = left;
+      resetVerticalScrollRef.current = false;
     }
-  }, [branchPickerSelection]);
+  }, [branchPickerSelection, branchPickerClick]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
@@ -200,7 +194,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <main className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center">
+      <main
+        ref={mainRef}
+        className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
+      >
         {sideBarSelection !== null && sideBarVehicle !== null ?
           <SideBar
             searchedCar={sideBarSelection.searchedCar}
@@ -209,6 +206,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           />
         : null}
         <div
+          ref={scrollContainerRef}
           data-testid="scroll-container"
           className={className([
             "relative flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",

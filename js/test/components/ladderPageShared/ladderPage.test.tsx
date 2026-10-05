@@ -1,8 +1,5 @@
 import { Ladders } from "../../../components/ladderPageShared/ladder";
-import {
-  centeredScrollLeft,
-  LadderPage,
-} from "../../../components/ladderPageShared/ladderPage";
+import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { Vehicle } from "../../../models/vehicle";
@@ -498,86 +495,9 @@ const nextVehicleId = (() => {
   return () => `mock-id-${mockVehicleId++}`;
 })();
 
-describe("centeredScrollLeft", () => {
-  const fakeElement = (metrics: {
-    offsetLeft?: number;
-    offsetWidth?: number;
-    clientWidth?: number;
-    scrollWidth?: number;
-  }): HTMLElement => {
-    const element = document.createElement("div");
-    Object.entries(metrics).forEach(([key, value]) => {
-      // eslint-disable-next-line better-mutation/no-mutating-functions
-      Object.defineProperty(element, key, {
-        get: () => value,
-        configurable: true,
-      });
-    });
-    return element;
-  };
-
-  test("centers the branch within the visible width", () => {
-    const container = fakeElement({
-      offsetLeft: 0,
-      clientWidth: 600,
-      scrollWidth: 3000,
-    });
-    const branch = fakeElement({ offsetLeft: 1000, offsetWidth: 1000 });
-
-    // 1000 + 500 - 300
-    expect(centeredScrollLeft(container, branch)).toBe(1200);
-  });
-
-  test("accounts for a container that is not at the document origin", () => {
-    const container = fakeElement({
-      offsetLeft: 200,
-      clientWidth: 600,
-      scrollWidth: 3000,
-    });
-    const branch = fakeElement({ offsetLeft: 1200, offsetWidth: 1000 });
-
-    expect(centeredScrollLeft(container, branch)).toBe(1200);
-  });
-
-  test("clamps to 0 when centering would scroll before the start", () => {
-    const container = fakeElement({
-      offsetLeft: 0,
-      clientWidth: 2000,
-      scrollWidth: 3000,
-    });
-    const branch = fakeElement({ offsetLeft: 0, offsetWidth: 1000 });
-
-    expect(centeredScrollLeft(container, branch)).toBe(0);
-  });
-
-  test("clamps to the maximum scroll offset for the last branch", () => {
-    const container = fakeElement({
-      offsetLeft: 0,
-      clientWidth: 600,
-      scrollWidth: 3000,
-    });
-    const branch = fakeElement({ offsetLeft: 2000, offsetWidth: 1000 });
-
-    // 2000 + 500 - 300 = 2200, clamped to 3000 - 600
-    expect(centeredScrollLeft(container, branch)).toBe(2200);
-  });
-
-  test("returns 0 when the container does not overflow", () => {
-    const container = fakeElement({
-      offsetLeft: 0,
-      clientWidth: 3000,
-      scrollWidth: 3000,
-    });
-    const branch = fakeElement({ offsetLeft: 2000, offsetWidth: 1000 });
-
-    expect(centeredScrollLeft(container, branch)).toBe(0);
-  });
-});
-
 describe("LadderPage branch centering", () => {
   const CONTAINER_WIDTH = 600;
   const SCROLL_WIDTH = 3000;
-  const BRANCH_WIDTH = 1000;
 
   const defineMetric = (
     element: HTMLElement,
@@ -591,34 +511,32 @@ describe("LadderPage branch centering", () => {
     });
   };
 
-  // jsdom performs no layout, so fake the metrics the centering math reads
+  // jsdom performs no layout, so fake horizontal overflow to show the picker.
   const fakeLayout = (
     view: ReturnType<typeof render>,
     containerWidth: number = CONTAINER_WIDTH,
   ) => {
     const container = view.getByTestId("ladders-scroll-container");
-    defineMetric(container, "offsetLeft", 0);
     defineMetric(container, "clientWidth", containerWidth);
     defineMetric(container, "scrollWidth", SCROLL_WIDTH);
-
-    [0, 1, 2].forEach((branch) => {
-      const branchElement = view.getByTestId(`ladder-branch-${branch}`);
-      defineMetric(branchElement, "offsetLeft", branch * BRANCH_WIDTH);
-      defineMetric(branchElement, "offsetWidth", BRANCH_WIDTH);
-    });
 
     return container;
   };
 
-  // Element.prototype.scrollTo is a shared mock (see setupTest), and jest.spyOn
-  // would hand back that same shared mock, so install a fresh own property instead
-  const watchScrollTo = (container: HTMLElement): jest.Mock => {
+  const watchBranchScroll = (
+    view: ReturnType<typeof render>,
+    branch: number,
+  ): jest.Mock => {
     const scrollTo = jest.fn();
     // eslint-disable-next-line better-mutation/no-mutating-functions
-    Object.defineProperty(container, "scrollTo", {
-      value: scrollTo,
-      configurable: true,
-    });
+    Object.defineProperty(
+      view.getByTestId(`ladder-branch-${branch}`),
+      "scrollIntoView",
+      {
+        value: scrollTo,
+        configurable: true,
+      },
+    );
     return scrollTo;
   };
 
@@ -630,12 +548,6 @@ describe("LadderPage branch centering", () => {
       jest.advanceTimersByTime(150);
     });
   };
-
-  const expectedLeft = (branch: number, containerWidth = CONTAINER_WIDTH) =>
-    Math.min(
-      branch * BRANCH_WIDTH + BRANCH_WIDTH / 2 - containerWidth / 2,
-      SCROLL_WIDTH - containerWidth,
-    );
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -665,10 +577,10 @@ describe("LadderPage branch centering", () => {
   test("clicking the Braintree branch button centers the Braintree ladder", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const view = render(<LadderPage routeId="Red" />);
-    const container = fakeLayout(view);
+    fakeLayout(view);
     showBranchPicker();
 
-    const scrollTo = watchScrollTo(container);
+    const scrollTo = watchBranchScroll(view, 2);
     await user.click(
       within(view.getByTestId("branch-picker")).getByRole("button", {
         name: "Braintree",
@@ -676,7 +588,8 @@ describe("LadderPage branch centering", () => {
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
-      left: expectedLeft(2),
+      inline: "center",
+      block: "start",
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -689,7 +602,16 @@ describe("LadderPage branch centering", () => {
     showBranchPicker();
 
     container.scrollTop = 400;
-    const scrollTo = watchScrollTo(container);
+    const pageScroller = view.getByRole("main");
+    pageScroller.scrollTop = 400;
+    const intermediateScroller = view.getByTestId("scroll-container");
+    intermediateScroller.scrollTop = 400;
+    const scrollTo = watchBranchScroll(view, 2);
+    scrollTo.mockImplementation(() => {
+      pageScroller.scrollTop = 200;
+      intermediateScroller.scrollTop = 200;
+      container.scrollTop = 200;
+    });
 
     await user.click(
       within(view.getByTestId("branch-picker")).getByRole("button", {
@@ -698,20 +620,23 @@ describe("LadderPage branch centering", () => {
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
-      left: expectedLeft(2),
+      inline: "center",
+      block: "start",
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
     expect(container.scrollTop).toBe(0);
+    expect(pageScroller.scrollTop).toBe(0);
+    expect(intermediateScroller.scrollTop).toBe(0);
   });
 
   test("clicking the Alewife branch button centers the Alewife ladder", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const view = render(<LadderPage routeId="Red" />);
-    const container = fakeLayout(view);
+    fakeLayout(view);
     showBranchPicker();
 
-    const scrollTo = watchScrollTo(container);
+    const scrollTo = watchBranchScroll(view, 0);
     await user.click(
       within(view.getByTestId("branch-picker")).getByRole("button", {
         name: "Alewife",
@@ -719,13 +644,14 @@ describe("LadderPage branch centering", () => {
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
-      left: expectedLeft(0),
+      inline: "center",
+      block: "start",
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
   });
 
-  test("centering accounts for the narrower scroll area when the sidebar is open", async () => {
+  test("centers the selected ladder after closing the sidebar", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const view = render(<LadderPage routeId="Red" />);
     fakeLayout(view);
@@ -735,9 +661,7 @@ describe("LadderPage branch centering", () => {
     await user.click(view.getByRole("button", { name: /2001/ }));
     expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
 
-    const narrowedWidth = 400;
-    const container = fakeLayout(view, narrowedWidth);
-    const scrollTo = watchScrollTo(container);
+    const scrollTo = watchBranchScroll(view, 1);
 
     await user.click(
       within(view.getByTestId("branch-picker")).getByRole("button", {
@@ -746,10 +670,13 @@ describe("LadderPage branch centering", () => {
     );
 
     expect(scrollTo).toHaveBeenCalledWith({
-      left: expectedLeft(1, narrowedWidth),
+      inline: "center",
+      block: "start",
       behavior: "auto",
     });
-    expect(expectedLeft(1, narrowedWidth)).not.toEqual(expectedLeft(1));
+    expect(
+      view.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
   });
 
   test("clicking a train centers the Braintree ladder without resetting vertical scroll", async () => {
@@ -761,11 +688,12 @@ describe("LadderPage branch centering", () => {
     container.scrollTop = 400;
     const pageScroller = view.getByRole("main");
     pageScroller.scrollTop = 300;
-    const scrollTo = watchScrollTo(container);
+    const scrollTo = watchBranchScroll(view, 2);
     await user.click(view.getByRole("button", { name: /2001/ }));
 
     expect(scrollTo).toHaveBeenCalledWith({
-      left: expectedLeft(2),
+      inline: "center",
+      block: "nearest",
       behavior: "auto",
     });
     expect(scrollTo).toHaveBeenCalledTimes(1);
@@ -773,21 +701,29 @@ describe("LadderPage branch centering", () => {
     expect(pageScroller.scrollTop).toBe(300);
   });
 
-  test("re-selecting the already selected branch does not scroll again", async () => {
+  test("re-selecting the current branch centers it and resets vertical scroll", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const view = render(<LadderPage routeId="Red" />);
-    const container = fakeLayout(view);
+    fakeLayout(view);
     showBranchPicker();
 
-    const scrollTo = watchScrollTo(container);
+    const scrollTo = watchBranchScroll(view, 1);
     const ashmontButton = within(view.getByTestId("branch-picker")).getByRole(
       "button",
       { name: "Ashmont" },
     );
     await user.click(ashmontButton);
+    const intermediateScroller = view.getByTestId("scroll-container");
+    intermediateScroller.scrollTop = 400;
     await user.click(ashmontButton);
 
-    expect(scrollTo).not.toHaveBeenCalled();
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(intermediateScroller.scrollTop).toBe(0);
   });
 
   test("does not throw when rendering without faked layout metrics", () => {
