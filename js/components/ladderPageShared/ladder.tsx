@@ -146,6 +146,7 @@ export const Ladders = ({
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
       const vp = vehicle.vehiclePosition;
+      let matchingLadderRungs: LadderConfig | undefined;
       // for vehicles in transit to Andrew or JFK, calculate the proportaionl
       // progress and if it exceeds a threshold, "jump" the vehicle to the next ladder rung
       if (
@@ -176,28 +177,25 @@ export const Ladders = ({
               branchIndex = 2;
             }
           }
-        } else {
-          // below PROPORTIONAL_PROGRESS_THRESHOLD, don't jump branches
         }
-        if (branchIndex !== undefined) {
-          const vehiclesForLadderRungs = accumulator.get(
-            ladderRungsForRoute[branchIndex],
-          );
-          vehiclesForLadderRungs?.push(vehicle);
-        }
-        return accumulator;
+        matchingLadderRungs =
+          branchIndex !== undefined ?
+            ladderRungsForRoute[branchIndex]
+          : undefined;
+      } else {
+        // --- not in transit to Andrew or JFK -OR- is under PROPORTIONAL_PROGRESS_THRESHOLD
+        // find the appropriate ladder rung based on the vehicle's current station
+        matchingLadderRungs = ladderRungsForRoute.find((rung) =>
+          // check if any station within the current rung array includes the VehiclePosition's stopId
+          rung.some((station) => {
+            if (station.stop_ids !== undefined) {
+              return station.stop_ids.some(
+                (stopId) => stopId === vehicle.vehiclePosition.stopId,
+              );
+            }
+          }),
+        );
       }
-      // --- not in transit to Andrew or JFK, so find the appropriate ladder rung based on the vehicle's current station
-      const matchingLadderRungs = ladderRungsForRoute.find((rung) =>
-        // check if any station within the current rung array includes the VehiclePosition's stopId
-        rung.some((station) => {
-          if (station.stop_ids !== undefined) {
-            return station.stop_ids.some(
-              (stopId) => stopId === vehicle.vehiclePosition.stopId,
-            );
-          }
-        }),
-      );
       if (matchingLadderRungs) {
         const vehiclesForLadderRungs = accumulator.get(matchingLadderRungs);
         vehiclesForLadderRungs?.push(vehicle);
