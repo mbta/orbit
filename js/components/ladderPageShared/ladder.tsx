@@ -21,9 +21,12 @@ import { consistsEqual, remapLabel } from "../../util/consist";
 import { BranchPickerSelection } from "./branchPicker";
 import { Ladder } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
+import { proportionBetweenLatLngs } from "rail-tech-ui/dist/src/models/latLng";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement, Ref } from "react";
+
+const PROPORTIONAL_PROGRESS_THRESHOLD = 0.6;
 
 const ROUTE_PATTERN_CONFIG: Readonly<
   Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
@@ -138,9 +141,53 @@ export const Ladders = ({
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
   const ladderRungsForRoute = LadderRungs[routeId];
+  const andrewLatLng = { latitude: 42.330154, longitude: -71.057655 };
+  const jfkLatLng = { latitude: 42.320685, longitude: -71.052391 };
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
-      // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
+      const vp = vehicle.vehiclePosition;
+      // for vehicles in transit to Andrew or JFK, calculate the proportaionl
+      // progress and if it exceeds a threshold, "jump" the vehicle to the next ladder rung
+      if (
+        (vp.stationId === "place-jfk" || vp.stationId === "place-andrw") &&
+        vp.stopStatus === StopStatus.InTransitTo &&
+        vp.position !== null
+      ) {
+        const origLatLng =
+          vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
+        const destLatLng =
+          vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
+
+        const prog = proportionBetweenLatLngs(
+          origLatLng,
+          destLatLng,
+          vp.position,
+        );
+
+        let branchIndex: number | undefined;
+        if (prog >= PROPORTIONAL_PROGRESS_THRESHOLD) {
+          if (vp.stationId === "place-andrw") {
+            branchIndex = 0;
+          } else {
+            const routePatternId = vehicle.tripUpdate?.routePatternId;
+            if (routePatternId === "Red-1-0") {
+              branchIndex = 1;
+            } else if (routePatternId === "Red-3-0") {
+              branchIndex = 2;
+            }
+          }
+        } else {
+          // below PROPORTIONAL_PROGRESS_THRESHOLD, don't jump branches
+        }
+        if (branchIndex !== undefined) {
+          const vehiclesForLadderRungs = accumulator.get(
+            ladderRungsForRoute[branchIndex],
+          );
+          vehiclesForLadderRungs?.push(vehicle);
+        }
+        return accumulator;
+      }
+      // --- not in transit to Andrew or JFK, so find the appropriate ladder rung based on the vehicle's current station
       const matchingLadderRungs = ladderRungsForRoute.find((rung) =>
         // check if any station within the current rung array includes the VehiclePosition's stopId
         rung.some((station) => {

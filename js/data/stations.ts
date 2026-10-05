@@ -131,7 +131,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow bottom left
         id: "arrow",
         spacingRatio: 0.0,
-        location: { latitude: 42.325166, longitude: -71.055402 },
+        location: { latitude: 42.3244726, longitude: -71.0544966 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -143,7 +143,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow top right
         id: "arrow",
         spacingRatio: 2.0,
-        location: { latitude: 42.325166, longitude: -71.055402 },
+        location: { latitude: 42.326390, longitude: -71.056827 },
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -208,7 +208,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow top right
         id: "arrow",
         spacingRatio: 2.0,
-        location: { latitude: 42.28107, longitude: -71.06378 },
+        location: { latitude: 42.326390, longitude: -71.056827 },
         showName: false,
         showDots: false,
         arrowRight: "up",
