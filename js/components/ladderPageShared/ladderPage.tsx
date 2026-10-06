@@ -148,6 +148,55 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     }
   }, [branchPickerSelection, branchPickerClick]);
 
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!container) return;
+
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const updateSelection = () => {
+      const containerCenter =
+        container.getBoundingClientRect().left +
+        container.clientLeft +
+        container.clientWidth / 2;
+
+      const branches = container.querySelectorAll<HTMLElement>("[data-branch]");
+
+      const centeredBranch = Array.from(branches).reduce((closest, branch) => {
+        const center =
+          branch.getBoundingClientRect().left +
+          branch.getBoundingClientRect().width / 2;
+        const closestCenter =
+          closest.getBoundingClientRect().left +
+          closest.getBoundingClientRect().width / 2;
+
+        return (
+            Math.abs(center - containerCenter) <
+              Math.abs(closestCenter - containerCenter)
+          ) ?
+            branch
+          : closest;
+      });
+
+      const selection = Number(centeredBranch.dataset.branch);
+      if (Number.isInteger(selection)) {
+        setBranchPickerSelection(selection);
+      }
+    };
+
+    const onScroll = () => {
+      clearTimeout(timeout);
+      // eslint-disable-next-line better-mutation/no-mutation
+      timeout = setTimeout(updateSelection, 120);
+    };
+
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      clearTimeout(timeout);
+    };
+  }, []);
+
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
       openSideBar({
