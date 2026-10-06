@@ -13,7 +13,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
         location: { latitude: 42.396192, longitude: -71.142230 },
         // TODO: in the future, for `Implement location interpolation between ladders`
@@ -129,7 +129,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0.0,
         location: { latitude: 42.3244726, longitude: -71.0544966 },
         showName: false,
@@ -141,7 +141,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
         location: { latitude: 42.326390, longitude: -71.056827 },
         showName: false,
@@ -194,7 +194,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0.0,
         location: { latitude: 42.28107, longitude: -71.06378 },
         showName: false,
@@ -206,7 +206,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
         location: { latitude: 42.326390, longitude: -71.056827 },
         showName: false,
@@ -271,7 +271,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0,
         location: { latitude: 42.204572, longitude: -71.002080 },
         showName: false,
