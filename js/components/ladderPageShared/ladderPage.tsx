@@ -160,23 +160,24 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         container.clientLeft +
         container.clientWidth / 2;
 
-      const branches = container.querySelectorAll<HTMLElement>("[data-branch]");
+      const distanceFromCenter = (branch: HTMLElement) => {
+        const { left, width } = branch.getBoundingClientRect();
+        return Math.abs(left + width / 2 - containerCenter);
+      };
 
-      const centeredBranch = Array.from(branches).reduce((closest, branch) => {
-        const center =
-          branch.getBoundingClientRect().left +
-          branch.getBoundingClientRect().width / 2;
-        const closestCenter =
-          closest.getBoundingClientRect().left +
-          closest.getBoundingClientRect().width / 2;
+      const branches = Array.from(
+        container.querySelectorAll<HTMLElement>("[data-branch]"),
+      );
+      if (branches.length === 0) return;
+      const [first] = branches;
 
-        return (
-            Math.abs(center - containerCenter) <
-              Math.abs(closestCenter - containerCenter)
-          ) ?
+      const centeredBranch = branches.reduce(
+        (closest, branch) =>
+          distanceFromCenter(branch) < distanceFromCenter(closest) ?
             branch
-          : closest;
-      });
+          : closest,
+        first,
+      );
 
       const selection = Number(centeredBranch.dataset.branch);
       if (Number.isInteger(selection)) {
