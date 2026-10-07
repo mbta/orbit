@@ -26,6 +26,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     typeof setTimeout
   > | null>(null);
   const laddersRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const resetVerticalScrollRef = useRef(false);
+  const [branchPickerClick, setBranchPickerClick] = useState(0);
 
   const findVehicle = useCallback(
     (vehicleId: string | null): Vehicle | null =>
@@ -59,6 +63,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       if (event.key === "Escape") {
         close();
       }
+    },
+    [close],
+  );
+
+  // Close sidebar on branch picker click
+  const onBranchPickerSelection = useCallback(
+    (selection: BranchPickerSelection) => {
+      close();
+      // eslint-disable-next-line better-mutation/no-mutation
+      resetVerticalScrollRef.current = true;
+      setBranchPickerSelection(selection);
+      // increment to signal we should scroll to top
+      setBranchPickerClick((click) => click + 1);
     },
     [close],
   );
@@ -102,6 +119,34 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       }
     };
   }, [resizeTimeout]);
+
+  // Center the selected branch's ladder whenever the selection changes
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!container) return;
+    const branch = container.querySelector<HTMLElement>(
+      `[data-branch="${branchPickerSelection}"]`,
+    );
+    if (!branch) return;
+
+    branch.scrollIntoView({
+      behavior: "auto",
+      inline: "center",
+      block: resetVerticalScrollRef.current ? "start" : "nearest",
+    });
+    if (resetVerticalScrollRef.current) {
+      [mainRef.current, scrollContainerRef.current, container].forEach(
+        (scroller) => {
+          if (scroller) {
+            // eslint-disable-next-line better-mutation/no-mutation
+            scroller.scrollTop = 0;
+          }
+        },
+      );
+      // eslint-disable-next-line better-mutation/no-mutation
+      resetVerticalScrollRef.current = false;
+    }
+  }, [branchPickerSelection, branchPickerClick]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
@@ -149,7 +194,10 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <main className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center">
+      <main
+        ref={mainRef}
+        className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
+      >
         {sideBarSelection !== null && sideBarVehicle !== null ?
           <SideBar
             searchedCar={sideBarSelection.searchedCar}
@@ -158,6 +206,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           />
         : null}
         <div
+          ref={scrollContainerRef}
           data-testid="scroll-container"
           className={className([
             "relative flex transition-all duration-300 ease-in-out overflow-x-auto snap-x snap-mandatory w-full",
@@ -183,11 +232,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         </div>
       </main>
       {isOverflowing && (
-        <div className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex justify-center w-full">
+        <div
+          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center w-full"
+          data-testid="branch-picker-container"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              close();
+            }
+          }}
+        >
           <BranchPicker
             route={routeId}
             selection={branchPickerSelection}
-            setSelection={setBranchPickerSelection}
+            setSelection={onBranchPickerSelection}
           />
         </div>
       )}

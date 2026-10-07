@@ -443,6 +443,7 @@ describe("LadderPage BranchPicker visibility", () => {
     });
 
     const branchPicker = getByTestId("branch-picker");
+    expect(getByTestId("branch-picker-container")).toHaveClass("shrink-0");
     expect(
       within(branchPicker).getByRole("button", { name: "Alewife" }),
     ).toBeInTheDocument();
@@ -493,6 +494,278 @@ const nextVehicleId = (() => {
   let mockVehicleId = 0;
   return () => `mock-id-${mockVehicleId++}`;
 })();
+
+describe("LadderPage branch centering", () => {
+  const CONTAINER_WIDTH = 600;
+  const SCROLL_WIDTH = 3000;
+
+  const defineMetric = (
+    element: HTMLElement,
+    key: string,
+    value: number,
+  ): void => {
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(element, key, {
+      get: () => value,
+      configurable: true,
+    });
+  };
+
+  // jsdom performs no layout, so fake horizontal overflow to show the picker.
+  const fakeLayout = (
+    view: ReturnType<typeof render>,
+    containerWidth: number = CONTAINER_WIDTH,
+  ) => {
+    const container = view.getByTestId("ladders-scroll-container");
+    defineMetric(container, "clientWidth", containerWidth);
+    defineMetric(container, "scrollWidth", SCROLL_WIDTH);
+
+    return container;
+  };
+
+  const watchBranchScroll = (
+    view: ReturnType<typeof render>,
+    branch: number,
+  ): jest.Mock => {
+    const scrollTo = jest.fn();
+    // eslint-disable-next-line better-mutation/no-mutating-functions
+    Object.defineProperty(
+      view.getByTestId(`ladder-branch-${branch}`),
+      "scrollIntoView",
+      {
+        value: scrollTo,
+        configurable: true,
+      },
+    );
+    return scrollTo;
+  };
+
+  const showBranchPicker = () => {
+    act(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+    act(() => {
+      jest.advanceTimersByTime(150);
+    });
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    mockGetMetaContent.mockImplementation((field: MetaDataKey) => {
+      if (field === "userGroups") return ORBIT_RL_TRAINSTARTERS;
+      return null;
+    });
+    mockUseVehicles.mockReturnValue([
+      vehicleFactory.build({
+        vehiclePosition: vehiclePositionFactory.build({
+          vehicleId: nextVehicleId(),
+          label: "2001",
+          cars: ["2001", "1876", "1807", "1806", "1815", "1814"],
+          stationId: "place-brntn",
+          stopId: "70105",
+          stopStatus: StopStatus.StoppedAt,
+          position: null,
+        }),
+      }),
+    ]);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  test("clicking the Braintree branch button centers the Braintree ladder", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    const scrollTo = watchBranchScroll(view, 2);
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Braintree",
+      }),
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+  });
+
+  test("changing branches scrolls the page to the top", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    container.scrollTop = 400;
+    const pageScroller = view.getByRole("main");
+    pageScroller.scrollTop = 400;
+    const intermediateScroller = view.getByTestId("scroll-container");
+    intermediateScroller.scrollTop = 400;
+    const scrollTo = watchBranchScroll(view, 2);
+    scrollTo.mockImplementation(() => {
+      pageScroller.scrollTop = 200;
+      intermediateScroller.scrollTop = 200;
+      container.scrollTop = 200;
+    });
+
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Braintree",
+      }),
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(container.scrollTop).toBe(0);
+    expect(pageScroller.scrollTop).toBe(0);
+    expect(intermediateScroller.scrollTop).toBe(0);
+  });
+
+  test("clicking the Alewife branch button centers the Alewife ladder", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    const scrollTo = watchBranchScroll(view, 0);
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Alewife",
+      }),
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+  });
+
+  test("centers the selected ladder after closing the sidebar", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    // open the sidebar, which shrinks the ladders scroll area
+    await user.click(view.getByRole("button", { name: /2001/ }));
+    expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+    const scrollTo = watchBranchScroll(view, 1);
+
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    );
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(
+      view.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("clicking a train centers the Braintree ladder without resetting vertical scroll", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    container.scrollTop = 400;
+    const pageScroller = view.getByRole("main");
+    pageScroller.scrollTop = 300;
+    const scrollTo = watchBranchScroll(view, 2);
+    await user.click(view.getByRole("button", { name: /2001/ }));
+
+    expect(scrollTo).toHaveBeenCalledWith({
+      inline: "center",
+      block: "nearest",
+      behavior: "auto",
+    });
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(container.scrollTop).toBe(400);
+    expect(pageScroller.scrollTop).toBe(300);
+  });
+
+  test("re-selecting the current branch centers it and resets vertical scroll", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    const scrollTo = watchBranchScroll(view, 1);
+    const ashmontButton = within(view.getByTestId("branch-picker")).getByRole(
+      "button",
+      { name: "Ashmont" },
+    );
+    await user.click(ashmontButton);
+    const intermediateScroller = view.getByTestId("scroll-container");
+    intermediateScroller.scrollTop = 400;
+    await user.click(ashmontButton);
+
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      inline: "center",
+      block: "start",
+      behavior: "auto",
+    });
+    expect(intermediateScroller.scrollTop).toBe(0);
+  });
+
+  test("does not throw when rendering without faked layout metrics", () => {
+    expect(() => render(<LadderPage routeId="Red" />)).not.toThrow();
+  });
+
+  test("clicking a branch selection button closes the sidebar", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    await user.click(view.getByRole("button", { name: /2001/ }));
+    expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+    await user.click(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    );
+
+    expect(
+      view.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
+  });
+
+  test("clicking the empty space beside the branch picker closes the sidebar", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    const view = render(<LadderPage routeId="Red" />);
+    fakeLayout(view);
+    showBranchPicker();
+
+    await user.click(view.getByRole("button", { name: /2001/ }));
+    expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
+
+    await user.click(view.getByTestId("branch-picker-container"));
+
+    expect(
+      view.queryByRole("button", { name: "Close" }),
+    ).not.toBeInTheDocument();
+  });
+});
 
 describe("Ladder", () => {
   test("shows station names", () => {
