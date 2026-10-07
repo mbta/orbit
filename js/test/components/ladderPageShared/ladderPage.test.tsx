@@ -7,7 +7,7 @@ import { StopStatus } from "../../../models/vehiclePosition";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
-import { act, render, within } from "@testing-library/react";
+import { act, fireEvent, render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../hooks/useVehicles", () => ({
@@ -764,6 +764,58 @@ describe("LadderPage branch centering", () => {
     expect(
       view.queryByRole("button", { name: "Close" }),
     ).not.toBeInTheDocument();
+  });
+
+  test("scrolling updates the branch picker after scrolling settles", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    // The container's visible center is x = 300
+    jest
+      .spyOn(container, "getBoundingClientRect")
+      .mockReturnValue(DOMRect.fromRect({ x: 0, width: 600 }));
+
+    // Simulate the Braintree ladder centered in the viewport
+    [-800, -300, 200].forEach((left, branch) => {
+      jest
+        .spyOn(
+          view.getByTestId(`ladder-branch-${branch}`),
+          "getBoundingClientRect",
+        )
+        .mockReturnValue(DOMRect.fromRect({ x: left, width: 200 }));
+    });
+
+    const picker = view.getByTestId("branch-picker");
+    const ashmont = within(picker).getByRole("button", { name: "Ashmont" });
+    const braintree = within(picker).getByRole("button", { name: "Braintree" });
+    const activeClass = "bg-heavy-rail-ashmont";
+    const braintreeActiveClass = "bg-heavy-rail-braintree";
+
+    expect(ashmont).toHaveClass(activeClass);
+    expect(braintree).not.toHaveClass(braintreeActiveClass);
+
+    fireEvent.scroll(container);
+
+    act(() => {
+      jest.advanceTimersByTime(119);
+    });
+    expect(ashmont).toHaveClass(activeClass);
+
+    // Ensure another scroll event resets debounce
+    fireEvent.scroll(container);
+
+    act(() => {
+      jest.advanceTimersByTime(119);
+    });
+    expect(ashmont).toHaveClass(activeClass);
+
+    // Restarted timer fires at 120 ms
+    act(() => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(braintree).toHaveClass(braintreeActiveClass);
+    expect(ashmont).not.toHaveClass(activeClass);
   });
 });
 
