@@ -131,7 +131,8 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow bottom left
         id: "arrow-bottom",
         spacingRatio: 0.0,
-        location: { latitude: 42.3244726, longitude: -71.0544966 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -143,7 +144,8 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow top right
         id: "arrow-top",
         spacingRatio: 2.0,
-        location: { latitude: 42.326390, longitude: -71.056827 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -196,7 +198,8 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow bottom left
         id: "arrow-bottom",
         spacingRatio: 0.0,
-        location: { latitude: 42.28107, longitude: -71.06378 },
+        // Ashmont southbound storage -- should this be Codman Yard?
+        location: { latitude: 42.281250, longitude: -71.061650 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -208,7 +211,8 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow top right
         id: "arrow-top",
         spacingRatio: 2.0,
-        location: { latitude: 42.326390, longitude: -71.056827 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -273,7 +277,8 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow bottom left
         id: "arrow-bottom",
         spacingRatio: 0,
-        location: { latitude: 42.204572, longitude: -71.002080 },
+        // Caddigan Yard
+        location: { latitude: 42.204568, longitude: -71.002040 },
         showName: false,
         showDots: false,
         arrowLeft: "down",

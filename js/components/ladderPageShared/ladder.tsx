@@ -26,7 +26,7 @@ import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement, Ref } from "react";
 
-const PROPORTIONAL_PROGRESS_THRESHOLD = 0.6;
+const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
 const ROUTE_PATTERN_CONFIG: Readonly<
   Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
@@ -144,14 +144,14 @@ const matchingLadderRungsForVehicle = (
   ) {
     const origLatLng =
       vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
-    console.warn(`origLatLng: ${JSON.stringify(origLatLng)}`);
+    // console.warn(`origLatLng: ${JSON.stringify(origLatLng)}`);
     const destLatLng =
       vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
-    console.warn(`destLatLng: ${JSON.stringify(destLatLng)}`);
+    // console.warn(`destLatLng: ${JSON.stringify(destLatLng)}`);
 
     // TODO: import from rail-tech-ui instead of using orbit version?
     const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
-    console.warn(`prog towards dest: ${prog}`);
+    // console.warn(`prog towards dest: ${prog}`);
 
     let branchIndex: number | undefined;
     if (prog != null && prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
@@ -171,7 +171,7 @@ const matchingLadderRungsForVehicle = (
           branchIndex = 2;
         }
       }
-      // If prog is under the threshold, branchIndex will be undefined.
+      // If prog is over the threshold (i.e. the vehicle has jumped), branchIndex will be undefined.
       // This is handled in ternary in the return statement below.
       matchingLadderRungs =
         branchIndex !== undefined ?
