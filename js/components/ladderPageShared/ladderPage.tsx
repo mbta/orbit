@@ -29,6 +29,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const mainRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const resetVerticalScrollRef = useRef(false);
+  const swipedSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
 
   const findVehicle = useCallback(
@@ -122,6 +123,11 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   // Center the selected branch's ladder whenever the selection changes
   useEffect(() => {
+    // Swiping already centered this branch; re-centering would jump vertically
+    const fromSwipe = swipedSelectionRef.current === branchPickerSelection;
+    // eslint-disable-next-line better-mutation/no-mutation
+    swipedSelectionRef.current = null;
+    if (fromSwipe && !resetVerticalScrollRef.current) return;
     const container = laddersRef.current;
     if (!container) return;
     const branch = container.querySelector<HTMLElement>(
@@ -147,6 +153,44 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       resetVerticalScrollRef.current = false;
     }
   }, [branchPickerSelection, branchPickerClick]);
+
+  // Detect touch scroll and lock direction to starting axis by hiding overflow
+  // on other axis
+  useEffect(() => {
+    const el = laddersRef.current;
+    if (!el) return;
+    let start: { x: number; y: number } | null = null;
+
+    /* eslint-disable better-mutation/no-mutation */
+    const unlock = () => {
+      el.style.overflowX = "";
+      el.style.overflowY = "";
+    };
+    const onTouchStart = ({ touches }: TouchEvent) => {
+      unlock();
+      start = { x: touches[0].clientX, y: touches[0].clientY };
+    };
+    const onTouchMove = ({ touches }: TouchEvent) => {
+      if (!start) return;
+      const dx = Math.abs(touches[0].clientX - start.x);
+      const dy = Math.abs(touches[0].clientY - start.y);
+      if (dx + dy <= 5) return;
+      if (dx > dy) el.style.overflowY = "hidden";
+      else el.style.overflowX = "hidden";
+      start = null;
+    };
+    /* eslint-enable better-mutation/no-mutation */
+
+    // Touches anywhere (e.g. the branch picker) end the previous lock
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: true });
+    el.addEventListener("scrollend", unlock);
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("scrollend", unlock);
+    };
+  }, []);
 
   useEffect(() => {
     const container = laddersRef.current;
@@ -181,6 +225,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
       const selection = Number(centeredBranch.dataset.branch);
       if (Number.isInteger(selection)) {
+        // eslint-disable-next-line better-mutation/no-mutation
+        swipedSelectionRef.current = selection;
         setBranchPickerSelection(selection);
       }
     };
