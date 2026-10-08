@@ -28,7 +28,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const laddersRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const resetVerticalScrollRef = useRef(false);
+  // Start true so the initial centering also starts at the top of the page
+  const resetVerticalScrollRef = useRef(true);
   const swipedSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
 
