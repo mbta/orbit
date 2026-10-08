@@ -770,6 +770,8 @@ describe("LadderPage branch centering", () => {
     const view = render(<LadderPage routeId="Red" />);
     const container = fakeLayout(view);
     showBranchPicker();
+    // Scrolled partway, away from either edge
+    defineMetric(container, "scrollLeft", 1000);
 
     // The container's visible center is x = 300
     jest
@@ -816,6 +818,49 @@ describe("LadderPage branch centering", () => {
     });
     expect(braintree).toHaveClass(braintreeActiveClass);
     expect(ashmont).not.toHaveClass(activeClass);
+  });
+
+  test("scrolling to an edge selects the outer branch even if it can't be centered", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    // Ashmont is nearest the center, as when the ladders barely overflow
+    jest
+      .spyOn(container, "getBoundingClientRect")
+      .mockReturnValue(DOMRect.fromRect({ x: 0, width: 600 }));
+    [-150, 200, 550].forEach((left, branch) => {
+      jest
+        .spyOn(
+          view.getByTestId(`ladder-branch-${branch}`),
+          "getBoundingClientRect",
+        )
+        .mockReturnValue(DOMRect.fromRect({ x: left, width: 200 }));
+    });
+
+    const picker = view.getByTestId("branch-picker");
+    const scrollTo = (scrollLeft: number) => {
+      defineMetric(container, "scrollLeft", scrollLeft);
+      fireEvent.scroll(container);
+      act(() => {
+        jest.advanceTimersByTime(120);
+      });
+    };
+
+    scrollTo(SCROLL_WIDTH - CONTAINER_WIDTH);
+    expect(
+      within(picker).getByRole("button", { name: "Braintree" }),
+    ).toHaveClass("bg-heavy-rail-braintree");
+
+    scrollTo(1000);
+    expect(within(picker).getByRole("button", { name: "Ashmont" })).toHaveClass(
+      "bg-heavy-rail-ashmont",
+    );
+
+    scrollTo(0);
+    expect(within(picker).getByRole("button", { name: "Alewife" })).toHaveClass(
+      "bg-ladder-branch-picker-alewife-dot-dark",
+    );
   });
 });
 

@@ -215,14 +215,21 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       );
       if (branches.length === 0) return;
       const [first] = branches;
+      const last = branches[branches.length - 1];
 
-      const centeredBranch = branches.reduce(
-        (closest, branch) =>
-          distanceFromCenter(branch) < distanceFromCenter(closest) ?
-            branch
-          : closest,
-        first,
-      );
+      // At a scroll edge, the outer branch may be unable to reach the center
+      // (e.g. when the ladders barely overflow), so select it explicitly
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const centeredBranch =
+        container.scrollLeft <= 1 ? first
+        : container.scrollLeft >= maxScrollLeft - 1 ? last
+        : branches.reduce(
+            (closest, branch) =>
+              distanceFromCenter(branch) < distanceFromCenter(closest) ?
+                branch
+              : closest,
+            first,
+          );
 
       const selection = Number(centeredBranch.dataset.branch);
       if (Number.isInteger(selection)) {
