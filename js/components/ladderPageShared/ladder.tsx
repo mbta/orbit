@@ -177,7 +177,7 @@ const matchingLadderRungsForVehicle = (
     }
   }
 
-  // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/below the threshold.
+  // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/over the threshold.
   return (
     matchingLadderRungs ??
     ladderRungsForRoute.find((rung) =>
