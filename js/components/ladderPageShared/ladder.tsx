@@ -144,14 +144,11 @@ const matchingLadderRungsForVehicle = (
   ) {
     const origLatLng =
       vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
-    // console.warn(`origLatLng: ${JSON.stringify(origLatLng)}`);
     const destLatLng =
       vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
-    // console.warn(`destLatLng: ${JSON.stringify(destLatLng)}`);
 
     // TODO: import from rail-tech-ui instead of using orbit version?
     const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
-    // console.warn(`prog towards dest: ${prog}`);
 
     let branchIndex: number | undefined;
     if (prog != null && prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
@@ -178,7 +175,6 @@ const matchingLadderRungsForVehicle = (
           ladderRungsForRoute[branchIndex]
         : undefined;
     }
-    console.warn(`branchIndex: ${branchIndex}`);
   }
 
   // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/below the threshold.
