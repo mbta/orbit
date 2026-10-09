@@ -766,27 +766,27 @@ describe("LadderPage branch centering", () => {
     ).not.toBeInTheDocument();
   });
 
+  test("the branch picker appears with Ashmont selected and centered", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    const scrollTo = watchBranchScroll(view, 1);
+    showBranchPicker();
+
+    expect(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    ).toHaveClass("bg-heavy-rail-ashmont");
+    // Centered directly; scrollIntoView could also scroll vertically
+    expect(container.scrollLeft).toBe((SCROLL_WIDTH - CONTAINER_WIDTH) / 2);
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
   test("scrolling updates the branch picker after scrolling settles", () => {
     const view = render(<LadderPage routeId="Red" />);
     const container = fakeLayout(view);
     showBranchPicker();
-    // Scrolled partway, away from either edge
-    defineMetric(container, "scrollLeft", 1000);
-
-    // The container's visible center is x = 300
-    jest
-      .spyOn(container, "getBoundingClientRect")
-      .mockReturnValue(DOMRect.fromRect({ x: 0, width: 600 }));
-
-    // Simulate the Braintree ladder centered in the viewport
-    [-800, -300, 200].forEach((left, branch) => {
-      jest
-        .spyOn(
-          view.getByTestId(`ladder-branch-${branch}`),
-          "getBoundingClientRect",
-        )
-        .mockReturnValue(DOMRect.fromRect({ x: left, width: 200 }));
-    });
+    const scrollTo = watchBranchScroll(view, 2);
 
     const picker = view.getByTestId("branch-picker");
     const ashmont = within(picker).getByRole("button", { name: "Ashmont" });
@@ -797,6 +797,8 @@ describe("LadderPage branch centering", () => {
     expect(ashmont).toHaveClass(activeClass);
     expect(braintree).not.toHaveClass(braintreeActiveClass);
 
+    // Scrolled all the way right, to Braintree
+    container.scrollLeft = SCROLL_WIDTH - CONTAINER_WIDTH;
     fireEvent.scroll(container);
 
     act(() => {
@@ -818,29 +820,18 @@ describe("LadderPage branch centering", () => {
     });
     expect(braintree).toHaveClass(braintreeActiveClass);
     expect(ashmont).not.toHaveClass(activeClass);
+    // Already scrolled into place, so it isn't re-centered
+    expect(scrollTo).not.toHaveBeenCalled();
   });
 
-  test("scrolling to an edge selects the outer branch even if it can't be centered", () => {
+  test("the scroll position selects the branch, even if outer branches can't be centered", () => {
     const view = render(<LadderPage routeId="Red" />);
     const container = fakeLayout(view);
     showBranchPicker();
 
-    // Ashmont is nearest the center, as when the ladders barely overflow
-    jest
-      .spyOn(container, "getBoundingClientRect")
-      .mockReturnValue(DOMRect.fromRect({ x: 0, width: 600 }));
-    [-150, 200, 550].forEach((left, branch) => {
-      jest
-        .spyOn(
-          view.getByTestId(`ladder-branch-${branch}`),
-          "getBoundingClientRect",
-        )
-        .mockReturnValue(DOMRect.fromRect({ x: left, width: 200 }));
-    });
-
     const picker = view.getByTestId("branch-picker");
     const scrollTo = (scrollLeft: number) => {
-      defineMetric(container, "scrollLeft", scrollLeft);
+      container.scrollLeft = scrollLeft;
       fireEvent.scroll(container);
       act(() => {
         jest.advanceTimersByTime(120);
@@ -852,7 +843,8 @@ describe("LadderPage branch centering", () => {
       within(picker).getByRole("button", { name: "Braintree" }),
     ).toHaveClass("bg-heavy-rail-braintree");
 
-    scrollTo(1000);
+    // Not exactly half-way, as with uneven snap positions
+    scrollTo(1100);
     expect(within(picker).getByRole("button", { name: "Ashmont" })).toHaveClass(
       "bg-heavy-rail-ashmont",
     );
@@ -861,6 +853,26 @@ describe("LadderPage branch centering", () => {
     expect(within(picker).getByRole("button", { name: "Alewife" })).toHaveClass(
       "bg-ladder-branch-picker-alewife-dot-dark",
     );
+  });
+
+  test("vertical scrolling without horizontal overflow keeps Ashmont selected", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+    // e.g. the window widening until all ladders fit
+    defineMetric(container, "scrollWidth", CONTAINER_WIDTH);
+    container.scrollLeft = 0;
+
+    fireEvent.scroll(container);
+    act(() => {
+      jest.advanceTimersByTime(120);
+    });
+
+    expect(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    ).toHaveClass("bg-heavy-rail-ashmont");
   });
 });
 

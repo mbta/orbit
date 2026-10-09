@@ -30,7 +30,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   // Start true so the initial centering also starts at the top of the page
   const resetVerticalScrollRef = useRef(true);
-  const swipedSelectionRef = useRef<BranchPickerSelection | null>(null);
+  const centeredSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
 
   const findVehicle = useCallback(
@@ -122,13 +122,26 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     };
   }, [resizeTimeout]);
 
+  // Whenever the branch picker appears, select and center Ashmont
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!isOverflowing || !container) return;
+    /* eslint-disable better-mutation/no-mutation */
+    container.scrollLeft = (container.scrollWidth - container.clientWidth) / 2;
+    centeredSelectionRef.current = 1;
+    /* eslint-enable better-mutation/no-mutation */
+    setBranchPickerSelection(1);
+  }, [isOverflowing]);
+
   // Center the selected branch's ladder whenever the selection changes
   useEffect(() => {
-    // Swiping already centered this branch; re-centering would jump vertically
-    const fromSwipe = swipedSelectionRef.current === branchPickerSelection;
+    // Swiping or the picker appearing already centered this branch;
+    // re-centering would jump vertically
+    const alreadyCentered =
+      centeredSelectionRef.current === branchPickerSelection;
     // eslint-disable-next-line better-mutation/no-mutation
-    swipedSelectionRef.current = null;
-    if (fromSwipe && !resetVerticalScrollRef.current) return;
+    centeredSelectionRef.current = null;
+    if (alreadyCentered && !resetVerticalScrollRef.current) return;
     const container = laddersRef.current;
     if (!container) return;
     const branch = container.querySelector<HTMLElement>(
@@ -200,43 +213,19 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     let timeout: ReturnType<typeof setTimeout>;
 
     const updateSelection = () => {
-      const containerCenter =
-        container.getBoundingClientRect().left +
-        container.clientLeft +
-        container.clientWidth / 2;
-
-      const distanceFromCenter = (branch: HTMLElement) => {
-        const { left, width } = branch.getBoundingClientRect();
-        return Math.abs(left + width / 2 - containerCenter);
-      };
-
-      const branches = Array.from(
-        container.querySelectorAll<HTMLElement>("[data-branch]"),
-      );
-      if (branches.length === 0) return;
-      const [first] = branches;
-      const last = branches[branches.length - 1];
-
-      // At a scroll edge, the outer branch may be unable to reach the center
-      // (e.g. when the ladders barely overflow), so select it explicitly
+      // Snapping only rests at the left edge, middle, or right edge, so the
+      // scroll fraction maps directly to a branch, even when the outer
+      // branches can't reach the center (e.g. when the ladders barely overflow)
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      const centeredBranch =
-        container.scrollLeft <= 1 ? first
-        : container.scrollLeft >= maxScrollLeft - 1 ? last
-        : branches.reduce(
-            (closest, branch) =>
-              distanceFromCenter(branch) < distanceFromCenter(closest) ?
-                branch
-              : closest,
-            first,
-          );
+      const branchCount = container.querySelectorAll("[data-branch]").length;
+      if (maxScrollLeft <= 0 || branchCount === 0) return;
 
-      const selection = Number(centeredBranch.dataset.branch);
-      if (Number.isInteger(selection)) {
-        // eslint-disable-next-line better-mutation/no-mutation
-        swipedSelectionRef.current = selection;
-        setBranchPickerSelection(selection);
-      }
+      const selection = Math.round(
+        (container.scrollLeft / maxScrollLeft) * (branchCount - 1),
+      );
+      // eslint-disable-next-line better-mutation/no-mutation
+      centeredSelectionRef.current = selection;
+      setBranchPickerSelection(selection);
     };
 
     const onScroll = () => {
