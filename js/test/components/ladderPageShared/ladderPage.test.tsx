@@ -7,7 +7,7 @@ import { StopStatus } from "../../../models/vehiclePosition";
 import { trackSideBarOpened } from "../../../telemetry/trackingEvents";
 import { getMetaContent, MetaDataKey } from "../../../util/metadata";
 import { vehicleFactory, vehiclePositionFactory } from "../../helpers/factory";
-import { act, render, within } from "@testing-library/react";
+import { act, fireEvent, render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("../../../hooks/useVehicles", () => ({
@@ -764,6 +764,115 @@ describe("LadderPage branch centering", () => {
     expect(
       view.queryByRole("button", { name: "Close" }),
     ).not.toBeInTheDocument();
+  });
+
+  test("the branch picker appears with Ashmont selected and centered", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    const scrollTo = watchBranchScroll(view, 1);
+    showBranchPicker();
+
+    expect(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    ).toHaveClass("bg-heavy-rail-ashmont");
+    // Centered directly; scrollIntoView could also scroll vertically
+    expect(container.scrollLeft).toBe((SCROLL_WIDTH - CONTAINER_WIDTH) / 2);
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  test("scrolling updates the branch picker after scrolling settles", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+    const scrollTo = watchBranchScroll(view, 2);
+
+    const picker = view.getByTestId("branch-picker");
+    const ashmont = within(picker).getByRole("button", { name: "Ashmont" });
+    const braintree = within(picker).getByRole("button", { name: "Braintree" });
+    const activeClass = "bg-heavy-rail-ashmont";
+    const braintreeActiveClass = "bg-heavy-rail-braintree";
+
+    expect(ashmont).toHaveClass(activeClass);
+    expect(braintree).not.toHaveClass(braintreeActiveClass);
+
+    // Scrolled all the way right, to Braintree
+    container.scrollLeft = SCROLL_WIDTH - CONTAINER_WIDTH;
+    fireEvent.scroll(container);
+
+    act(() => {
+      jest.advanceTimersByTime(119);
+    });
+    expect(ashmont).toHaveClass(activeClass);
+
+    // Ensure another scroll event resets debounce
+    fireEvent.scroll(container);
+
+    act(() => {
+      jest.advanceTimersByTime(119);
+    });
+    expect(ashmont).toHaveClass(activeClass);
+
+    // Restarted timer fires at 120 ms
+    act(() => {
+      jest.advanceTimersByTime(1);
+    });
+    expect(braintree).toHaveClass(braintreeActiveClass);
+    expect(ashmont).not.toHaveClass(activeClass);
+    // Already scrolled into place, so it isn't re-centered
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  test("the scroll position selects the branch, even if outer branches can't be centered", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+
+    const picker = view.getByTestId("branch-picker");
+    const scrollTo = (scrollLeft: number) => {
+      container.scrollLeft = scrollLeft;
+      fireEvent.scroll(container);
+      act(() => {
+        jest.advanceTimersByTime(120);
+      });
+    };
+
+    scrollTo(SCROLL_WIDTH - CONTAINER_WIDTH);
+    expect(
+      within(picker).getByRole("button", { name: "Braintree" }),
+    ).toHaveClass("bg-heavy-rail-braintree");
+
+    // Not exactly half-way, as with uneven snap positions
+    scrollTo(1100);
+    expect(within(picker).getByRole("button", { name: "Ashmont" })).toHaveClass(
+      "bg-heavy-rail-ashmont",
+    );
+
+    scrollTo(0);
+    expect(within(picker).getByRole("button", { name: "Alewife" })).toHaveClass(
+      "bg-ladder-branch-picker-alewife-dot-dark",
+    );
+  });
+
+  test("vertical scrolling without horizontal overflow keeps Ashmont selected", () => {
+    const view = render(<LadderPage routeId="Red" />);
+    const container = fakeLayout(view);
+    showBranchPicker();
+    // e.g. the window widening until all ladders fit
+    defineMetric(container, "scrollWidth", CONTAINER_WIDTH);
+    container.scrollLeft = 0;
+
+    fireEvent.scroll(container);
+    act(() => {
+      jest.advanceTimersByTime(120);
+    });
+
+    expect(
+      within(view.getByTestId("branch-picker")).getByRole("button", {
+        name: "Ashmont",
+      }),
+    ).toHaveClass("bg-heavy-rail-ashmont");
   });
 });
 
