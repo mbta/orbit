@@ -14,12 +14,15 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
+// Ashmont, the middle ladder
+const DEFAULT_BRANCH: BranchPickerSelection = 1;
+
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
-    useState<BranchPickerSelection>(1);
+    useState<BranchPickerSelection>(DEFAULT_BRANCH);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [resizeTimeout, setResizeTimeout] = useState<ReturnType<
@@ -128,9 +131,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     if (!isOverflowing || !container) return;
     /* eslint-disable better-mutation/no-mutation */
     container.scrollLeft = (container.scrollWidth - container.clientWidth) / 2;
-    centeredSelectionRef.current = 1;
+    centeredSelectionRef.current = DEFAULT_BRANCH;
     /* eslint-enable better-mutation/no-mutation */
-    setBranchPickerSelection(1);
+    setBranchPickerSelection(DEFAULT_BRANCH);
   }, [isOverflowing]);
 
   // Center the selected branch's ladder whenever the selection changes
