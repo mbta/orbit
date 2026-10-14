@@ -278,7 +278,7 @@ describe("LadderPage SideBar", () => {
         view.queryByRole("button", { name: "Close" }),
       ).not.toBeInTheDocument();
       expect(
-        view.queryByText('⚠️ No search results for "876"'),
+        view.queryByText("⚠️ No trains matched your search"),
       ).not.toBeInTheDocument();
     });
 
@@ -296,7 +296,7 @@ describe("LadderPage SideBar", () => {
       await user.type(input, "9999{Enter}");
 
       expect(
-        view.getByText('⚠️ No search results for "9999"'),
+        view.getByText("⚠️ No trains matched your search"),
       ).toBeInTheDocument();
       expect(
         view.queryByRole("button", { name: "Close" }),
@@ -352,29 +352,29 @@ describe("LadderPage SideBar", () => {
       await user.type(input, "ab{Enter}");
 
       expect(
-        view.getByText('⚠️ No search results for "ab"'),
+        view.getByText("⚠️ No trains matched your search"),
       ).toBeInTheDocument();
 
       await user.type(input, "1");
       expect(
-        view.queryByText('⚠️ No search results for "ab"'),
+        view.queryByText("⚠️ No trains matched your search"),
       ).not.toBeInTheDocument();
 
       await user.click(view.getByText("Davis"));
       await user.click(input);
       expect(
-        view.queryByText('⚠️ No search results for "ab"'),
+        view.queryByText("⚠️ No trains matched your search"),
       ).not.toBeInTheDocument();
 
       await user.type(input, "12{Enter}");
       expect(
-        view.getByText('⚠️ No search results for "12"'),
+        view.getByText("⚠️ No trains matched your search"),
       ).toBeInTheDocument();
 
       await user.click(view.getByRole("button", { name: "×" }));
       expect(input).toHaveValue("");
       expect(
-        view.queryByText('⚠️ No search results for "12"'),
+        view.queryByText("⚠️ No trains matched your search"),
       ).not.toBeInTheDocument();
     });
 
