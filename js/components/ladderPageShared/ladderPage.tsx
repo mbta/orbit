@@ -14,12 +14,15 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 // Without this: each render on L17 will create a new array, causing the useEffect on L49 to run every time
 const NO_VEHICLES: Vehicle[] = [];
 
+// Ashmont, the middle ladder
+const DEFAULT_BRANCH: BranchPickerSelection = 1;
+
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const vehicles = useVehicles() ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
-    useState<BranchPickerSelection>(1);
+    useState<BranchPickerSelection>(DEFAULT_BRANCH);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [resizeTimeout, setResizeTimeout] = useState<ReturnType<
@@ -28,7 +31,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const laddersRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const resetVerticalScrollRef = useRef(false);
+  // Start true so the initial centering also starts at the top of the page
+  const resetVerticalScrollRef = useRef(true);
+  const centeredSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
 
   const findVehicle = useCallback(
@@ -120,8 +125,26 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     };
   }, [resizeTimeout]);
 
+  // Whenever the branch picker appears, select and center Ashmont
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!isOverflowing || !container) return;
+    /* eslint-disable better-mutation/no-mutation */
+    container.scrollLeft = (container.scrollWidth - container.clientWidth) / 2;
+    centeredSelectionRef.current = DEFAULT_BRANCH;
+    /* eslint-enable better-mutation/no-mutation */
+    setBranchPickerSelection(DEFAULT_BRANCH);
+  }, [isOverflowing]);
+
   // Center the selected branch's ladder whenever the selection changes
   useEffect(() => {
+    // Swiping or the picker appearing already centered this branch;
+    // re-centering would jump vertically
+    const alreadyCentered =
+      centeredSelectionRef.current === branchPickerSelection;
+    // eslint-disable-next-line better-mutation/no-mutation
+    centeredSelectionRef.current = null;
+    if (alreadyCentered && !resetVerticalScrollRef.current) return;
     const container = laddersRef.current;
     if (!container) return;
     const branch = container.querySelector<HTMLElement>(
@@ -147,6 +170,79 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       resetVerticalScrollRef.current = false;
     }
   }, [branchPickerSelection, branchPickerClick]);
+
+  // Detect touch scroll and lock direction to starting axis by hiding overflow
+  // on other axis
+  useEffect(() => {
+    const el = laddersRef.current;
+    if (!el) return;
+    let start: { x: number; y: number } | null = null;
+
+    /* eslint-disable better-mutation/no-mutation */
+    const unlock = () => {
+      el.style.overflowX = "";
+      el.style.overflowY = "";
+    };
+    const onTouchStart = ({ touches }: TouchEvent) => {
+      unlock();
+      start = { x: touches[0].clientX, y: touches[0].clientY };
+    };
+    const onTouchMove = ({ touches }: TouchEvent) => {
+      if (!start) return;
+      const dx = Math.abs(touches[0].clientX - start.x);
+      const dy = Math.abs(touches[0].clientY - start.y);
+      if (dx + dy <= 5) return;
+      if (dx > dy) el.style.overflowY = "hidden";
+      else el.style.overflowX = "hidden";
+      start = null;
+    };
+    /* eslint-enable better-mutation/no-mutation */
+
+    // Touches anywhere (e.g. the branch picker) end the previous lock
+    document.addEventListener("touchstart", onTouchStart, { passive: true });
+    document.addEventListener("touchmove", onTouchMove, { passive: true });
+    el.addEventListener("scrollend", unlock);
+    return () => {
+      document.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("scrollend", unlock);
+    };
+  }, []);
+
+  useEffect(() => {
+    const container = laddersRef.current;
+    if (!container) return;
+
+    let timeout: ReturnType<typeof setTimeout>;
+
+    const updateSelection = () => {
+      // Snapping only rests at the left edge, middle, or right edge, so the
+      // scroll fraction maps directly to a branch, even when the outer
+      // branches can't reach the center (e.g. when the ladders barely overflow)
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const branchCount = container.querySelectorAll("[data-branch]").length;
+      if (maxScrollLeft <= 0 || branchCount === 0) return;
+
+      const selection = Math.round(
+        (container.scrollLeft / maxScrollLeft) * (branchCount - 1),
+      );
+      // eslint-disable-next-line better-mutation/no-mutation
+      centeredSelectionRef.current = selection;
+      setBranchPickerSelection(selection);
+    };
+
+    const onScroll = () => {
+      clearTimeout(timeout);
+      // eslint-disable-next-line better-mutation/no-mutation
+      timeout = setTimeout(updateSelection, 120);
+    };
+
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      container.removeEventListener("scroll", onScroll);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
