@@ -13,7 +13,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
         location: { latitude: 42.396192, longitude: -71.142230 },
         // TODO: in the future, for `Implement location interpolation between ladders`
@@ -129,9 +129,10 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0.0,
-        location: { latitude: 42.325166, longitude: -71.055402 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -141,9 +142,10 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
-        location: { latitude: 42.325166, longitude: -71.055402 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -194,9 +196,10 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0.0,
-        location: { latitude: 42.28107, longitude: -71.06378 },
+        // Ashmont southbound storage -- should this be Codman Yard?
+        location: { latitude: 42.281250, longitude: -71.061650 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -206,9 +209,10 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
     [
       {
         // Arrow top right
-        id: "arrow",
+        id: "arrow-top",
         spacingRatio: 2.0,
-        location: { latitude: 42.28107, longitude: -71.06378 },
+        // ~halfway between Andrew and JFK
+        location: { latitude: 42.325419, longitude: -71.055023 },
         showName: false,
         showDots: false,
         arrowRight: "up",
@@ -271,9 +275,10 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
       },
       {
         // Arrow bottom left
-        id: "arrow",
+        id: "arrow-bottom",
         spacingRatio: 0,
-        location: { latitude: 42.204572, longitude: -71.002080 },
+        // Caddigan Yard
+        location: { latitude: 42.204568, longitude: -71.002040 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
