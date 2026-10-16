@@ -43,7 +43,7 @@ defmodule Orbit.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bandit, "== 1.12.5"},
+      {:bandit, "== 1.13.1"},
       {
         :broadway_kinesis,
         github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
