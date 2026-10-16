@@ -77,7 +77,7 @@ export const SearchBar = ({
     const match = findVehicleMatch(vehicles, trimmed);
     if (match === null) {
       onSearchCleared();
-      setErrorMessage(`⚠️ No search results for "${trimmed}"`);
+      setErrorMessage(`⚠️ No trains matched your search`);
       return;
     }
 
@@ -147,7 +147,7 @@ export const SearchBar = ({
       </form>
 
       {errorMessage !== null ?
-        <p className="mt-1 rounded px-2 py-1 text-sm text-red-300">
+        <p className="mt-1 rounded px-2 py-1 text-sm text-ladder-text-primary-light dark:text-ladder-text-primary-dark">
           {errorMessage}
         </p>
       : null}
