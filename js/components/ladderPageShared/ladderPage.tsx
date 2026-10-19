@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+import { LadderRungs } from "../../data/stations";
 import { useVehicles } from "../../hooks/useVehicles";
 import { RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
@@ -214,13 +215,14 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     if (!container) return;
 
     let timeout: ReturnType<typeof setTimeout>;
+    // Renders one ladder per set of rungs
+    const branchCount = LadderRungs[routeId].length;
 
     const updateSelection = () => {
       // Snapping only rests at the left edge, middle, or right edge, so the
       // scroll fraction maps directly to a branch, even when the outer
       // branches can't reach the center (e.g. when the ladders barely overflow)
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      const branchCount = container.querySelectorAll("[data-branch]").length;
       if (maxScrollLeft <= 0 || branchCount === 0) return;
 
       const selection = Math.round(
@@ -242,7 +244,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       container.removeEventListener("scroll", onScroll);
       clearTimeout(timeout);
     };
-  }, []);
+  }, [routeId]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
