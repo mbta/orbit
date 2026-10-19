@@ -135,8 +135,8 @@ const matchingLadderRungsForVehicle = (
   const vp = vehicle.vehiclePosition;
   let matchingLadderRungs: LadderConfig | undefined;
 
-  // calcuate the progress for vehicles in transit to Andrew or JFK where the Red line
-  // branches out and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
+  // Calculate the progress for vehicles in transit to Andrew or JFK where the Red Line
+  //  branches and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
   if (
     vp.position !== null &&
     vp.stopStatus === StopStatus.InTransitTo &&
