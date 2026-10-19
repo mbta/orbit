@@ -37,7 +37,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE`
-          : "",
+            : "",
       },
       {
         id: "place-davis",
@@ -192,7 +192,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT`
-          : "",
+            : "",
       },
       {
         // Arrow bottom left
@@ -271,7 +271,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE`
-          : "",
+            : "",
       },
       {
         // Arrow bottom left
@@ -578,7 +578,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE`
-          : "",
+            : "",
       },
       {
         id: "place-davis",
@@ -713,7 +713,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT`
-          : "",
+            : "",
       },
     ],
     // JFK <-> Braintree
@@ -772,7 +772,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE`
-          : "",
+            : "",
       },
     ],
   ],

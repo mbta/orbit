@@ -20,7 +20,7 @@ import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { consistsEqual, remapLabel } from "../../util/consist";
 import { BranchPickerSelection } from "./branchPicker";
-import { Ladder } from "rail-tech-ui";
+import { Ladder, StationId } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
@@ -52,11 +52,12 @@ const ROUTE_PATTERN_CONFIG: Readonly<
 };
 
 const ROUTE_DEFAULTS: Readonly<
-  Record<RouteId, { color: string; letter: string }>
+  Record<RouteId, { color: string; letter: string; interLadderStationIds: StationId[] }>
 > = {
   Red: {
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
+    interLadderStationIds: ["place-jfk", "place-andrw"]
   },
 };
 
@@ -115,7 +116,7 @@ const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
       vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt
     ) ?
       DirectionalStopIds.get(stopId)
-    : null;
+      : null;
   return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
 };
 
@@ -173,7 +174,7 @@ const matchingLadderRungsForVehicle = (
       matchingLadderRungs =
         branchIndex !== undefined ?
           ladderRungsForRoute[branchIndex]
-        : undefined;
+          : undefined;
     }
   }
 
@@ -256,7 +257,7 @@ export const Ladders = ({
         (vehicle) =>
           vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
       ) ?? null)
-    : null;
+      : null;
   const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
   return (
@@ -268,6 +269,8 @@ export const Ladders = ({
       {Array.from(vehiclesByBranch.entries()).map(
         ([ladderRungs, branchVehicles], index) => {
           const branch: BranchPickerSelection = index;
+
+          const interLadderStationIds = ROUTE_DEFAULTS[routeId].interLadderStationIds;
 
           return (
             <div
@@ -318,6 +321,7 @@ export const Ladders = ({
                 labelRemap={(car: CarId) => remapLabel(car, routeId)}
                 getInitialPredictionsDirection={() => 0}
                 highlight={selected}
+                interLadderStationIds={interLadderStationIds}
               />
             </div>
           );
