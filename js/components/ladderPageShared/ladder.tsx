@@ -14,16 +14,19 @@ import {
   userHasOneOf,
 } from "../../groups";
 import { CarId, DirectionId, RouteId } from "../../models/common";
+import { proportionBetweenLatLngs } from "../../models/latlng";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { consistsEqual, remapLabel } from "../../util/consist";
 import { BranchPickerSelection } from "./branchPicker";
-import { Ladder } from "rail-tech-ui";
+import { Ladder, StationId } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement, Ref } from "react";
+
+const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
 const ROUTE_PATTERN_CONFIG: Readonly<
   Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
@@ -49,11 +52,12 @@ const ROUTE_PATTERN_CONFIG: Readonly<
 };
 
 const ROUTE_DEFAULTS: Readonly<
-  Record<RouteId, { color: string; letter: string }>
+  Record<RouteId, { color: string; letter: string; interLadderStationIds: StationId[] }>
 > = {
   Red: {
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
+    interLadderStationIds: ["place-jfk", "place-andrw"]
   },
 };
 
@@ -112,7 +116,7 @@ const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
       vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt
     ) ?
       DirectionalStopIds.get(stopId)
-    : null;
+      : null;
   return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
 };
 
@@ -120,6 +124,70 @@ const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
 export type SelectedVehicle = {
   vehicleId: string | null;
   searchedCar?: CarId | null;
+};
+
+const matchingLadderRungsForVehicle = (
+  vehicle: Vehicle,
+  ladderRungsForRoute: LadderConfig[],
+): LadderConfig | undefined => {
+  const andrewLatLng = { latitude: 42.330154, longitude: -71.057655 };
+  const jfkLatLng = { latitude: 42.320685, longitude: -71.052391 };
+  const vp = vehicle.vehiclePosition;
+  let matchingLadderRungs: LadderConfig | undefined;
+
+  // Calculate the progress for vehicles in transit to Andrew or JFK where the Red Line
+  //  branches and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
+  if (
+    vp.position !== null &&
+    vp.stopStatus === StopStatus.InTransitTo &&
+    ((vp.stationId === "place-jfk" && vp.directionId === 0) ||
+      (vp.stationId === "place-andrw" && vp.directionId === 1))
+  ) {
+    const origLatLng =
+      vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
+    const destLatLng =
+      vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
+
+    // TODO: import from rail-tech-ui instead of using orbit version?
+    const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
+
+    let branchIndex: number | undefined;
+    if (prog != null && prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
+      if (vp.stationId === "place-jfk") {
+        branchIndex = 0;
+      } else {
+        // Vehicle in transit to Andrew, determine branch based on route pattern.
+        const routePatternId = vehicle.tripUpdate?.routePatternId;
+        if (routePatternId === "Red-1-0" || routePatternId === "Red-1-1") {
+          // ashmont
+          branchIndex = 1;
+        } else if (
+          routePatternId === "Red-3-0" ||
+          routePatternId === "Red-3-1"
+        ) {
+          // braintree
+          branchIndex = 2;
+        }
+      }
+      // If prog is over the threshold (i.e. the vehicle has jumped), branchIndex will be undefined.
+      // This is handled in ternary in the return statement below.
+      matchingLadderRungs =
+        branchIndex !== undefined ?
+          ladderRungsForRoute[branchIndex]
+          : undefined;
+    }
+  }
+
+  // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/over the threshold.
+  return (
+    matchingLadderRungs ??
+    ladderRungsForRoute.find((rung) =>
+      // Check if any station within the current rung array includes the VehiclePosition's stopId.
+      rung.some((station) =>
+        station.stop_ids?.some((stopId) => stopId === vp.stopId),
+      ),
+    )
+  );
 };
 
 export const Ladders = ({
@@ -140,17 +208,12 @@ export const Ladders = ({
   const ladderRungsForRoute = LadderRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
-      // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
-      const matchingLadderRungs = ladderRungsForRoute.find((rung) =>
-        // check if any station within the current rung array includes the VehiclePosition's stopId
-        rung.some((station) => {
-          if (station.stop_ids !== undefined) {
-            return station.stop_ids.some(
-              (stopId) => stopId === vehicle.vehiclePosition.stopId,
-            );
-          }
-        }),
+      const matchingLadderRungs = matchingLadderRungsForVehicle(
+        vehicle,
+        ladderRungsForRoute,
       );
+
+      // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
       if (matchingLadderRungs) {
         const vehiclesForLadderRungs = accumulator.get(matchingLadderRungs);
         vehiclesForLadderRungs?.push(vehicle);
@@ -194,7 +257,7 @@ export const Ladders = ({
         (vehicle) =>
           vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
       ) ?? null)
-    : null;
+      : null;
   const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
   return (
@@ -206,6 +269,8 @@ export const Ladders = ({
       {Array.from(vehiclesByBranch.entries()).map(
         ([ladderRungs, branchVehicles], index) => {
           const branch: BranchPickerSelection = index;
+
+          const interLadderStationIds = ROUTE_DEFAULTS[routeId].interLadderStationIds;
 
           return (
             <div
@@ -258,6 +323,7 @@ export const Ladders = ({
                 labelRemap={(car: CarId) => remapLabel(car, routeId)}
                 getInitialPredictionsDirection={() => 0}
                 highlight={selected}
+                interLadderStationIds={interLadderStationIds}
               />
             </div>
           );
