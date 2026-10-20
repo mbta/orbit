@@ -1014,15 +1014,13 @@ describe("Ladder", () => {
       vehicles: Vehicle[],
       ladder: keyof typeof ladderToIndex,
     ) => {
-      mockUseVehicles.mockReturnValue(vehicles);
-
       const view = render(
         <Ladders
           routeId="Red"
           setSideBarSelection={jest.fn()}
           setBranchPickerSelection={jest.fn()}
           sideBarSelection={null}
-          vehicles={useVehicles() ?? []}
+          vehicles={vehicles}
         />,
       );
 
@@ -1043,7 +1041,7 @@ describe("Ladder", () => {
     };
 
     describe("plots trains on correct side of ladder", () => {
-      test("plots trains based on vehicle direction", async () => {
+      test("plots trains based on vehicle direction", () => {
         const { northboundContainer, southboundContainer } =
           setupTrainsOnLadderTest(
             [
@@ -1113,7 +1111,7 @@ describe("Ladder", () => {
           setupTrainsOnLadderTest(vehicles, "alewife");
 
         // Alewife 70061 : No directional overrides
-        test("NB train IN_TRANSIT_TO Alewife 70061 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Alewife 70061 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1127,7 +1125,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Alewife 70061 shows as NB", async () => {
+        test("NB train STOPPED_AT Alewife 70061 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1141,7 +1139,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Alewife 70061 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Alewife 70061 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1155,7 +1153,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Alewife 70061 shows as SB", async () => {
+        test("SB train STOPPED_AT Alewife 70061 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1170,7 +1168,7 @@ describe("Ladder", () => {
         });
 
         // Alewife-01 : Overrides to Northbound
-        test("NB train IN_TRANSIT_TO Alewife-01 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Alewife-01 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1184,7 +1182,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Alewife-01 shows as NB", async () => {
+        test("NB train STOPPED_AT Alewife-01 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1198,7 +1196,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Alewife-01 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Alewife-01 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1212,7 +1210,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Alewife-01 shows as NB (override)", async () => {
+        test("SB train STOPPED_AT Alewife-01 shows as NB (override)", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1227,7 +1225,7 @@ describe("Ladder", () => {
         });
 
         // Alewife-02 : Overrides to Southbound
-        test("NB train IN_TRANSIT_TO Alewife-02 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Alewife-02 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1241,7 +1239,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Alewife-02 shows as SB (override)", async () => {
+        test("NB train STOPPED_AT Alewife-02 shows as SB (override)", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1255,7 +1253,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Alewife-02 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Alewife-02 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1269,7 +1267,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Alewife-02 shows as SB", async () => {
+        test("SB train STOPPED_AT Alewife-02 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1312,7 +1310,7 @@ describe("Ladder", () => {
           setupTrainsOnLadderTest(vehicles, "braintree");
 
         // Braintree 70105 : No directional overrides
-        test("NB train IN_TRANSIT_TO Braintree 70105 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Braintree 70105 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1326,7 +1324,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Braintree 70105 shows as NB", async () => {
+        test("NB train STOPPED_AT Braintree 70105 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1340,7 +1338,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Braintree 70105 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Braintree 70105 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1354,7 +1352,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Braintree-01 shows as SB", async () => {
+        test("SB train STOPPED_AT Braintree-01 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1369,7 +1367,7 @@ describe("Ladder", () => {
         });
 
         // Braintree-01 : Overrides to Northbound
-        test("NB train IN_TRANSIT_TO Braintree-01 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Braintree-01 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1383,7 +1381,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Braintree-01 shows as NB", async () => {
+        test("NB train STOPPED_AT Braintree-01 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1397,7 +1395,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Braintree-01 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Braintree-01 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1411,7 +1409,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Braintree-01 shows as NB (override)", async () => {
+        test("SB train STOPPED_AT Braintree-01 shows as NB (override)", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1426,7 +1424,7 @@ describe("Ladder", () => {
         });
 
         // Braintree-02 : Overrides to Southbound
-        test("NB train IN_TRANSIT_TO Braintree-02 shows as NB", async () => {
+        test("NB train IN_TRANSIT_TO Braintree-02 shows as NB", () => {
           const { northboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1440,7 +1438,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("NB train STOPPED_AT Braintree-02 shows as SB (override)", async () => {
+        test("NB train STOPPED_AT Braintree-02 shows as SB (override)", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 1,
@@ -1454,7 +1452,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train IN_TRANSIT_TO Braintree-02 shows as SB", async () => {
+        test("SB train IN_TRANSIT_TO Braintree-02 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
@@ -1468,7 +1466,7 @@ describe("Ladder", () => {
           ).toBeInTheDocument();
         });
 
-        test("SB train STOPPED_AT Braintree-02 shows as SB", async () => {
+        test("SB train STOPPED_AT Braintree-02 shows as SB", () => {
           const { southboundContainer } = setupTest([
             mockTrain({
               directionId: 0,
