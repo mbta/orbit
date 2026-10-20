@@ -40,6 +40,17 @@ const inactiveDotText: Record<string, string> = {
 };
 
 describe("BranchPicker", () => {
+  test("picker row takes up full height of its buttons", () => {
+    const view = render(
+      <BranchPicker route="Red" selection={0} setSelection={jest.fn()} />,
+    );
+
+    expect(view.getByTestId("branch-picker")).toHaveClass("h-16");
+    view.getAllByRole("button").forEach((button) => {
+      expect(button).toHaveClass("h-16");
+    });
+  });
+
   test("renders all three branch buttons", () => {
     const view = render(
       <BranchPicker

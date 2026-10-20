@@ -12,7 +12,7 @@ expect.extend(jestExtendedMatchers);
 global.TextEncoder = TextEncoder;
 
 // jsdom doesn't have a scrollIntoView implementation, so we mock it to avoid errors in tests
-HTMLButtonElement.prototype.scrollIntoView = jest.fn();
+HTMLElement.prototype.scrollIntoView = jest.fn();
 
 // always prevent these side-effects from being called in tests
 jest.mock("../browser", () => ({
