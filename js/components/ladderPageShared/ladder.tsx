@@ -3,16 +3,6 @@ import {
   LadderConfig,
   LadderRungs,
 } from "../../data/stations";
-import {
-  ORBIT_HR_DISPATCHERS,
-  ORBIT_HR_STAKEHOLDERS,
-  ORBIT_RL_CHIEF_INSPECTORS,
-  ORBIT_RL_INSPECTORS,
-  ORBIT_RL_TRAINSTARTERS,
-  ORBIT_RL_YARDMASTERS,
-  ORBIT_TID_STAFF,
-  userHasOneOf,
-} from "../../groups";
 import { CarId, DirectionId, RouteId } from "../../models/common";
 import { proportionBetweenLatLngs } from "../../models/latlng";
 import { Station } from "../../models/station";
@@ -280,15 +270,7 @@ export const Ladders = ({
               className="h-full mx-40 mt-28 snap-center snap-always"
             >
               <Ladder
-                trainsClickable={userHasOneOf([
-                  ORBIT_HR_DISPATCHERS,
-                  ORBIT_HR_STAKEHOLDERS,
-                  ORBIT_RL_CHIEF_INSPECTORS,
-                  ORBIT_RL_INSPECTORS,
-                  ORBIT_RL_TRAINSTARTERS,
-                  ORBIT_RL_YARDMASTERS,
-                  ORBIT_TID_STAFF,
-                ])}
+                trainsClickable
                 zoom={47}
                 labelMode="lead"
                 trainLocs={branchVehicles.map(vehicleToTrainLoc)}
