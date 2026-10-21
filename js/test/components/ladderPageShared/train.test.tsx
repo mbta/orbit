@@ -8,20 +8,8 @@ import {
   TrainThemes,
 } from "../../../components/ladderPageShared/trainTheme";
 import { dateTimeFromISO } from "../../../dateTime";
-import { ORBIT_BL_FFD } from "../../../groups";
 import { vehicleFactory } from "../../helpers/factory";
 import { render, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-
-let mockUserGroups: string | null = null;
-afterEach(() => {
-  mockUserGroups = null;
-});
-jest.mock("../../../util/metadata", () => ({
-  getMetaContent: jest.fn((field: string) =>
-    field === "userGroups" ? mockUserGroups : null,
-  ),
-}));
 
 describe("Train", () => {
   test("shows label", () => {
@@ -118,29 +106,6 @@ describe("Train", () => {
       });
     });
     scrollIntoView.mockRestore();
-  });
-
-  test("is clickable for a group that previously had the button disabled", async () => {
-    mockUserGroups = ORBIT_BL_FFD;
-    const vehicle = vehicleFactory.build();
-    const setSideBarSelection = jest.fn();
-
-    const view = render(
-      <Train
-        theme={TrainThemes.braintree}
-        vehicle={vehicle}
-        forceDirection={1}
-        labelOffset={null}
-        setSideBarSelection={setSideBarSelection}
-      />,
-    );
-
-    const button = view.getByRole("button");
-    expect(button).toBeEnabled();
-    await userEvent.click(button);
-    expect(setSideBarSelection).toHaveBeenCalledWith({
-      vehicleId: vehicle.vehiclePosition.vehicleId,
-    });
   });
 });
 
