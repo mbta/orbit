@@ -48,7 +48,7 @@ defmodule Orbit.MixProject do
         :broadway_kinesis,
         github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
       },
-      {:castore, ">= 1.0.22"},
+      {:castore, "1.0.22"},
       # used by ex_aws to parse AWS CLI settings/credentials
       {:configparser_ex, "== 5.0.1", only: :dev},
       # Needed by laboratory for prod build
