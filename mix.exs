@@ -76,7 +76,6 @@ defmodule Orbit.MixProject do
        compile: false,
        depth: 1},
       {:highlander, "0.2.1"},
-      {:httpoison, "3.0.0"},
       {:jason, "1.4.5"},
       {:laboratory, [github: "mbta/laboratory", ref: "2d9ed1cf4471c0001d2f97d483a219c58158e141"]},
       {:lcov_ex, "0.3.5", only: [:test], runtime: false},
