@@ -21,6 +21,13 @@
       "enabled": false
     },
     {
+      "description": "don't update the constraints in this file (namely erlang)",
+      "matchFileNames": [
+        "renovate.json"
+      ],
+      "enabled": false
+    },
+    {
       "groupName": "npm devDependencies (non-major)",
       "matchManagers": ["npm"],
       "matchDepTypes": ["devDependencies"],
