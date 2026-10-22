@@ -1,8 +1,12 @@
 defmodule Realtime.Data.VehicleEvent do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Orbit.RailLine
+  alias Orbit.Repo
+
+  @recent_cutoff_m -180
 
   @type t :: %__MODULE__{
           service_date: Date.t(),
@@ -54,5 +58,28 @@ defmodule Realtime.Data.VehicleEvent do
     ])
     |> validate_inclusion(:direction_id, [0, 1])
     |> validate_inclusion(:arrival_departure, [:arrival, :departure])
+  end
+
+  @spec recent(DateTime.t()) :: map()
+  def recent(now) do
+    search_cutoff = DateTime.add(now, @recent_cutoff_m, :minute)
+    service_date = Util.Time.service_date_for_utc_datetime(now)
+
+    Repo.all(
+      from(event in __MODULE__,
+        where:
+          event.service_date == ^service_date and event.arrival_departure == :departure and
+            event.timestamp > ^search_cutoff,
+        group_by: [event.vehicle_id, event.station_id],
+        select: %{
+          vehicle_id: event.vehicle_id,
+          station_id: event.station_id,
+          timestamp: max(event.timestamp)
+        }
+      )
+    )
+    # NB pm: Should be possible for Repo.all to return a map, I think?
+    # But I couldn't quickly figure it out, hence the group_by above followed by this
+    |> Enum.into(%{}, &{{&1.vehicle_id, &1.station_id}, &1.timestamp})
   end
 end

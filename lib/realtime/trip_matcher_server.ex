@@ -7,6 +7,9 @@ defmodule Realtime.TripMatcherServer do
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
+  alias Realtime.VehicleEventDetector
+
+  @event_cache_cutoff_m 180
 
   @typep state :: %{
            in: %{
@@ -15,6 +18,9 @@ defmodule Realtime.TripMatcherServer do
              ocs_trips: %{timestamp: integer(), entities: [Trip.t()]}
            },
            out: %{timestamp: integer(), entities: [Vehicle.t()]},
+
+           # Cache departures
+           vehicle_events: map(),
            entities_server_ref: reference() | nil,
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
@@ -49,6 +55,8 @@ defmodule Realtime.TripMatcherServer do
 
     schedule()
 
+    now = DateTime.utc_now()
+
     {:ok,
      %{
        in: %{
@@ -57,6 +65,7 @@ defmodule Realtime.TripMatcherServer do
          ocs_trips: %{timestamp: 0, entities: []}
        },
        out: %{timestamp: 0, entities: []},
+       vehicle_events: Realtime.Data.VehicleEvent.recent(now),
        entities_server_ref: ocs_ref,
        subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
@@ -74,6 +83,29 @@ defmodule Realtime.TripMatcherServer do
 
   defp schedule do
     Process.send_after(self(), {:ensure_push, 5}, 1_000)
+  end
+
+  defp add_new_vehicle_events(vehicle_events, old_vehicle_positions, new_vehicle_positions) do
+    now = DateTime.utc_now()
+
+    VehicleEventDetector.new_vehicle_events(
+      old_vehicle_positions,
+      new_vehicle_positions,
+      Util.Time.current_service_date()
+    )
+    |> Enum.filter(&(&1.arrival_departure == :departure))
+    |> Enum.reduce(vehicle_events, fn e, acc ->
+      Map.update(
+        acc,
+        {e.vehicle_id, e.station_id},
+        e.timestamp,
+        &Enum.max([&1, e.timestamp], DateTime)
+      )
+    end)
+    # Prune departures that aren't recent
+    |> Map.filter(fn {_key, timestamp} ->
+      DateTime.diff(now, timestamp, :minute) < @event_cache_cutoff_m
+    end)
   end
 
   @impl GenServer
@@ -98,7 +130,19 @@ defmodule Realtime.TripMatcherServer do
   @impl GenServer
   @spec handle_info({:new_data, atom(), any()}, state()) :: {:noreply, state()}
   def handle_info({:new_data, type, data}, state) do
-    state = put_in(state, [:in, type], data)
+    # Store new vehicle events in memory
+    vehicle_events =
+      if type == :vehicle_positions do
+        add_new_vehicle_events(state.vehicle_events, state.in.vehicle_positions, data)
+      else
+        state.vehicle_events
+      end
+
+    state = %{
+      state
+      | vehicle_events: vehicle_events,
+        in: Map.put(state.in, type, data)
+    }
 
     now = DateTime.to_unix(DateTime.utc_now())
 
@@ -113,7 +157,8 @@ defmodule Realtime.TripMatcherServer do
       TripMatcher.match_trips(
         state.in.vehicle_positions.entities,
         state.in.trip_updates.entities,
-        state.in.ocs_trips.entities
+        state.in.ocs_trips.entities,
+        state.vehicle_events
       )
 
     if state.in.ocs_trips.timestamp != 0 do
