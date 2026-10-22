@@ -65,6 +65,11 @@ RUN mix release --path /app-release
 # Run in minimal Alpine container
 FROM alpine:3.24.2 AS runtime
 
+# Install ca-certificates (version 20261020-r0 or later), and update to
+# drop compromised eMudhra certs.
+# This can be removed once an updated alpine docker image has been published.
+RUN apk add --upgrade --no-cache ca-certificates && update-ca-certificates
+
 # Expose HTTP, EPMD, and Erlang RPC
 EXPOSE 4001 4369 57195
 
