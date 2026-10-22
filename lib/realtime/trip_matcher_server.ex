@@ -2,12 +2,12 @@ defmodule Realtime.TripMatcherServer do
   use GenServer
   require Logger
 
+  alias Realtime.VehicleEventDetector
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
-  alias Realtime.VehicleEventWriter
 
   @event_cache_cutoff_m 180
 
@@ -85,16 +85,16 @@ defmodule Realtime.TripMatcherServer do
     Process.send_after(self(), {:ensure_push, 5}, 1_000)
   end
 
-  defp add_new_vehicle_events(vehicle_events, old_vehicle_positions, new_vehicle_positions) do
+  defp cache_vehicle_events(existing_cache, old_vehicle_positions, new_vehicle_positions) do
     now = DateTime.utc_now()
 
-    VehicleEventWriter.new_vehicle_events(
+    VehicleEventDetector.new_vehicle_events(
       old_vehicle_positions,
       new_vehicle_positions,
       Util.Time.current_service_date()
     )
     |> Enum.filter(&(&1.arrival_departure == :departure))
-    |> Enum.reduce(vehicle_events, fn e, acc ->
+    |> Enum.reduce(existing_cache, fn e, acc ->
       Map.update(
         acc,
         {e.vehicle_id, e.station_id},
@@ -133,7 +133,7 @@ defmodule Realtime.TripMatcherServer do
     # Store new vehicle events in memory
     vehicle_events =
       if type == :vehicle_positions do
-        add_new_vehicle_events(state.vehicle_events, state.in.vehicle_positions, data)
+        cache_vehicle_events(state.vehicle_events, state.in.vehicle_positions, data)
       else
         state.vehicle_events
       end
