@@ -120,6 +120,8 @@ defmodule OrbitWeb.Router do
     post "/rfid", Admin.AdminController, :post_rfid
     delete "/rfid", Admin.AdminController, :delete_rfid
 
+    get "/test-certs", Admin.AdminController, :test_certs
+
     live_dashboard "/dashboard", metrics: OrbitWeb.Telemetry
   end
 
