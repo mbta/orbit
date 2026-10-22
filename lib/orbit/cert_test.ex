@@ -12,7 +12,8 @@ defmodule CertTest do
       :req,
       :finch,
       :mint,
-      :httpoison
+      :httpoison,
+      :hackney
     ]
     |> Enum.each(&test/1)
   end
@@ -62,6 +63,19 @@ defmodule CertTest do
 
       {_, error} ->
         Logger.error("cert_test httpoison error error=#{inspect(error)}")
+    end
+  end
+
+  defp test(:hackney) do
+    {:ok, _} = Application.ensure_all_started(:hackney)
+
+    case :hackney.request(:get, test_url(), [], "", []) do
+      {:ok, status, headers, body} ->
+        response = {status, headers, body}
+        Logger.info("cert_test hackney ok response=#{inspect(response)}")
+
+      {:error, reason} ->
+        Logger.error("cert_test hackney error error=#{inspect(reason)}")
     end
   end
 end
