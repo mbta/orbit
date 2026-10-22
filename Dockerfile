@@ -15,12 +15,6 @@ RUN mix deps.compile
 
 
 ### Node Deps and Build Frontend
-# This is on a different alpine version (3.24 vs 3.23)
-# because there is no node 24 / alpine 3.23 image.
-# We need elixir and the runtime to be on alpine 3.23
-# due to an ECS issue (see: https://stitchworkflow.com/blog/aws-ecs-alpine-changes/)
-# but since we're just using this image for building the static
-# frontend assets we think a mismatch is fine.
 FROM node:24.22.1-alpine3.24 AS node
 
 # npm deps
