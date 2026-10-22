@@ -38,5 +38,13 @@ defmodule CertTest do
       {:error, error} -> Logger.error("cert_test mint error error=#{inspect(error)}")
       {:error, _conn, error} -> Logger.error("cert_test mint error error=#{inspect(error)}")
     end
+
+    case HTTPoison.get(test_url) do
+      {:ok, response} ->
+        Logger.info("cert_test httpoison ok response=#{inspect(response)}")
+
+      {_, error} ->
+        Logger.error("cert_test httpoison error error=#{inspect(error)}")
+    end
   end
 end
