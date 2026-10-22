@@ -26,9 +26,14 @@ defmodule Realtime.TripMatcherServer do
            last_push_to_subscriptions: DateTime.t()
          }
 
-  @spec start_link(any()) :: GenServer.on_start()
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil, name: __MODULE__)
+  @doc """
+  Options:
+  - `:vehicle_events` - initial vehicle event cache, mostly for testing
+    Defaults to recent departures loaded from the db
+  """
+  @spec start_link(keyword()) :: GenServer.on_start()
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   @spec subscribe(pid()) :: [Vehicle.t()]
@@ -38,9 +43,9 @@ defmodule Realtime.TripMatcherServer do
 
   @impl GenServer
   @dialyzer {:no_opaque, init: 1}
-  @spec init(any()) ::
+  @spec init(keyword()) ::
           {:ok, state()}
-  def init(_args) do
+  def init(opts) do
     Logger.info("#{__MODULE__} initialize pid=#{inspect(self())}")
 
     Realtime.PollingServer.subscribe(self(), :vehicle_positions)
@@ -65,7 +70,10 @@ defmodule Realtime.TripMatcherServer do
          ocs_trips: %{timestamp: 0, entities: []}
        },
        out: %{timestamp: 0, entities: []},
-       vehicle_events: Realtime.Data.VehicleEvent.recent(now),
+       vehicle_events:
+         Keyword.get_lazy(opts, :vehicle_events, fn ->
+           Realtime.Data.VehicleEvent.recent(now)
+         end),
        entities_server_ref: ocs_ref,
        subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
