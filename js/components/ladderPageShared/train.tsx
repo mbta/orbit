@@ -1,14 +1,4 @@
 import { DirectionalStopIds } from "../../data/stations";
-import {
-  ORBIT_HR_DISPATCHERS,
-  ORBIT_HR_STAKEHOLDERS,
-  ORBIT_RL_CHIEF_INSPECTORS,
-  ORBIT_RL_INSPECTORS,
-  ORBIT_RL_TRAINSTARTERS,
-  ORBIT_RL_YARDMASTERS,
-  ORBIT_TID_STAFF,
-  userHasOneOf,
-} from "../../groups";
 import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
@@ -197,17 +187,6 @@ export const Train = ({
           }
           setSideBarSelection({ vehicleId: vehicle.vehiclePosition.vehicleId });
         }}
-        disabled={
-          !userHasOneOf([
-            ORBIT_HR_DISPATCHERS,
-            ORBIT_HR_STAKEHOLDERS,
-            ORBIT_RL_CHIEF_INSPECTORS,
-            ORBIT_RL_INSPECTORS,
-            ORBIT_RL_TRAINSTARTERS,
-            ORBIT_RL_YARDMASTERS,
-            ORBIT_TID_STAFF,
-          ])
-        }
       >
         {displayLabel}
       </button>

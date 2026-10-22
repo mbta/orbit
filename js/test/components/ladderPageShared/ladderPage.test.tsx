@@ -400,14 +400,14 @@ describe("LadderPage SideBar", () => {
   });
 
   describe("without red line sidebar permissions", () => {
-    test("clicking on train pill does not open sidebar", async () => {
-      mockGetMetaContent.mockReturnValue("");
+    test("clicking on train pill opens sidebar", async () => {
+      mockGetMetaContent.mockImplementation((field: MetaDataKey) =>
+        field === "userGroups" ? "" : null,
+      );
       const user = userEvent.setup();
       const view = render(<LadderPage routeId="Red" />);
       await user.click(view.getByText("1877"));
-      expect(
-        view.queryByRole("button", { name: "Close" }),
-      ).not.toBeInTheDocument();
+      expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
     });
   });
 });
