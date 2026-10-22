@@ -1,4 +1,4 @@
-defmodule Realtime.VehicleEventDetector do
+defmodule Realtime.VehicleEventWriter do
   @moduledoc """
   Watches for trains entering and exiting stations
   and stores them in the vehicle_events table

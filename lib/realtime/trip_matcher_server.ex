@@ -7,7 +7,7 @@ defmodule Realtime.TripMatcherServer do
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
-  alias Realtime.VehicleEventDetector
+  alias Realtime.VehicleEventWriter
 
   @event_cache_cutoff_m 180
 
@@ -88,7 +88,7 @@ defmodule Realtime.TripMatcherServer do
   defp add_new_vehicle_events(vehicle_events, old_vehicle_positions, new_vehicle_positions) do
     now = DateTime.utc_now()
 
-    VehicleEventDetector.new_vehicle_events(
+    VehicleEventWriter.new_vehicle_events(
       old_vehicle_positions,
       new_vehicle_positions,
       Util.Time.current_service_date()
