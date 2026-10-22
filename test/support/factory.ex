@@ -41,6 +41,7 @@ defmodule Orbit.Factory do
       revenue: true,
       direction: 0,
       label: "1700",
+      cars: ["1700", "1701", "1702", "1703", "1704", "1705"],
       position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},
       station_id: "place-chmnl",
       stop_id: "70073",
