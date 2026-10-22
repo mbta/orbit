@@ -1,12 +1,12 @@
-defmodule Realtime.VehicleEventDetectorTest do
+defmodule Realtime.VehicleEventWriterTest do
   use ExUnit.Case, async: true
 
   import Orbit.Factory
   import Test.Support.Helpers
 
   alias Realtime.Data.VehicleEvent
-  alias Realtime.VehicleEventDetector
-  alias Realtime.VehicleEventDetector.StationEvent
+  alias Realtime.VehicleEventWriter
+  alias Realtime.VehicleEventWriter.StationEvent
 
   @service_date ~D[2025-07-17]
 
@@ -72,7 +72,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  timestamp: 180
                }
              ] =
-               VehicleEventDetector.new_vehicle_events(
+               VehicleEventWriter.new_vehicle_events(
                  old_vehicle_positions,
                  new_vehicle_positions,
                  @service_date
@@ -142,7 +142,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  timestamp: 180
                }
              ] =
-               VehicleEventDetector.new_vehicle_events(
+               VehicleEventWriter.new_vehicle_events(
                  old_vehicle_positions,
                  new_vehicle_positions,
                  @service_date
@@ -166,7 +166,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_new_event(event)
+          VehicleEventWriter.log_new_event(event)
         end
 
       assert Enum.member?(
@@ -190,7 +190,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_new_event(event)
+          VehicleEventWriter.log_new_event(event)
         end
 
       assert Enum.member?(
@@ -220,7 +220,7 @@ defmodule Realtime.VehicleEventDetectorTest do
     test "logs vehicle created", %{vehicle_position: vehicle_position} do
       logs =
         capture_log do
-          VehicleEventDetector.log_vehicle_change({nil, vehicle_position})
+          VehicleEventWriter.log_vehicle_change({nil, vehicle_position})
         end
 
       assert Enum.member?(
@@ -236,7 +236,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_vehicle_change({vehicle_position, updated})
+          VehicleEventWriter.log_vehicle_change({vehicle_position, updated})
         end
 
       assert nil ==
@@ -254,7 +254,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_vehicle_change({vehicle_position, updated})
+          VehicleEventWriter.log_vehicle_change({vehicle_position, updated})
         end
 
       assert Enum.member?(
@@ -266,7 +266,7 @@ defmodule Realtime.VehicleEventDetectorTest do
     test "logs vehicle deleted", %{vehicle_position: vehicle_position} do
       logs =
         capture_log do
-          VehicleEventDetector.log_vehicle_change({vehicle_position, nil})
+          VehicleEventWriter.log_vehicle_change({vehicle_position, nil})
         end
 
       assert Enum.member?(
@@ -295,7 +295,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_vehicle_change({nil, vehicle_position})
+          VehicleEventWriter.log_vehicle_change({nil, vehicle_position})
         end
 
       assert Enum.member?(
@@ -305,7 +305,7 @@ defmodule Realtime.VehicleEventDetectorTest do
     end
   end
 
-  describe "VehicleEventDetector.station_events_for_one_train" do
+  describe "VehicleEventWriter.station_events_for_one_train" do
     test "records departure from pullout if the train appears just after leaving" do
       assert [
                %StationEvent{
@@ -315,7 +315,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  nil,
                  build(:vehicle_position, %{
                    route_id: :Red,
@@ -329,7 +329,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for recently appeared train that hasn't just left a terminal" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  nil,
                  build(:vehicle_position, %{
                    station_id: "place-sstat",
@@ -342,7 +342,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for disappeared train" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -361,7 +361,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -385,7 +385,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -403,7 +403,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for stopped train in station" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -421,7 +421,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for stopped train between stations" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -439,7 +439,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for train moving on track between stations" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -468,7 +468,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -497,7 +497,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -515,7 +515,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event if jumping to a station that's not immediately next" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -540,7 +540,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    route_id: :Red,
                    direction: 1,
@@ -560,7 +560,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event if train goes from in a station to before that station" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -584,7 +584,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -602,7 +602,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event for train switching direction within station" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -620,7 +620,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event if switching direction and jumping to a station that's not adjacent" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -638,7 +638,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event if switching direction at a station that's not adjacent" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -667,7 +667,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -691,7 +691,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -715,7 +715,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -744,7 +744,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -768,7 +768,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -786,7 +786,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
     test "no event when turning around between stations" do
       assert [] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -810,7 +810,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -839,7 +839,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :departure
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -873,7 +873,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
@@ -907,7 +907,7 @@ defmodule Realtime.VehicleEventDetectorTest do
                  arrival_departure: :arrival
                }
              ] ==
-               VehicleEventDetector.station_events_for_one_train({
+               VehicleEventWriter.station_events_for_one_train({
                  build(:vehicle_position, %{
                    direction: 1,
                    station_id: "place-sstat",
