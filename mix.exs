@@ -46,7 +46,7 @@ defmodule Orbit.MixProject do
       {:bandit, "== 1.12.5"},
       {
         :broadway_kinesis,
-        github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
+        github: "mbta/broadway_kinesis", ref: "e35a5490254698328f3c99aa428e0d05c4ed66d9"
       },
       {:castore, "1.0.22"},
       # used by ex_aws to parse AWS CLI settings/credentials
@@ -76,7 +76,6 @@ defmodule Orbit.MixProject do
        compile: false,
        depth: 1},
       {:highlander, "0.2.1"},
-      {:httpoison, "3.0.0"},
       {:jason, "1.4.5"},
       {:laboratory, [github: "mbta/laboratory", ref: "2d9ed1cf4471c0001d2f97d483a219c58158e141"]},
       {:lcov_ex, "0.3.5", only: [:test], runtime: false},
@@ -97,6 +96,7 @@ defmodule Orbit.MixProject do
       {:postgrex, "0.22.4"},
       {:req, "0.6.3"},
       {:sentry, "13.4.2"},
+      {:ssl_verify_fun, "1.1.7"},
       {:sobelow, "== 0.15.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "1.1.0"},
       {:telemetry_poller, "1.3.0"},

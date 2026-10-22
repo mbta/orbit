@@ -69,11 +69,11 @@ defmodule Orbit.S3 do
 
   @spec read_anonymous(String.t(), String.t()) :: read_result()
   defp read_anonymous(bucket, path) do
-    case HTTPoison.get(anonymous_url(bucket, path)) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: binary_data}} ->
+    case Req.get(anonymous_url(bucket, path)) do
+      {:ok, %Req.Response{status: 200, body: binary_data}} ->
         {:ok, binary_data}
 
-      {:ok, %HTTPoison.Response{status_code: 404}} ->
+      {:ok, %Req.Response{status: 404}} ->
         {:error, :missing}
 
       {_, error_or_failure} ->
