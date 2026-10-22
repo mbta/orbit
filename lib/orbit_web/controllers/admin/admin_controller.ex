@@ -14,6 +14,12 @@ defmodule OrbitWeb.Admin.AdminController do
          ]
   )
 
+  @spec test_certs(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def test_certs(conn, _params) do
+    CertTest.test_client_requests()
+    text(conn, "OK")
+  end
+
   @spec get_employee(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_employee(conn, _params) do
     render(conn, :employee, layout: false)
