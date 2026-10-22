@@ -46,7 +46,7 @@ defmodule Orbit.MixProject do
       {:bandit, "== 1.12.5"},
       {
         :broadway_kinesis,
-        github: "mbta/broadway_kinesis", ref: "a4c0e846a6370b553b22fda1f9fc2af0eaffbe38"
+        github: "mbta/broadway_kinesis", ref: "e35a5490254698328f3c99aa428e0d05c4ed66d9"
       },
       {:castore, "1.0.22"},
       # used by ex_aws to parse AWS CLI settings/credentials
