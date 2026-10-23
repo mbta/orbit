@@ -1,5 +1,4 @@
 defmodule Realtime.VehicleEventDetector do
-  alias Realtime.Data.VehicleEvent
   alias Orbit.RailLine
   alias Realtime.Data.Stations
   alias Realtime.Data.VehicleEvent
