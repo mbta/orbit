@@ -19,7 +19,7 @@
     "@tailwindcss/forms": "0.5.11",
     "esbuild": "0.28.2",
     "luxon": "3.7.2",
-    "rail-tech-ui": "github:mbta/rail-tech-ui#e37dedd0cbc72b58e68eb6bbdc22be6ea2702ca4",
+    "rail-tech-ui": "github:mbta/rail-tech-ui#ad6724a3dab99c6b27b5ca9ab67733f9ccdb184b",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router": "7.18.2",
