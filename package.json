@@ -12,7 +12,7 @@
     "test": "npm run test:tsc && npm run test:jest && npm run test:e2e && npm run test:eslint && npm run test:format"
   },
   "dependencies": {
-    "@fullstory/browser": "2.1.0",
+    "@fullstory/browser": "2.1.2",
     "@restart/ui": "1.9.4",
     "@sentry/fullstory": "5.0.0",
     "@sentry/react": "10.75.2",
@@ -20,11 +20,11 @@
     "esbuild": "0.28.2",
     "luxon": "3.7.2",
     "rail-tech-ui": "github:mbta/rail-tech-ui#ad6724a3dab99c6b27b5ca9ab67733f9ccdb184b",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-router": "7.18.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "7.18.4",
     "tailwindcss": "3.4.19",
-    "zod": "4.6.2"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
