@@ -2,12 +2,12 @@ defmodule Realtime.TripMatcherServer do
   use GenServer
   require Logger
 
-  alias Realtime.VehicleEventDetector
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
+  alias Realtime.VehicleEventDetector
 
   @event_cache_cutoff_m 180
 
