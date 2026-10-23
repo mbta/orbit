@@ -53,7 +53,8 @@ defmodule Realtime.TripMatcherTest do
                      train_uid: "OTHER_TRAIN_UID",
                      uid: "1234FFAE"
                    }
-                 ]
+                 ],
+                 %{}
                )
     end
 
@@ -99,7 +100,8 @@ defmodule Realtime.TripMatcherTest do
                      uid: "1234FFAD",
                      next_uid: "1234FFAE"
                    }
-                 ]
+                 ],
+                 %{}
                )
     end
 
@@ -143,7 +145,8 @@ defmodule Realtime.TripMatcherTest do
                      uid: "1234FFAD",
                      next_uid: "1234FFAE"
                    }
-                 ]
+                 ],
+                 %{}
                )
     end
 
@@ -183,7 +186,8 @@ defmodule Realtime.TripMatcherTest do
                      uid: "1234FFAD",
                      next_uid: "1234FFAE"
                    }
-                 ]
+                 ],
+                 %{}
                )
     end
   end
@@ -236,7 +240,8 @@ defmodule Realtime.TripMatcherTest do
                        uid: "1234FFAD",
                        next_uid: "1234FFAE"
                      }
-                   ]
+                   ],
+                   %{}
                  )
       end
 
@@ -277,7 +282,8 @@ defmodule Realtime.TripMatcherTest do
                        # Trip refers to itself as "next"
                        next_uid: "1234FFAC"
                      }
-                   ]
+                   ],
+                   %{}
                  )
       end
 
@@ -314,7 +320,8 @@ defmodule Realtime.TripMatcherTest do
                    trip_id: "69349212"
                  }
                ],
-               []
+               [],
+               %{}
              )
   end
 
@@ -797,49 +804,42 @@ defmodule Realtime.TripMatcherTest do
   end
 
   describe "populate_actual_departures" do
-    test "gets an actual departure from the database based on vehicle_id" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+    test "gets an actual departure from the events based on vehicle_id" do
+      ocs_trip = build(:ocs_trip, train_uid: "5484208E")
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      insert(:vehicle_event, vehicle_id: "5484208E")
+      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
-    end
-
-    test "uses the most recent vehicle event" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      insert(:vehicle_event, vehicle_id: "5484208E")
-      insert(:vehicle_event, vehicle_id: "5484208E", timestamp: ~U[2025-07-08 16:25:24Z])
-
-      assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:25:24Z]}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+               TripMatcher.populate_actual_departures([vehicle], events)
     end
 
     test "uses the updated origin if specified" do
       ocs_trip =
-        insert(:ocs_trip,
+        build(:ocs_trip,
           train_uid: "5484208E",
           origin_station: "SHAWMUT",
           origin_station_updated: "ASHMONT"
         )
 
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      insert(:vehicle_event, vehicle_id: "5484208E")
+      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+               TripMatcher.populate_actual_departures([vehicle], events)
     end
 
     test "can handle multiple" do
-      ocs_trip = insert(:ocs_trip, uid: "trip1", train_uid: "5484208E")
-      ocs_trip2 = insert(:ocs_trip, uid: "trip2", train_uid: "5484208F")
-      ocs_trip3 = insert(:ocs_trip, uid: "trip3", train_uid: "5484208G")
+      ocs_trip = build(:ocs_trip, uid: "trip1", train_uid: "5484208E")
+      ocs_trip2 = build(:ocs_trip, uid: "trip2", train_uid: "5484208F")
+      ocs_trip3 = build(:ocs_trip, uid: "trip3", train_uid: "5484208G")
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
       vehicle2 = build(:vehicle, ocs_trips: %{current: ocs_trip2})
       vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3})
-      insert(:vehicle_event, vehicle_id: "5484208E")
-      insert(:vehicle_event, vehicle_id: "5484208F", timestamp: ~U[2025-07-08 16:25:24Z])
+
+      events = %{
+        {"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z],
+        {"5484208F", "place-asmnl"} => ~U[2025-07-08 16:25:24Z]
+      }
 
       assert [
                %{
@@ -867,33 +867,21 @@ defmodule Realtime.TripMatcherTest do
                  }
                }
              ] =
-               TripMatcher.populate_actual_departures(
-                 [vehicle, vehicle2, vehicle3],
-                 ~U[2025-07-08 16:30:00Z]
-               )
+               TripMatcher.populate_actual_departures([vehicle, vehicle2, vehicle3], events)
     end
 
     test "departures from other stations do not apply" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      ocs_trip = build(:ocs_trip, train_uid: "5484208E")
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
       # The OCS trip starts at Ashmont
-      insert(:vehicle_event, vehicle_id: "5484208E", station_id: "place-harsq")
+      events = %{{"5484208E", "place-harsq"} => ~U[2025-07-08 16:05:24Z]}
 
       assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
-    end
-
-    test "does not get actual departure from too long ago" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      insert(:vehicle_event, vehicle_id: "5484208E")
-
-      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 19:30:00Z])
+               TripMatcher.populate_actual_departures([vehicle], events)
     end
 
     test "does not get actual departure when haven't left yet (must be an older event)" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      ocs_trip = build(:ocs_trip, train_uid: "5484208E")
 
       vehicle =
         build(:vehicle,
@@ -906,14 +894,14 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      insert(:vehicle_event, vehicle_id: "5484208E")
+      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+               TripMatcher.populate_actual_departures([vehicle], events)
     end
 
     test "does not get actual departure when south of Ashmont in the turnaround" do
-      ocs_trip = insert(:ocs_trip, train_uid: "5484208E")
+      ocs_trip = build(:ocs_trip, train_uid: "5484208E")
 
       vehicle =
         build(:vehicle,
@@ -927,10 +915,10 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      insert(:vehicle_event, vehicle_id: "5484208E")
+      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
-               TripMatcher.populate_actual_departures([vehicle], ~U[2025-07-08 16:30:00Z])
+               TripMatcher.populate_actual_departures([vehicle], events)
     end
   end
 end

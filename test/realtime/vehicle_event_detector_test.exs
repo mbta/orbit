@@ -7,6 +7,7 @@ defmodule Realtime.VehicleEventDetectorTest do
   alias Realtime.Data.VehicleEvent
   alias Realtime.VehicleEventDetector
   alias Realtime.VehicleEventDetector.StationEvent
+  alias Realtime.VehicleEventWriter
 
   @service_date ~D[2025-07-17]
 
@@ -166,7 +167,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_new_event(event)
+          VehicleEventWriter.log_new_event(event)
         end
 
       assert Enum.member?(
@@ -190,7 +191,7 @@ defmodule Realtime.VehicleEventDetectorTest do
 
       logs =
         capture_log do
-          VehicleEventDetector.log_new_event(event)
+          VehicleEventWriter.log_new_event(event)
         end
 
       assert Enum.member?(
