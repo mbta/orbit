@@ -96,10 +96,12 @@ defmodule Realtime.TripMatcherServer do
   defp cache_vehicle_events(existing_cache, old_vehicle_positions, new_vehicle_positions) do
     now = DateTime.utc_now()
 
+    service_date = Util.Time.service_date_for_timestamp(new_vehicle_positions.timestamp)
+
     VehicleEventDetector.new_vehicle_events(
       old_vehicle_positions,
       new_vehicle_positions,
-      Util.Time.current_service_date()
+      service_date
     )
     |> Enum.filter(&(&1.arrival_departure == :departure))
     |> Enum.reduce(existing_cache, fn e, acc ->

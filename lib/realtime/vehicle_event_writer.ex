@@ -46,11 +46,13 @@ defmodule Realtime.VehicleEventWriter do
   def handle_info({:new_data, :vehicle_positions, new_vehicle_positions}, state) do
     new_state = %{state | last_vehicle_positions: new_vehicle_positions}
 
+    service_date = Util.Time.service_date_for_timestamp(new_vehicle_positions.timestamp)
+
     new_events =
       VehicleEventDetector.new_vehicle_events(
         state.last_vehicle_positions,
         new_vehicle_positions,
-        Util.Time.current_service_date()
+        service_date
       )
 
     if new_events != [] do
