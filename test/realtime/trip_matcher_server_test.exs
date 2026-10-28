@@ -168,4 +168,135 @@ defmodule Realtime.TripMatcherServerTest do
              ~s(missing_next_scheduled_departure_time="R-12345678")
            ]
   end
+
+  test "populates actual departure for a vehicle that just departed, before it's in the database" do
+    {:ok, _} = start_supervised(Realtime.TripMatcherServer)
+    TripMatcherServer.subscribe(self())
+
+    departed_at = DateTime.truncate(DateTime.utc_now(), :second)
+
+    # Factory trip originates at Ashmont
+    ocs_trip = build(:ocs_trip, train_uid: "5484208E", assigned_at: departed_at)
+
+    stopped_at_origin =
+      build(:vehicle_position,
+        vehicle_id: "R-5484208E",
+        direction: 1,
+        station_id: "place-asmnl",
+        current_status: :STOPPED_AT,
+        timestamp: DateTime.add(departed_at, -30, :second)
+      )
+
+    departing =
+      build(:vehicle_position,
+        vehicle_id: "R-5484208E",
+        direction: 1,
+        station_id: "place-smmnl",
+        current_status: :IN_TRANSIT_TO,
+        timestamp: departed_at
+      )
+
+    send(
+      Realtime.TripMatcherServer,
+      {:new_data, :ocs_trips, %{timestamp: 1, entities: [ocs_trip]}}
+    )
+
+    send(
+      Realtime.TripMatcherServer,
+      {:new_data, :vehicle_positions, %{timestamp: 4, entities: [stopped_at_origin]}}
+    )
+
+    assert_receive {:new_data, :vehicles,
+                    %{entities: [%Vehicle{ocs_trips: %{current: %{actual_departure: nil}}}]}}
+
+    logs =
+      capture_log do
+        send(
+          Realtime.TripMatcherServer,
+          {:new_data, :vehicle_positions, %{timestamp: 5, entities: [departing]}}
+        )
+
+        assert_receive {:new_data, :vehicles,
+                        %{
+                          entities: [
+                            %Vehicle{
+                              ocs_trips: %{
+                                current: %{departed: true, actual_departure: ^departed_at}
+                              }
+                            }
+                          ]
+                        }}
+      end
+
+    assert Enum.any?(
+             logs,
+             &String.contains?(&1, ~s(missing_current_actual_departure_time=""))
+           )
+
+    # The departure came from in-memory detection, not the vehicle_events table
+    assert Orbit.Repo.all(Realtime.Data.VehicleEvent) == []
+  end
+
+  test "prunes cached departures that are older than the cache cutoff" do
+    now = DateTime.utc_now()
+    stale_departure = DateTime.add(now, -181, :minute)
+    recent_departure = DateTime.add(now, -179, :minute)
+
+    {:ok, _} =
+      start_supervised(
+        {Realtime.TripMatcherServer,
+         vehicle_events: %{
+           {"5484208E", "place-asmnl"} => stale_departure,
+           {"547210A7", "place-asmnl"} => recent_departure
+         }}
+      )
+
+    TripMatcherServer.subscribe(self())
+
+    # Factory trips originate at Ashmont
+    ocs_trips = [
+      build(:ocs_trip, uid: "1", train_uid: "5484208E", assigned_at: stale_departure),
+      build(:ocs_trip, uid: "2", train_uid: "547210A7", assigned_at: recent_departure)
+    ]
+
+    # Both trains have left Ashmont
+    vehicle_positions = [
+      build(:vehicle_position,
+        vehicle_id: "R-5484208E",
+        direction: 1,
+        station_id: "place-smmnl",
+        current_status: :IN_TRANSIT_TO
+      ),
+      build(:vehicle_position,
+        vehicle_id: "R-547210A7",
+        direction: 1,
+        station_id: "place-smmnl",
+        current_status: :IN_TRANSIT_TO
+      )
+    ]
+
+    send(
+      Realtime.TripMatcherServer,
+      {:new_data, :ocs_trips, %{timestamp: 1, entities: ocs_trips}}
+    )
+
+    send(
+      Realtime.TripMatcherServer,
+      {:new_data, :vehicle_positions, %{timestamp: 2, entities: vehicle_positions}}
+    )
+
+    assert_receive {:new_data, :vehicles,
+                    %{
+                      entities: [
+                        %Vehicle{
+                          ocs_trips: %{current: %{departed: true, actual_departure: nil}}
+                        },
+                        %Vehicle{
+                          ocs_trips: %{
+                            current: %{departed: true, actual_departure: ^recent_departure}
+                          }
+                        }
+                      ]
+                    }}
+  end
 end
