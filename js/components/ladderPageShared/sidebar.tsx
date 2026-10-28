@@ -12,10 +12,10 @@ import { getColorSchemeSetting } from "../../util/colorScheme";
 import { remapLabels, reorder } from "../../util/consist";
 import { className } from "../../util/dom";
 import { isFeatureEnabled } from "../../util/featureFlags";
+import { getMetaContent } from "../../util/metadata";
 import { TrainThemes } from "./trainTheme";
 import { DateTime } from "luxon";
 import { ReactElement, useState } from "react";
-import { getMetaContent } from "../../util/metadata";
 
 export const SideBar = ({
   searchedCar,
@@ -170,7 +170,7 @@ const Consist = ({
             );
           })}
         </div>
-        {ocsHost &&
+        {ocsHost && (
           <a
             href={`http://${ocsHost}/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
             className="hidden mt-1 mb-4 w-fit px-6 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
@@ -183,7 +183,7 @@ const Consist = ({
               See Cars&rsquo; History
             </span>
           </a>
-        }
+        )}
       </div>
     </section>
   );

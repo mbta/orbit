@@ -15,7 +15,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         // Arrow top right
         id: "arrow-top",
         spacingRatio: 2.0,
-        location: { latitude: 42.396192, longitude: -71.142230 },
+        location: { latitude: 42.396192, longitude: -71.14223 },
         // TODO: in the future, for `Implement location interpolation between ladders`
         //   we probably want this to be:
         // threshold: 0.6,
@@ -37,7 +37,7 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE`
-            : "",
+          : "",
       },
       {
         id: "place-davis",
@@ -192,14 +192,14 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT`
-            : "",
+          : "",
       },
       {
         // Arrow bottom left
         id: "arrow-bottom",
         spacingRatio: 0.0,
         // Ashmont southbound storage -- should this be Codman Yard?
-        location: { latitude: 42.281250, longitude: -71.061650 },
+        location: { latitude: 42.28125, longitude: -71.06165 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -271,14 +271,14 @@ export const LadderRungs: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE`
-            : "",
+          : "",
       },
       {
         // Arrow bottom left
         id: "arrow-bottom",
         spacingRatio: 0,
         // Caddigan Yard
-        location: { latitude: 42.204568, longitude: -71.002040 },
+        location: { latitude: 42.204568, longitude: -71.00204 },
         showName: false,
         showDots: false,
         arrowLeft: "down",
@@ -578,7 +578,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ALEWIFE`
-            : "",
+          : "",
       },
       {
         id: "place-davis",
@@ -713,7 +713,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=ASHMONT`
-            : "",
+          : "",
       },
     ],
     // JFK <-> Braintree
@@ -772,7 +772,7 @@ export const Stations: Record<RouteId, LadderConfig[]> = {
         externalUrl:
           OCS_HOST ?
             `http://${OCS_HOST}/Train/sched_trip.php?transitline=RED%20LINE&station=BRAINTREE`
-            : "",
+          : "",
       },
     ],
   ],

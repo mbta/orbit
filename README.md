@@ -49,9 +49,9 @@ and then visit `localhost:<port>`.
 
 ## Set up Links to OCS
 
-For UI elements to appear that point to OCS, the `ocs_host` value needs to be populated. 
+For UI elements to appear that point to OCS, the `ocs_host` value needs to be populated.
 
-In higher environments, this is done through environment variable configs. Locally, this can be done by copying the `OCS Host` section of `dev.secret.example.exs` to the `dev.secret.exs` file, uncommenting it and filling in the OCS host. 
+In higher environments, this is done through environment variable configs. Locally, this can be done by copying the `OCS Host` section of `dev.secret.example.exs` to the `dev.secret.exs` file, uncommenting it and filling in the OCS host.
 
 ## Receiving messages from OCS
 

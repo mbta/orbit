@@ -22,9 +22,7 @@
     },
     {
       "description": "don't update the constraints in this file (namely erlang)",
-      "matchFileNames": [
-        "renovate.json"
-      ],
+      "matchFileNames": ["renovate.json"],
       "enabled": false
     },
     {
