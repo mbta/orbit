@@ -42,12 +42,15 @@ const ROUTE_PATTERN_CONFIG: Readonly<
 };
 
 const ROUTE_DEFAULTS: Readonly<
-  Record<RouteId, { color: string; letter: string; interLadderStationIds: StationId[] }>
+  Record<
+    RouteId,
+    { color: string; letter: string; interLadderStationIds: StationId[] }
+  >
 > = {
   Red: {
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
-    interLadderStationIds: ["place-jfk", "place-andrw"]
+    interLadderStationIds: ["place-jfk", "place-andrw"],
   },
 };
 
@@ -106,7 +109,7 @@ const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
       vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt
     ) ?
       DirectionalStopIds.get(stopId)
-      : null;
+    : null;
   return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
 };
 
@@ -164,7 +167,7 @@ const matchingLadderRungsForVehicle = (
       matchingLadderRungs =
         branchIndex !== undefined ?
           ladderRungsForRoute[branchIndex]
-          : undefined;
+        : undefined;
     }
   }
 
@@ -247,7 +250,7 @@ export const Ladders = ({
         (vehicle) =>
           vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
       ) ?? null)
-      : null;
+    : null;
   const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
   return (
@@ -260,7 +263,8 @@ export const Ladders = ({
         ([ladderRungs, branchVehicles], index) => {
           const branch: BranchPickerSelection = index;
 
-          const interLadderStationIds = ROUTE_DEFAULTS[routeId].interLadderStationIds;
+          const interLadderStationIds =
+            ROUTE_DEFAULTS[routeId].interLadderStationIds;
 
           return (
             <div
