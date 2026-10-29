@@ -246,8 +246,8 @@ defmodule Realtime.TripMatcherServerTest do
       start_supervised(
         {Realtime.TripMatcherServer,
          vehicle_events: %{
-           {"5484208E", "place-asmnl"} => stale_departure,
-           {"547210A7", "place-asmnl"} => recent_departure
+           {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: stale_departure),
+           {"547210A7", "place-asmnl"} => build(:vehicle_event, timestamp: recent_departure)
          }}
       )
 

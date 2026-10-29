@@ -830,7 +830,10 @@ defmodule Realtime.TripMatcherTest do
     test "gets an actual departure from the events based on vehicle_id" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -845,7 +848,10 @@ defmodule Realtime.TripMatcherTest do
         )
 
       vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -860,8 +866,8 @@ defmodule Realtime.TripMatcherTest do
       vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3, past: []})
 
       events = %{
-        {"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z],
-        {"5484208F", "place-asmnl"} => ~U[2025-07-08 16:25:24Z]
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z]),
+        {"5484208F", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:25:24Z])
       }
 
       assert [
@@ -917,7 +923,9 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -938,7 +946,9 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)

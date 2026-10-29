@@ -6,9 +6,16 @@ defmodule Realtime.TripMatcher do
   alias Orbit.Vehicle
 
   alias Realtime.Data.TripUpdate
+  alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
 
-  @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()], map()) :: [Vehicle.t()]
+  @type departure_lookup :: %{
+          {vehicle_id :: String.t(), station_id :: String.t()} => VehicleEvent.t()
+        }
+
+  @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()], departure_lookup()) :: [
+          Vehicle.t()
+        ]
   def match_trips(vehicle_positions, trip_updates, ocs_trips, events) do
     ocs_trips_by_uid =
       Enum.into(ocs_trips, %{}, fn trip ->
@@ -244,7 +251,12 @@ defmodule Realtime.TripMatcher do
           Map.get(events, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
 
         vehicle = put_in(vehicle.ocs_trips.current.departed, true)
-        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
+
+        if actual_departure != nil do
+          put_in(vehicle.ocs_trips.current.actual_departure, actual_departure.timestamp)
+        else
+          vehicle
+        end
       else
         vehicle
       end
