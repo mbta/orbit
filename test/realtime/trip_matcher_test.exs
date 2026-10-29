@@ -901,9 +901,64 @@ defmodule Realtime.TripMatcherTest do
 
     test "departures from other stations do not apply" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
       # The OCS trip starts at Ashmont
-      events = %{{"5484208E", "place-harsq"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-harsq"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
+
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], events)
+    end
+
+    test "does not falsely match a departure from an earlier trip" do
+      # Scenario: Vehicle making multiple trips:
+      #   trip_1: Park St to Braintree
+      #   trip_2: Braintree to Park St
+      #   trip_3: Part St to Braintree
+      # Current trip is trip_3, but the departure from Park St was not detected
+      # so there is no VehicleEvent. However there is a VehicleEvent for the prior
+      # departure on trip_1
+
+      trip_1 =
+        insert(:ocs_trip,
+          uid: "11111111",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 18:00:00Z],
+          origin_station: "PARK STREET [R]",
+          destination_station: "BRAINTREE"
+        )
+
+      trip_2 =
+        insert(:ocs_trip,
+          uid: "22222222",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 18:45:00Z],
+          origin_station: "BRAINTREE",
+          destination_station: "PARK STREET [R]"
+        )
+
+      trip_3 =
+        insert(:ocs_trip,
+          uid: "33333333",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 19:30:00Z],
+          origin_station: "PARK STREET [R]",
+          destination_station: "BRAINTREE"
+        )
+
+      vehicle = build(:vehicle, ocs_trips: %{current: trip_3, past: [trip_2, trip_1]})
+
+      # Departure event for trip_1, not current trip. Still within cutoff time
+      events = %{
+        {"5484208E", "place-pktrm"} =>
+          build(:vehicle_event,
+            station_id: "place-pktrm",
+            vehicle_id: "5484208E",
+            direction_id: 0,
+            timestamp: ~U[2025-07-08 18:05:00Z]
+          )
+      }
 
       assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
