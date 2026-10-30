@@ -14,7 +14,7 @@ permissions: {}
 jobs:
   deploy:
     name: Deploy to Staging
-    uses: ./.github/workflows/deploy.yml
+    uses: $/.github/workflows/deploy.yml
     permissions:
       id-token: write # allows workflow to exchange short-lived tokens directly from cloud provider
       contents: read

@@ -16,7 +16,7 @@ jobs:
       group: sandbox
       cancel-in-progress: true
     if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'deploy-to-sandbox') }}
-    uses: ./.github/workflows/deploy.yml
+    uses: $/.github/workflows/deploy.yml
     permissions:
       id-token: write # allows workflow to exchange short-lived tokens directly from cloud provider
       contents: read
