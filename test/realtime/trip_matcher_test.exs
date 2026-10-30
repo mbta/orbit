@@ -353,7 +353,8 @@ defmodule Realtime.TripMatcherTest do
                        ),
                      next: [
                        build(:ocs_trip)
-                     ]
+                     ],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_ID"
@@ -388,7 +389,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:00:00Z],
                          scheduled_departure: ~U[2026-08-21 11:30:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_ID"
@@ -416,7 +418,8 @@ defmodule Realtime.TripMatcherTest do
                  %Vehicle{
                    ocs_trips: %{
                      current: nil,
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_ID"
@@ -450,7 +453,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:00:00Z],
                          scheduled_departure: ~U[2026-08-21 11:30:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_ID"
@@ -473,7 +477,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          origin_station: "place-asmnl"
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -493,7 +498,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          scheduled_departure: ~U[2025-06-06 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -513,7 +519,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          departed: true
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -529,7 +536,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: build(:ocs_trip),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -545,7 +553,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: build(:ocs_trip, origin_station: "CABOT YARD", departed: true),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -565,7 +574,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          destination_station: "place-alfcl"
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -585,7 +595,8 @@ defmodule Realtime.TripMatcherTest do
                          :ocs_trip,
                          scheduled_arrival: ~U[2025-06-06 13:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -601,7 +612,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
-                     next: []
+                     next: [],
+                     past: []
                    }
                  }
                ])
@@ -617,7 +629,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
-                     next: [build(:ocs_trip, origin_station: "place-alfcl")]
+                     next: [build(:ocs_trip, origin_station: "place-alfcl")],
+                     past: []
                    }
                  }
                ])
@@ -633,7 +646,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
-                     next: [build(:ocs_trip, scheduled_departure: ~U[2025-06-06 12:00:00Z])]
+                     next: [build(:ocs_trip, scheduled_departure: ~U[2025-06-06 12:00:00Z])],
+                     past: []
                    }
                  }
                ])
@@ -649,7 +663,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
-                     next: [build(:ocs_trip, destination_station: "place-asmnl")]
+                     next: [build(:ocs_trip, destination_station: "place-asmnl")],
+                     past: []
                    }
                  }
                ])
@@ -665,7 +680,8 @@ defmodule Realtime.TripMatcherTest do
                    position: build(:vehicle_position),
                    ocs_trips: %{
                      current: nil,
-                     next: [build(:ocs_trip, scheduled_arrival: ~U[2025-06-06 13:00:00Z])]
+                     next: [build(:ocs_trip, scheduled_arrival: ~U[2025-06-06 13:00:00Z])],
+                     past: []
                    }
                  }
                ])
@@ -685,7 +701,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_APPROACHING_DAVIS",
@@ -703,7 +720,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_APPROACHING_SHAWMUT",
@@ -721,7 +739,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_APPROACHING_QUINCY_ADAMS",
@@ -739,7 +758,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_APPROACHING_QUINCY_ADAMS",
@@ -757,7 +777,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{vehicle_id: "VEHICLE_OVER_45_NO_STATION"}
                  ),
@@ -769,7 +790,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:46:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{
                      vehicle_id: "VEHICLE_OVER_45",
@@ -784,7 +806,8 @@ defmodule Realtime.TripMatcherTest do
                          actual_departure: ~U[2026-08-21 12:30:00Z],
                          scheduled_departure: ~U[2026-08-21 12:00:00Z]
                        ),
-                     next: []
+                     next: [],
+                     past: []
                    },
                    position: %VehiclePosition{vehicle_id: "VEHICLE_UNDER_45"}
                  )
@@ -806,8 +829,11 @@ defmodule Realtime.TripMatcherTest do
   describe "populate_actual_departures" do
     test "gets an actual departure from the events based on vehicle_id" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -821,8 +847,11 @@ defmodule Realtime.TripMatcherTest do
           origin_station_updated: "ASHMONT"
         )
 
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{actual_departure: ~U[2025-07-08 16:05:24Z]}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -832,13 +861,13 @@ defmodule Realtime.TripMatcherTest do
       ocs_trip = build(:ocs_trip, uid: "trip1", train_uid: "5484208E")
       ocs_trip2 = build(:ocs_trip, uid: "trip2", train_uid: "5484208F")
       ocs_trip3 = build(:ocs_trip, uid: "trip3", train_uid: "5484208G")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
-      vehicle2 = build(:vehicle, ocs_trips: %{current: ocs_trip2})
-      vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3})
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+      vehicle2 = build(:vehicle, ocs_trips: %{current: ocs_trip2, past: []})
+      vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3, past: []})
 
       events = %{
-        {"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z],
-        {"5484208F", "place-asmnl"} => ~U[2025-07-08 16:25:24Z]
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z]),
+        {"5484208F", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:25:24Z])
       }
 
       assert [
@@ -872,9 +901,64 @@ defmodule Realtime.TripMatcherTest do
 
     test "departures from other stations do not apply" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip})
+      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
       # The OCS trip starts at Ashmont
-      events = %{{"5484208E", "place-harsq"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-harsq"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
+
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], events)
+    end
+
+    test "does not falsely match a departure from an earlier trip" do
+      # Scenario: Vehicle making multiple trips:
+      #   trip_1: Park St to Braintree
+      #   trip_2: Braintree to Park St
+      #   trip_3: Part St to Braintree
+      # Current trip is trip_3, but the departure from Park St was not detected
+      # so there is no VehicleEvent. However there is a VehicleEvent for the prior
+      # departure on trip_1
+
+      trip_1 =
+        insert(:ocs_trip,
+          uid: "11111111",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 18:00:00Z],
+          origin_station: "PARK STREET [R]",
+          destination_station: "BRAINTREE"
+        )
+
+      trip_2 =
+        insert(:ocs_trip,
+          uid: "22222222",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 18:45:00Z],
+          origin_station: "BRAINTREE",
+          destination_station: "PARK STREET [R]"
+        )
+
+      trip_3 =
+        insert(:ocs_trip,
+          uid: "33333333",
+          train_uid: "5484208E",
+          scheduled_departure: ~U[2025-07-08 19:30:00Z],
+          origin_station: "PARK STREET [R]",
+          destination_station: "BRAINTREE"
+        )
+
+      vehicle = build(:vehicle, ocs_trips: %{current: trip_3, past: [trip_2, trip_1]})
+
+      # Departure event for trip_1, not current trip. Still within cutoff time
+      events = %{
+        {"5484208E", "place-pktrm"} =>
+          build(:vehicle_event,
+            station_id: "place-pktrm",
+            vehicle_id: "5484208E",
+            direction_id: 0,
+            timestamp: ~U[2025-07-08 18:05:00Z]
+          )
+      }
 
       assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -885,7 +969,7 @@ defmodule Realtime.TripMatcherTest do
 
       vehicle =
         build(:vehicle,
-          ocs_trips: %{current: ocs_trip},
+          ocs_trips: %{current: ocs_trip, past: []},
           position:
             build(
               :vehicle_position,
@@ -894,7 +978,9 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
@@ -905,7 +991,7 @@ defmodule Realtime.TripMatcherTest do
 
       vehicle =
         build(:vehicle,
-          ocs_trips: %{current: ocs_trip},
+          ocs_trips: %{current: ocs_trip, past: []},
           position:
             build(
               :vehicle_position,
@@ -915,7 +1001,9 @@ defmodule Realtime.TripMatcherTest do
             )
         )
 
-      events = %{{"5484208E", "place-asmnl"} => ~U[2025-07-08 16:05:24Z]}
+      events = %{
+        {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
+      }
 
       assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)

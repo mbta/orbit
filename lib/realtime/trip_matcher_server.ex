@@ -20,7 +20,7 @@ defmodule Realtime.TripMatcherServer do
            out: %{timestamp: integer(), entities: [Vehicle.t()]},
 
            # Cache departures
-           vehicle_events: map(),
+           vehicle_events: TripMatcher.departure_lookup(),
            entities_server_ref: reference() | nil,
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
@@ -108,13 +108,13 @@ defmodule Realtime.TripMatcherServer do
       Map.update(
         acc,
         {e.vehicle_id, e.station_id},
-        e.timestamp,
-        &Enum.max([&1, e.timestamp], DateTime)
+        e,
+        &Enum.max([&1.timestamp, e.timestamp], DateTime)
       )
     end)
     # Prune departures that aren't recent
-    |> Map.filter(fn {_key, timestamp} ->
-      DateTime.diff(now, timestamp, :minute) < @event_cache_cutoff_m
+    |> Map.filter(fn {_key, event} ->
+      DateTime.diff(now, event.timestamp, :minute) < @event_cache_cutoff_m
     end)
   end
 

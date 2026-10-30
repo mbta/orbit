@@ -6,9 +6,16 @@ defmodule Realtime.TripMatcher do
   alias Orbit.Vehicle
 
   alias Realtime.Data.TripUpdate
+  alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
 
-  @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()], map()) :: [Vehicle.t()]
+  @type departure_lookup :: %{
+          {vehicle_id :: String.t(), station_id :: String.t()} => VehicleEvent.t()
+        }
+
+  @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()], departure_lookup()) :: [
+          Vehicle.t()
+        ]
   def match_trips(vehicle_positions, trip_updates, ocs_trips, events) do
     ocs_trips_by_uid =
       Enum.into(ocs_trips, %{}, fn trip ->
@@ -19,21 +26,19 @@ defmodule Realtime.TripMatcher do
       vehicle_id = Realtime.Data.unprefixed_vehicle_id(vp.vehicle_id)
 
       # Find OCS trip: the most recently assigned trip for this train
-      current_trip =
+      sorted_trips =
         Enum.filter(ocs_trips, fn trip ->
           trip.train_uid == vehicle_id && trip.assigned_at != nil
         end)
-        |> Enum.max_by(
-          fn trip -> trip.assigned_at end,
-          # Use default compare function provided by DateTime
-          DateTime,
-          # If there are no assigned trips (empty list), current trip should be nil
-          fn -> nil end
-        )
+        |> Enum.sort_by(fn trip -> DateTime.to_unix(trip.assigned_at) end, :desc)
 
-      next = next_trip_chain(ocs_trips_by_uid, vehicle_id, current_trip)
+      {current_trip, past_trips} =
+        case sorted_trips do
+          [current_trip | past_trips] -> {current_trip, past_trips}
+          [] -> {nil, []}
+        end
 
-      ocs_current_and_next = %{current: current_trip, next: next}
+      next_trips = next_trip_chain(ocs_trips_by_uid, vehicle_id, current_trip)
 
       # Find TripUpdate
       trip_update =
@@ -44,7 +49,11 @@ defmodule Realtime.TripMatcher do
       %Vehicle{
         position: vp,
         trip_update: trip_update,
-        ocs_trips: ocs_current_and_next
+        ocs_trips: %{
+          current: current_trip,
+          next: next_trips,
+          past: past_trips
+        }
       }
     end)
     |> populate_actual_departures(events)
@@ -222,31 +231,47 @@ defmodule Realtime.TripMatcher do
     end)}"
   end
 
-  @spec populate_actual_departures([Vehicle.t()], map()) :: [Vehicle.t()]
+  @spec populate_actual_departures([Vehicle.t()], departure_lookup()) :: [Vehicle.t()]
   def populate_actual_departures(vehicles, events) do
-    Enum.map(vehicles, fn vehicle ->
-      %{ocs_trips: %{current: current}} = vehicle
+    Enum.map(vehicles, &populate_actual_departure(&1, events))
+  end
 
-      origin_station = current && Trip.get_origin_station(current)
+  @spec populate_actual_departure(Vehicle.t(), departure_lookup()) :: Vehicle.t()
+  defp populate_actual_departure(vehicle, departures) do
+    %{ocs_trips: %{current: current, past: past}} = vehicle
 
-      # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
-      # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
-      # or else we would not have gotten a vehicle position from GTFS realtime.
-      departed? =
-        origin_station != nil and
-          not (Stations.revenue?(origin_station) and
-                 at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
+    origin_station = current && Trip.get_origin_station(current)
 
-      if departed? do
-        actual_departure =
-          Map.get(events, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
+    # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
+    # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
+    # or else we would not have gotten a vehicle position from GTFS realtime.
+    departed? =
+      origin_station != nil and
+        not (Stations.revenue?(origin_station) and
+               at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
 
-        vehicle = put_in(vehicle.ocs_trips.current.departed, true)
-        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure)
+    if departed? do
+      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
+
+      # We have determined that the vehicle has departed based on its position. Now check to
+      # see if we recorded a VehicleEvent capturing the exact time of departure, in order
+      # to populate `actual_departure`
+      actual_departure =
+        Map.get(departures, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
+
+      # Check that this departure isn't actually for a prior trip, which could happen if the current
+      # trip's departure has not been detected
+      best_trip =
+        actual_departure && best_matching_trip_for_departure([current | past], actual_departure)
+
+      if best_trip == current do
+        put_in(vehicle.ocs_trips.current.actual_departure, actual_departure.timestamp)
       else
         vehicle
       end
-    end)
+    else
+      vehicle
+    end
   end
 
   @spec nonrevenue_origin?(Trip.t()) :: boolean()
@@ -266,5 +291,49 @@ defmodule Realtime.TripMatcher do
 
     # Check if stopped at the OCS origin_station
     stopped and vehicle.position.station_id == station
+  end
+
+  @spec best_matching_trip_for_departure([Trip.t()], VehicleEvent.t()) :: Trip.t() | nil
+  defp best_matching_trip_for_departure(trips, event) do
+    {best_trip, _} =
+      trips
+      |> Enum.map(fn trip -> {trip, match_departure?(trip, event)} end)
+      |> Enum.reject(fn {_trip, {result, _}} -> result == :no_match end)
+      |> Enum.min_by(fn {_trip, {:match, penalty}} -> penalty end, fn -> {nil, nil} end)
+
+    best_trip
+  end
+
+  @spec match_departure?(Trip.t(), VehicleEvent.t()) ::
+          {:match, penalty :: integer()} | {:no_match, :wrong_station | :missing_departure_time}
+  defp match_departure?(ocs_trip, vehicle_event) do
+    origin_station = Trip.get_origin_station(ocs_trip) |> Stations.ocs_to_gtfs()
+    dest_station = Trip.get_destination_station(ocs_trip) |> Stations.ocs_to_gtfs()
+    trip_direction = Realtime.Data.Stations.direction_from_stations(origin_station, dest_station)
+
+    matches_direction? =
+      trip_direction == :ambiguous or trip_direction == vehicle_event.direction_id
+
+    cond do
+      not matches_direction? ->
+        {:no_match, :wrong_direction}
+
+      origin_station != vehicle_event.station_id ->
+        {:no_match, :wrong_station}
+
+      ocs_trip.scheduled_departure == nil and ocs_trip.assigned_at == nil ->
+        {:no_match, :missing_departure_time}
+
+      true ->
+        expected_departure_time =
+          if ocs_trip.scheduled_departure != nil do
+            DateTime.add(ocs_trip.scheduled_departure, ocs_trip.offset || 0)
+          else
+            ocs_trip.assigned_at
+          end
+
+        difference = DateTime.diff(vehicle_event.timestamp, expected_departure_time)
+        {:match, abs(difference)}
+    end
   end
 end
