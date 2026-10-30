@@ -105,12 +105,18 @@ defmodule Realtime.TripMatcherServer do
       service_date
     )
     |> Enum.filter(&(&1.arrival_departure == :departure))
-    |> Enum.reduce(existing_cache, fn e, acc ->
+    |> Enum.reduce(existing_cache, fn new_event, acc ->
       Map.update(
         acc,
-        {e.vehicle_id, e.station_id},
-        e,
-        &Enum.max([&1.timestamp, e.timestamp], DateTime)
+        {new_event.vehicle_id, new_event.station_id},
+        new_event,
+        fn existing_event ->
+          if DateTime.compare(new_event.timestamp, existing_event.timestamp) == :gt do
+            new_event
+          else
+            existing_event
+          end
+        end
       )
     end)
     # Prune departures that aren't recent
