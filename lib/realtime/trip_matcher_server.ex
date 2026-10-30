@@ -5,6 +5,7 @@ defmodule Realtime.TripMatcherServer do
   alias Orbit.Ocs.Trip
   alias Orbit.Vehicle
   alias Realtime.Data.TripUpdate
+  alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
   alias Realtime.TripMatcher
   alias Realtime.VehicleEventDetector
@@ -20,7 +21,7 @@ defmodule Realtime.TripMatcherServer do
            out: %{timestamp: integer(), entities: [Vehicle.t()]},
 
            # Cache departures
-           vehicle_events: TripMatcher.departure_lookup(),
+           vehicle_events: VehicleEvent.departure_lookup(),
            entities_server_ref: reference() | nil,
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
@@ -72,7 +73,7 @@ defmodule Realtime.TripMatcherServer do
        out: %{timestamp: 0, entities: []},
        vehicle_events:
          Keyword.get_lazy(opts, :vehicle_events, fn ->
-           Realtime.Data.VehicleEvent.recent(now)
+           Realtime.Data.VehicleEvent.recent_departures(now)
          end),
        entities_server_ref: ocs_ref,
        subscriptions: MapSet.new(),

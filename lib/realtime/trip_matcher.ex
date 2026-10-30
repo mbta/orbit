@@ -9,11 +9,12 @@ defmodule Realtime.TripMatcher do
   alias Realtime.Data.VehicleEvent
   alias Realtime.Data.VehiclePosition
 
-  @type departure_lookup :: %{
-          {vehicle_id :: String.t(), station_id :: String.t()} => VehicleEvent.t()
-        }
-
-  @spec match_trips([VehiclePosition.t()], [TripUpdate.t()], [Trip.t()], departure_lookup()) :: [
+  @spec match_trips(
+          [VehiclePosition.t()],
+          [TripUpdate.t()],
+          [Trip.t()],
+          VehicleEvent.departure_lookup()
+        ) :: [
           Vehicle.t()
         ]
   def match_trips(vehicle_positions, trip_updates, ocs_trips, events) do
@@ -231,12 +232,14 @@ defmodule Realtime.TripMatcher do
     end)}"
   end
 
-  @spec populate_actual_departures([Vehicle.t()], departure_lookup()) :: [Vehicle.t()]
+  @spec populate_actual_departures([Vehicle.t()], VehicleEvent.departure_lookup()) :: [
+          Vehicle.t()
+        ]
   def populate_actual_departures(vehicles, events) do
     Enum.map(vehicles, &populate_actual_departure(&1, events))
   end
 
-  @spec populate_actual_departure(Vehicle.t(), departure_lookup()) :: Vehicle.t()
+  @spec populate_actual_departure(Vehicle.t(), VehicleEvent.departure_lookup()) :: Vehicle.t()
   defp populate_actual_departure(vehicle, departures) do
     %{ocs_trips: %{current: current, past: past}} = vehicle
 
