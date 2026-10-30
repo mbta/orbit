@@ -4,7 +4,7 @@ defmodule OrbitWeb.SignInExportController do
   alias Orbit.OperatorSignIn
   alias Orbit.Repo
 
-  import Ecto.Query
+  import Ecto.Query, only: [from: 2]
 
   @timezone Application.compile_env!(:orbit, :timezone)
 
