@@ -97,7 +97,7 @@ defmodule Orbit.MixProject do
       {:req, "== 0.7.5"},
       {:sentry, "== 14.0.1"},
       {:ssl_verify_fun, "1.1.7"},
-      {:sobelow, "== 0.15.0", only: [:dev, :test], runtime: false},
+      {:sobelow, "== 0.18.1", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.2.0"},
       {:telemetry_poller, "1.3.0"},
       {:tz, "== 0.28.4"},
