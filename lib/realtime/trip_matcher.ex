@@ -251,10 +251,13 @@ defmodule Realtime.TripMatcher do
                at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
 
     if departed? do
+      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
+
+      # We have determined that the vehicle has departed based on its position. Now check to
+      # see if we recorded a VehicleEvent capturing the exact time of departure, in order
+      # to populate `actual_departure`
       actual_departure =
         Map.get(departures, {current.train_uid, Stations.ocs_to_gtfs(origin_station)})
-
-      vehicle = put_in(vehicle.ocs_trips.current.departed, true)
 
       # Check that this departure isn't actually for a prior trip, which could happen if the current
       # trip's departure has not been detected
