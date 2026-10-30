@@ -29,6 +29,8 @@ Checklist
   - [ ] Has tests
   - [ ] Doesn't need tests
   - [ ] Tests deferred (with justification)
+- Quality:
+  - [ ] Reviewed by design/product
 
 <!--
 * Should this PR be deployed to orbit-sandbox for review? If so, add the `deploy-to-sandbox` label.
