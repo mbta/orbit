@@ -96,7 +96,7 @@ defmodule Orbit.MixProject do
       {:postgrex, "0.22.4"},
       {:req, "== 0.7.5"},
       {:sentry, "== 14.0.1"},
-      {:ssl_verify_fun, "1.1.7"},
+      {:ssl_verify_fun, "== 1.1.9"},
       {:sobelow, "== 0.18.1", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.2.0"},
       {:telemetry_poller, "1.3.0"},
