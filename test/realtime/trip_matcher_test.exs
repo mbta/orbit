@@ -829,7 +829,12 @@ defmodule Realtime.TripMatcherTest do
   describe "populate_actual_departures" do
     test "gets an actual departure from the events based on vehicle_id" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+
+      vehicle =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
 
       events = %{
         {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
@@ -847,7 +852,11 @@ defmodule Realtime.TripMatcherTest do
           origin_station_updated: "ASHMONT"
         )
 
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+      vehicle =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
 
       events = %{
         {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
@@ -861,9 +870,24 @@ defmodule Realtime.TripMatcherTest do
       ocs_trip = build(:ocs_trip, uid: "trip1", train_uid: "5484208E")
       ocs_trip2 = build(:ocs_trip, uid: "trip2", train_uid: "5484208F")
       ocs_trip3 = build(:ocs_trip, uid: "trip3", train_uid: "5484208G")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
-      vehicle2 = build(:vehicle, ocs_trips: %{current: ocs_trip2, past: []})
-      vehicle3 = build(:vehicle, ocs_trips: %{current: ocs_trip3, past: []})
+
+      vehicle =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
+      vehicle2 =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip2, past: []}
+        )
+
+      vehicle3 =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip3, past: []}
+        )
 
       events = %{
         {"5484208E", "place-asmnl"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z]),
@@ -901,7 +925,13 @@ defmodule Realtime.TripMatcherTest do
 
     test "departures from other stations do not apply" do
       ocs_trip = build(:ocs_trip, train_uid: "5484208E")
-      vehicle = build(:vehicle, ocs_trips: %{current: ocs_trip, past: []})
+
+      vehicle =
+        build(:vehicle,
+          position: build(:vehicle_position, direction: 1),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
       # The OCS trip starts at Ashmont
       events = %{
         {"5484208E", "place-harsq"} => build(:vehicle_event, timestamp: ~U[2025-07-08 16:05:24Z])
@@ -909,6 +939,49 @@ defmodule Realtime.TripMatcherTest do
 
       assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
                TripMatcher.populate_actual_departures([vehicle], events)
+    end
+
+    test "does not mark an early OCS trip assignment as departed until vehicle has turned" do
+      # Scenario:
+      # - Vehicle is northbound, approaching Alewife.
+      # - OCS issues an early ASN message to the next southbound trip.
+      ocs_trip =
+        build(:ocs_trip,
+          origin_station: "ALEWIFE",
+          destination_station: "ASHMONT"
+        )
+
+      # Vehicle should not be marked departed because it hasn't actually reached Alewife yet
+      # and turned around
+      vehicle =
+        build(:vehicle,
+          position:
+            build(:vehicle_position,
+              station_id: "place-alfcl",
+              current_status: :INCOMING_AT,
+              direction: 1
+            ),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
+      assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], %{})
+
+      # Later, vehicle actually departs and is now approaching Davis southbound. Should
+      # now be marked departed.
+      vehicle =
+        build(:vehicle,
+          position:
+            build(:vehicle_position,
+              station_id: "place-davis",
+              current_status: :INCOMING_AT,
+              direction: 0
+            ),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], %{})
     end
 
     test "does not falsely match a departure from an earlier trip" do
