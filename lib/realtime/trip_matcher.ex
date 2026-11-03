@@ -244,6 +244,7 @@ defmodule Realtime.TripMatcher do
     %{ocs_trips: %{current: current, past: past}} = vehicle
 
     origin_station = current && Trip.get_origin_station(current)
+    trip_direction = current && expected_trip_direction(current)
 
     # If the vehicle's trip has a known revenue location as its origin, check that the vehicle is not
     # stopped at that station. For nonrevenue origins, we will assume that the vehicle has already departed
@@ -251,7 +252,8 @@ defmodule Realtime.TripMatcher do
     departed? =
       origin_station != nil and
         not (Stations.revenue?(origin_station) and
-               at_station?(vehicle, Stations.ocs_to_gtfs(origin_station)))
+               at_station?(vehicle, Stations.ocs_to_gtfs(origin_station))) and
+        (trip_direction == :ambiguous or trip_direction == vehicle.position.direction)
 
     if departed? do
       vehicle = put_in(vehicle.ocs_trips.current.departed, true)
@@ -274,6 +276,19 @@ defmodule Realtime.TripMatcher do
       end
     else
       vehicle
+    end
+  end
+
+  @spec expected_trip_direction(Trip.t()) :: 0 | 1 | :ambiguous
+  defp expected_trip_direction(trip) do
+    with origin_station when not is_nil(origin_station) <-
+           Trip.get_origin_station(trip) |> Stations.ocs_to_gtfs(),
+         dest_station when not is_nil(dest_station) <-
+           Trip.get_destination_station(trip) |> Stations.ocs_to_gtfs() do
+      Realtime.Data.Stations.direction_from_stations(origin_station, dest_station)
+    else
+      _ ->
+        :ambiguous
     end
   end
 
