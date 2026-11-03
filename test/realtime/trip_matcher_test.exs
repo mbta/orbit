@@ -941,6 +941,49 @@ defmodule Realtime.TripMatcherTest do
                TripMatcher.populate_actual_departures([vehicle], events)
     end
 
+    test "does not mark an early OCS trip assignment as departed until vehicle has turned" do
+      # Scenario:
+      # - Vehicle is northbound, approaching Alewife.
+      # - OCS issues an early ASN message to the next southbound trip.
+      ocs_trip =
+        build(:ocs_trip,
+          origin_station: "ALEWIFE",
+          destination_station: "ASHMONT"
+        )
+
+      # Vehicle should not be marked departed because it hasn't actually reached Alewife yet
+      # and turned around
+      vehicle =
+        build(:vehicle,
+          position:
+            build(:vehicle_position,
+              station_id: "place-alfcl",
+              current_status: :INCOMING_AT,
+              direction: 1
+            ),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
+      assert [%{ocs_trips: %{current: %{departed: nil, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], %{})
+
+      # Later, vehicle actually departs and is now approaching Davis southbound. Should
+      # now be marked departed.
+      vehicle =
+        build(:vehicle,
+          position:
+            build(:vehicle_position,
+              station_id: "place-davis",
+              current_status: :INCOMING_AT,
+              direction: 0
+            ),
+          ocs_trips: %{current: ocs_trip, past: []}
+        )
+
+      assert [%{ocs_trips: %{current: %{departed: true, actual_departure: nil}}}] =
+               TripMatcher.populate_actual_departures([vehicle], %{})
+    end
+
     test "does not falsely match a departure from an earlier trip" do
       # Scenario: Vehicle making multiple trips:
       #   trip_1: Park St to Braintree
