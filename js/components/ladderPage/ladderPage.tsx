@@ -19,7 +19,7 @@ const NO_VEHICLES: Vehicle[] = [];
 const DEFAULT_BRANCH: BranchPickerSelection = 1;
 
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
-  const vehicles = useVehicles() ?? NO_VEHICLES;
+  const vehicles = useVehicles("Red") ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
@@ -36,8 +36,6 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const resetVerticalScrollRef = useRef(true);
   const centeredSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
-  const sideBarOpen = sideBarSelection !== null;
-  const prevSideBarOpenRef = useRef(sideBarOpen);
 
   const findVehicle = useCallback(
     (vehicleId: string | null): Vehicle | null =>
@@ -145,14 +143,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     // re-centering would jump vertically
     const alreadyCentered =
       centeredSelectionRef.current === branchPickerSelection;
-    const sideBarToggled = prevSideBarOpenRef.current !== sideBarOpen;
-    /* eslint-disable better-mutation/no-mutation */
+    // eslint-disable-next-line better-mutation/no-mutation
     centeredSelectionRef.current = null;
-    prevSideBarOpenRef.current = sideBarOpen;
-    /* eslint-enable better-mutation/no-mutation */
-    if (alreadyCentered && !resetVerticalScrollRef.current && !sideBarToggled) {
-      return;
-    }
+    if (alreadyCentered && !resetVerticalScrollRef.current) return;
     const container = laddersRef.current;
     if (!container) return;
     const branch = container.querySelector<HTMLElement>(
@@ -177,7 +170,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       // eslint-disable-next-line better-mutation/no-mutation
       resetVerticalScrollRef.current = false;
     }
-  }, [branchPickerSelection, branchPickerClick, sideBarOpen]);
+  }, [branchPickerSelection, branchPickerClick]);
 
   // Detect touch scroll and lock direction to starting axis by hiding overflow
   // on other axis
@@ -226,9 +219,6 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     const branchCount = LadderRungs[routeId].length;
 
     const updateSelection = () => {
-      // The sidebar's scroll padding shifts rest positions, so the scroll
-      // fraction no longer maps to a branch
-      if (sideBarOpen) return;
       // Snapping only rests at the left edge, middle, or right edge, so the
       // scroll fraction maps directly to a branch, even when the outer
       // branches can't reach the center (e.g. when the ladders barely overflow)
@@ -254,7 +244,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       container.removeEventListener("scroll", onScroll);
       clearTimeout(timeout);
     };
-  }, [routeId, sideBarOpen]);
+  }, [routeId]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
@@ -301,15 +291,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     sideBarSelection === null ? null : findVehicle(sideBarSelection.vehicleId);
 
   return (
-    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
-      {sideBarOpen && sideBarVehicle !== null ?
-        <div
-          className="absolute inset-0 z-modal-backdrop light:bg-black/[.48] dark:bg-black/60 md:hidden"
-          onClick={() => {
-            setSideBarSelection(null);
-          }}
-        />
-      : null}
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <main
         ref={mainRef}
         className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
@@ -349,7 +331,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       </main>
       {isOverflowing && (
         <div
-          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center"
+          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center w-full"
           data-testid="branch-picker-container"
           onClick={(event) => {
             if (event.target === event.currentTarget) {

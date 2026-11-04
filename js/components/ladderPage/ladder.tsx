@@ -187,6 +187,7 @@ export const Ladders = ({
   vehicles: Vehicle[];
   ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
+  const vehicles = useVehicles(routeId) ?? [];
   const ladderRungsForRoute = LadderRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
