@@ -23,7 +23,7 @@ export const Ladders = ({
   sideBarSelection: SideBarSelection | null;
   setSideBarSelection: (selection: SideBarSelection | null) => void;
 }): ReactElement => {
-  const vehicles = useVehicles() ?? [];
+  const vehicles = useVehicles("Red") ?? [];
   const stationLists = Stations[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {

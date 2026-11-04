@@ -34,4 +34,6 @@ defmodule Orbit.RailLine do
 
   @spec from_route_id(Realtime.Data.route_id()) :: t()
   def from_route_id(:Red), do: :red
+  def from_route_id(:Blue), do: :blue
+  def from_route_id(:Orange), do: :orange
 end
