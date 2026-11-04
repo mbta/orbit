@@ -19,7 +19,7 @@ const NO_VEHICLES: Vehicle[] = [];
 const DEFAULT_BRANCH: BranchPickerSelection = 1;
 
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
-  const vehicles = useVehicles() ?? NO_VEHICLES;
+  const vehicles = useVehicles("Red") ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
