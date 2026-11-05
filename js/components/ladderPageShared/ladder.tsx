@@ -258,8 +258,8 @@ export const Ladders = ({
       ref={ref}
       data-testid="ladders-scroll-container"
       className={`relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory ${
-        // Matches the sidebar's w-80 so centering and snapping use the uncovered area
-        sideBarSelection !== null ? "scroll-pl-80" : ""
+        // Matches the sidebar's w-80: padding lets the first ladder scroll clear of it
+        sideBarSelection !== null ? "pl-80 scroll-pl-80" : ""
       }`}
     >
       {Array.from(vehiclesByBranch.entries()).map(
