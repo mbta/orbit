@@ -105,6 +105,18 @@ const router = createBrowserRouter([
         element: <HelpMenu />,
       },
       {
+        path: paths.ladderBlue,
+        element: <LadderPage routeId="Blue" />,
+      },
+      {
+        path: paths.ladderOrange,
+        element: <LadderPage routeId="Orange" />,
+      },
+      {
+        path: paths.ladderRed,
+        element: <Navigate to={paths.ladder} replace />,
+      },
+      {
         path: paths.ladder,
         element: <LadderPage routeId="Red" />,
       },

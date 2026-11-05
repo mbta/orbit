@@ -39,6 +39,26 @@ const ROUTE_PATTERN_CONFIG: Readonly<
       letter: "B",
     },
   },
+  Blue: {
+    "Blue-6-0": {
+      color: "branch-color-heavy-rail-blue-line",
+      letter: "B",
+    },
+    "Blue-6-1": {
+      color: "branch-color-heavy-rail-blue-line",
+      letter: "B",
+    },
+  },
+  Orange: {
+    "Orange-3-0": {
+      color: "branch-color-heavy-rail-orange-line",
+      letter: "O",
+    },
+    "Orange-3-1": {
+      color: "branch-color-heavy-rail-orange-line",
+      letter: "O",
+    },
+  },
 };
 
 const ROUTE_DEFAULTS: Readonly<
@@ -51,6 +71,16 @@ const ROUTE_DEFAULTS: Readonly<
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
     interLadderStationIds: ["place-jfk", "place-andrw"],
+  },
+  Blue: {
+    color: "branch-color-heavy-rail-blue-line",
+    letter: "B",
+    interLadderStationIds: [],
+  },
+  Orange: {
+    color: "branch-color-heavy-rail-orange-line",
+    letter: "O",
+    interLadderStationIds: [],
   },
 };
 
@@ -78,7 +108,7 @@ const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
     consist: vp.cars,
     routeId: vp.routeId,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-assignment
-    directionId: directionIdFromVehicle(vehicle),
+    directionId: ladderDirectionIdFromVehicle(vehicle),
     ab: vp.cars.map(() => null),
     routePatternId: vehicle.tripUpdate?.routePatternId ?? undefined,
     stationId: vp.stationId,
@@ -103,6 +133,14 @@ const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
   return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
 };
 
+// Blue's GTFS direction 0 heads to Bowdoin (right side); rail-tech-ui uses 0 for the left side.
+const ladderDirectionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
+  const directionId = directionIdFromVehicle(vehicle);
+  return vehicle.vehiclePosition.routeId === "Blue" && directionId !== null ?
+      1 - directionId
+    : directionId;
+};
+
 // Tracks which vehicle is selected and which car within its consist was searched for
 export type SelectedVehicle = {
   vehicleId: string | null;
@@ -121,6 +159,7 @@ const matchingLadderRungsForVehicle = (
   // Calculate the progress for vehicles in transit to Andrew or JFK where the Red Line
   //  branches and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
   if (
+    vp.routeId === "Red" &&
     vp.position !== null &&
     vp.stopStatus === StopStatus.InTransitTo &&
     ((vp.stationId === "place-jfk" && vp.directionId === 0) ||
@@ -250,7 +289,8 @@ export const Ladders = ({
         "relative flex w-full h-full overflow-x-auto snap-x snap-mandatory",
         sideBarSelection !== null ?
           "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
-        : "justify-start min-[1485px]:justify-center",
+        : routeId === "Red" ? "justify-start min-[1485px]:justify-center"
+        : "justify-start min-[384px]:justify-center",
       ])}
     >
       {Array.from(vehiclesByBranch.entries()).map(
@@ -265,7 +305,7 @@ export const Ladders = ({
               key={index}
               data-branch={branch}
               data-testid={`ladder-branch-${branch}`}
-              className="h-full mx-40 mt-28 snap-center snap-always"
+              className="h-full mt-28 snap-center snap-always mx-40"
             >
               <Ladder
                 trainsClickable

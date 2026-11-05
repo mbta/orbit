@@ -29,7 +29,7 @@ export const SideBar = ({
   const colorScheme = getColorSchemeSetting();
 
   return (
-    <aside className="absolute inset-y-0 h-auto min-w-[320px] z-modal-backdrop flex flex-col left-0 w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="sm:min-w-[320px] z-[20] sticky flex flex-col left-0 sm:w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <SideBarHeader vehicle={vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
@@ -75,6 +75,8 @@ const processVehicleConsist = (
 };
 
 const headerSymbol = (vehicle: Vehicle) => {
+  if (vehicle.vehiclePosition.routeId === "Blue") return "B";
+  if (vehicle.vehiclePosition.routeId === "Orange") return "O";
   const routePatternId = vehicle.tripUpdate?.routePatternId;
   if (routePatternId) {
     if (["Red-1-0", "Red-1-1"].includes(routePatternId)) return "A";
@@ -95,6 +97,8 @@ const SideBarHeader = ({ vehicle }: { vehicle: Vehicle }) => {
   const symbol = headerSymbol(vehicle);
   const theme =
     !vehicle.vehiclePosition.revenue ? TrainThemes.gray
+    : vehicle.vehiclePosition.routeId === "Blue" ? TrainThemes.blue
+    : vehicle.vehiclePosition.routeId === "Orange" ? TrainThemes.orange
     : symbol === "A" ? TrainThemes.ashmont
     : TrainThemes.braintree;
   return (
@@ -205,7 +209,10 @@ const CurrentLocation = ({ vehicle }: { vehicle: Vehicle }) => {
           : "Next stop"}
           &nbsp;
           <span className="font-bold">
-            {gtfsIdToDisplayName(vehicle.vehiclePosition.stationId) ?? "--"}
+            {gtfsIdToDisplayName(
+              vehicle.vehiclePosition.stationId,
+              vehicle.vehiclePosition.routeId,
+            ) ?? "--"}
           </span>
         </div>
       </div>
