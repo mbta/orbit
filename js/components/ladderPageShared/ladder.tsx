@@ -257,7 +257,10 @@ export const Ladders = ({
     <div
       ref={ref}
       data-testid="ladders-scroll-container"
-      className="relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory"
+      className={`relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory ${
+        // Matches the sidebar's w-80 so centering and snapping use the uncovered area
+        sideBarSelection !== null ? "scroll-pl-80" : ""
+      }`}
     >
       {Array.from(vehiclesByBranch.entries()).map(
         ([ladderRungs, branchVehicles], index) => {

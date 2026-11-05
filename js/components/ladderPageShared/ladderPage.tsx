@@ -36,6 +36,8 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   const resetVerticalScrollRef = useRef(true);
   const centeredSelectionRef = useRef<BranchPickerSelection | null>(null);
   const [branchPickerClick, setBranchPickerClick] = useState(0);
+  const sideBarOpen = sideBarSelection !== null;
+  const prevSideBarOpenRef = useRef(sideBarOpen);
 
   const findVehicle = useCallback(
     (vehicleId: string | null): Vehicle | null =>
@@ -143,9 +145,14 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     // re-centering would jump vertically
     const alreadyCentered =
       centeredSelectionRef.current === branchPickerSelection;
-    // eslint-disable-next-line better-mutation/no-mutation
+    const sideBarToggled = prevSideBarOpenRef.current !== sideBarOpen;
+    /* eslint-disable better-mutation/no-mutation */
     centeredSelectionRef.current = null;
-    if (alreadyCentered && !resetVerticalScrollRef.current) return;
+    prevSideBarOpenRef.current = sideBarOpen;
+    /* eslint-enable better-mutation/no-mutation */
+    if (alreadyCentered && !resetVerticalScrollRef.current && !sideBarToggled) {
+      return;
+    }
     const container = laddersRef.current;
     if (!container) return;
     const branch = container.querySelector<HTMLElement>(
@@ -170,7 +177,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       // eslint-disable-next-line better-mutation/no-mutation
       resetVerticalScrollRef.current = false;
     }
-  }, [branchPickerSelection, branchPickerClick]);
+  }, [branchPickerSelection, branchPickerClick, sideBarOpen]);
 
   // Detect touch scroll and lock direction to starting axis by hiding overflow
   // on other axis
@@ -219,6 +226,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     const branchCount = LadderRungs[routeId].length;
 
     const updateSelection = () => {
+      // The sidebar's scroll padding shifts rest positions, so the scroll
+      // fraction no longer maps to a branch
+      if (sideBarOpen) return;
       // Snapping only rests at the left edge, middle, or right edge, so the
       // scroll fraction maps directly to a branch, even when the outer
       // branches can't reach the center (e.g. when the ladders barely overflow)
@@ -244,7 +254,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       container.removeEventListener("scroll", onScroll);
       clearTimeout(timeout);
     };
-  }, [routeId]);
+  }, [routeId, sideBarOpen]);
 
   const onSearchMatch = useCallback(
     (match: VehicleSearchMatch): boolean => {
