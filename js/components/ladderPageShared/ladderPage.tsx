@@ -291,18 +291,26 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
     sideBarSelection === null ? null : findVehicle(sideBarSelection.vehicleId);
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+    <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
+      {sideBarSelection !== null && sideBarVehicle !== null ?
+        <div
+          className="absolute inset-0 z-modal-backdrop light:bg-black/[.48] dark:bg-black/60 md:hidden"
+          onClick={() => setSideBarSelection(null)}
+        />
+      : null}
       <main
         ref={mainRef}
-        className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
+        className="relative dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
       >
         {sideBarSelection !== null && sideBarVehicle !== null ?
-          <SideBar
-            searchedCar={sideBarSelection.searchedCar}
-            vehicle={sideBarVehicle}
-            close={close}
-          />
-        : null}
+          <>
+            <SideBar
+              searchedCar={sideBarSelection.searchedCar}
+              vehicle={sideBarVehicle}
+              close={close}
+            />
+          </>
+          : null}
         <div
           ref={scrollContainerRef}
           data-testid="scroll-container"
@@ -331,7 +339,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       </main>
       {isOverflowing && (
         <div
-          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center w-full"
+          className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center"
           data-testid="branch-picker-container"
           onClick={(event) => {
             if (event.target === event.currentTarget) {
