@@ -27,15 +27,21 @@ defmodule Orbit.Ocs.Entities do
 
   @type entities() :: [Trip.t()]
 
+  # We assume OCS trips stay alive for one day. In practice trip UIDs may be globally unique,
+  #  but we don't have a guarantee.
+  def trip_uid_ttl_d, do: 1
+
   @spec query_latest(DateTime.t()) :: entities()
   def query_latest(current_datetime \\ DateTime.utc_now()) do
     # TODO: What filtering/sorting makes sense for this query?
     service_date = Util.Time.service_date_for_utc_datetime(current_datetime)
-    Repo.all(from(trip in Trip, where: trip.service_date == ^service_date))
+    horizon = Date.add(service_date, -trip_uid_ttl_d())
+
+    Repo.all(from(trip in Trip, where: trip.service_date >= ^horizon))
   end
 
-  @spec apply_changes(Message.t()) :: [{:ok, any} | {:error, any()}]
-  def apply_changes(%TschNewMessage{} = message) do
+  @spec apply_changes(Message.t(), map()) :: [{:ok, any} | {:error, any()}]
+  def apply_changes(%TschNewMessage{} = message, trip_uid_cache) do
     # A note about upserts:
     #
     # We generally don't expect to receive multiple TSCH_NEW messages for the same
@@ -52,8 +58,13 @@ defmodule Orbit.Ocs.Entities do
     # a dispatcher's updated endpoints only when they differ from the scheduled
     # ones (NULL = unchanged). Every TSCH_NEW is authoritative for the current
     # endpoints, so replaying a window of messages still converges correctly.
+
+    # If the cache has the trip UID, we use the cache's service date; this means
+    # it's a carry-over trip from the previous day.
+    service_date = Map.get(trip_uid_cache, message.trip_uid, service_date(message.timestamp))
+
     %Trip{
-      service_date: service_date(message.timestamp),
+      service_date: service_date,
       uid: message.trip_uid,
       prev_uid: message.prev_trip_uid,
       next_uid: message.next_trip_uid,
@@ -73,7 +84,7 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschConMessage{} = message) do
+  def apply_changes(%TschConMessage{} = message, _trip_uid_cache) do
     service_date = service_date(message.timestamp)
     rail_line = RailLine.from_ocs_transitline(message.transitline)
     # Apply consist to train
@@ -96,7 +107,7 @@ defmodule Orbit.Ocs.Entities do
     [train_result, trip_result]
   end
 
-  def apply_changes(%TschAsnMessage{} = message) do
+  def apply_changes(%TschAsnMessage{} = message, _trip_uid_cache) do
     assign_train_to_trip(
       service_date(message.timestamp),
       RailLine.from_ocs_transitline(message.transitline),
@@ -108,13 +119,13 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschRldMessage{}) do
+  def apply_changes(%TschRldMessage{}, _trip_uid_cache) do
     [{:ok, :noop}]
   end
 
   # TODO: RTR has a lot of logic around this particular message.
   # Confirm that we understand how OCS works here.
-  def apply_changes(%TschDstMessage{} = message) do
+  def apply_changes(%TschDstMessage{} = message, _trip_uid_cache) do
     # TSCH_DST carries a dispatcher-updated destination. The scheduled
     # destination stays in destination_station (first value seen wins);
     # destination_station_updated records the new destination only when it
@@ -136,7 +147,7 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschDelMessage{} = message) do
+  def apply_changes(%TschDelMessage{} = message, _trip_uid_cache) do
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -151,7 +162,7 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschLnkMessage{} = message) do
+  def apply_changes(%TschLnkMessage{} = message, _trip_uid_cache) do
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -168,7 +179,7 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschOffMessage{} = message) do
+  def apply_changes(%TschOffMessage{} = message, _trip_uid_cache) do
     %Trip{
       service_date: service_date(message.timestamp),
       uid: message.trip_uid,
@@ -183,7 +194,7 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschTagMessage{} = message) do
+  def apply_changes(%TschTagMessage{} = message, _trip_uid_cache) do
     service_date = service_date(message.timestamp)
     rail_line = RailLine.from_ocs_transitline(message.transitline)
 

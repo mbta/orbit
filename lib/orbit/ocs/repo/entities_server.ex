@@ -4,11 +4,13 @@ defmodule Orbit.Ocs.EntitiesServer do
   use GenServer
 
   alias Orbit.Ocs.Message
+  alias Orbit.Ocs.UidCache
 
   @throttle_seconds 5
 
   @typep output :: %{timestamp: integer(), entities: Orbit.Ocs.Entities.entities()}
   @typep state :: %{
+           trip_uid_cache: map(),
            out: output(),
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
@@ -28,8 +30,13 @@ defmodule Orbit.Ocs.EntitiesServer do
       schedule()
     end
 
+    today = Util.Time.current_service_date()
+    trip_uid_cache = UidCache.initialize(today)
+    Logger.info("trip_uid_cache initialized size is #{map_size(trip_uid_cache)}")
+
     {:ok,
      %{
+       trip_uid_cache: trip_uid_cache,
        out: %{timestamp: Util.Time.current_time(), entities: Orbit.Ocs.Entities.query_latest()},
        subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
@@ -53,7 +60,7 @@ defmodule Orbit.Ocs.EntitiesServer do
         ) ::
           {:reply, :ok, state()}
   def handle_call({:new_messages, messages}, _from, state) do
-    apply_changes(messages)
+    apply_changes(messages, state.trip_uid_cache)
 
     # TODO: Avoid synchronous push here?
     state = push_with_throttling(state)
@@ -103,13 +110,16 @@ defmodule Orbit.Ocs.EntitiesServer do
   @spec push(state()) :: state()
   defp push(state) do
     entities = Orbit.Ocs.Entities.query_latest()
+    now = Util.Time.current_time()
+    service_date = Util.Time.service_date_for_timestamp(now)
 
     state = %{
       state
       | out: %{
-          timestamp: Util.Time.current_time(),
+          timestamp: now,
           entities: entities
-        }
+        },
+        trip_uid_cache: Orbit.Ocs.UidCache.prune(state.trip_uid_cache, service_date)
     }
 
     Logger.info(
@@ -130,14 +140,16 @@ defmodule Orbit.Ocs.EntitiesServer do
     GenServer.call(pid, {:new_messages, messages}, 10_000)
   end
 
-  @spec apply_changes([Orbit.Ocs.Message.t()]) :: :ok | :error
-  defp apply_changes(messages) do
-    Enum.each(messages, &apply_changes_for_message/1)
+  @spec apply_changes([Orbit.Ocs.Message.t()], map()) :: :ok | :error
+  defp apply_changes(messages, trip_uid_cache) do
+    Enum.each(messages, fn message ->
+      apply_changes_for_message(message, trip_uid_cache)
+    end)
   end
 
-  @spec apply_changes_for_message(Orbit.Ocs.Message.t()) :: :ok | :error
-  defp apply_changes_for_message(message) do
-    results = Orbit.Ocs.Entities.apply_changes(message)
+  @spec apply_changes_for_message(Orbit.Ocs.Message.t(), map()) :: :ok | :error
+  defp apply_changes_for_message(message, trip_uid_cache) do
+    results = Orbit.Ocs.Entities.apply_changes(message, trip_uid_cache)
 
     errors =
       Enum.filter(results, fn result ->
