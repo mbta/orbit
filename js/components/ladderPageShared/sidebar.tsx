@@ -29,7 +29,7 @@ export const SideBar = ({
   const colorScheme = getColorSchemeSetting();
 
   return (
-    <aside className="sticky h-auto min-w-[320px] z-modal-backdrop flex flex-col left-0 w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
+    <aside className="absolute inset-y-0 h-auto min-w-[320px] z-modal-backdrop flex flex-col left-0 w-80 light:bg-drawer-background-light light:text-text-primary-light dark:bg-drawer-background-dark dark:text-text-primary-dark transition-transform duration-300 ease-in-out animate-slide-in-from-left">
       <SideBarHeader vehicle={vehicle} />
       <button
         className="absolute m-3 pt-2 top-0 right-0 h-4 w-4 hover:fill-slate-700"
