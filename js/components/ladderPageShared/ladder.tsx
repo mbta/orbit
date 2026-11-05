@@ -257,9 +257,10 @@ export const Ladders = ({
     <div
       ref={ref}
       data-testid="ladders-scroll-container"
-      className={`relative flex w-full h-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory ${
-        // Matches the sidebar's w-80: padding lets the first ladder scroll clear of it
-        sideBarSelection !== null ? "pl-80 scroll-pl-80" : ""
+      className={`relative flex w-full h-full overflow-x-auto snap-x snap-mandatory ${
+        sideBarSelection !== null ?
+          "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
+        : "justify-start min-[1485px]:justify-center"
       }`}
     >
       {Array.from(vehiclesByBranch.entries()).map(
