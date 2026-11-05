@@ -313,14 +313,12 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
         className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex grow flex-1 min-h-0 overflow-y-auto overflow-x-hidden justify-center"
       >
         {sideBarSelection !== null && sideBarVehicle !== null ?
-          <>
-            <SideBar
-              searchedCar={sideBarSelection.searchedCar}
-              vehicle={sideBarVehicle}
-              close={close}
-            />
-          </>
-          : null}
+          <SideBar
+            searchedCar={sideBarSelection.searchedCar}
+            vehicle={sideBarVehicle}
+            close={close}
+          />
+        : null}
         <div
           ref={scrollContainerRef}
           data-testid="scroll-container"
