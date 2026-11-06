@@ -138,7 +138,7 @@ export const SearchBar = ({
             type="button"
             className={className([
               "border border-white",
-              // "rounded-full dark:bg-gray-200",
+              "rounded-full dark:bg-gray-200",
               "absolute size-8 right-1 top-1/2 -translate-y-1/2 text-gray-500",
             ])}
             onClick={(event) => {
@@ -147,7 +147,7 @@ export const SearchBar = ({
             }}
           >
             x
-            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 size-4 rounded-full dark:bg-gray-200" />
+            {/* <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 size-4 rounded-full dark:bg-gray-200" /> */}
             {/* <span className="inline-block align-middle leading-none size-4 rounded-full dark:bg-gray-200 text-gray-500">
               x
             </span> */}
