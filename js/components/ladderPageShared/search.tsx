@@ -109,11 +109,12 @@ export const SearchBar = ({
             event.stopPropagation();
           }}
         >
-          <img
+          <SearchIcon />
+          {/* <img
             src="/images/magnifying-glass.svg"
             alt={""}
             className="h-4 w-4"
-          />
+          /> */}
         </button>
         <input
           ref={inputRef}
@@ -136,24 +137,13 @@ export const SearchBar = ({
         {query !== "" ?
           <button
             type="button"
-            className={className([
-              "border border-white",
-              // "rounded-full dark:bg-gray-200",
-              "absolute size-8 right-1 top-1/2 -translate-y-1/2 text-gray-500",
-            ])}
+            className="absolute size-8 right-1 top-1/2 -translate-y-1/2"
             onClick={(event) => {
               event.stopPropagation();
               clearSearch();
             }}
           >
-            <img
-              src={`/images/close.svg`}
-              alt={"clear search"}
-              className="inline size-4 p-0.5 rounded-full dark:bg-gray-200"
-            />
-            {/* <span className="inline-block align-middle leading-none size-4 rounded-full dark:bg-gray-200 text-gray-500">
-              x
-            </span> */}
+            <CloseIcon />
           </button>
         : null}
       </form>
@@ -164,5 +154,32 @@ export const SearchBar = ({
         </p>
       : null}
     </div>
+  );
+};
+
+// TODO: Create a better unified way to represent and tint icons
+
+const CloseIcon = () => {
+  return (
+    <svg
+      id="icon--close"
+      viewBox="0 0 26 27"
+      xmlns="http://www.w3.org/2000/svg"
+      className="inline size-4 p-0.5 rounded-full dark:bg-gray-200 dark:fill-inputField-search-background-dark light:fill-inputField-search-background-light"
+    >
+      <path d="M16.324 13.704l9.015 9.076a2.377 2.377 0 0 1 0 3.345 2.339 2.339 0 0 1-3.323 0l-9.015-9.075-9.015 9.075a2.339 2.339 0 0 1-3.323 0 2.377 2.377 0 0 1 0-3.345l9.015-9.076L.663 4.63a2.377 2.377 0 0 1 0-3.345 2.339 2.339 0 0 1 3.323 0l9.015 9.075 9.015-9.075a2.339 2.339 0 0 1 3.323 0 2.377 2.377 0 0 1 0 3.345l-9.015 9.075z" />
+    </svg>
+  );
+};
+
+const SearchIcon = () => {
+  return (
+    <svg
+      viewBox="0 0 640 640"
+      xmlns="http://www.w3.org/2000/svg"
+      className="size-4 dark:fill-gray-200 light:fill-gray-200"
+    >
+      <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
+    </svg>
   );
 };
