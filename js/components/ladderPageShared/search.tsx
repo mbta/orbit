@@ -158,6 +158,8 @@ export const SearchBar = ({
 };
 
 // TODO: Create a better unified way to represent and tint icons
+// TODO: Verify that the search bar color is meant to be the same in both light and dark mode
+// TODO: If so, then consider baking these in as svg assets hosted as <img> instead of inlining them
 
 const CloseIcon = () => {
   return (
