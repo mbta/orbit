@@ -1,6 +1,7 @@
 import { CarId, RouteId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
+import { className } from "../../util/dom";
 import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 
 export type VehicleSearchMatch = {
@@ -135,13 +136,21 @@ export const SearchBar = ({
         {query !== "" ?
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            className={className([
+              "border border-white",
+              // "rounded-full dark:bg-gray-200",
+              "absolute size-8 right-1 top-1/2 -translate-y-1/2 text-gray-500",
+            ])}
             onClick={(event) => {
               event.stopPropagation();
               clearSearch();
             }}
           >
-            ×
+            x
+            <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 size-4 rounded-full dark:bg-gray-200" />
+            {/* <span className="inline-block align-middle leading-none size-4 rounded-full dark:bg-gray-200 text-gray-500">
+              x
+            </span> */}
           </button>
         : null}
       </form>
