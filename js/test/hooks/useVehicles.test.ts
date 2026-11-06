@@ -15,12 +15,27 @@ describe("useVehicles", () => {
       data: [],
     });
   });
-  test("subscribes to the proper topic", () => {
-    renderHook(useVehicles, { wrapper: DataWarningsProvider });
+  test("subscribes to the proper topic with requested line filter", () => {
+    renderHook(() => useVehicles("Red"), { wrapper: DataWarningsProvider });
     expect(mockUseChannel).toHaveBeenCalledWith(
       expect.objectContaining({
         topic: "vehicles",
         event: "vehicles",
+        joinParams: {
+          line: "Red",
+        },
+      }),
+    );
+  });
+  test("joins with the requested line filter for other lines", () => {
+    renderHook(() => useVehicles("Blue"), { wrapper: DataWarningsProvider });
+    expect(mockUseChannel).toHaveBeenCalledWith(
+      expect.objectContaining({
+        topic: "vehicles",
+        event: "vehicles",
+        joinParams: {
+          line: "Blue",
+        },
       }),
     );
   });

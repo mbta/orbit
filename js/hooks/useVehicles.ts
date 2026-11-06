@@ -2,6 +2,7 @@ import { useSocket } from "../contexts/socketContext";
 import "../models/vehiclePosition";
 import { useDataWarnings } from "../contexts/dataWarningsContext";
 import { dateTimeFromUnix, useNow } from "../dateTime";
+import { RouteId } from "../models/common";
 import {
   Vehicle,
   VehicleDataMessage,
@@ -16,9 +17,7 @@ import {
   useState,
 } from "react";
 
-export type RealtimeLine = "Red" | "Blue" | "Orange";
-
-export const useVehicles = (line: RealtimeLine): Vehicle[] | null => {
+export const useVehicles = (line: RouteId): Vehicle[] | null => {
   const now = useNow("minute");
   const [, addWarning, removeWarning] = useDataWarnings();
   const [mostRecentTimestamp, setMostRecentTimestamp] = useState(
