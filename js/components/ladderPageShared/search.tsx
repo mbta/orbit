@@ -169,7 +169,7 @@ const CloseIcon = () => {
 };
 
 const SearchIcon = () => {
-  const title = "Search for car";
+  const title = "Search";
   return (
     <svg
       viewBox="0 0 640 640"

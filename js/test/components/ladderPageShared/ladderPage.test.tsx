@@ -179,7 +179,7 @@ describe("LadderPage SideBar", () => {
 
       const input = view.getByPlaceholderText("Car #");
       await user.type(input, "1876");
-      await user.click(view.getByRole("button", { name: "Search for car" }));
+      await user.click(view.getByRole("button", { name: "Search" }));
 
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       expect(view.getByText("1876")).toHaveClass(
