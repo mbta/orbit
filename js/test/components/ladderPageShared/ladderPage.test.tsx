@@ -186,7 +186,7 @@ describe("LadderPage SideBar", () => {
         "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
-      await user.click(view.getByRole("button", { name: "×" }));
+      await user.click(view.getByRole("button", { name: "Clear search" }));
       expect(input).toHaveValue("");
       expect(
         view.queryByRole("button", { name: "Close" }),
@@ -375,7 +375,7 @@ describe("LadderPage SideBar", () => {
         view.getByText("⚠️ No trains matched your search"),
       ).toBeInTheDocument();
 
-      await user.click(view.getByRole("button", { name: "×" }));
+      await user.click(view.getByRole("button", { name: "Clear search" }));
       expect(input).toHaveValue("");
       expect(
         view.queryByText("⚠️ No trains matched your search"),
