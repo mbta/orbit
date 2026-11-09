@@ -135,13 +135,13 @@ export const SearchBar = ({
         {query !== "" ?
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+            className="absolute size-8 right-1 top-1/2 -translate-y-1/2"
             onClick={(event) => {
               event.stopPropagation();
               clearSearch();
             }}
           >
-            ×
+            <CloseIcon />
           </button>
         : null}
       </form>
@@ -152,5 +152,23 @@ export const SearchBar = ({
         </p>
       : null}
     </div>
+  );
+};
+
+// TODO: Set up a reusable way to embed svg icons
+const CloseIcon = () => {
+  const title = "Clear search";
+  return (
+    <svg
+      id="icon--close"
+      viewBox="0 0 26 27"
+      xmlns="http://www.w3.org/2000/svg"
+      className="inline size-4 p-0.5 rounded-full bg-gray-200 dark:fill-inputField-search-background-dark light:fill-inputField-search-background-light"
+      role="img"
+      aria-label={title}
+    >
+      <title>{title}</title>
+      <path d="M16.324 13.704l9.015 9.076a2.377 2.377 0 0 1 0 3.345 2.339 2.339 0 0 1-3.323 0l-9.015-9.075-9.015 9.075a2.339 2.339 0 0 1-3.323 0 2.377 2.377 0 0 1 0-3.345l9.015-9.076L.663 4.63a2.377 2.377 0 0 1 0-3.345 2.339 2.339 0 0 1 3.323 0l9.015 9.075 9.015-9.075a2.339 2.339 0 0 1 3.323 0 2.377 2.377 0 0 1 0 3.345l-9.015 9.075z" />
+    </svg>
   );
 };
