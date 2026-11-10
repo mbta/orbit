@@ -179,14 +179,14 @@ describe("LadderPage SideBar", () => {
 
       const input = view.getByPlaceholderText("Car #");
       await user.type(input, "1876");
-      await user.click(view.getByRole("button", { name: "Search for car" }));
+      await user.click(view.getByRole("button", { name: "Search" }));
 
       expect(view.getByRole("button", { name: "Close" })).toBeInTheDocument();
       expect(view.getByText("1876")).toHaveClass(
         "light:bg-slate-700 light:text-glides-gray-200 dark:bg-slate-200 dark:text-slate-700",
       );
 
-      await user.click(view.getByRole("button", { name: "×" }));
+      await user.click(view.getByRole("button", { name: "Clear search" }));
       expect(input).toHaveValue("");
       expect(
         view.queryByRole("button", { name: "Close" }),
@@ -375,7 +375,7 @@ describe("LadderPage SideBar", () => {
         view.getByText("⚠️ No trains matched your search"),
       ).toBeInTheDocument();
 
-      await user.click(view.getByRole("button", { name: "×" }));
+      await user.click(view.getByRole("button", { name: "Clear search" }));
       expect(input).toHaveValue("");
       expect(
         view.queryByText("⚠️ No trains matched your search"),
