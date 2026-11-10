@@ -97,7 +97,7 @@ defmodule Orbit.Ocs.EntitiesTest do
       assert %Trip{
                service_date: @test_service_date,
                uid: "TRIP_UID",
-               train_uid: nil,
+               train_uid: "TRAIN_UID",
                prev_uid: "PREV_TRIP_UID",
                next_uid: "NEXT_TRIP_UID",
                route: "OCS_ROUTE_ID",
@@ -144,7 +144,7 @@ defmodule Orbit.Ocs.EntitiesTest do
       assert %Trip{
                service_date: @test_service_date_minus_1,
                uid: "TRIP_UID_YESTERDAY",
-               train_uid: nil,
+               train_uid: "TRAIN_UID",
                prev_uid: "PREV_TRIP_UID",
                next_uid: "NEXT_TRIP_UID",
                route: "OCS_ROUTE_ID",

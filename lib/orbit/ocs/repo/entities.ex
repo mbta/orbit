@@ -273,7 +273,7 @@ defmodule Orbit.Ocs.Entities do
     from(trip in Trip,
       update: [
         set: [
-          train_uid: fragment("EXCLUDED.train_uid"),
+          train_uid: fragment("COALESCE(?, EXCLUDED.train_uid)", trip.train_uid),
           assigned_at: fragment("EXCLUDED.assigned_at"),
           prev_uid: fragment("EXCLUDED.prev_uid"),
           next_uid: fragment("EXCLUDED.next_uid"),
