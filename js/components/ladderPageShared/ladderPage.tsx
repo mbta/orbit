@@ -302,7 +302,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
 
   return (
     <div className="relative flex flex-col flex-1 min-h-0 overflow-hidden">
-      {sideBarSelection !== null && sideBarVehicle !== null ?
+      {sideBarOpen && sideBarVehicle !== null ?
         <div
           className="absolute inset-0 z-modal-backdrop light:bg-black/[.48] dark:bg-black/60 md:hidden"
           onClick={() => setSideBarSelection(null)}
