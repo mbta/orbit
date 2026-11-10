@@ -15,6 +15,7 @@ import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPa
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement, Ref } from "react";
+import { className } from "../../util/dom";
 
 const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
@@ -257,11 +258,12 @@ export const Ladders = ({
     <div
       ref={ref}
       data-testid="ladders-scroll-container"
-      className={`relative flex w-full h-full overflow-x-auto snap-x snap-mandatory ${
+      className={className([
+        "relative flex w-full h-full overflow-x-auto snap-x snap-mandatory",
         sideBarSelection !== null ?
           "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
         : "justify-start min-[1485px]:justify-center"
-      }`}
+      ])}
     >
       {Array.from(vehiclesByBranch.entries()).map(
         ([ladderRungs, branchVehicles], index) => {
