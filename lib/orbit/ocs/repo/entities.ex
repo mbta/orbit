@@ -6,6 +6,7 @@ defmodule Orbit.Ocs.Entities do
   """
   alias Orbit.Ocs.Train
   alias Orbit.Ocs.Trip
+  alias Orbit.Ocs.UidCache
   alias Orbit.RailLine
   alias Orbit.Repo
 
@@ -40,7 +41,7 @@ defmodule Orbit.Ocs.Entities do
     Repo.all(from(trip in Trip, where: trip.service_date >= ^horizon))
   end
 
-  @spec apply_changes(Message.t(), map()) :: [{:ok, any} | {:error, any()}]
+  @spec apply_changes(Message.t(), UidCache.t()) :: [{:ok, any} | {:error, any()}]
   def apply_changes(%TschNewMessage{} = message, trip_uid_cache) do
     # A note about upserts:
     #
@@ -260,7 +261,7 @@ defmodule Orbit.Ocs.Entities do
   # If the cache has the trip UID, we use the cache's service date; this means
   # it may be a carryover trip from the previous day (but not necessarily).
   # Otherwise, fall back to the service date of the message's timestamp.
-  @spec trip_service_date(Message.t(), map()) :: Date.t()
+  @spec trip_service_date(Message.t(), UidCache.t()) :: Date.t()
   defp trip_service_date(%{trip_uid: trip_uid, timestamp: timestamp}, trip_uid_cache) do
     Map.get_lazy(trip_uid_cache, trip_uid, fn -> service_date(timestamp) end)
   end

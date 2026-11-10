@@ -10,7 +10,7 @@ defmodule Orbit.Ocs.EntitiesServer do
 
   @typep output :: %{timestamp: integer(), entities: Orbit.Ocs.Entities.entities()}
   @typep state :: %{
-           trip_uid_cache: map(),
+           trip_uid_cache: UidCache.t(),
            out: output(),
            subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
@@ -148,14 +148,14 @@ defmodule Orbit.Ocs.EntitiesServer do
     GenServer.call(pid, {:new_messages, messages}, 10_000)
   end
 
-  @spec apply_changes([Orbit.Ocs.Message.t()], map()) :: :ok | :error
+  @spec apply_changes([Orbit.Ocs.Message.t()], UidCache.t()) :: :ok | :error
   defp apply_changes(messages, trip_uid_cache) do
     Enum.each(messages, fn message ->
       apply_changes_for_message(message, trip_uid_cache)
     end)
   end
 
-  @spec apply_changes_for_message(Orbit.Ocs.Message.t(), map()) :: :ok | :error
+  @spec apply_changes_for_message(Orbit.Ocs.Message.t(), UidCache.t()) :: :ok | :error
   defp apply_changes_for_message(message, trip_uid_cache) do
     results = Orbit.Ocs.Entities.apply_changes(message, trip_uid_cache)
 

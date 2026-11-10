@@ -5,7 +5,10 @@ defmodule Orbit.Ocs.UidCache do
 
   alias Orbit.Ocs.Entities
 
-  @spec initialize(Date.t()) :: map()
+  @typedoc "Caches OCS trips for carryover to subsequent service days (up to TTL)"
+  @type t :: %{(trip_uid :: String.t()) => service_date :: Date.t()}
+
+  @spec initialize(Date.t()) :: t()
   def initialize(now_service_date) do
     horizon = Date.add(now_service_date, -Entities.trip_uid_ttl_d())
 
@@ -19,7 +22,7 @@ defmodule Orbit.Ocs.UidCache do
     |> Map.new()
   end
 
-  @spec prune(map(), Date.t()) :: map()
+  @spec prune(t(), Date.t()) :: t()
   def prune(cache, now_service_date) do
     Map.filter(cache, fn {_uid, service_date} ->
       Date.diff(service_date, now_service_date) >= -Entities.trip_uid_ttl_d()
