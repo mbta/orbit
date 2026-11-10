@@ -30,7 +30,7 @@ defmodule Orbit.Ocs.Entities do
 
   # We assume OCS trips stay alive for one day. In practice trip UIDs may be globally unique,
   #  but we don't have a guarantee.
-  def trip_uid_ttl_d, do: 1
+  def trip_uid_ttl_d, do: 2
 
   @spec query_latest(DateTime.t()) :: entities()
   def query_latest(current_datetime \\ DateTime.utc_now()) do

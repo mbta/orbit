@@ -4,7 +4,7 @@ defmodule Orbit.Ocs.UidCacheTest do
 
   @today Date.new!(2025, 7, 2)
   @yesterday Date.new!(2025, 7, 1)
-  @two_days_ago Date.new!(2025, 6, 30)
+  @three_days_ago Date.new!(2025, 6, 29)
 
   describe "initialize" do
     test "gets trip UIDs from current day" do
@@ -17,8 +17,8 @@ defmodule Orbit.Ocs.UidCacheTest do
       assert %{"11111" => @yesterday} = Orbit.Ocs.UidCache.initialize(@today)
     end
 
-    test "doesn't include two days ago" do
-      insert(:trip, service_date: @two_days_ago)
+    test "doesn't include three days ago" do
+      insert(:trip, service_date: @three_days_ago)
       assert %{} == Orbit.Ocs.UidCache.initialize(@today)
     end
   end
@@ -30,7 +30,7 @@ defmodule Orbit.Ocs.UidCacheTest do
                  %{
                    "CURRENT" => @today,
                    "OLD1" => ~D[2024-11-02],
-                   "OLD2" => @two_days_ago
+                   "OLD2" => @three_days_ago
                  },
                  @today
                )
