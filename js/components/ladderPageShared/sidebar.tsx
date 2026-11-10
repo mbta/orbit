@@ -173,6 +173,7 @@ const Consist = ({
         {ocsHost && (
           <a
             href={`http://${ocsHost}/Train/sched_trip.php?train=${processedConsist[leadCarIndex]}`}
+            target="_blank"
             className="hidden mt-1 mb-4 w-fit px-6 py-2 md:flex flex-row items-center justify-center gap-2 border light:bg-button-tertiary-background-light light:border-button-tertiary-border-light dark:bg-button-tertiary-background-dark dark:border-button-tertiary-border-dark mx-auto rounded-lg"
           >
             <span
