@@ -1,5 +1,5 @@
-import { Ladders } from "../../../components/ladderPageShared/ladder";
-import { LadderPage } from "../../../components/ladderPageShared/ladderPage";
+import { Ladders } from "../../../components/ladderPage/ladder";
+import { LadderPage } from "../../../components/ladderPage/ladderPage";
 import { ORBIT_RL_TRAINSTARTERS } from "../../../groups";
 import { useVehicles } from "../../../hooks/useVehicles";
 import { Vehicle } from "../../../models/vehicle";

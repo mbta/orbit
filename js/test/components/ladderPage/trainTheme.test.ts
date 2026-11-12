@@ -1,7 +1,7 @@
 import {
   TrainThemes,
   trainThemesByRoutePattern,
-} from "../../../components/ladderPageShared/trainTheme";
+} from "../../../components/ladderPage/trainTheme";
 
 describe("trainThemesByRoutePattern", () => {
   test("returns ashmont theme for expected Ashmont pattern IDs", () => {

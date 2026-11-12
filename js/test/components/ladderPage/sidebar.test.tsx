@@ -1,4 +1,4 @@
-import { SideBar } from "../../../components/ladderPageShared/sidebar";
+import { SideBar } from "../../../components/ladderPage/sidebar";
 import { dateTimeFromISO } from "../../../dateTime";
 import { StopStatus } from "../../../models/vehiclePosition";
 import {

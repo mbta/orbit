@@ -1,12 +1,12 @@
-import { VehicleWithHeight } from "../../../components/ladderPageShared/ladder";
+import { VehicleWithHeight } from "../../../components/ladderPage/ladder";
 import {
   avoidLabelOverlaps,
   Train,
-} from "../../../components/ladderPageShared/train";
+} from "../../../components/ladderPage/train";
 import {
   TrainTheme,
   TrainThemes,
-} from "../../../components/ladderPageShared/trainTheme";
+} from "../../../components/ladderPage/trainTheme";
 import { dateTimeFromISO } from "../../../dateTime";
 import { vehicleFactory } from "../../helpers/factory";
 import { render, waitFor } from "@testing-library/react";

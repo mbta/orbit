@@ -1,8 +1,8 @@
 import {
   height,
   vehicleHeightDiff,
-} from "../../../components/ladderPageShared/height";
-import { VehicleWithHeight } from "../../../components/ladderPageShared/ladder";
+} from "../../../components/ladderPage/height";
+import { VehicleWithHeight } from "../../../components/ladderPage/ladder";
 import { Stations } from "../../../data/stations";
 import { StopStatus } from "../../../models/vehiclePosition";
 import { vehiclePositionFactory } from "../../helpers/factory";
