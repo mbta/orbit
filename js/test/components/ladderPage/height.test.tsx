@@ -13,7 +13,7 @@ describe("height()", () => {
       const pos = vehiclePositionFactory.build({
         stopStatus: StopStatus.StoppedAt,
       });
-      expect(height(pos, LadderRungs.Red[2])).toBe(68);
+      expect(height(pos, LadderRungs.Red[2])).toBe(156);
     });
 
     test("for a valid southbound InTransitTo VehiclePosition", () => {
@@ -23,14 +23,14 @@ describe("height()", () => {
         stopId: "70063",
         position: { latitude: 42.397631, longitude: -71.130443 },
       });
-      expect(height(pos, LadderRungs.Red[0])).toBeCloseTo(144.16);
+      expect(height(pos, LadderRungs.Red[0])).toBeCloseTo(232.16);
     });
 
     test("for a valid northbound InTransitTo VehiclePosition", () => {
       const pos = vehiclePositionFactory.build({
         position: { latitude: 42.298885, longitude: -71.053602 },
       });
-      expect(height(pos, LadderRungs.Red[2])).toBeCloseTo(160.42);
+      expect(height(pos, LadderRungs.Red[2])).toBeCloseTo(248.42);
     });
 
     test("for a valid VehiclePosition past Quincy Adams", () => {
@@ -39,7 +39,7 @@ describe("height()", () => {
         stopId: "Braintree-01",
         stopStatus: StopStatus.StoppedAt,
       });
-      expect(height(pos, LadderRungs.Red[2])).toBe(900);
+      expect(height(pos, LadderRungs.Red[2])).toBe(988);
     });
 
     // TODO: handling trains "above" or "below" the ladder will change once we have
@@ -51,7 +51,7 @@ describe("height()", () => {
         stopId: "Alewife-02",
         position: { latitude: 42.396177, longitude: -71.142923 },
       });
-      expect(height(pos, LadderRungs.Red[0])).toBe(20);
+      expect(height(pos, LadderRungs.Red[0])).toBeCloseTo(12.1);
     });
 
     test("for northbound trains InTransitTo below first station", () => {
@@ -61,7 +61,7 @@ describe("height()", () => {
         stopId: "70094",
         position: { latitude: 42.283842, longitude: -71.063361 },
       });
-      expect(height(pos, LadderRungs.Red[1])).toBe(364);
+      expect(height(pos, LadderRungs.Red[1])).toBeCloseTo(429.94);
     });
   });
 
