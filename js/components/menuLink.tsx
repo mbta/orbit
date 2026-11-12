@@ -10,6 +10,7 @@ export const MenuLink = ({
   reload,
   newTab,
   children,
+  extraClassName,
 }: {
   to: string;
   icon?: IconName;
@@ -17,6 +18,7 @@ export const MenuLink = ({
   reload?: boolean;
   newTab?: boolean;
   children: string;
+  extraClassName?: string;
 }): ReactElement => (
   <Link
     to={to}
@@ -24,7 +26,12 @@ export const MenuLink = ({
     target={newTab ? "_blank" : undefined}
     rel={newTab ? "noopener noreferrer" : undefined}
   >
-    <button className="block font-semibold mx-auto w-full rounded border border-gray-300 bg-none hover:bg-gray-200 p-1 mb-6">
+    <button
+      className={className([
+        "block font-semibold mx-auto w-full rounded bg-none hover:bg-gray-200 p-1 mb-6",
+        extraClassName,
+      ])}
+    >
       {icon && (
         <img
           src={`/images/${icon}.svg`}
