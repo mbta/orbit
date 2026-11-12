@@ -43,7 +43,7 @@ config :orbit, Orbit.S3,
 config :orbit, Orbit.Import.Personnel, pathname: "personnel/demo.csv"
 config :orbit, Orbit.Import.Rfid, pathname: "rfid/demo.csv"
 
-config :logger, level: :warning
+config :logger, level: :info
 config :logger, :console, format: "[$level] $message\n"
 
 # Initialize plugs at runtime for faster test compilation
