@@ -1,7 +1,7 @@
 import {
   formatStationName,
   gtfsIdToDisplayName,
-  Stations,
+  LadderRungs,
 } from "../../data/stations";
 import { dateTimeFormat } from "../../dateTime";
 import { CarId } from "../../models/common";
@@ -81,7 +81,7 @@ const headerSymbol = (vehicle: Vehicle) => {
     if (["Red-3-0", "Red-3-1"].includes(routePatternId)) return "B";
   }
   // Check for Ashmont stopId's. Fall back to Braintree if routePatternId is not recognized;
-  for (const station of Stations.Red[1]) {
+  for (const station of LadderRungs.Red[1]) {
     if (station.stop_ids?.includes(vehicle.vehiclePosition.stopId ?? "")) {
       return "A";
     }
