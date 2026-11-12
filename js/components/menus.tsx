@@ -15,7 +15,7 @@ const ColorSchemeSelect = (): ReactElement => {
     <label className="w-full">
       <span className="text-xs font-semibold">Color Mode</span>
       <select
-        className="w-full"
+        className="w-full rounded border appearance-auto dark:bg-slate-600"
         value={value}
         onChange={(evt) => {
           const value = evt.target.value as ColorSchemeSetting;
