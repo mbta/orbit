@@ -121,6 +121,17 @@ defmodule Orbit.Ocs.EntitiesServerTest do
 
       assert %{"44444" => @yesterday} = push_at(@today_after_3am)
     end
+
+    test "prunes cached trip UIDs older than the TTL" do
+      oldest_kept = Date.add(@today, -Orbit.Ocs.Entities.trip_uid_ttl_d())
+      expired = Date.add(oldest_kept, -1)
+      put_trip_uid_cache(%{"44444" => oldest_kept, "55555" => expired})
+
+      cache = push_at(@today_after_3am)
+
+      assert %{"44444" => ^oldest_kept} = cache
+      refute Map.has_key?(cache, "55555")
+    end
   end
 
   # Forces a push at `datetime` (must be >= 5s after the previous push to avoid the
