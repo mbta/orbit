@@ -55,7 +55,7 @@ defmodule Orbit.MixProject do
       {:cowboy, "== 2.20.0"},
       {:credo, "1.7.19", only: [:dev, :test], runtime: false},
       {:csv, "3.2.2"},
-      {:dialyxir, "== 1.4.8", only: [:dev, :test], runtime: false},
+      {:dialyxir, "== 1.4.9", only: [:dev, :test], runtime: false},
       {:diskusage_logger, "0.2.0", only: :prod},
       {:dns_cluster, "== 0.3.1"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
