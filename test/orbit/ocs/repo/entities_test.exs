@@ -7,8 +7,11 @@ defmodule Orbit.Ocs.EntitiesTest do
   alias Orbit.Ocs.Trip
   alias Orbit.Repo
 
+  import Ecto.Query
+
   @test_timezone Application.compile_env!(:orbit, :timezone)
   @test_service_date Date.new!(2025, 7, 2)
+  @test_service_date_minus_1 Date.add(@test_service_date, -1)
   @test_time Time.new!(16, 48, 0)
   @test_datetime DateTime.new!(
                    @test_service_date,
@@ -22,6 +25,21 @@ defmodule Orbit.Ocs.EntitiesTest do
     %Trip{
       service_date: @test_service_date,
       uid: "TRIP_UID",
+      rail_line: :red,
+      train_uid: "TRAIN_UID",
+      prev_uid: "PREV_UID",
+      next_uid: "NEXT_UID",
+      route: "ROUTE",
+      offset: 0,
+      origin_station: "ORIGIN_STATION",
+      destination_station: "DESTINATION_STATION"
+    }
+    |> Trip.changeset()
+    |> Repo.insert()
+
+    %Trip{
+      service_date: @test_service_date_minus_1,
+      uid: "TRIP_UID_YESTERDAY",
       rail_line: :red,
       train_uid: "TRAIN_UID",
       prev_uid: "PREV_UID",
@@ -66,7 +84,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried =
         Repo.get_by!(
@@ -79,7 +97,54 @@ defmodule Orbit.Ocs.EntitiesTest do
       assert %Trip{
                service_date: @test_service_date,
                uid: "TRIP_UID",
-               train_uid: nil,
+               train_uid: "TRAIN_UID",
+               prev_uid: "PREV_TRIP_UID",
+               next_uid: "NEXT_TRIP_UID",
+               route: "OCS_ROUTE_ID",
+               rail_line: :red,
+               trip_type: "TRIP_TYPE",
+               scheduled_departure: @test_datetime_utc,
+               scheduled_arrival: @test_datetime_utc,
+               offset: nil,
+               # Scheduled endpoints from setup are preserved; new values from
+               # the TSCH_NEW go to the updated columns because they differ.
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: "ORIGIN_STA",
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DEST_STA"
+             } = queried
+    end
+
+    test "carry-over trip from yesterday for TSCH_NEW" do
+      message = %Message.TschNewMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID_YESTERDAY",
+        add_type: "ADD_TYPE",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STA",
+        dest_sta: "DEST_STA",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(message, %{"TRIP_UID_YESTERDAY" => @test_service_date_minus_1})
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID_YESTERDAY",
+          rail_line: :red
+        )
+
+      assert %Trip{
+               service_date: @test_service_date_minus_1,
+               uid: "TRIP_UID_YESTERDAY",
+               train_uid: "TRAIN_UID",
                prev_uid: "PREV_TRIP_UID",
                next_uid: "NEXT_TRIP_UID",
                route: "OCS_ROUTE_ID",
@@ -114,7 +179,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried =
         Repo.get_by!(
@@ -149,7 +214,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried =
         Repo.get_by!(
@@ -184,13 +249,16 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID"
       }
 
-      Entities.apply_changes(changed)
+      Entities.apply_changes(changed, %{})
 
-      Entities.apply_changes(%{
-        changed
-        | origin_sta: "ORIGIN_STATION",
-          dest_sta: "DESTINATION_STATION"
-      })
+      Entities.apply_changes(
+        %{
+          changed
+          | origin_sta: "ORIGIN_STATION",
+            dest_sta: "DESTINATION_STATION"
+        },
+        %{}
+      )
 
       queried =
         Repo.get_by!(
@@ -234,7 +302,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: nil
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried =
         Repo.get_by!(
@@ -269,8 +337,8 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID"
       }
 
-      Entities.apply_changes(changed)
-      Entities.apply_changes(%{changed | origin_sta: nil, dest_sta: nil})
+      Entities.apply_changes(changed, %{})
+      Entities.apply_changes(%{changed | origin_sta: nil, dest_sta: nil}, %{})
 
       queried =
         Repo.get_by!(
@@ -298,7 +366,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         train_uid: "TRAIN_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -335,6 +403,36 @@ defmodule Orbit.Ocs.EntitiesTest do
              } = queried_train
     end
 
+    test "carry-over trip from yesterday for TSCH_CON" do
+      message = %Message.TschConMessage{
+        counter: 111,
+        timestamp: @test_datetime,
+        transitline: :red,
+        trip_uid: "TRIP_UID_YESTERDAY",
+        consist: ["1515", "1717", "1718"],
+        train_uid: "NEW_TRAIN_UID"
+      }
+
+      Entities.apply_changes(message, %{"TRIP_UID_YESTERDAY" => @test_service_date_minus_1})
+
+      # Only yesterday's rows are written; the message's own (today's) service date is not used.
+      assert [
+               %Trip{
+                 service_date: @test_service_date_minus_1,
+                 train_uid: "NEW_TRAIN_UID",
+                 # Check that other fields still exist
+                 route: "ROUTE"
+               }
+             ] = Repo.all(from(trip in Trip, where: trip.uid == "TRIP_UID_YESTERDAY"))
+
+      assert [
+               %Train{
+                 service_date: @test_service_date_minus_1,
+                 cars: ["1515", "1717", "1718"]
+               }
+             ] = Repo.all(from(train in Train, where: train.uid == "NEW_TRAIN_UID"))
+    end
+
     test "upserts trip for TSCH_ASN" do
       message = %Message.TschAsnMessage{
         counter: 111,
@@ -344,7 +442,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         trip_uid: "TRIP_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -372,7 +470,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         transitline: :red
       }
 
-      assert [{:ok, :noop}] = Entities.apply_changes(message)
+      assert [{:ok, :noop}] = Entities.apply_changes(message, %{})
     end
 
     test "upserts trip for TSCH_DST" do
@@ -389,7 +487,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         sched_arr: timestamp_local
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -425,7 +523,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         sched_arr: @test_datetime
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -452,7 +550,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         sched_arr: @test_datetime
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -464,7 +562,7 @@ defmodule Orbit.Ocs.EntitiesTest do
 
       assert %Trip{destination_station_updated: "DESTINATION_STATION_2"} = queried_trip
 
-      Entities.apply_changes(%{message | dest_sta: "DESTINATION_STATION"})
+      Entities.apply_changes(%{message | dest_sta: "DESTINATION_STATION"}, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -491,7 +589,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         sched_arr: @test_datetime
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -516,7 +614,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         trip_uid: "NEW_TRIP_UID"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       message = %Message.TschDstMessage{
         counter: 111,
@@ -526,7 +624,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         dest_sta: "DEST_STA_2"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -551,7 +649,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         delete_status: :deleted
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -580,7 +678,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         delete_status: :undeleted
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -610,7 +708,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         next_trip_uid: "NEXT_TRIP_UID_2"
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -640,7 +738,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         offset: 15
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_trip =
         Repo.get_by!(
@@ -684,7 +782,7 @@ defmodule Orbit.Ocs.EntitiesTest do
         ]
       }
 
-      Entities.apply_changes(message)
+      Entities.apply_changes(message, %{})
 
       queried_train =
         Repo.get_by!(
