@@ -1,8 +1,35 @@
 import { paths } from "../paths";
+import {
+  ColorSchemeSetting,
+  getColorSchemeSetting,
+  saveColorSchemeSetting,
+} from "../util/colorScheme";
 import { getMetaContent } from "../util/metadata";
 import { MenuLink } from "./menuLink";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
 import { Link } from "react-router";
+
+const ColorSchemeSelect = (): ReactElement => {
+  const [value, setValue] = useState(() => getColorSchemeSetting());
+  return (
+    <label className="w-full">
+      <span className="text-xs font-semibold">Color Mode</span>
+      <select
+        className="w-full"
+        value={value}
+        onChange={(evt) => {
+          const value = evt.target.value as ColorSchemeSetting;
+          setValue(value);
+          saveColorSchemeSetting(value);
+        }}
+      >
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+        <option value="system">Auto/System</option>
+      </select>
+    </label>
+  );
+};
 
 export const Menu = (): ReactElement => {
   const name = getMetaContent("userName");
@@ -47,6 +74,7 @@ export const Menu = (): ReactElement => {
       >
         Support Resources
       </MenuLink>
+      <ColorSchemeSelect />
       <hr className="mx-auto my-8 w-full border-glides-blue-800" />
       <MenuLink
         icon="feedback"
@@ -100,11 +128,6 @@ export const HelpMenu = (): ReactElement => {
         className="mb-6 tracking-widest h-full w-16 text-sm font-semibold uppercase no-underline"
         to={paths.menu}
       >
-        {/* <img
-          src={`/images/back.svg`}
-          alt={"Back"}
-          className="w-5 inline -translate-y-0.5"
-        /> */}
         <span
           aria-hidden="true"
           className="inline-block align-middle h-5 w-5 mr-1"
