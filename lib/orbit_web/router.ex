@@ -87,7 +87,6 @@ defmodule OrbitWeb.Router do
     get "/menu", ReactAppController, :home
     get "/operators", ReactAppController, :home
     get "/ladder", ReactAppController, :home
-    get "/ladder-shared", ReactAppController, :home
     get "/help", ReactAppController, :home
     get "/logout", AuthController, :logout
 
