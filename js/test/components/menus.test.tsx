@@ -9,8 +9,16 @@ describe("menu", () => {
         <Menu />
       </MemoryRouter>,
     );
-    expect(view.getAllByRole("button")).toHaveLength(3);
-    expect(view.getByRole("button", { name: "Help" })).toBeInTheDocument();
+    expect(view.getAllByRole("button")).toHaveLength(4);
+    expect(
+      view.getByRole("button", { name: "Call Help Desk" }),
+    ).toBeInTheDocument();
+    expect(
+      view.getByRole("button", { name: "Support Resources" }),
+    ).toBeInTheDocument();
+    expect(
+      view.getByRole("combobox", { name: "Color Mode" }),
+    ).toBeInTheDocument();
     expect(
       view.getByRole("button", { name: "Send Feedback" }),
     ).toBeInTheDocument();
