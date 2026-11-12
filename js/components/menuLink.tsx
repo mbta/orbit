@@ -38,7 +38,7 @@ export const MenuLink = ({
       size={buttonSize}
       onClick={() => null}
       className={className([
-        "flex items-center justify-center gap-2 font-semibold mx-auto w-full rounded bg-none hover:bg-gray-200 p-1 mb-6",
+        "flex items-center justify-center gap-2 font-semibold mx-auto w-full rounded bg-none p-1",
         extraClassName,
       ])}
     >
@@ -53,7 +53,6 @@ export const MenuLink = ({
             style={{
               backgroundColor: iconColor,
               mask: `url(/images/${icon}.svg) center / contain no-repeat`,
-              WebkitMask: `url(/images/${icon}.svg) center / contain no-repeat`,
             }}
           />
         : <img

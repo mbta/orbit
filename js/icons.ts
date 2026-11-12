@@ -7,9 +7,12 @@ export type IconName =
   | "help"
   | "info"
   | "logo"
+  | "logo_white"
   | "magnifying-glass"
   | "menu"
+  | "phone"
   | "red-line"
   | "shield"
   | "sign-out"
+  | "T"
   | "warning-circle";

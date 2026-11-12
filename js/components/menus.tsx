@@ -7,104 +7,142 @@ import { Link } from "react-router";
 export const Menu = (): ReactElement => {
   const name = getMetaContent("userName");
   const email = getMetaContent("userEmail");
-  const menuLinkClassName =
-    "border dark:border-button-quaternary-outline-dark dark:text-button-quaternary-text-dark light:border-button-quaternary-outline-light light:text-button-quaternary-text-light";
 
   return (
-    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14">
-      <h2 className="text-2xl mb-6 dark:text-text-primary-dark light:text-text-primary-light">
-        Hi, {name ?? email}
-      </h2>
+    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14 dark:text-text-primary-dark light:text-text-primary-light">
+      <h2 className="text-2xl mb-6">Hi, {name ?? email}</h2>
+
+      <MenuLink
+        icon="phone"
+        iconExtraClassName="h-4 w-4"
+        iconColor="currentColor"
+        buttonType="quaternary"
+        buttonSize="medium"
+        to={paths.help}
+        extraClassName={"mb-1"}
+      >
+        Call Help Desk
+      </MenuLink>
+
+      <div className="mb-6 text-xs dark:text-text-primary-dark light:text-text-primary-light">
+        If you are experiencing issues with Orbit, call Help Desk{" "}
+        <Link className="underline" to={"tel:+1-617-222-5761"}>
+          617-222-5761
+        </Link>{" "}
+        or email{" "}
+        <Link className="underline" to={"mailto:helpdesk@mbta.com"}>
+          helpdesk@mbta.com
+        </Link>
+        .
+      </div>
 
       <MenuLink
         icon="help"
         iconExtraClassName="h-7 w-7"
         iconColor="currentColor"
         buttonType="quaternary"
-        buttonSize="large"
+        buttonSize="medium"
         to={paths.help}
-        extraClassName={menuLinkClassName}
+        extraClassName={"mb-6"}
       >
-        Help
+        Support Resources
       </MenuLink>
+      <hr className="mx-auto my-8 w-full border-glides-blue-800" />
       <MenuLink
         icon="feedback"
         iconExtraClassName="h-7 w-7"
         iconColor="currentColor"
         buttonType="quaternary"
-        buttonSize="large"
+        buttonSize="medium"
         newTab={true}
         to="https://form.asana.com/?k=NS0FKd0bBpHpURLbD3jmeg&d=15492006741476"
-        extraClassName={menuLinkClassName}
+        extraClassName={"mb-1"}
       >
         Send Feedback
       </MenuLink>
-      <hr className="mx-auto my-8 w-full" />
+
+      <div className="mb-6 text-xs dark:text-text-primary-dark light:text-text-primary-light">
+        If you have a suggestion or opinion to share, use the feedback form to
+        send it to the Orbit team.
+      </div>
+
       <MenuLink
         icon={"sign-out"}
         iconExtraClassName="h-5 w-5 mr-1"
         iconColor="currentColor"
         buttonType="quaternary"
-        buttonSize="large"
+        buttonSize="medium"
         to={paths.logout}
         reload={true}
-        extraClassName={menuLinkClassName}
+        extraClassName={"mb-6"}
       >
         Logout
       </MenuLink>
+      <div className="flex flex-col items-center text-xs text-center">
+        <span
+          aria-hidden="true"
+          className="mb-1 inline-block align-middle h-7 w-7 light:bg-alt-blue-700 dark: bg-blue-300"
+          style={{
+            mask: `url(/images/T.svg) center / contain no-repeat`,
+          }}
+        />
+        Orbit is a product of the Transformation & Technology Department at the
+        MBTA.
+      </div>
     </main>
   );
 };
 
 export const HelpMenu = (): ReactElement => {
   return (
-    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14">
+    <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14 dark:text-text-primary-dark light:text-text-primary-light">
       <Link
         className="mb-6 tracking-widest h-full w-16 text-sm font-semibold uppercase no-underline"
         to={paths.menu}
       >
-        <img
+        {/* <img
           src={`/images/back.svg`}
           alt={"Back"}
           className="w-5 inline -translate-y-0.5"
+        /> */}
+        <span
+          aria-hidden="true"
+          className="inline-block align-middle h-5 w-5 mr-1"
+          style={{
+            backgroundColor: "currentColor",
+            mask: `url(/images/back.svg) center / contain no-repeat`,
+          }}
         />
         Back
       </Link>
 
-      <h2 className="text-2xl my-8">How can we help?</h2>
+      <h2 className="text-2xl my-8">Support Resources</h2>
 
       <MenuLink
-        icon="info"
-        iconExtraClassName="w-4 mr-2"
-        iconColor="currentColor"
         buttonType="quaternary"
-        buttonSize="large"
+        buttonSize="medium"
         newTab={true}
         to="https://www.mbta.com/orbit-user-guide"
+        extraClassName={"mb-6"}
       >
         User Guide
       </MenuLink>
       <MenuLink
-        icon="clipboard"
-        iconExtraClassName="w-4 mr-1 border-black border-solid border-1"
         buttonType="quaternary"
-        buttonSize="large"
+        buttonSize="medium"
         newTab={true}
         to="https://www.mbta.com/orbit-training"
+        extraClassName={"mb-6"}
       >
         Training Materials
       </MenuLink>
-      <hr className="mx-auto my-8 w-full" />
-      <div>
-        For more support, contact{" "}
+      <hr className="mx-auto my-8 w-full border-glides-blue-800" />
+      <div className="text-sm">
+        For additional help, call Help desk 617-222-5761 or email{" "}
         <Link className="underline" to={"mailto:helpdesk@mbta.com"}>
           helpdesk@mbta.com
-        </Link>{" "}
-        or{" "}
-        <Link className="underline" to={"tel:+1-617-222-5761"}>
-          617-222-5761
-        </Link>{" "}
-        and mention that you are having an issue with Orbit.
+        </Link>
+        .
       </div>
     </main>
   );
