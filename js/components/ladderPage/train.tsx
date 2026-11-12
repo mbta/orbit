@@ -1,23 +1,12 @@
 import { DirectionalStopIds } from "../../data/stations";
-import {
-  ORBIT_HR_DISPATCHERS,
-  ORBIT_HR_STAKEHOLDERS,
-  ORBIT_RL_CHIEF_INSPECTORS,
-  ORBIT_RL_INSPECTORS,
-  ORBIT_RL_TRAINSTARTERS,
-  ORBIT_RL_YARDMASTERS,
-  ORBIT_TID_STAFF,
-  userHasOneOf,
-} from "../../groups";
 import { DirectionId } from "../../models/common";
 import { Vehicle } from "../../models/vehicle";
 import { remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { vehicleHeightDiff } from "./height";
-import { VehicleWithHeight } from "./ladder";
-import { SideBarSelection } from "./sidebar";
+import { SelectedVehicle, VehicleWithHeight } from "./ladder";
 import { TrainTheme } from "./trainTheme";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 
 /**
  * Takes in a sorted array of vehiclesWithHeight (asc) and processes
@@ -113,7 +102,8 @@ export const Train = ({
   vehicle,
   forceDirection,
   labelOffset,
-  highlight,
+  selected,
+  scrollIntoView,
   className: extraClassName,
   setSideBarSelection,
 }: {
@@ -121,15 +111,30 @@ export const Train = ({
   vehicle: Vehicle;
   forceDirection: DirectionId;
   labelOffset: number | null;
-  highlight?: boolean;
+  selected?: boolean;
+  scrollIntoView?: boolean;
   className?: string;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
+  setSideBarSelection: (selection: SelectedVehicle | null) => void;
 }): ReactElement => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const orientation = forceDirection == 0 ? "right-0" : "left-0";
   const label = vehicle.vehiclePosition.label;
   const displayLabel = remapLabel(label, vehicle.vehiclePosition.routeId);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!button || !scrollIntoView) {
+      return;
+    }
+
+    button.scrollIntoView({
+      block: "center",
+      inline: "nearest",
+    });
+  }, [scrollIntoView]);
+
   return (
-    <div className={className(["relative", highlight ? "animate-pulse" : ""])}>
+    <div className={className(["relative", selected ? "animate-pulse" : ""])}>
       {/* line that connects to dot */}
       {/* the bounding box is determined by the pill button. the svg element must be transformed such that its
       dimensions covers the area between the dot and the pill in order to render the line that connects them */}
@@ -159,10 +164,10 @@ export const Train = ({
 
       {/* train label */}
       <button
-        data-testid={`train-pill-${displayLabel}`}
+        ref={buttonRef}
         className={className([
           "pointer-events-auto m-1 relative items-center justify-center rounded-3xl w-24 h-10 font-semibold bg-white",
-          highlight ? "border-[3px]" : "border",
+          selected ? "border-[3px]" : "border",
           theme.borderColor,
           extraClassName,
         ])}
@@ -177,22 +182,11 @@ export const Train = ({
         }}
         onClick={(e) => {
           e.stopPropagation();
-          const sideBarSelection: SideBarSelection = {
-            vehicle,
-          };
-          setSideBarSelection(sideBarSelection);
+          if (selected) {
+            return;
+          }
+          setSideBarSelection({ vehicleId: vehicle.vehiclePosition.vehicleId });
         }}
-        disabled={
-          !userHasOneOf([
-            ORBIT_HR_DISPATCHERS,
-            ORBIT_HR_STAKEHOLDERS,
-            ORBIT_RL_CHIEF_INSPECTORS,
-            ORBIT_RL_INSPECTORS,
-            ORBIT_RL_TRAINSTARTERS,
-            ORBIT_RL_YARDMASTERS,
-            ORBIT_TID_STAFF,
-          ])
-        }
       >
         {displayLabel}
       </button>
@@ -204,9 +198,9 @@ export const Train = ({
           "absolute rounded-full h-[32px] w-[32px] border-8 border-opacity-35 top-2 z-1",
           theme.borderColor,
           forceDirection == 0 ?
-            highlight ? "translate-x-[calc(100%+3px)]"
+            selected ? "translate-x-[calc(100%+3px)]"
             : "translate-x-[calc(100%+3px)]"
-          : highlight ? "-translate-x-[calc(100%+3px)]"
+          : selected ? "-translate-x-[calc(100%+3px)]"
           : "-translate-x-[calc(100%+3px)]",
           orientation,
         ])}
