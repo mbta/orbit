@@ -305,7 +305,9 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       {sideBarOpen && sideBarVehicle !== null ?
         <div
           className="absolute inset-0 z-modal-backdrop light:bg-black/[.48] dark:bg-black/60 md:hidden"
-          onClick={() => setSideBarSelection(null)}
+          onClick={() => {
+            setSideBarSelection(null);
+          }}
         />
       : null}
       <main
