@@ -9,13 +9,13 @@ import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { consistsEqual, remapLabel } from "../../util/consist";
+import { className } from "../../util/dom";
 import { BranchPickerSelection } from "./branchPicker";
 import { Ladder, StationId } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
 import { ReactElement, Ref } from "react";
-import { className } from "../../util/dom";
 
 const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
@@ -90,10 +90,12 @@ const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
   return {
     consist: vp.cars,
     routeId: vp.routeId,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-assignment
     directionId: directionIdFromVehicle(vehicle),
     ab: vp.cars.map(() => null),
     routePatternId: vehicle.tripUpdate?.routePatternId ?? undefined,
     stationId: vp.stationId,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-assignment
     stopStatus: vp.stopStatus,
     latLng: vp.position,
     heading: vp.heading,
@@ -262,7 +264,7 @@ export const Ladders = ({
         "relative flex w-full h-full overflow-x-auto snap-x snap-mandatory",
         sideBarSelection !== null ?
           "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
-        : "justify-start min-[1485px]:justify-center"
+        : "justify-start min-[1485px]:justify-center",
       ])}
     >
       {Array.from(vehiclesByBranch.entries()).map(
