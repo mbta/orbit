@@ -269,6 +269,9 @@ defmodule Orbit.Ocs.Entities do
   # On conflict, a re-sent TSCH_NEW replaces the same fields `:replace_all`
   # used to (so replays remain harmless), except for the endpoint columns,
   # which follow the scheduled/updated semantics described above.
+  #
+  # We maintain train_uid in upserts for carryover trips; we expect a ASN/CON to be issued
+  # if the consist is actually changing
   @spec tsch_new_on_conflict() :: Ecto.Query.t()
   defp tsch_new_on_conflict do
     from(trip in Trip,
