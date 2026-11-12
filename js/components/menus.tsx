@@ -7,19 +7,35 @@ import { Link } from "react-router";
 export const Menu = (): ReactElement => {
   const name = getMetaContent("userName");
   const email = getMetaContent("userEmail");
+  const menuLinkClassName =
+    "border dark:border-button-quaternary-outline-dark dark:text-button-quaternary-text-dark light:border-button-quaternary-outline-light light:text-button-quaternary-text-light";
 
   return (
     <main className="w-5/6 mx-auto pt-4 max-w-[400px] relative top-14">
-      <h2 className="text-2xl mb-6">Hi, {name ?? email}</h2>
+      <h2 className="text-2xl mb-6 dark:text-text-primary-dark light:text-text-primary-light">
+        Hi, {name ?? email}
+      </h2>
 
-      <MenuLink icon="help" iconExtraClassName="h-7 w-7" to={paths.help}>
+      <MenuLink
+        icon="help"
+        iconExtraClassName="h-7 w-7"
+        iconColor="currentColor"
+        buttonType="quaternary"
+        buttonSize="large"
+        to={paths.help}
+        extraClassName={menuLinkClassName}
+      >
         Help
       </MenuLink>
       <MenuLink
         icon="feedback"
         iconExtraClassName="h-7 w-7"
+        iconColor="currentColor"
+        buttonType="quaternary"
+        buttonSize="large"
         newTab={true}
         to="https://form.asana.com/?k=NS0FKd0bBpHpURLbD3jmeg&d=15492006741476"
+        extraClassName={menuLinkClassName}
       >
         Send Feedback
       </MenuLink>
@@ -27,8 +43,12 @@ export const Menu = (): ReactElement => {
       <MenuLink
         icon={"sign-out"}
         iconExtraClassName="h-5 w-5 mr-1"
+        iconColor="currentColor"
+        buttonType="quaternary"
+        buttonSize="large"
         to={paths.logout}
         reload={true}
+        extraClassName={menuLinkClassName}
       >
         Logout
       </MenuLink>
@@ -56,6 +76,9 @@ export const HelpMenu = (): ReactElement => {
       <MenuLink
         icon="info"
         iconExtraClassName="w-4 mr-2"
+        iconColor="currentColor"
+        buttonType="quaternary"
+        buttonSize="large"
         newTab={true}
         to="https://www.mbta.com/orbit-user-guide"
       >
@@ -64,6 +87,8 @@ export const HelpMenu = (): ReactElement => {
       <MenuLink
         icon="clipboard"
         iconExtraClassName="w-4 mr-1 border-black border-solid border-1"
+        buttonType="quaternary"
+        buttonSize="large"
         newTab={true}
         to="https://www.mbta.com/orbit-training"
       >

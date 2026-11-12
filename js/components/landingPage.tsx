@@ -13,6 +13,8 @@ export const LandingPage = () => {
       <MenuLink
         icon="red-line"
         iconExtraClassName="h-6 mr-2"
+        buttonType="primary"
+        buttonSize="large"
         extraClassName={menuLinkClassName}
         to={paths.ladder}
       >
@@ -21,6 +23,8 @@ export const LandingPage = () => {
       <MenuLink
         icon="blue-line"
         iconExtraClassName="h-6 mr-2"
+        buttonType="primary"
+        buttonSize="large"
         extraClassName={menuLinkClassName}
         to={paths.operators}
       >
