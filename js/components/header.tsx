@@ -9,21 +9,27 @@ export const Header = () => {
     currentLocation.pathname === paths.help;
 
   return (
-    <div className="w-full bg-gray-200 p-2 flex justify-between h-header">
+    <div className="w-full p-2 flex justify-between h-header dark:bg-menu-background-dark light:bg-menu-background-light">
       <Link to={paths.root}>
-        <img src="/images/logo.svg" alt="MBTA" className="w-44 h-[32px]" />
+        <img
+          src="/images/logo_white.svg"
+          alt="MBTA logo"
+          className="w-44 h-[32px]"
+        />
       </Link>
       <Link to={paths.menu}>
         <button
           className={className([
-            "border border-black bg-gray-200 rounded w-8 h-8",
-            menuSelected && "invert border-white",
+            "rounded w-8 h-8",
+            menuSelected ?
+              "dark:bg-menu-button-active-dark light:bg-menu-button-active-light"
+            : "dark:bg-menu-button-default-dark light:bg-menu-button-default-light",
           ])}
         >
           <img
             src="/images/menu.svg"
             alt="Menu"
-            className="w-full h-full text-black"
+            className="w-full h-full invert"
           />
         </button>
       </Link>

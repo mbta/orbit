@@ -82,7 +82,7 @@ const router = createBrowserRouter([
     element: (
       <DataWarningsProvider>
         <AppcuesTrackPage />
-        <div className="flex flex-col app-wrapper">
+        <div className="flex flex-col app-wrapper dark:bg-ladder-background-dark light:bg-ladder-background-light">
           <div className="sticky top-0 z-header">
             <Banner />
             <Header />
