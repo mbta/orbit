@@ -1,6 +1,7 @@
 import { List } from "./operatorSignIn/list";
 import { OperatorSignInModal } from "./operatorSignIn/operatorSignInModal";
 import { DateTime } from "luxon";
+import { Button } from "rail-tech-ui";
 import { ReactElement, useMemo, useState } from "react";
 
 export const Operators = (): ReactElement => {
@@ -15,22 +16,24 @@ export const Operators = (): ReactElement => {
   const today = useMemo<string>(() => DateTime.now().toISODate(), []);
   const [selectedDate, setSelectedDate] = useState<string>(today);
   return (
-    <main className="text-gray-500 relative">
+    <main className="light:text-text-primary-light dark:text-text-primary-dark relative">
       <section className="max-w-lg mx-auto px-2 py-5">
         <hgroup className="mb-5">
           <h1 className="text-[28px] font-semibold">Operators</h1>
           <p>Search and sign in operators</p>
         </hgroup>
-        <button
-          className="w-full rounded bg-gray-500 hover:bg-gray-400 text-white font-semibold p-1 h-10"
+        <Button
+          type="primary"
+          size="large"
+          className="w-full"
           onClick={() => {
             setModalOpen(true);
           }}
         >
           Sign In Operator
-        </button>
+        </Button>
       </section>
-      <section className="w-full bg-gray-100/50 py-5">
+      <section className="w-full py-5 light:bg-text-tertiary-light dark:bg-text-tertiary-dark">
         <form action="/sign-in-export" method="get" target="_blank">
           <div className="mx-auto max-w-lg px-2">
             <p className="font-semibold">Export sign in records</p>
@@ -45,15 +48,17 @@ export const Operators = (): ReactElement => {
                 onChange={(evt) => {
                   setSelectedDate(evt.target.value);
                 }}
-                className="w-full rounded h-10 bg-gray-100"
+                className="w-full rounded h-10 dark:bg-inputField-search-background-dark dark:border-inputField-search-border-dark light:border-inputField-search-border-light"
               />
             </label>
-            <button
-              className="rounded border border-gray-300 hover:bg-gray-100 p-2 h-10"
-              type="submit"
+            <Button
+              type="tertiary"
+              size="large"
+              className="h-10 p-2"
+              onClick="submit"
             >
               Export Records
-            </button>
+            </Button>
           </div>
         </form>
       </section>
