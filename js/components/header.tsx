@@ -13,7 +13,7 @@ export const Header = () => {
       <Link to={paths.root}>
         <img
           src="/images/logo_white.svg"
-          alt="MBTA"
+          alt="MBTA logo"
           className="w-44 h-[32px]"
         />
       </Link>
@@ -29,7 +29,7 @@ export const Header = () => {
           <img
             src="/images/menu.svg"
             alt="Menu"
-            className="w-full h-full brightness-0 invert"
+            className="w-full h-full invert"
           />
         </button>
       </Link>

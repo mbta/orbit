@@ -12,7 +12,7 @@ export const LandingPage = () => {
         iconExtraClassName="h-6 mr-2"
         buttonType="primary"
         buttonSize="large"
-        extraClassName={"mb-6"}
+        extraClassName="mb-6"
         to={paths.ladder}
       >
         Red Line Train Locations

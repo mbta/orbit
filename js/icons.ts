@@ -1,6 +1,7 @@
 export type IconName =
   | "back"
   | "blue-line"
+  | "carrot"
   | "clipboard"
   | "clock"
   | "feedback"

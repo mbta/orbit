@@ -19,8 +19,8 @@ const ColorSchemeSelect = (): ReactElement => {
         value={value}
         onChange={(evt) => {
           const value = evt.target.value as ColorSchemeSetting;
-          setValue(value);
           saveColorSchemeSetting(value);
+          setValue(value);
         }}
       >
         <option value="dark">Dark</option>
@@ -109,9 +109,9 @@ export const Menu = (): ReactElement => {
       <div className="flex flex-col items-center text-xs text-center">
         <span
           aria-hidden="true"
-          className="mb-1 inline-block align-middle h-7 w-7 light:bg-alt-blue-700 dark: bg-blue-300"
+          className="mb-1 inline-block align-middle h-7 w-7 light:bg-alt-blue-700 dark:bg-blue-300"
           style={{
-            mask: `url(/images/T.svg) center / contain no-repeat`,
+            mask: "url(/images/T.svg) center / contain no-repeat",
           }}
         />
         Orbit is a product of the Transformation & Technology Department at the
