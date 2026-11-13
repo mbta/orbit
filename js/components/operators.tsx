@@ -48,7 +48,7 @@ export const Operators = (): ReactElement => {
                 onChange={(evt) => {
                   setSelectedDate(evt.target.value);
                 }}
-                className="w-full rounded h-10 dark:bg-inputField-search-background-dark dark:border-inputField-search-background-dark light:border-inputField-search-background-light"
+                className="w-full rounded h-10 dark:bg-inputField-search-background-dark dark:border-inputField-search-border-dark light:border-inputField-search-border-light"
               />
             </label>
             <Button

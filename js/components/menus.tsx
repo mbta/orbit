@@ -53,7 +53,7 @@ export const Menu = (): ReactElement => {
         iconColor="currentColor"
         buttonType="quaternary"
         buttonSize="medium"
-        to={paths.help}
+        to={"tel:+1-617-222-5761"}
         extraClassName={"mb-1"}
       >
         Call Help Desk
@@ -169,7 +169,7 @@ export const HelpMenu = (): ReactElement => {
       </MenuLink>
       <hr className="mx-auto my-8 w-full border-glides-blue-800" />
       <div className="text-sm">
-        For additional help, call Help desk 617-222-5761 or email{" "}
+        For additional help, call Help Desk 617-222-5761 or email{" "}
         <Link className="underline" to={"mailto:helpdesk@mbta.com"}>
           helpdesk@mbta.com
         </Link>
