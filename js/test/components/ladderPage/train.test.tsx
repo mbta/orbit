@@ -9,13 +9,13 @@ import {
 } from "../../../components/ladderPage/trainTheme";
 import { dateTimeFromISO } from "../../../dateTime";
 import { vehicleFactory } from "../../helpers/factory";
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 
 describe("Train", () => {
   test("shows label", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
         labelOffset={null}
@@ -28,8 +28,8 @@ describe("Train", () => {
   test("accepts additional properties", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
-        highlight={true}
+        theme={TrainThemes.braintree}
+        selected={true}
         vehicle={vehicleFactory.build()}
         forceDirection={0}
         labelOffset={null}
@@ -50,7 +50,7 @@ describe("Train", () => {
       <Train
         theme={theme}
         vehicle={vehicleFactory.build()}
-        highlight={true}
+        selected={true}
         forceDirection={1}
         labelOffset={null}
         setSideBarSelection={jest.fn()}
@@ -64,7 +64,7 @@ describe("Train", () => {
   test("renders at an angle when labelOffset provided", () => {
     const view = render(
       <Train
-        theme={TrainThemes.crimson}
+        theme={TrainThemes.braintree}
         vehicle={vehicleFactory.build()}
         forceDirection={1}
         labelOffset={42}
@@ -79,6 +79,33 @@ describe("Train", () => {
       "42",
     );
     expect(view.getByRole("button")).toHaveStyle({ top: "42px" });
+  });
+
+  test("brings selected searched trains into view", async () => {
+    const scrollIntoView = jest.spyOn(
+      HTMLButtonElement.prototype,
+      "scrollIntoView",
+    );
+
+    render(
+      <Train
+        theme={TrainThemes.braintree}
+        vehicle={vehicleFactory.build()}
+        forceDirection={1}
+        labelOffset={null}
+        selected={true}
+        scrollIntoView={true}
+        setSideBarSelection={jest.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(scrollIntoView).toHaveBeenCalledWith({
+        block: "center",
+        inline: "nearest",
+      });
+    });
+    scrollIntoView.mockRestore();
   });
 });
 

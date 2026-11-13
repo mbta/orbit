@@ -1,68 +1,58 @@
-import { LadderConfig, Stations } from "../../data/stations";
-import { useVehicles } from "../../hooks/useVehicles";
-import { RouteId } from "../../models/common";
+import {
+  DirectionalStopIds,
+  LadderConfig,
+  LadderRungs,
+} from "../../data/stations";
+import { CarId, DirectionId, RouteId } from "../../models/common";
+import { proportionBetweenLatLngs } from "../../models/latlng";
+import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
+import { consistsEqual, remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
-import { height } from "./height";
-import { SideBarSelection } from "./sidebar";
-import { avoidLabelOverlaps, Train } from "./train";
-import {
-  TrainTheme,
-  TrainThemes,
-  trainThemesByRoutePattern,
-} from "./trainTheme";
-import { ReactElement } from "react";
+import { BranchPickerSelection } from "./branchPicker";
+import { Ladder, StationId } from "rail-tech-ui";
+import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
+import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
+import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
+import { ReactElement, Ref } from "react";
 
-export const Ladders = ({
-  routeId,
-  sideBarSelection,
-  setSideBarSelection,
-}: {
-  routeId: RouteId;
-  sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
-}): ReactElement => {
-  const vehicles = useVehicles() ?? [];
-  const stationLists = Stations[routeId];
-  const vehiclesByBranch = vehicles.reduce(
-    (accumulator, vehicle) => {
-      // find which StationList contains a Station whose id matches the VehiclePosition's station
-      const matchingStationList = stationLists.find((stations) =>
-        // check if any station within the current stations array includes the VehiclePosition's stopId
-        stations.some((station) =>
-          station.stop_ids?.some(
-            (stopId) => stopId === vehicle.vehiclePosition.stopId,
-          ),
-        ),
-      );
-      if (matchingStationList) {
-        const vehiclesForStationList = accumulator.get(matchingStationList);
-        vehiclesForStationList?.push(vehicle);
-      }
-      return accumulator;
+const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
+
+const ROUTE_PATTERN_CONFIG: Readonly<
+  Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
+> = {
+  Red: {
+    "Red-1-0": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
     },
-    // initial map of {[stations on the ladder]: VehiclePositions[]}
-    new Map<LadderConfig, Vehicle[]>(
-      stationLists.map((stationList) => [stationList, []]),
-    ),
-  );
+    "Red-1-1": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
+    },
+    "Red-3-0": {
+      color: "branch-color-heavy-rail-braintree",
+      letter: "B",
+    },
+    "Red-3-1": {
+      color: "branch-color-heavy-rail-braintree",
+      letter: "B",
+    },
+  },
+};
 
-  return (
-    <div className="relative flex w-full justify-start min-[1485px]:justify-center overflow-x-auto snap-x snap-mandatory">
-      {Array.from(vehiclesByBranch.entries()).map(
-        ([stationList, vehicles], index) => (
-          <TrainsAndStations
-            key={index}
-            ladderConfig={stationList}
-            vehicles={vehicles}
-            sideBarSelection={sideBarSelection}
-            setSideBarSelection={setSideBarSelection}
-          />
-        ),
-      )}
-    </div>
-  );
+const ROUTE_DEFAULTS: Readonly<
+  Record<
+    RouteId,
+    { color: string; letter: string; interLadderStationIds: StationId[] }
+  >
+> = {
+  Red: {
+    color: "branch-color-heavy-rail-braintree",
+    letter: "-",
+    interLadderStationIds: ["place-jfk", "place-andrw"],
+  },
 };
 
 type TrainHeight = {
@@ -70,175 +60,269 @@ type TrainHeight = {
   labelOffset?: number | null;
 };
 
+// Re-exported for consumers (height.ts, train.tsx and their tests) that still
+// operate on vehicles annotated with a height
 export type VehicleWithHeight = {
   vehicle: Vehicle;
   heights: TrainHeight;
 };
 
-const TrainsAndStations = ({
-  ladderConfig,
-  vehicles,
+// Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
+// LadderStation shape (`latLng`, requires `shortName`).
+// TODO: After we remove the old ladder, this can be simplified
+const toLadderStation = (station: Station) => ({
+  id: station.id,
+  name: station.name,
+  shortName: station.name,
+  latLng: station.location,
+  spacingRatio: station.spacingRatio,
+  externalUrl: station.externalUrl,
+  showDots: station.showDots,
+  showName: station.showName,
+  arrowLeft: station.arrowLeft,
+  arrowRight: station.arrowRight,
+});
+
+// Transform an Orbit `Vehicle` to a TrainLoc that rail-tech-ui & Glides use
+// TODO: After we remove the old ladder, we may be able to standardize on TrainLoc
+const vehicleToTrainLoc = (vehicle: Vehicle): TrainLoc => {
+  const vp = vehicle.vehiclePosition;
+  return {
+    consist: vp.cars,
+    routeId: vp.routeId,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-assignment
+    directionId: directionIdFromVehicle(vehicle),
+    ab: vp.cars.map(() => null),
+    routePatternId: vehicle.tripUpdate?.routePatternId ?? undefined,
+    stationId: vp.stationId,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-assignment
+    stopStatus: vp.stopStatus,
+    latLng: vp.position,
+    heading: vp.heading,
+    timestamp: vp.timestamp,
+    trip: { scheduled: { revenue: vp.revenue }, manual: null },
+  };
+};
+
+const directionIdFromVehicle = (vehicle: Vehicle): DirectionId | null => {
+  const stopId = vehicle.vehiclePosition.stopId;
+  const fixedDirectionForStop =
+    (
+      stopId !== null &&
+      vehicle.vehiclePosition.stopStatus === StopStatus.StoppedAt
+    ) ?
+      DirectionalStopIds.get(stopId)
+    : null;
+  return fixedDirectionForStop ?? vehicle.vehiclePosition.directionId;
+};
+
+// Tracks which vehicle is selected and which car within its consist was searched for
+export type SelectedVehicle = {
+  vehicleId: string | null;
+  searchedCar?: CarId | null;
+};
+
+const matchingLadderRungsForVehicle = (
+  vehicle: Vehicle,
+  ladderRungsForRoute: LadderConfig[],
+): LadderConfig | undefined => {
+  const andrewLatLng = { latitude: 42.330154, longitude: -71.057655 };
+  const jfkLatLng = { latitude: 42.320685, longitude: -71.052391 };
+  const vp = vehicle.vehiclePosition;
+  let matchingLadderRungs: LadderConfig | undefined;
+
+  // Calculate the progress for vehicles in transit to Andrew or JFK where the Red Line
+  //  branches and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
+  if (
+    vp.position !== null &&
+    vp.stopStatus === StopStatus.InTransitTo &&
+    ((vp.stationId === "place-jfk" && vp.directionId === 0) ||
+      (vp.stationId === "place-andrw" && vp.directionId === 1))
+  ) {
+    const origLatLng =
+      vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
+    const destLatLng =
+      vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
+
+    // TODO: import from rail-tech-ui instead of using orbit version?
+    const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
+
+    let branchIndex: number | undefined;
+    if (prog != null && prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
+      if (vp.stationId === "place-jfk") {
+        branchIndex = 0;
+      } else {
+        // Vehicle in transit to Andrew, determine branch based on route pattern.
+        const routePatternId = vehicle.tripUpdate?.routePatternId;
+        if (routePatternId === "Red-1-0" || routePatternId === "Red-1-1") {
+          // ashmont
+          branchIndex = 1;
+        } else if (
+          routePatternId === "Red-3-0" ||
+          routePatternId === "Red-3-1"
+        ) {
+          // braintree
+          branchIndex = 2;
+        }
+      }
+      // If prog is over the threshold (i.e. the vehicle has jumped), branchIndex will be undefined.
+      // This is handled in ternary in the return statement below.
+      matchingLadderRungs =
+        branchIndex !== undefined ?
+          ladderRungsForRoute[branchIndex]
+        : undefined;
+    }
+  }
+
+  // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/over the threshold.
+  return (
+    matchingLadderRungs ??
+    ladderRungsForRoute.find((rung) =>
+      // Check if any station within the current rung array includes the VehiclePosition's stopId.
+      rung.some((station) =>
+        station.stop_ids?.some((stopId) => stopId === vp.stopId),
+      ),
+    )
+  );
+};
+
+export const Ladders = ({
+  routeId,
   sideBarSelection,
   setSideBarSelection,
+  setBranchPickerSelection,
+  vehicles,
+  ref,
 }: {
-  ladderConfig: LadderConfig;
+  routeId: RouteId;
+  sideBarSelection: SelectedVehicle | null;
+  setSideBarSelection: (selection: SelectedVehicle | null) => void;
+  setBranchPickerSelection: (selection: BranchPickerSelection) => void;
   vehicles: Vehicle[];
-  sideBarSelection: SideBarSelection | null;
-  setSideBarSelection: (selection: SideBarSelection | null) => void;
+  ref?: Ref<HTMLDivElement>;
 }): ReactElement => {
-  const vehiclesWithHeights: VehicleWithHeight[] = vehicles.map((vehicle) => {
-    const { vehiclePosition: vp } = vehicle;
-    // should still be able to render trains that are StoppedAt a station,
-    // even if they have a null position
-    if (vp.position == null && vp.stopStatus !== StopStatus.StoppedAt) {
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    }
-
-    const trainHeight = height(vp, ladderConfig);
-    if (trainHeight === -1) {
-      console.error(
-        `VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId} not found on station list.`,
+  const ladderRungsForRoute = LadderRungs[routeId];
+  const vehiclesByBranch = vehicles.reduce(
+    (accumulator, vehicle) => {
+      const matchingLadderRungs = matchingLadderRungsForVehicle(
+        vehicle,
+        ladderRungsForRoute,
       );
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    } else if (trainHeight === null) {
-      console.error(
-        `unable to calculate position for VehiclePosition with label: ${vp.label}, vehicleId: ${vp.vehicleId}`,
-      );
-      return { vehicle: vehicle, heights: { dotHeight: null } };
-    }
-    // add 80 for top margin above the station list borders
-    return { vehicle: vehicle, heights: { dotHeight: trainHeight + 80 } };
-  });
 
-  const sortedVehiclesByHeight = [
-    ...vehiclesWithHeights.filter(
-      (vehicle) => vehicle.heights.dotHeight !== null,
+      // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
+      if (matchingLadderRungs) {
+        const vehiclesForLadderRungs = accumulator.get(matchingLadderRungs);
+        vehiclesForLadderRungs?.push(vehicle);
+      }
+      return accumulator;
+    },
+    // initial map of {[rungs on the ladder]: VehiclePositions[]}
+    new Map<LadderConfig, Vehicle[]>(
+      ladderRungsForRoute.map((ladderRungs) => [ladderRungs, []]),
     ),
-  ].sort((v1, v2) => {
-    const v1DotHeight = v1.heights.dotHeight;
-    const v2DotHeight = v2.heights.dotHeight;
-    return v1DotHeight && v2DotHeight ? v1DotHeight - v2DotHeight : 0;
-  });
-
-  const processedSortedVehicles = avoidLabelOverlaps(sortedVehiclesByHeight);
-
-  return (
-    <div className="relative flex snap-center snap-always">
-      <StationList stations={ladderConfig} />
-
-      {processedSortedVehicles.map((vehicleWithHeight) => {
-        const vp = vehicleWithHeight.vehicle.vehiclePosition;
-
-        const trainTheme = themeForVehicleOnLadder(
-          vehicleWithHeight.vehicle,
-          ladderConfig,
-        );
-
-        const station = ladderConfig.find((station) =>
-          station.stop_ids?.some((stop_id) => stop_id === vp.stopId),
-        );
-
-        const direction =
-          vp.stopId !== null ?
-            (station?.forcedDirections?.get(vp.stopId) ?? vp.directionId)
-          : vp.directionId;
-
-        return (
-          <div
-            key={vp.vehicleId}
-            style={{
-              position: "absolute",
-              top: `${vehicleWithHeight.heights.dotHeight}px`,
-            }}
-            className={className([
-              "pointer-events-none",
-              direction === 0 ? "left-[24px]" : "right-[24px]",
-            ])}
-          >
-            <Train
-              theme={trainTheme}
-              vehicle={vehicleWithHeight.vehicle}
-              forceDirection={direction}
-              labelOffset={vehicleWithHeight.heights.labelOffset ?? null}
-              highlight={
-                vp.label === sideBarSelection?.vehicle.vehiclePosition.label
-              }
-              setSideBarSelection={setSideBarSelection}
-            />
-          </div>
-        );
-      })}
-    </div>
   );
-};
 
-const StationList = ({
-  stations,
-}: {
-  stations: LadderConfig;
-}): ReactElement => {
-  return (
-    <div className="mt-20 mb-20">
-      <ul className="relative mx-36 w-32 border-x-[6px] border-solid border-gray-300">
-        {/* northbound arrow on top right */}
-        <div className="absolute right-[-18px] top-0 w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-b-[25px] border-b-gray-300" />
-        {/* southbound arrow on bottom left */}
-        <div className="absolute bottom-0 left-[-18px] w-0 h-0 border-l-[15px] border-l-white border-r-[15px] border-r-white border-t-[25px] border-t-gray-300" />
+  const onVehicleSelection = (
+    selection: VehicleSelection,
+    branch: BranchPickerSelection,
+  ) => {
+    const match = vehicles.find((vehicle) =>
+      consistsEqual(
+        vehicle.vehiclePosition.cars,
+        selection.consist as string[],
+      ),
+    );
+    if (match) {
+      setBranchPickerSelection(branch);
 
-        {stations.map((station) => {
-          const stationId = station.id;
-          return (
-            <li
-              key={stationId}
-              style={{ marginBottom: station.spacingRatio * 32 }}
-              className={
-                stationId == "place-alfcl" ? "pt-20"
-                : stationId == "place-andrw" ?
-                  "pb-20"
-                : stationId == "place-jfk" ?
-                  "pt-20"
-                : stationId == "place-asmnl" ?
-                  "pb-20"
-                : stationId == "place-brntn" ?
-                  "pb-20"
-                : ""
-              }
-            >
-              {/* station dots on left and right */}
-              <div className="absolute bg-white mt-0.5 left-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="absolute bg-white mt-0.5 right-[-13px] size-5 rounded-full border-4 border-gray-300" />
-              <div className="text-center mx-auto text-wrap w-24">
-                {station.name}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
+      const sameVehicle =
+        sideBarSelection !== null &&
+        sideBarSelection.vehicleId !== null &&
+        sideBarSelection.vehicleId === match.vehiclePosition.vehicleId;
+      setSideBarSelection({
+        vehicleId: match.vehiclePosition.vehicleId,
+        searchedCar: sameVehicle ? sideBarSelection.searchedCar : undefined,
+      });
+    }
+  };
 
-const themeForVehicleOnLadder = (
-  vehicle: Vehicle,
-  ladderConfig: LadderConfig,
-): TrainTheme => {
-  if (!vehicle.vehiclePosition.revenue) {
-    return TrainThemes.gray;
-  }
-
-  const routePatternId = vehicle.tripUpdate?.routePatternId;
-  const themeFromRoute =
-    routePatternId != null ?
-      trainThemesByRoutePattern.get(routePatternId)
+  // Highlight the pill any time the sidebar is showing
+  const selectedVehicle =
+    sideBarSelection !== null ?
+      (vehicles.find(
+        (vehicle) =>
+          vehicle.vehiclePosition.vehicleId === sideBarSelection.vehicleId,
+      ) ?? null)
     : null;
-  if (themeFromRoute) {
-    return themeFromRoute;
-  }
+  const selected = selectedVehicle?.vehiclePosition.cars ?? null;
 
-  // Route pattern is missing or unfamiliar. Guess colors based on current
-  // ladder segment, with Braintree colors as fallback.
-  const isAshmontLadder = ladderConfig.some(
-    (station) => station.id === "place-asmnl",
+  return (
+    <div
+      ref={ref}
+      data-testid="ladders-scroll-container"
+      className={className([
+        "relative flex w-full h-full overflow-x-auto snap-x snap-mandatory",
+        sideBarSelection !== null ?
+          "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
+        : "justify-start min-[1485px]:justify-center",
+      ])}
+    >
+      {Array.from(vehiclesByBranch.entries()).map(
+        ([ladderRungs, branchVehicles], index) => {
+          const branch: BranchPickerSelection = index;
+
+          const interLadderStationIds =
+            ROUTE_DEFAULTS[routeId].interLadderStationIds;
+
+          return (
+            <div
+              key={index}
+              data-branch={branch}
+              data-testid={`ladder-branch-${branch}`}
+              className="h-full mx-40 mt-28 snap-center snap-always"
+            >
+              <Ladder
+                trainsClickable
+                zoom={47}
+                labelMode="lead"
+                trainLocs={branchVehicles.map(vehicleToTrainLoc)}
+                stationSelection={null}
+                // TODO: split scrolling to a train and highlighting a train in rail-tech-ui
+                scrollToConsist={selected}
+                onVehicleSelection={(selection) => {
+                  onVehicleSelection(selection, branch);
+                }}
+                setStationSelection={() => undefined}
+                eastToWestStations={ladderRungs.map(toLadderStation)}
+                letterFn={(
+                  routeId: RouteId,
+                  routePatternId?: RoutePatternId,
+                ) => {
+                  if (routePatternId !== undefined) {
+                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
+                  }
+
+                  return ROUTE_DEFAULTS[routeId].letter;
+                }}
+                routeColorFn={(
+                  routeId: RouteId,
+                  routePatternId?: RoutePatternId,
+                ) => {
+                  if (routePatternId !== undefined) {
+                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
+                  }
+
+                  return ROUTE_DEFAULTS[routeId].color;
+                }}
+                labelRemap={(car: CarId) => remapLabel(car, routeId)}
+                getInitialPredictionsDirection={() => 0}
+                highlight={selected}
+                interLadderStationIds={interLadderStationIds}
+              />
+            </div>
+          );
+        },
+      )}
+    </div>
   );
-  return isAshmontLadder ? TrainThemes.tangerine : TrainThemes.crimson;
 };

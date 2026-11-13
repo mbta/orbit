@@ -1,5 +1,5 @@
-import { SideBarSelection } from "../components/ladderPage/sidebar";
 import { estimatedArrival } from "../models/tripUpdate";
+import { Vehicle } from "../models/vehicle";
 import {
   FullStory as FS,
   isInitialized as isFullStoryInitialized,
@@ -18,8 +18,7 @@ export enum FullStoryEventName {
   SideBarOpened = "Orbit: Ladder Side Bar Opened",
 }
 
-export const trackSideBarOpened = (selection: SideBarSelection) => {
-  const { vehicle } = selection;
+export const trackSideBarOpened = ({ vehicle }: { vehicle: Vehicle }) => {
   const currentTrip = vehicle.ocsTrips.current;
   const nextTrip =
     vehicle.ocsTrips.next.length > 0 ? vehicle.ocsTrips.next[0] : null;
