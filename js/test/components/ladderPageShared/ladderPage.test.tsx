@@ -890,7 +890,7 @@ describe("Ladder", () => {
         setSideBarSelection={jest.fn()}
         setBranchPickerSelection={jest.fn()}
         sideBarSelection={null}
-        vehicles={useVehicles() ?? []}
+        vehicles={useVehicles("Red") ?? []}
       />,
     );
 
@@ -930,7 +930,7 @@ describe("Ladder", () => {
           setSideBarSelection={jest.fn()}
           setBranchPickerSelection={mockSetBranch}
           sideBarSelection={null}
-          vehicles={useVehicles() ?? []}
+          vehicles={useVehicles("Red") ?? []}
         />,
       );
 
@@ -961,7 +961,7 @@ describe("Ladder", () => {
           setSideBarSelection={jest.fn()}
           setBranchPickerSelection={mockSetBranch}
           sideBarSelection={null}
-          vehicles={useVehicles() ?? []}
+          vehicles={useVehicles("Red") ?? []}
         />,
       );
 
@@ -992,7 +992,7 @@ describe("Ladder", () => {
           setSideBarSelection={jest.fn()}
           setBranchPickerSelection={mockSetBranch}
           sideBarSelection={null}
-          vehicles={useVehicles() ?? []}
+          vehicles={useVehicles("Red") ?? []}
         />,
       );
 

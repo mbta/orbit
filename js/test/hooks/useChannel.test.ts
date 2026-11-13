@@ -49,4 +49,25 @@ describe("useChannel", () => {
     );
     expect(result.current).toBeNull();
   });
+
+  test("creates the channel with the given join params", () => {
+    const socket = new Socket("/test");
+    // must be stable, or the channel will be re-joined on every render
+    const joinParams = { line: "Red" };
+
+    const RawData = z.string();
+    const parser = (data: unknown): string => data as string;
+    renderHook(() =>
+      useChannel({
+        socket,
+        topic: "vehicles",
+        event: "vehicles",
+        RawData,
+        parser,
+        defaultResult: null,
+        joinParams,
+      }),
+    );
+    expect(socket.channel).toHaveBeenCalledWith("vehicles", { line: "Red" });
+  });
 });
