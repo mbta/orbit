@@ -14,19 +14,27 @@ const ColorSchemeSelect = (): ReactElement => {
   return (
     <label className="w-full">
       <span className="text-xs font-semibold">Color Mode</span>
-      <select
-        className="w-full rounded border appearance-auto dark:bg-slate-600"
-        value={value}
-        onChange={(evt) => {
-          const value = evt.target.value as ColorSchemeSetting;
-          saveColorSchemeSetting(value);
-          setValue(value);
-        }}
-      >
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
-        <option value="system">Auto/System</option>
-      </select>
+      <div className="relative">
+        <select
+          className="w-full appearance-none bg-none px-3 py-2 rounded border dark:bg-slate-600"
+          value={value}
+          onChange={(evt) => {
+            const value = evt.target.value as ColorSchemeSetting;
+            saveColorSchemeSetting(value);
+            setValue(value);
+          }}
+        >
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="system">Auto/System</option>
+        </select>
+
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute right-3 top-1/2 h-3 w-3 -translate-y-1/2 dark:bg-color-mode-picker-dropdown-arrow-dark light:bg-color-mode-picker-dropdown-arrow-light"
+          style={{ mask: "url(/images/carrot.svg) center / contain no-repeat" }}
+        />
+      </div>
     </label>
   );
 };
