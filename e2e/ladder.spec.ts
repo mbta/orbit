@@ -18,7 +18,10 @@ test("Ladders load for logged in RL operator", async ({
   ).toBeVisible();
 
   if (duringService()) {
-    const count = await page.getByTestId(/^train-pill-.+/).count();
+    const count = await page
+      .getByTestId(/^ladder-branch-/)
+      .getByRole("button", { name: /\d{4}/ })
+      .count();
     expect(count).toBeGreaterThan(1);
   }
 });
