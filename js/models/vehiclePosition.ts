@@ -1,7 +1,7 @@
 import { dateTimeFromISO } from "../dateTime";
 import { CarId, DirectionId, RouteId, StationId } from "./common";
-import type { LatLng } from "rail-tech-ui";
 import { DateTime } from "luxon";
+import type { LatLng } from "rail-tech-ui";
 import { z } from "zod";
 
 export enum StopStatus {
