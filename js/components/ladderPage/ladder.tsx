@@ -4,14 +4,13 @@ import {
   LadderRungs,
 } from "../../data/stations";
 import { CarId, DirectionId, RouteId } from "../../models/common";
-import { proportionBetweenLatLngs } from "../../models/latlng";
 import { Station } from "../../models/station";
 import { Vehicle } from "../../models/vehicle";
 import { StopStatus } from "../../models/vehiclePosition";
 import { consistsEqual, remapLabel } from "../../util/consist";
 import { className } from "../../util/dom";
 import { BranchPickerSelection } from "./branchPicker";
-import { Ladder, StationId } from "rail-tech-ui";
+import { Ladder, proportionBetweenLatLngs, StationId } from "rail-tech-ui";
 import type { VehicleSelection } from "rail-tech-ui/dist/src/components/ladderPage/types";
 import { RoutePatternId } from "rail-tech-ui/dist/src/models/route";
 import type { TrainLoc } from "rail-tech-ui/dist/src/models/trainLocation";
@@ -132,7 +131,6 @@ const matchingLadderRungsForVehicle = (
     const destLatLng =
       vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
 
-    // TODO: import from rail-tech-ui instead of using orbit version?
     const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
 
     let branchIndex: number | undefined;

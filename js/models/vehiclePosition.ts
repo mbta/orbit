@@ -1,6 +1,6 @@
 import { dateTimeFromISO } from "../dateTime";
 import { CarId, DirectionId, RouteId, StationId } from "./common";
-import { LatLng } from "./latlng";
+import type { LatLng } from "rail-tech-ui";
 import { DateTime } from "luxon";
 import { z } from "zod";
 

@@ -1,4 +1,4 @@
-import { LatLng } from "./latlng";
+import type { LatLng } from "rail-tech-ui";
 
 export type Station = {
   id?: string;
