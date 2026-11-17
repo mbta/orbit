@@ -55,18 +55,6 @@ const ROUTE_DEFAULTS: Readonly<
   },
 };
 
-type TrainHeight = {
-  dotHeight: number | null;
-  labelOffset?: number | null;
-};
-
-// Re-exported for consumers (height.ts, train.tsx and their tests) that still
-// operate on vehicles annotated with a height
-export type VehicleWithHeight = {
-  vehicle: Vehicle;
-  heights: TrainHeight;
-};
-
 // Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
 // LadderStation shape (`latLng`, requires `shortName`).
 // TODO: After we remove the old ladder, this can be simplified
