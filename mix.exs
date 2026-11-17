@@ -104,7 +104,7 @@ defmodule Orbit.MixProject do
       {:ueberauth, "== 0.11.0"},
       {:ueberauth_fake_oidcc,
        github: "skyqrose/ueberauth_fake_oidcc", tag: "v0.1.2", only: [:dev, :test]},
-      {:ueberauth_oidcc, "0.4.2"}
+      {:ueberauth_oidcc, "== 0.5.0"}
     ]
   end
 
