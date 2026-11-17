@@ -1,6 +1,6 @@
 import { RouteId } from "../../models/common";
 
-// Use index from LadderConfig sub-array (Stations[routeId])
+// Use index from LadderConfig sub-array (LadderRungs[routeId])
 // i.e. 0 for Alewife, 1 for Ashmont, 2 for Braintree
 export type BranchPickerSelection = number;
 

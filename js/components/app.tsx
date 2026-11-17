@@ -13,7 +13,6 @@ import { AppcuesTrackPage } from "./appcues";
 import { Banner } from "./banner";
 import { Header } from "./header";
 import { LadderPage } from "./ladderPage/ladderPage";
-import { LadderPage as LadderPageShared } from "./ladderPageShared/ladderPage";
 import { LandingPage } from "./landingPage";
 import { HelpMenu, Menu } from "./menus";
 import { Operators } from "./operators";
@@ -104,10 +103,6 @@ const router = createBrowserRouter([
       {
         path: paths.help,
         element: <HelpMenu />,
-      },
-      {
-        path: paths.ladderShared,
-        element: <LadderPageShared routeId="Red" />,
       },
       {
         path: paths.ladder,
