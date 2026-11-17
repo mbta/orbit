@@ -134,7 +134,7 @@ const matchingLadderRungsForVehicle = (
     const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
 
     let branchIndex: number | undefined;
-    if (prog != null && prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
+    if (prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
       if (vp.stationId === "place-jfk") {
         branchIndex = 0;
       } else {
