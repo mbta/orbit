@@ -304,6 +304,7 @@ export const Ladders = ({
                 getInitialPredictionsDirection={() => 0}
                 highlight={selected}
                 interLadderStationIds={interLadderStationIds}
+                trainHeightOptions={{ clampOffsets: false }}
               />
             </div>
           );
