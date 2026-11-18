@@ -36,6 +36,7 @@
     // "module": "commonjs",                             /* Specify what module code is generated. */,
     "module": "esnext",
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
+    "rootDir": "./",
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
     "moduleResolution": "bundler",
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
@@ -43,6 +44,11 @@
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
     // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
+    "types": [
+      "jest",
+      "node",
+      "w3c-web-nfc"
+    ],
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
     // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
     // "allowImportingTsExtensions": true,               /* Allow imports to include TypeScript file extensions. Requires '--moduleResolution bundler' and either '--noEmit' or '--emitDeclarationOnly' to be set. */
