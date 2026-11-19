@@ -136,6 +136,35 @@ describe("LadderPage SideBar", () => {
       ).not.toBeInTheDocument();
     });
 
+    test("sidebar shows an express vehicle's real next stop", async () => {
+      mockUseVehicles.mockReturnValue([
+        vehicleFactory.build({
+          vehiclePosition: vehiclePositionFactory.build({
+            directionId: 0,
+            stationId: "place-jfk",
+            stopId: "70085",
+            stopStatus: StopStatus.InTransitTo,
+            // Between South Station and Broadway
+            position: { latitude: 42.3474465, longitude: -71.0561045 },
+          }),
+        }),
+      ]);
+
+      const user = userEvent.setup();
+      const view = render(<LadderPage routeId="Red" />);
+      await user.click(view.getByText("1877"));
+
+      const currentLocationSection = view.getByTestId(
+        "current-location-section",
+      );
+      expect(
+        within(currentLocationSection).getByText(/Next stop/i),
+      ).toBeInTheDocument();
+      expect(
+        within(currentLocationSection).getByText("JFK"),
+      ).toBeInTheDocument();
+    });
+
     test("15xx RL train labels are remapped", () => {
       const view = render(<LadderPage routeId="Red" />);
       expect(view.getByText("2514")).toBeInTheDocument();

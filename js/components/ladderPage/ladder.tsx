@@ -109,67 +109,190 @@ export type SelectedVehicle = {
   searchedCar?: CarId | null;
 };
 
-const matchingLadderRungsForVehicle = (
+const branchIndexForRoutePattern = (vehicle: Vehicle): number | undefined => {
+  const routePatternId = vehicle.tripUpdate?.routePatternId;
+  if (routePatternId === "Red-1-0" || routePatternId === "Red-1-1") {
+    // ashmont
+    return 1;
+  } else if (routePatternId === "Red-3-0" || routePatternId === "Red-3-1") {
+    // braintree
+    return 2;
+  }
+  return undefined;
+};
+
+type TrackStation = { station: Station; ladderIndex: number };
+
+type ExpressCorrection = {
+  vehicle: Vehicle;
+  ladderRungs: LadderConfig;
+  // Proportion of the way from the previous station to the vehicle's
+  // stationId, or null when it was not computed (e.g. the vehicle is stopped)
+  progress: number | null;
+};
+
+/**
+ * A vehicle's stopId is usually the next station on the ladder, but a vehicle
+ * running express may skip several stations before reaching it. When the
+ * vehicle's position is not between the stopId's station and the station
+ * before it, walk along the track to find the stations it is actually between.
+ *
+ * The ladder positions vehicles by stationId, so it is also synced to the
+ * stopId's station when they disagree.
+ *
+ * The returned vehicle has its stationId set to the station ahead of it on the
+ * ladder; the stopId (its real destination) is left unchanged.
+ */
+export const vehicleWithExpressCorrection = (
   vehicle: Vehicle,
   ladderRungsForRoute: LadderConfig[],
-): LadderConfig | undefined => {
-  const andrewLatLng = { latitude: 42.330154, longitude: -71.057655 };
-  const jfkLatLng = { latitude: 42.320685, longitude: -71.052391 };
+): ExpressCorrection | undefined => {
   const vp = vehicle.vehiclePosition;
-  let matchingLadderRungs: LadderConfig | undefined;
+  const destination: TrackStation | undefined = ladderRungsForRoute
+    .flatMap((rung, ladderIndex) =>
+      rung.map((station) => ({ station, ladderIndex })),
+    )
+    .find(({ station }) => station.stop_ids?.includes(vp.stopId ?? ""));
+  if (destination === undefined) return undefined;
 
-  // Calculate the progress for vehicles in transit to Andrew or JFK where the Red Line
-  //  branches and, if it exceeds a threshold, "jump" the vehicle to the next ladder rung
-  if (
-    vp.position !== null &&
-    vp.stopStatus === StopStatus.InTransitTo &&
-    ((vp.stationId === "place-jfk" && vp.directionId === 0) ||
-      (vp.stationId === "place-andrw" && vp.directionId === 1))
-  ) {
-    const origLatLng =
-      vp.stationId === "place-andrw" ? jfkLatLng : andrewLatLng;
-    const destLatLng =
-      vp.stationId === "place-andrw" ? andrewLatLng : jfkLatLng;
+  // Helper to create a vehicle positioned at the given station on its ladder.
+  // The ladder is returned even when the stationId is unchanged, since it may
+  // differ from the ladder containing the stopId.
+  const withStation = (
+    { station, ladderIndex }: TrackStation,
+    progress: number | null,
+  ): ExpressCorrection | undefined =>
+    // Arrow rungs have no id.
+    station.id === undefined ?
+      undefined
+    : {
+        vehicle: {
+          ...vehicle,
+          vehiclePosition: { ...vp, stationId: station.id },
+        },
+        ladderRungs: ladderRungsForRoute[ladderIndex],
+        progress,
+      };
 
-    const prog = proportionBetweenLatLngs(origLatLng, destLatLng, vp.position);
+  const position = vp.position;
+  // vehicle position unknown or is stopped at a station. return with the provided station.
+  if (position === null || vp.stopStatus !== StopStatus.InTransitTo) {
+    return withStation(destination, null);
+  }
 
-    let branchIndex: number | undefined;
-    if (prog < PROPORTIONAL_PROGRESS_THRESHOLD) {
-      if (vp.stationId === "place-jfk") {
-        branchIndex = 0;
-      } else {
-        // Vehicle in transit to Andrew, determine branch based on route pattern.
-        const routePatternId = vehicle.tripUpdate?.routePatternId;
-        if (routePatternId === "Red-1-0" || routePatternId === "Red-1-1") {
-          // ashmont
-          branchIndex = 1;
-        } else if (
-          routePatternId === "Red-3-0" ||
-          routePatternId === "Red-3-1"
-        ) {
-          // braintree
-          branchIndex = 2;
-        }
-      }
-      // If prog is over the threshold (i.e. the vehicle has jumped), branchIndex will be undefined.
-      // This is handled in ternary in the return statement below.
-      matchingLadderRungs =
-        branchIndex !== undefined ?
-          ladderRungsForRoute[branchIndex]
-        : undefined;
+  // Branch ladders continue from the end of the first (trunk) ladder.
+  const branchLadderIndex =
+    destination.ladderIndex > 0 ?
+      destination.ladderIndex
+    : branchIndexForRoutePattern(vehicle);
+  const ladderIndexes =
+    branchLadderIndex !== undefined && branchLadderIndex > 0 ?
+      [0, branchLadderIndex]
+    : [destination.ladderIndex];
+  // Filter out arrows and build a "linear" track by joining trunk with a branch ladder
+  const track: TrackStation[] = ladderIndexes.flatMap((ladderIndex) =>
+    ladderRungsForRoute[ladderIndex]
+      .filter((station) => station.stop_ids !== undefined)
+      .map((station) => ({ station, ladderIndex })),
+  );
+
+  const destinationIndex = track.findIndex(
+    ({ station }) => station === destination.station,
+  );
+  // Southbound (0) travels down the ladder, toward increasing indexes.
+  const step = vp.directionId === 0 ? 1 : -1;
+  // Calculate the progress of the vehicle along the track relative to its destination station.
+  const progressTowards = (index: number): number | null => {
+    const originIndex = index - step;
+    if (
+      index < 0 ||
+      index >= track.length ||
+      originIndex < 0 ||
+      originIndex >= track.length
+    ) {
+      return null;
+    }
+    // calculate progress of vehicle's position TOWARDS destination station starting FROM the station that is one before the destination station.
+    // negative progress means the vehicle is still behind the origin station (expressing towards dest from further out?)
+    // progress between 0 and 1 indicates the vehicle is progressing between the station before the destination and the destination station.
+    return proportionBetweenLatLngs(
+      track[originIndex].station.location,
+      track[index].station.location,
+      position,
+    );
+  };
+  const betweenAdjacentStations = (
+    progress: number | null,
+  ): progress is number => progress !== null && progress >= 0 && progress <= 1;
+
+  const progress = progressTowards(destinationIndex);
+  if (progress === null || betweenAdjacentStations(progress)) {
+    // vehicle is between the station before the destination and the destination station, return the destination station directly.
+    return withStation(destination, progress);
+  }
+
+  // --- else the vehicle is either behind the station before the destination or past the destination station ---
+
+  // Walk backward along the track when the vehicle is behind its departure
+  // station, or forward when it is past its destination.
+  const searchStep = progress < 0 ? -step : step;
+  const candidateIndexes = track.map(
+    (_, offset) => destinationIndex + searchStep * (offset + 1),
+  );
+  for (const index of candidateIndexes) {
+    const candidateProgress = progressTowards(index);
+    if (betweenAdjacentStations(candidateProgress)) {
+      return withStation(track[index], candidateProgress);
     }
   }
 
-  // handles if vehicle is not in transit to Andrew/JFK, or it is but prog is null/over the threshold.
-  return (
-    matchingLadderRungs ??
-    ladderRungsForRoute.find((rung) =>
-      // Check if any station within the current rung array includes the VehiclePosition's stopId.
-      rung.some((station) =>
-        station.stop_ids?.some((stopId) => stopId === vp.stopId),
-      ),
-    )
+  // No segment contains the vehicle, so keep the stopId's station.
+  return withStation(destination, progress);
+};
+
+const matchingLadderRungsForVehicle = (
+  vehicle: Vehicle,
+  ladderRungsForRoute: LadderConfig[],
+): { vehicle: Vehicle; ladderRungs: LadderConfig } | undefined => {
+  const expressCorrection = vehicleWithExpressCorrection(
+    vehicle,
+    ladderRungsForRoute,
   );
+  // The vehicle's stopId is not on any ladder.
+  if (expressCorrection === undefined) return undefined;
+
+  const {
+    vehicle: correctedVehicle,
+    ladderRungs,
+    progress,
+  } = expressCorrection;
+  const vp = correctedVehicle.vehiclePosition;
+
+  // For vehicles in transit to Andrew or JFK, where the Red Line branches,
+  // keep the vehicle on the ladder it is leaving until its progress between
+  // Andrew and JFK exceeds a threshold, then "jump" it to the next ladder.
+  // The express correction already computed that progress, since the station
+  // before JFK (southbound) is Andrew, and before Andrew (northbound) is JFK.
+  const isApproachingJfk = vp.stationId === "place-jfk" && vp.directionId === 0;
+  const isApproachingAndrew =
+    vp.stationId === "place-andrw" && vp.directionId === 1;
+  if (
+    (isApproachingJfk || isApproachingAndrew) &&
+    progress !== null &&
+    progress < PROPORTIONAL_PROGRESS_THRESHOLD
+  ) {
+    // Southbound, the vehicle stays on the trunk. Northbound, it stays on
+    // the branch given by its route pattern.
+    const branchIndex =
+      isApproachingJfk ? 0 : branchIndexForRoutePattern(vehicle);
+    if (branchIndex !== undefined) {
+      return {
+        vehicle: correctedVehicle,
+        ladderRungs: ladderRungsForRoute[branchIndex],
+      };
+    }
+  }
+  return { vehicle: correctedVehicle, ladderRungs };
 };
 
 export const Ladders = ({
@@ -190,15 +313,12 @@ export const Ladders = ({
   const ladderRungsForRoute = LadderRungs[routeId];
   const vehiclesByBranch = vehicles.reduce(
     (accumulator, vehicle) => {
-      const matchingLadderRungs = matchingLadderRungsForVehicle(
-        vehicle,
-        ladderRungsForRoute,
-      );
+      const match = matchingLadderRungsForVehicle(vehicle, ladderRungsForRoute);
 
       // find which LadderRungs contains a Station whose id matches the VehiclePosition's station
-      if (matchingLadderRungs) {
-        const vehiclesForLadderRungs = accumulator.get(matchingLadderRungs);
-        vehiclesForLadderRungs?.push(vehicle);
+      if (match) {
+        const vehiclesForLadderRungs = accumulator.get(match.ladderRungs);
+        vehiclesForLadderRungs?.push(match.vehicle);
       }
       return accumulator;
     },
