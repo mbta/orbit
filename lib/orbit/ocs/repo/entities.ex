@@ -6,7 +6,6 @@ defmodule Orbit.Ocs.Entities do
   """
   alias Orbit.Ocs.Train
   alias Orbit.Ocs.Trip
-  alias Orbit.Ocs.UidCache
   alias Orbit.RailLine
   alias Orbit.Repo
 
@@ -28,21 +27,15 @@ defmodule Orbit.Ocs.Entities do
 
   @type entities() :: [Trip.t()]
 
-  # We assume OCS trips stay alive for one day. In practice trip UIDs may be globally unique,
-  #  but we don't have a guarantee.
-  def trip_uid_ttl_d, do: 2
-
   @spec query_latest(DateTime.t()) :: entities()
   def query_latest(current_datetime \\ DateTime.utc_now()) do
     # TODO: What filtering/sorting makes sense for this query?
     service_date = Util.Time.service_date_for_utc_datetime(current_datetime)
-    horizon = Date.add(service_date, -trip_uid_ttl_d())
-
-    Repo.all(from(trip in Trip, where: trip.service_date >= ^horizon))
+    Repo.all(from(trip in Trip, where: trip.service_date == ^service_date))
   end
 
-  @spec apply_changes(Message.t(), UidCache.t()) :: [{:ok, any} | {:error, any()}]
-  def apply_changes(%TschNewMessage{} = message, trip_uid_cache) do
+  @spec apply_changes(Message.t()) :: [{:ok, any} | {:error, any()}]
+  def apply_changes(%TschNewMessage{} = message) do
     # A note about upserts:
     #
     # We generally don't expect to receive multiple TSCH_NEW messages for the same
@@ -59,10 +52,8 @@ defmodule Orbit.Ocs.Entities do
     # a dispatcher's updated endpoints only when they differ from the scheduled
     # ones (NULL = unchanged). Every TSCH_NEW is authoritative for the current
     # endpoints, so replaying a window of messages still converges correctly.
-    service_date = trip_service_date(message, trip_uid_cache)
-
     %Trip{
-      service_date: service_date,
+      service_date: service_date(message.timestamp),
       uid: message.trip_uid,
       prev_uid: message.prev_trip_uid,
       next_uid: message.next_trip_uid,
@@ -82,8 +73,8 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschConMessage{} = message, trip_uid_cache) do
-    service_date = trip_service_date(message, trip_uid_cache)
+  def apply_changes(%TschConMessage{} = message) do
+    service_date = service_date(message.timestamp)
     rail_line = RailLine.from_ocs_transitline(message.transitline)
     # Apply consist to train
     train_result =
@@ -105,9 +96,9 @@ defmodule Orbit.Ocs.Entities do
     [train_result, trip_result]
   end
 
-  def apply_changes(%TschAsnMessage{} = message, trip_uid_cache) do
+  def apply_changes(%TschAsnMessage{} = message) do
     assign_train_to_trip(
-      trip_service_date(message, trip_uid_cache),
+      service_date(message.timestamp),
       RailLine.from_ocs_transitline(message.transitline),
       message.trip_uid,
       message.train_uid,
@@ -117,19 +108,19 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschRldMessage{}, _trip_uid_cache) do
+  def apply_changes(%TschRldMessage{}) do
     [{:ok, :noop}]
   end
 
   # TODO: RTR has a lot of logic around this particular message.
   # Confirm that we understand how OCS works here.
-  def apply_changes(%TschDstMessage{} = message, trip_uid_cache) do
+  def apply_changes(%TschDstMessage{} = message) do
     # TSCH_DST carries a dispatcher-updated destination. The scheduled
     # destination stays in destination_station (first value seen wins);
     # destination_station_updated records the new destination only when it
     # differs from the scheduled one (NULL = unchanged).
     %Trip{
-      service_date: trip_service_date(message, trip_uid_cache),
+      service_date: service_date(message.timestamp),
       uid: message.trip_uid,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       destination_station: message.dest_sta,
@@ -145,9 +136,9 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschDelMessage{} = message, trip_uid_cache) do
+  def apply_changes(%TschDelMessage{} = message) do
     %Trip{
-      service_date: trip_service_date(message, trip_uid_cache),
+      service_date: service_date(message.timestamp),
       uid: message.trip_uid,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       deleted: message.delete_status == :deleted
@@ -160,9 +151,9 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschLnkMessage{} = message, trip_uid_cache) do
+  def apply_changes(%TschLnkMessage{} = message) do
     %Trip{
-      service_date: trip_service_date(message, trip_uid_cache),
+      service_date: service_date(message.timestamp),
       uid: message.trip_uid,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       # TODO: Should we update these if they are nil, or leave the old values?
@@ -177,9 +168,9 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschOffMessage{} = message, trip_uid_cache) do
+  def apply_changes(%TschOffMessage{} = message) do
     %Trip{
-      service_date: trip_service_date(message, trip_uid_cache),
+      service_date: service_date(message.timestamp),
       uid: message.trip_uid,
       rail_line: RailLine.from_ocs_transitline(message.transitline),
       offset: message.offset
@@ -192,8 +183,8 @@ defmodule Orbit.Ocs.Entities do
     |> List.wrap()
   end
 
-  def apply_changes(%TschTagMessage{} = message, trip_uid_cache) do
-    service_date = trip_service_date(message, trip_uid_cache)
+  def apply_changes(%TschTagMessage{} = message) do
+    service_date = service_date(message.timestamp)
     rail_line = RailLine.from_ocs_transitline(message.transitline)
 
     # We assume that a TSCH_TAG message contains the canonical ordering of car numbers,
@@ -255,29 +246,18 @@ defmodule Orbit.Ocs.Entities do
 
   @spec service_date(DateTime.t()) :: Date.t()
   defp service_date(date_time) do
-    Util.Time.service_date_for_utc_datetime(date_time)
-  end
-
-  # If the cache has the trip UID, we use the cache's service date; this means
-  # it may be a carryover trip from the previous day (but not necessarily).
-  # Otherwise, fall back to the service date of the message's timestamp.
-  @spec trip_service_date(Message.t(), UidCache.t()) :: Date.t()
-  defp trip_service_date(%{trip_uid: trip_uid, timestamp: timestamp}, trip_uid_cache) do
-    Map.get_lazy(trip_uid_cache, trip_uid, fn -> service_date(timestamp) end)
+    DateTime.to_date(date_time)
   end
 
   # On conflict, a re-sent TSCH_NEW replaces the same fields `:replace_all`
   # used to (so replays remain harmless), except for the endpoint columns,
   # which follow the scheduled/updated semantics described above.
-  #
-  # We maintain train_uid in upserts for carryover trips; we expect a ASN/CON to be issued
-  # if the consist is actually changing
   @spec tsch_new_on_conflict() :: Ecto.Query.t()
   defp tsch_new_on_conflict do
     from(trip in Trip,
       update: [
         set: [
-          train_uid: fragment("COALESCE(?, EXCLUDED.train_uid)", trip.train_uid),
+          train_uid: fragment("EXCLUDED.train_uid"),
           assigned_at: fragment("EXCLUDED.assigned_at"),
           prev_uid: fragment("EXCLUDED.prev_uid"),
           next_uid: fragment("EXCLUDED.next_uid"),
