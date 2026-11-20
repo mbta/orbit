@@ -30,6 +30,15 @@ const ROUTE_PATTERN_CONFIG: Readonly<
       color: "branch-color-heavy-rail-ashmont",
       letter: "A",
     },
+    // We started seeing `Red-A` the morning of 11/20/26 during a scheduled disruption.
+    "Red-A-0": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
+    },
+    "Red-A-1": {
+      color: "branch-color-heavy-rail-ashmont",
+      letter: "A",
+    },
     "Red-3-0": {
       color: "branch-color-heavy-rail-braintree",
       letter: "B",
@@ -284,7 +293,14 @@ export const Ladders = ({
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  if (routePatternId !== undefined) {
+                  if (
+                    routePatternId !== undefined &&
+                    // It's possible to receive route patterns we aren't
+                    // familiar with during disruptions.
+
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    ROUTE_PATTERN_CONFIG[routeId][routePatternId] !== undefined
+                  ) {
                     return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
                   }
 
@@ -294,7 +310,14 @@ export const Ladders = ({
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  if (routePatternId !== undefined) {
+                  if (
+                    routePatternId !== undefined &&
+                    // It's possible to receive route patterns we aren't
+                    // familiar with during disruptions.
+
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    ROUTE_PATTERN_CONFIG[routeId][routePatternId] !== undefined
+                  ) {
                     return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
                   }
 
