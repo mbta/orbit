@@ -35,4 +35,11 @@ defmodule OrbitWeb.ReactAppControllerTest do
     assert response =~ "<meta name=\"environment\" content=\"test\">"
     assert response =~ "<meta name=\"fullStoryOrgId\" content=\"RAWR\">"
   end
+
+  @tag :authenticated
+  test "new ladder URLs serve the React app", %{conn: conn} do
+    for path <- ["/ladder/blue", "/ladder/orange", "/ladder/red"] do
+      assert conn |> get(path) |> html_response(200) =~ "Orbit"
+    end
+  end
 end

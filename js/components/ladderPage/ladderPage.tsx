@@ -16,14 +16,14 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
 const NO_VEHICLES: Vehicle[] = [];
 
 // Ashmont, the middle ladder
-const DEFAULT_BRANCH: BranchPickerSelection = 1;
-
 export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
+  const defaultBranch: BranchPickerSelection = routeId === "Red" ? 1 : 0;
+  const hasMultipleBranches = LadderRungs[routeId].length > 1;
   const vehicles = useVehicles(routeId) ?? NO_VEHICLES;
   const [sideBarSelection, setSideBarSelection] =
     useState<SelectedVehicle | null>(null);
   const [branchPickerSelection, setBranchPickerSelection] =
-    useState<BranchPickerSelection>(DEFAULT_BRANCH);
+    useState<BranchPickerSelection>(defaultBranch);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [resizeTimeout, setResizeTimeout] = useState<ReturnType<
@@ -131,13 +131,13 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
   // Whenever the branch picker appears, select and center Ashmont
   useEffect(() => {
     const container = laddersRef.current;
-    if (!isOverflowing || !container) return;
+    if (!hasMultipleBranches || !isOverflowing || !container) return;
     /* eslint-disable better-mutation/no-mutation */
     container.scrollLeft = (container.scrollWidth - container.clientWidth) / 2;
-    centeredSelectionRef.current = DEFAULT_BRANCH;
+    centeredSelectionRef.current = defaultBranch;
     /* eslint-enable better-mutation/no-mutation */
-    setBranchPickerSelection(DEFAULT_BRANCH);
-  }, [isOverflowing]);
+    setBranchPickerSelection(defaultBranch);
+  }, [isOverflowing, hasMultipleBranches, defaultBranch]);
 
   // Center the selected branch's ladder whenever the selection changes
   useEffect(() => {
@@ -154,7 +154,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       return;
     }
     const container = laddersRef.current;
-    if (!container) return;
+    if (!container || !hasMultipleBranches) return;
     const branch = container.querySelector<HTMLElement>(
       `[data-branch="${branchPickerSelection}"]`,
     );
@@ -177,7 +177,12 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
       // eslint-disable-next-line better-mutation/no-mutation
       resetVerticalScrollRef.current = false;
     }
-  }, [branchPickerSelection, branchPickerClick, sideBarOpen]);
+  }, [
+    branchPickerSelection,
+    branchPickerClick,
+    sideBarOpen,
+    hasMultipleBranches,
+  ]);
 
   // Detect touch scroll and lock direction to starting axis by hiding overflow
   // on other axis
@@ -347,7 +352,7 @@ export const LadderPage = ({ routeId }: { routeId: RouteId }): ReactElement => {
           />
         </div>
       </main>
-      {isOverflowing && (
+      {hasMultipleBranches && isOverflowing && (
         <div
           className="dark:bg-ladder-background-dark light:bg-ladder-background-light flex shrink-0 justify-center"
           data-testid="branch-picker-container"
