@@ -10,15 +10,9 @@ defmodule OrbitWeb.OcsController do
   def trips(conn, _params) do
     today = Util.Time.current_service_date()
 
-    render(conn, :trips,
-      trips:
-        Repo.all(
-          from(trip in Trip,
-            where: trip.service_date == ^today,
-            order_by: :rail_line
-          )
-        )
-    )
+    trips = Orbit.Ocs.Entities.query_latest()
+
+    render(conn, :trips, trips: trips)
   end
 
   @spec trains(Plug.Conn.t(), map()) :: Plug.Conn.t()
