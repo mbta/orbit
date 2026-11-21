@@ -105,7 +105,7 @@ jobs:
       DATABASE_NAME: orbit_test
     services:
       postgres:
-        image: postgres:15@sha256:2663a9f0fde52de94f5dad3603a1942359f49472f1017c1a6d64f66bfedacb40
+        image: postgres:19@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
         ports:
           - 5432:5432
         env:
@@ -231,7 +231,7 @@ jobs:
       DATABASE_HOST: localhost
     services:
       postgres:
-        image: postgres:15@sha256:2663a9f0fde52de94f5dad3603a1942359f49472f1017c1a6d64f66bfedacb40
+        image: postgres:19@sha256:bb6e70add742cd868fb62cb3b2f67d1dd2bdd2b65a521e778420748753687c60
         ports:
           - 5432:5432
         env:
