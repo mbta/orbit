@@ -87,7 +87,8 @@ defmodule Realtime.TripMatcherServer do
   def handle_call({:subscribe, pid}, _from, state) do
     Process.monitor(pid)
 
-    {:reply, state.out, %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
+    {:reply, output_with_test_vehicles(state),
+     %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
   end
 
   defp schedule do
@@ -226,8 +227,10 @@ defmodule Realtime.TripMatcherServer do
   end
 
   defp push_new_data(state) do
+    output = output_with_test_vehicles(state)
+
     Enum.each(state.subscriptions, fn pid ->
-      send(pid, {:new_data, :vehicles, state.out})
+      send(pid, {:new_data, :vehicles, output})
     end)
 
     Map.put(state, :last_push_to_subscriptions, DateTime.utc_now())
@@ -243,5 +246,60 @@ defmodule Realtime.TripMatcherServer do
       Process.send_after(self(), :retry_entities_server, 3000)
 
       :error
+  end
+
+  defp output_with_test_vehicles(state) do
+    %{timestamp: timestamp, entities: entities} = state.out
+
+    now = DateTime.utc_now()
+    now_unix = DateTime.to_unix(now)
+
+    entities =
+      entities ++
+        [
+          %Vehicle{
+            position: %VehiclePosition{
+              route_id: :Red,
+              revenue: true,
+              direction: 0,
+              label: "1700",
+              cars: ["1700", "1701", "1702", "1703", "1704", "1705"],
+              position: %Util.Position{latitude: 42.3611328, longitude: -71.0706147},
+              station_id: "place-chmnl",
+              stop_id: "70073",
+              current_status: :STOPPED_AT,
+              timestamp: now,
+              vehicle_id: "R-547210A7"
+            },
+            trip_update: %TripUpdate{
+              label: "1700",
+              route_id: :Red,
+              direction: 0,
+              trip_id: "68078228",
+              route_pattern_id: "Red-1-0",
+              vehicle_id: "R-547210A7",
+              # FIXME
+              timestamp: now_unix,
+              stop_time_updates: [
+                %TripUpdate.StopTimeUpdate{
+                  station_id: "place-chmnl",
+                  # FIXME
+                  predicted_arrival_time: now_unix,
+                  predicted_departure_time: now_unix
+                }
+              ]
+            },
+            ocs_trips: %{
+              current: nil,
+              next: [],
+              prev: []
+            }
+          }
+        ]
+
+    %{
+      timestamp: timestamp,
+      entities: entities
+    }
   end
 end
