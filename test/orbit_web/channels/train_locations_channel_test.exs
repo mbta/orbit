@@ -2,7 +2,6 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
   use OrbitWeb.ChannelCase
 
   import Orbit.Factory
-  import Mock
   alias Orbit.Authentication.User
   alias OrbitWeb.TrainLocationsChannel
   alias Realtime.PollingServer
@@ -70,44 +69,22 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
   end
 
   describe "TrainLocationsChannel" do
-    for {line, route_id} <- [{"Red", :Red}, {"Blue", :Blue}, {"Orange", :Orange}] do
-      @tag :authenticated
-      test "joins #{line} and filters initial data and later pushes", %{socket: socket} do
-        line = unquote(line)
-        route_id = unquote(route_id)
-        send_vehicle_positions()
-
-        {:ok, data, _socket} =
-          subscribe_and_join(socket, TrainLocationsChannel, "vehicles", %{"line" => line})
-
-        assert %{data: %{timestamp: 123, entities: [%{position: %{route_id: ^route_id}}]}} =
-                 data
-
-        send_vehicle_positions(456)
-
-        assert_push("vehicles", %{
-          data: %{timestamp: 456, entities: [%{position: %{route_id: ^route_id}}]}
-        })
-      end
+    @tag :authenticated
+    test "channel sends data object to client on join", %{socket: socket} do
+      {:ok, data, _socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
+      assert %{data: %{timestamp: _, entities: []}} = data
     end
 
-    test_with_mocks "rejects missing and invalid line filters without subscribing",
-                    %{socket: socket},
-                    [{TripMatcherServer, [:passthrough], []}] do
-      assert {:error, %{reason: "missing_line"}} =
-               TrainLocationsChannel.join("vehicles", nil, socket)
+    @tag :authenticated
+    test "channel forwards vehicles to client", %{socket: socket} do
+      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
 
-      for {payload, reason} <- [
-            {%{}, "missing_line"},
-            {%{"line" => nil}, "invalid_line"},
-            {%{"line" => 123}, "invalid_line"},
-            {%{"line" => "Green"}, "invalid_line"}
-          ] do
-        assert {:error, %{reason: ^reason}} =
-                 subscribe_and_join(socket, TrainLocationsChannel, "vehicles", payload)
-      end
+      vehicles = [
+        build(:vehicle)
+      ]
 
-      assert_not_called(TripMatcherServer.subscribe(:_, :_))
+      send(socket.channel_pid, {:new_data, :vehicles, vehicles})
+      assert_push("vehicles", %{data: ^vehicles})
     end
 
     test "channel sends auth_expired after token expires" do
@@ -117,9 +94,7 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
         )
 
       {:ok, socket} = connect(OrbitWeb.UserSocket, %{"token" => token})
-
-      {:ok, _, socket} =
-        subscribe_and_join(socket, TrainLocationsChannel, "vehicles", %{"line" => "Red"})
+      {:ok, _, socket} = subscribe_and_join(socket, TrainLocationsChannel, "vehicles")
 
       # wait for token to expire
       # (must ensure token has been expired for an entire second since Guardian's timestamps are in seconds)
@@ -129,19 +104,5 @@ defmodule OrbitWeb.TrainLocationsChannelTest do
       send(socket.channel_pid, {:new_data, :vehicles, vehicles})
       assert_push("auth_expired", %{})
     end
-  end
-
-  defp send_vehicle_positions(timestamp \\ 123) do
-    positions =
-      Enum.map([:Red, :Blue, :Orange], fn route_id ->
-        build(:vehicle_position, route_id: route_id)
-      end)
-
-    send(
-      TripMatcherServer,
-      {:new_data, :vehicle_positions, %{timestamp: timestamp, entities: positions}}
-    )
-
-    :sys.get_state(TripMatcherServer)
   end
 end

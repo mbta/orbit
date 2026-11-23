@@ -2,22 +2,15 @@ import { useSocket } from "../contexts/socketContext";
 import "../models/vehiclePosition";
 import { useDataWarnings } from "../contexts/dataWarningsContext";
 import { dateTimeFromUnix, useNow } from "../dateTime";
-import { RouteId } from "../models/common";
 import {
   Vehicle,
   VehicleDataMessage,
   vehicleFromVehicleData,
 } from "../models/vehicle";
 import { useChannel } from "./useChannel";
-import {
-  useCallback,
-  useEffect,
-  useEffectEvent,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 
-export const useVehicles = (line: RouteId): Vehicle[] | null => {
+export const useVehicles = (): Vehicle[] | null => {
   const now = useNow("minute");
   const [, addWarning, removeWarning] = useDataWarnings();
   const [mostRecentTimestamp, setMostRecentTimestamp] = useState(
@@ -28,8 +21,6 @@ export const useVehicles = (line: RouteId): Vehicle[] | null => {
     return message.data.entities.map((data) => vehicleFromVehicleData(data));
   }, []);
   const socket = useSocket();
-  // Memoized so that the channel is not left and re-joined on every render
-  const joinParams = useMemo(() => ({ line }), [line]);
   const result = useChannel({
     socket,
     topic: "vehicles",
@@ -37,7 +28,6 @@ export const useVehicles = (line: RouteId): Vehicle[] | null => {
     event: "vehicles",
     RawData: VehicleDataMessage,
     defaultResult: null,
-    joinParams,
   });
   const checkForStaleData = useEffectEvent(() => {
     if (now.diff(dateTimeFromUnix(mostRecentTimestamp), "minute").minutes > 3) {
