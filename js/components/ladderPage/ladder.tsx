@@ -18,8 +18,13 @@ import { ReactElement, Ref } from "react";
 
 const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
+type RoutePatternConfig = { color: string; letter: string };
+
 const ROUTE_PATTERN_CONFIG: Readonly<
-  Record<RouteId, Record<RoutePatternId, { color: string; letter: string }>>
+  Record<
+    RouteId,
+    Record<RoutePatternId, RoutePatternConfig | undefined> | undefined
+  >
 > = {
   Red: {
     "Red-1-0": {
@@ -50,17 +55,35 @@ const ROUTE_PATTERN_CONFIG: Readonly<
   },
 };
 
-const ROUTE_DEFAULTS: Readonly<
-  Record<
-    RouteId,
-    { color: string; letter: string; interLadderStationIds: StationId[] }
-  >
-> = {
+type RouteConfig = RoutePatternConfig & { interLadderStationIds: StationId[] };
+const ROUTE_DEFAULTS: Readonly<Record<RouteId, RouteConfig | undefined>> = {
   Red: {
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
     interLadderStationIds: ["place-jfk", "place-andrw"],
   },
+};
+
+const ROUTE_CONFIG_FALLBACK: RouteConfig = {
+  color: "branch-color-heavy-rail-braintree",
+  letter: "-",
+  interLadderStationIds: [],
+};
+
+const getRoutePatternConfig = (
+  routeId: RouteId,
+  routePatternId?: RoutePatternId,
+): RoutePatternConfig => {
+  if (
+    routePatternId !== undefined &&
+    // It's possible to receive route patterns we aren't
+    // familiar with during disruptions.
+    ROUTE_PATTERN_CONFIG[routeId]?.[routePatternId] !== undefined
+  ) {
+    return ROUTE_PATTERN_CONFIG[routeId][routePatternId];
+  }
+
+  return ROUTE_DEFAULTS[routeId] ?? ROUTE_CONFIG_FALLBACK;
 };
 
 // Adapt Orbit's Station (uses `location`, no `shortName`) to rail-tech-ui's
@@ -267,7 +290,7 @@ export const Ladders = ({
           const branch: BranchPickerSelection = index;
 
           const interLadderStationIds =
-            ROUTE_DEFAULTS[routeId].interLadderStationIds;
+            ROUTE_DEFAULTS[routeId]?.interLadderStationIds ?? [];
 
           return (
             <div
@@ -293,35 +316,13 @@ export const Ladders = ({
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  if (
-                    routePatternId !== undefined &&
-                    // It's possible to receive route patterns we aren't
-                    // familiar with during disruptions.
-
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                    ROUTE_PATTERN_CONFIG[routeId][routePatternId] !== undefined
-                  ) {
-                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].letter;
-                  }
-
-                  return ROUTE_DEFAULTS[routeId].letter;
+                  return getRoutePatternConfig(routeId, routePatternId).letter;
                 }}
                 routeColorFn={(
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  if (
-                    routePatternId !== undefined &&
-                    // It's possible to receive route patterns we aren't
-                    // familiar with during disruptions.
-
-                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                    ROUTE_PATTERN_CONFIG[routeId][routePatternId] !== undefined
-                  ) {
-                    return ROUTE_PATTERN_CONFIG[routeId][routePatternId].color;
-                  }
-
-                  return ROUTE_DEFAULTS[routeId].color;
+                  return getRoutePatternConfig(routeId, routePatternId).color;
                 }}
                 labelRemap={(car: CarId) => remapLabel(car, routeId)}
                 getInitialPredictionsDirection={() => 0}

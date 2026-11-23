@@ -1049,7 +1049,7 @@ describe("Ladder", () => {
                 vehiclePosition: vehiclePositionFactory.build({
                   vehicleId: "vehicle1",
                   directionId: 0,
-                  label: "1898",
+                  label: "1899",
                   cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
                   stationId: "place-davis",
                   stopId: "70063",
@@ -1058,6 +1058,59 @@ describe("Ladder", () => {
                 }),
                 tripUpdate: {
                   routeId: "Red",
+                  routePatternId: "FAKE",
+                },
+              }),
+            ],
+            "alewife",
+          );
+        }).not.toThrow();
+      });
+
+      test("REGRESSION: does not error on null route patterns", () => {
+        expect(() => {
+          setupTrainsOnLadderTest(
+            [
+              vehicleFactory.build({
+                vehiclePosition: vehiclePositionFactory.build({
+                  vehicleId: "vehicle1",
+                  directionId: 0,
+                  label: "1899",
+                  cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
+                  stationId: "place-davis",
+                  stopId: "70063",
+                  stopStatus: StopStatus.StoppedAt,
+                  position: { latitude: 42.39674, longitude: -71.121815 },
+                }),
+                tripUpdate: {
+                  routeId: "Red",
+                  routePatternId: null,
+                },
+              }),
+            ],
+            "alewife",
+          );
+        }).not.toThrow();
+      });
+
+      test("REGRESSION: does not error on unknown route ID", () => {
+        expect(() => {
+          setupTrainsOnLadderTest(
+            [
+              vehicleFactory.build({
+                vehiclePosition: vehiclePositionFactory.build({
+                  routeId: "Chartreuse",
+                  vehicleId: "vehicle1",
+                  directionId: 0,
+                  label: "1899",
+                  cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
+                  stationId: "place-davis",
+                  stopId: "70063",
+                  stopStatus: StopStatus.StoppedAt,
+                  position: { latitude: 42.39674, longitude: -71.121815 },
+                }),
+                tripUpdate: {
+                  routeId: "Chartreuse",
                   routePatternId: "FAKE",
                 },
               }),
