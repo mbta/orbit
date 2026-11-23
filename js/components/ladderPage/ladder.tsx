@@ -71,8 +71,8 @@ const ROUTE_CONFIG_FALLBACK: RouteConfig = {
 };
 
 const getRoutePatternConfig = (
-  routeId: string,
-  routePatternId?: string,
+  routeId: RouteId,
+  routePatternId?: RoutePatternId,
 ): RoutePatternConfig => {
   if (
     routePatternId !== undefined &&
