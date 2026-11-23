@@ -1066,6 +1066,33 @@ describe("Ladder", () => {
           );
         }).not.toThrow();
       });
+
+      test("REGRESSION: does not error on unknown route ID", () => {
+        expect(() => {
+          setupTrainsOnLadderTest(
+            [
+              vehicleFactory.build({
+                vehiclePosition: vehiclePositionFactory.build({
+                  routeId: "Chartreuse",
+                  vehicleId: "vehicle1",
+                  directionId: 0,
+                  label: "1898",
+                  cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
+                  stationId: "place-davis",
+                  stopId: "70063",
+                  stopStatus: StopStatus.StoppedAt,
+                  position: { latitude: 42.39674, longitude: -71.121815 },
+                }),
+                tripUpdate: {
+                  routeId: "Chartreuse",
+                  routePatternId: "FAKE",
+                },
+              }),
+            ],
+            "alewife",
+          );
+        }).not.toThrow();
+      });
     });
 
     describe("plots trains on correct side of ladder", () => {
