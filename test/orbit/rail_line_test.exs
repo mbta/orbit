@@ -43,4 +43,12 @@ defmodule Orbit.RailLineTest do
       assert RailLine.dump(:pink) == :error
     end
   end
+
+  describe "from_route_id/1" do
+    test "maps route ids to rail lines" do
+      assert RailLine.from_route_id(:Red) == :red
+      assert RailLine.from_route_id(:Blue) == :blue
+      assert RailLine.from_route_id(:Orange) == :orange
+    end
+  end
 end
