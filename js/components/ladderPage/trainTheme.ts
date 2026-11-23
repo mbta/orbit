@@ -20,6 +20,16 @@ export const TrainThemes: Record<string, TrainTheme> = {
     borderColor: "border-glides-gray-400",
     strokeColor: "stroke-glides-gray-400",
   },
+  blue: {
+    backgroundColor: "bg-heavy-rail-blue-line",
+    borderColor: "border-heavy-rail-blue-line",
+    strokeColor: "stroke-heavy-rail-blue-line",
+  },
+  orange: {
+    backgroundColor: "bg-heavy-rail-orange-line",
+    borderColor: "border-heavy-rail-orange-line",
+    strokeColor: "stroke-heavy-rail-orange-line",
+  },
 } as const;
 
 export const trainThemesByRoutePattern: ReadonlyMap<

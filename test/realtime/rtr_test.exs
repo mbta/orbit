@@ -45,6 +45,14 @@ defmodule Realtime.RTRTest do
              } = vp
     end
 
+    test "Blue and Orange vehicle positions resolve platform stops to stations", context do
+      for route <- [:Blue, :Orange] do
+        positions = Enum.filter(context.vehicle_positions.entities, &(&1.route_id == route))
+        assert positions != []
+        assert Enum.all?(positions, &is_binary(&1.station_id))
+      end
+    end
+
     test "parses multiple vehicle_position entities into individual structs", context do
       assert %{
                timestamp: _time,
@@ -92,6 +100,18 @@ defmodule Realtime.RTRTest do
 
       assert Enum.at(nonrev_tu.stop_time_updates, 1).predicted_arrival_time ==
                1_751_553_175
+    end
+
+    test "Blue and Orange trip updates resolve every platform stop to a station", context do
+      for {route, first_station} <- [Blue: "place-bomnl", Orange: "place-grnst"] do
+        updates = Enum.filter(context.trip_updates.entities, &(&1.route_id == route))
+        assert updates != []
+        assert hd(hd(updates).stop_time_updates).station_id == first_station
+
+        assert Enum.all?(updates, fn update ->
+                 Enum.all?(update.stop_time_updates, &is_binary(&1.station_id))
+               end)
+      end
     end
 
     test "returns nil on empty file" do
