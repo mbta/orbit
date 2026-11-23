@@ -1049,7 +1049,7 @@ describe("Ladder", () => {
                 vehiclePosition: vehiclePositionFactory.build({
                   vehicleId: "vehicle1",
                   directionId: 0,
-                  label: "1898",
+                  label: "1899",
                   cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
                   stationId: "place-davis",
                   stopId: "70063",
@@ -1076,7 +1076,7 @@ describe("Ladder", () => {
                   routeId: "Chartreuse",
                   vehicleId: "vehicle1",
                   directionId: 0,
-                  label: "1898",
+                  label: "1899",
                   cars: ["1899", "1898", "1897", "1896", "1895", "1894"],
                   stationId: "place-davis",
                   stopId: "70063",
