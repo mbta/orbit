@@ -18,10 +18,13 @@ import { ReactElement, Ref } from "react";
 
 const PROPORTIONAL_PROGRESS_THRESHOLD = 0.5;
 
-type RouteConfig = { color: string; letter: string };
+type RoutePatternConfig = { color: string; letter: string };
 
 const ROUTE_PATTERN_CONFIG: Readonly<
-  Record<RouteId, Record<RoutePatternId, RouteConfig | undefined> | undefined>
+  Record<
+    RouteId,
+    Record<RoutePatternId, RoutePatternConfig | undefined> | undefined
+  >
 > = {
   Red: {
     "Red-1-0": {
@@ -52,10 +55,8 @@ const ROUTE_PATTERN_CONFIG: Readonly<
   },
 };
 
-type RouteDefaultConfig = RouteConfig & { interLadderStationIds: StationId[] };
-const ROUTE_DEFAULTS: Readonly<
-  Record<RouteId, RouteDefaultConfig | undefined>
-> = {
+type RouteConfig = RoutePatternConfig & { interLadderStationIds: StationId[] };
+const ROUTE_DEFAULTS: Readonly<Record<RouteId, RouteConfig | undefined>> = {
   Red: {
     color: "branch-color-heavy-rail-braintree",
     letter: "-",
@@ -63,15 +64,16 @@ const ROUTE_DEFAULTS: Readonly<
   },
 };
 
-const ROUTE_CONFIG_FALLBACK = {
+const ROUTE_CONFIG_FALLBACK: RouteConfig = {
   color: "branch-color-heavy-rail-braintree",
   letter: "-",
+  interLadderStationIds: [],
 };
 
-const getRouteConfig = (
+const getRoutePatternConfig = (
   routeId: string,
   routePatternId?: string,
-): RouteConfig => {
+): RoutePatternConfig => {
   if (
     routePatternId !== undefined &&
     // It's possible to receive route patterns we aren't
@@ -314,13 +316,13 @@ export const Ladders = ({
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  return getRouteConfig(routeId, routePatternId).letter;
+                  return getRoutePatternConfig(routeId, routePatternId).letter;
                 }}
                 routeColorFn={(
                   routeId: RouteId,
                   routePatternId?: RoutePatternId,
                 ) => {
-                  return getRouteConfig(routeId, routePatternId).color;
+                  return getRoutePatternConfig(routeId, routePatternId).color;
                 }}
                 labelRemap={(car: CarId) => remapLabel(car, routeId)}
                 getInitialPredictionsDirection={() => 0}
