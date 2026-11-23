@@ -288,6 +288,61 @@ defmodule Orbit.Ocs.EntitiesTest do
              } = queried
     end
 
+    test "TSCH_NEW at 2am inserts for that day's service date" do
+      message_timestamp =
+        DateTime.new!(
+          @test_service_date,
+          Time.new!(2, 0, 0),
+          @test_timezone
+        )
+
+      message = %Message.TschNewMessage{
+        counter: 111,
+        timestamp: message_timestamp,
+        transitline: :red,
+        trip_uid: "TRIP_UID",
+        add_type: "ADD_TYPE",
+        trip_type: "TRIP_TYPE",
+        sched_dep: @test_datetime,
+        sched_arr: @test_datetime,
+        ocs_route_id: "OCS_ROUTE_ID",
+        origin_sta: "ORIGIN_STA",
+        dest_sta: "DEST_STA",
+        prev_trip_uid: "PREV_TRIP_UID",
+        next_trip_uid: "NEXT_TRIP_UID"
+      }
+
+      Entities.apply_changes(message)
+
+      queried =
+        Repo.get_by!(
+          Trip,
+          uid: "TRIP_UID",
+          service_date: @test_service_date,
+          rail_line: :red
+        )
+
+      assert %Trip{
+               service_date: @test_service_date,
+               uid: "TRIP_UID",
+               train_uid: nil,
+               prev_uid: "PREV_TRIP_UID",
+               next_uid: "NEXT_TRIP_UID",
+               route: "OCS_ROUTE_ID",
+               rail_line: :red,
+               trip_type: "TRIP_TYPE",
+               scheduled_departure: @test_datetime_utc,
+               scheduled_arrival: @test_datetime_utc,
+               offset: nil,
+               # Scheduled endpoints from setup are preserved; new values from
+               # the TSCH_NEW go to the updated columns because they differ.
+               origin_station: "ORIGIN_STATION",
+               origin_station_updated: "ORIGIN_STA",
+               destination_station: "DESTINATION_STATION",
+               destination_station_updated: "DEST_STA"
+             } = queried
+    end
+
     test "inserts trip for TSCH_CON" do
       message = %Message.TschConMessage{
         counter: 111,
