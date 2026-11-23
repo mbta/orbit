@@ -23,7 +23,7 @@ defmodule Realtime.TripMatcherServer do
            # Cache departures
            vehicle_events: VehicleEvent.departure_lookup(),
            entities_server_ref: reference() | nil,
-           subscriptions: %{pid() => Realtime.Data.route_id()},
+           subscriptions: MapSet.t(pid()),
            last_push_to_subscriptions: DateTime.t()
          }
 
@@ -37,18 +37,9 @@ defmodule Realtime.TripMatcherServer do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
-  @doc """
-  Subscribes `pid` to vehicle updates for a single line.
-
-  The subscriber receives `{:new_data, :vehicles, payload}` messages, where
-  `payload` contains only the vehicles for the requested `line`.
-  """
-  @spec subscribe(pid(), Realtime.Data.route_id()) :: %{
-          timestamp: integer(),
-          entities: [Vehicle.t()]
-        }
-  def subscribe(pid, line) do
-    GenServer.call(__MODULE__, {:subscribe, pid, line})
+  @spec subscribe(pid()) :: [Vehicle.t()]
+  def subscribe(pid) do
+    GenServer.call(__MODULE__, {:subscribe, pid})
   end
 
   @impl GenServer
@@ -85,19 +76,18 @@ defmodule Realtime.TripMatcherServer do
            Realtime.Data.VehicleEvent.recent_departures(now)
          end),
        entities_server_ref: ocs_ref,
-       subscriptions: %{},
+       subscriptions: MapSet.new(),
        last_push_to_subscriptions: DateTime.utc_now()
      }}
   end
 
   @impl GenServer
-  @spec handle_call({:subscribe, pid(), Realtime.Data.route_id()}, GenServer.from(), state()) ::
+  @spec handle_call({:subscribe, pid()}, GenServer.from(), state()) ::
           {:reply, %{timestamp: integer(), entities: [Vehicle.t()]}, state()}
-  def handle_call({:subscribe, pid, line}, _from, state) do
+  def handle_call({:subscribe, pid}, _from, state) do
     Process.monitor(pid)
 
-    {:reply, vehicles_for_line(state.out, line),
-     %{state | subscriptions: Map.put(state.subscriptions, pid, line)}}
+    {:reply, state.out, %{state | subscriptions: MapSet.put(state.subscriptions, pid)}}
   end
 
   defp schedule do
@@ -221,7 +211,7 @@ defmodule Realtime.TripMatcherServer do
       {:noreply, %{state | entities_server_ref: nil}}
     else
       # The process that terminated was somebody that subscribed to us
-      {:noreply, %{state | subscriptions: Map.delete(state.subscriptions, pid)}}
+      {:noreply, %{state | subscriptions: MapSet.delete(state.subscriptions, pid)}}
     end
   end
 
@@ -236,18 +226,11 @@ defmodule Realtime.TripMatcherServer do
   end
 
   defp push_new_data(state) do
-    Enum.each(state.subscriptions, fn {pid, line} ->
-      send(pid, {:new_data, :vehicles, vehicles_for_line(state.out, line)})
+    Enum.each(state.subscriptions, fn pid ->
+      send(pid, {:new_data, :vehicles, state.out})
     end)
 
     Map.put(state, :last_push_to_subscriptions, DateTime.utc_now())
-  end
-
-  defp vehicles_for_line(%{timestamp: timestamp, entities: entities}, line) do
-    %{
-      timestamp: timestamp,
-      entities: Enum.filter(entities, fn vehicle -> vehicle.position.route_id == line end)
-    }
   end
 
   defp try_subscribe_to_ocs do

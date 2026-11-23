@@ -53,7 +53,6 @@ export const useChannel = <RawData, Data>({
   RawData,
   parser,
   defaultResult,
-  joinParams,
 }: {
   socket: Socket | null;
   topic: string;
@@ -61,14 +60,8 @@ export const useChannel = <RawData, Data>({
   RawData: z.ZodType<RawData>;
   parser: (rawData: RawData) => Data;
   defaultResult: Data | (() => Data);
-  /**
-   * Optional payload sent to the server when joining the channel.
-   * Must be referentially stable (memoized by the caller), otherwise the
-   * channel will be left and re-joined on every render.
-   */
-  joinParams?: object;
 }): Data => {
-  const channel = useRawChannel({ socket, topic, joinParams });
+  const channel = useRawChannel({ socket, topic });
   const [data, setData] = useState<Data>(defaultResult);
   useEffect(() => {
     if (channel !== null) {
