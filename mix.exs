@@ -62,7 +62,7 @@ defmodule Orbit.MixProject do
       {:ecto_sql, "3.14.0"},
       {:ex_aws, "2.7.0"},
       {:ex_aws_rds, "2.0.2"},
-      {:ex_aws_s3, "2.5.9"},
+      {:ex_aws_s3, "== 2.6.1"},
       {:ex_machina, "2.8.2", only: :test},
       {:finch, "== 0.25.0"},
       {:floki, "== 0.38.5", only: :test},
