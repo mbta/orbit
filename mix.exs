@@ -46,7 +46,7 @@ defmodule Orbit.MixProject do
       {:bandit, "== 1.15.0"},
       {
         :broadway_kinesis,
-        github: "mbta/broadway_kinesis", ref: "e35a5490254698328f3c99aa428e0d05c4ed66d9"
+        github: "mbta/broadway_kinesis", ref: "f615b9c53f3628dae88bc3a46c035928b1dad159"
       },
       {:castore, "1.0.22"},
       # used by ex_aws to parse AWS CLI settings/credentials
@@ -60,7 +60,7 @@ defmodule Orbit.MixProject do
       {:dns_cluster, "== 0.3.1"},
       {:ehmon, github: "mbta/ehmon", only: :prod},
       {:ecto_sql, "3.14.0"},
-      {:ex_aws, "2.7.0"},
+      {:ex_aws, "2.8.2"},
       {:ex_aws_rds, "2.0.2"},
       {:ex_aws_s3, "2.5.9"},
       {:ex_machina, "2.8.2", only: :test},
