@@ -95,7 +95,7 @@ defmodule Orbit.MixProject do
       {:phoenix_live_view, "== 1.2.13"},
       {:postgrex, "0.22.4"},
       {:req, "== 0.7.5"},
-      {:sentry, "== 14.0.1"},
+      {:sentry, "== 14.1.0"},
       {:ssl_verify_fun, "== 1.1.9"},
       {:sobelow, "== 0.19.0", only: [:dev, :test], runtime: false},
       {:telemetry_metrics, "== 1.2.0"},
