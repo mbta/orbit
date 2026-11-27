@@ -279,7 +279,7 @@ export const Ladders = ({
       ref={ref}
       data-testid="ladders-scroll-container"
       className={className([
-        "relative flex w-full h-full overflow-x-auto snap-x snap-mandatory",
+        "relative flex z-0 w-full h-full overflow-x-auto snap-x snap-mandatory",
         sideBarSelection !== null ?
           "justify-start pl-80 scroll-pl-80 min-[2000px]:justify-center min-[2000px]:pl-0 min-[2000px]:scroll-pl-0"
         : "justify-start min-[1485px]:justify-center",
